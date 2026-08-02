@@ -63,9 +63,9 @@ failure.
 
 ## Manager policy
 
-Use one trial while porting and increase trials before treating timing or
-handbook effects as causal. Open a ticket only for a strong reproducible
+Use one trial by default while porting; the controller-owned `## Trial plan`
+in the cycle request may explicitly raise this to two. Increase trials before
+treating timing or handbook effects as causal. Open a ticket only for a strong reproducible
 language/tooling observation that generalizes beyond this filesystem shape.
 Handbook changes are provisional until replayed with the same oracle and a
 nearby filesystem case.
-

@@ -1,6 +1,0 @@
-*
-!.dist/
-!.dist/**
-!runtime/
-!runtime/**
-!Dockerfile

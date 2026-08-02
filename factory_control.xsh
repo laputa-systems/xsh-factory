@@ -3,6 +3,69 @@
 ## One placeholder value used to fill a checked-in Markdown template.
 export type TemplateValue = {key: Str, value: Str}
 
+## The role names and defaults are the single launcher configuration source.
+export pure role_prefix(role: Str) -> Str {
+  if role == "director" { return "DIRECTOR" }
+  if role == "eval-designer" { return "EVAL_DESIGNER" }
+  if role == "eval-manager" { return "EVAL_MANAGER" }
+  if role == "eval-worker" { return "EVAL_WORKER" }
+  if role == "xsh-swe" { return "XSH_SWE" }
+  return ""
+}
+
+## Selects the default provider for a known factory role.
+export pure default_provider(role: Str) -> Str {
+  if role_prefix(role) != "" { return "openrouter" }
+  return ""
+}
+
+## Selects the default model for a known factory role.
+export pure default_model(role: Str) -> Str {
+  if role_prefix(role) != "" { return "deepseek/deepseek-v4-flash-0731" }
+  return ""
+}
+
+## Selects the default thinking level for a known factory role.
+export pure default_thinking(role: Str) -> Str {
+  if role_prefix(role) != "" { return "high" }
+  return ""
+}
+
+## Selects the default dollar budget for a known factory role.
+export pure default_budget(role: Str) -> Str {
+  if role_prefix(role) != "" { return "2" }
+  return ""
+}
+
+## Selects the default Pi tool set for a known factory role.
+export pure default_tools(role: Str) -> Str {
+  if role == "eval-worker" { return "read,write,edit,bash" }
+  if role_prefix(role) != "" { return "read,write,edit,bash,grep,find,ls" }
+  return ""
+}
+
+## Reads one configured role setting, falling back to the codified default.
+export proc configured_role_setting(role: Str, key: Str) [env, error] -> Result[Str] {
+  let prefix = role_prefix(role)
+  if prefix == "" {
+    return Ok("")
+  }
+  let fallback = if key == "PROVIDER" {
+    default_provider(role)
+  } else if key == "MODEL" {
+    default_model(role)
+  } else if key == "THINKING" {
+    default_thinking(role)
+  } else if key == "BUDGET_USD" {
+    default_budget(role)
+  } else if key == "TOOLS" {
+    default_tools(role)
+  } else {
+    ""
+  }
+  return env.get_or(f"FACTORY_${prefix}_${key}", fallback)
+}
+
 ## Reads the deterministic workflow mode from a cycle request.
 export pure request_mode(text: Str) -> Str {
   var in_mode = false
@@ -76,6 +139,64 @@ export pure request_tickets(text: Str) -> List[Str] {
   return tickets
 }
 
+## Reads the controller-owned trial count from a cycle request.
+export pure request_trial_count(text: Str) -> Result[Int] {
+  var in_plan = false
+  for line in text.lines() {
+    let trimmed = line.trim()
+    if trimmed == "## Trial plan" or trimmed == "## Trial count" {
+      in_plan = true
+      continue
+    }
+    if in_plan and trimmed.starts_with("## ") {
+      return Ok(1)
+    }
+    if in_plan and trimmed.starts_with("- Count:") {
+      let quoted = trimmed.split("`")
+      if quoted.len() >= 2 {
+        return quoted[1].parse_int()
+      }
+      let parts = trimmed.split(":")
+      if parts.len() >= 2 {
+        return parts[1].trim().parse_int()
+      }
+    }
+  }
+  return Ok(1)
+}
+
+## Reads the number of new eval proposals the controller must dispatch.
+export pure request_new_eval_count(text: Str) -> Result[Int] {
+  var in_proposals = false
+  for line in text.lines() {
+    let trimmed = line.trim()
+    if trimmed == "## New eval proposals" {
+      in_proposals = true
+      continue
+    }
+    if in_proposals and trimmed.starts_with("## ") {
+      return Ok(0)
+    }
+    if in_proposals and trimmed.starts_with("- Count:") {
+      let quoted = trimmed.split("`")
+      if quoted.len() >= 2 {
+        return quoted[1].parse_int()
+      }
+      let parts = trimmed.split(":")
+      if parts.len() >= 2 {
+        return parts[1].trim().parse_int()
+      }
+    }
+  }
+  return Ok(0)
+}
+
+## Only slash-free eval directories may be selected by a cycle request.
+export pure valid_eval_id(eval_id: Str) -> Bool {
+  return eval_id != "" and ! eval_id.contains("/") and ! eval_id.contains("..") and
+    ! eval_id.contains("\\") and ! eval_id.contains(" ")
+}
+
 ## Rejects ticket identifiers that could escape the ticket/worktree namespace.
 export pure valid_ticket_id(ticket_id: Str) -> Bool {
   return ticket_id != "" and ! ticket_id.contains("/") and ! ticket_id.contains("..") and
@@ -126,6 +247,40 @@ export pure report_contract_ok(report: Str, required_sections: List[Str], expect
     }
   }
   return true
+}
+
+## Validates every required xsh-swe report heading and result.
+export pure swe_report_contract_ok(report: Str) -> Bool {
+  return report_contract_ok(report,
+    ["Branch", "Commit", "Files changed", "Tests", "North-star impact", "Remaining risks"],
+    "ready-for-review")
+}
+
+## Validates the evidence headings required from an eval-manager.
+export pure manager_report_contract_ok(report: Str) -> Bool {
+  return report_contract_ok(report,
+    ["Effort metrics", "Usage and cost", "Thinking evidence", "Timing evidence",
+      "Observation classification", "Handbook decision", "Tickets created",
+      "Next replay", "North-star impact"], "")
+}
+
+## Validates the coordination headings required from a director.
+export pure director_report_contract_ok(report: Str) -> Bool {
+  return report_contract_ok(report,
+    ["Cycle", "Children", "Required-output status", "North-star impact"], "")
+}
+
+## Validates the deterministic executor summary written for one trial.
+export pure executor_report_contract_ok(report: Str) -> Bool {
+  return report_contract_ok(report,
+    ["Failure classification", "Trial", "Artifact", "Evidence"], "pass")
+}
+
+## Validates the concise report written by an eval-designer.
+export pure designer_report_contract_ok(report: Str) -> Bool {
+  return report_contract_ok(report,
+    ["Proposal", "Dry run", "North-star impact", "Known risks", "Review path"],
+    "ready-for-review")
 }
 
 ## Fills a checked-in Markdown template without embedding its contract in code.

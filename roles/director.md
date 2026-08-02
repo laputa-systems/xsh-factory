@@ -43,9 +43,12 @@ table. The runner rejects an altered, mismatched, or already-claimed
 assignment before Pi starts. Wait for each child process to finish, inspect its
 `SWE-REPORT.md`, and record the branch and commit without merging.
 
-In eval mode, run active eval-managers and the other stages requested by the
-cycle. Newly created tickets wait for the next cycle. Every stage completion is
-an event recorded by the controller; do not implement a polling loop in an
-agent. Collect every child report and finish `DIRECTOR-REPORT.md` with the
-required-output status, `## North-star impact`, and links to the worker tree.
-Do not invent a ticket when the evidence does not support one.
+In eval mode, follow the controller-generated `DISPATCH.md` exactly. It is the
+complete ordered child list: run each row once, wait for it, and do not infer a
+designer, manager, worker, or SWE stage from the cycle request prose. Newly
+created tickets wait for the next cycle. Every stage completion is an event
+recorded by the controller; do not implement a polling loop in an agent.
+Collect every child report and finish `DIRECTOR-REPORT.md` with exactly
+`## Result`, `## Cycle`, `## Children`, `## Required-output status`, and
+`## North-star impact`. Do not invent a ticket when the evidence does not
+support one.

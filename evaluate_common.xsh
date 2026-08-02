@@ -114,7 +114,7 @@ proc run_task_tags() [fs, process, env, time, error, io] -> Result[Int] {
   }
   let handbook_sha = if fs.exists(p"/work/handbook.md")? { hash.sha256(p"/work/handbook.md")?.hex() } else { "" }
   let agents_sha = if fs.exists(p"/work/agents.md")? { hash.sha256(p"/work/agents.md")?.hex() } else { "" }
-  let task_sha = if fs.exists(p"/work/task-tags.md")? { hash.sha256(p"/work/task-tags.md")?.hex() } else { "" }
+  let task_sha = if fs.exists(p"/work/task.md")? { hash.sha256(p"/work/task.md")?.hex() } else { "" }
   let candidate_sha = if fs.exists(p"/session/candidate.1.stdout")? { hash.sha256(p"/session/candidate.1.stdout")?.hex() } else { "" }
   let oracle_sha = if fs.exists(p"/session/oracle.1.stdout")? { hash.sha256(p"/session/oracle.1.stdout")?.hex() } else { "" }
   json.write(p"/session/run.json", {
@@ -226,7 +226,7 @@ proc run_task_ecount() [fs, process, env, time, error, io] -> Result[Int] {
   }
   let agents_sha = hash.sha256(p"/work/agents.md")?.hex()
   let handbook_sha = hash.sha256(p"/work/handbook.md")?.hex()
-  let task_sha = hash.sha256(p"/work/task-ecount.md")?.hex()
+  let task_sha = hash.sha256(p"/work/task.md")?.hex()
   let candidate_sha = if fs.exists(p"/session/candidate.stdout")? { hash.sha256(p"/session/candidate.stdout")?.hex() } else { "" }
   let oracle_sha = if fs.exists(p"/session/oracle.stdout")? { hash.sha256(p"/session/oracle.stdout")?.hex() } else { "" }
   let result = if eval_status == 0 { "pass" } else { "fail" }

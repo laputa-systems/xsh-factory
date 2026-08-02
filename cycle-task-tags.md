@@ -15,6 +15,10 @@ the north-star objective.
 
 - `task-tags`
 
+## Trial plan
+
+- Count: `2`
+
 ## New eval proposals
 
 - Count: `0`

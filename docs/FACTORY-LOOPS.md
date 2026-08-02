@@ -55,7 +55,10 @@ handbook during diagnosis. A candidate is trusted only after a replay uses its
 hash and the manager records the comparison. Promotion is global: an approved
 candidate becomes the next checked-in `runtime/handbook.md` for every eval.
 
-The standard two-trial replay is:
+The controller selects an explicit trial plan from the cycle request. One
+trial is the default for a cheap eval; two trials are required when the
+request is testing a handbook candidate or causal timing claim. A two-trial
+replay is:
 
 ```text
 trial 1 -> lineage/handbook-approved.md -> executor evidence
@@ -64,14 +67,21 @@ trial 2 -> lineage/handbook-candidate.md -> executor evidence
 ```
 
 An unchanged copy is valid evidence when the first trial yields no handbook
-change. The run records both staged handbook hashes so a prompt claiming to use
-the candidate cannot silently use the baseline.
+change. A one-trial run must copy the approved snapshot unchanged into the
+candidate path; it cannot promote a new handbook hypothesis. The controller
+records the approved, candidate, and staged trial hashes, verifies the
+checked-in handbook remains unchanged, and fails closed if the lineage is
+broken.
 
 ## Organization loop
 
-`run.xsh` is the executable cycle boundary. It selects the first eval listed
-under `## Active evals` in the cycle request, or accepts an explicit eval ID,
-then snapshots provenance before launching Pi:
+`run.xsh` is a thin signal-safe dispatcher. It selects
+`run-eval.xsh` or `run-ticket.xsh`; those mode controllers own admission,
+dispatch, validation, and reports. A run acquires `runs/factory.lock` and
+records its active run, so a second cycle cannot overlap it. The eval
+controller selects the first eval listed under `## Active evals` in the cycle
+request, or accepts an explicit eval ID, then snapshots provenance before
+launching Pi:
 
 - the clean XSH commit;
 - Docker image ID and platform;
@@ -89,6 +99,13 @@ ticket work. It does not merge XSH changes. The user approves new evals and
 merges completed XSH SWE branches. A ticket links its reporting eval, manager
 lineage, executor evidence, and XSH baseline; after a merge, that eval-manager
 accepts or rejects the change with a controlled replay.
+
+The controller writes `DISPATCH.md` for eval cycles and `TICKET-DISPATCH.md`
+for ticket cycles. These are the authoritative ordered child lists. The
+director has no discretion to discover work or infer a role from prose. An
+eval designer row appears only when the request explicitly sets
+`New eval proposals` to one; newly created tickets are never sent to SWE in
+the same cycle.
 
 ## Layer outputs
 
@@ -149,9 +166,10 @@ Accepted ticket
   -> ready-for-review branch (never auto-merged)
 ```
 
-The next tightening before `task-ecount` is to extend this same controller
-contract to eval approval, SWE acceptance/rejection, and post-merge replay:
-each transition should have one admissible input, one durable event, one
-validator, and one explicit callback/output. Pi remains useful for judgment and
-diagnosis, but it should not be responsible for inventing the organization's
-state machine.
+The current controller contract uses one admissible input, one durable event,
+one validator, and one callback/output at each cycle boundary. The remaining
+human-gated transitions are eval approval, SWE acceptance/rejection, and
+post-merge replay. Those should add the same durable event and validator shape
+without moving judgment out of the user or the eval-manager. Pi remains useful
+for judgment and diagnosis, but it does not invent the organization's state
+machine.

@@ -1,14 +1,34 @@
 ##! Cheap native tests for the deterministic factory control plane.
 
 use factory_control as control
+use factory_runtime as runtime
 
 proc test_cycle_request_parsing() [error] {
   let eval_request = "# Cycle\n\n## Active evals\n\n- `task-ecount`\n"
+  let planned_request = "# Cycle\n\n## Trial plan\n\n- Count: `2`\n\n## New eval proposals\n\n- Count: `1`\n"
   let ticket_request = "# Cycle\n\n## Mode\n\n- `ticket-implementation`\n\n## Approved tickets\n\n- `task-tags-001`\n- `task-ecount-002`\n"
   test.eq(control.request_mode(eval_request), "eval")?
   test.eq(control.request_eval(eval_request), "task-ecount")?
   test.eq(control.request_mode(ticket_request), "ticket-implementation")?
   test.eq(control.request_tickets(ticket_request), ["task-tags-001", "task-ecount-002"])?
+  test.eq(control.request_trial_count(planned_request)?, 2)?
+  test.eq(control.request_new_eval_count(planned_request)?, 1)?
+  test.eq(control.request_trial_count(eval_request)?, 1)?
+  test.eq(control.request_new_eval_count(eval_request)?, 0)?
+}
+
+proc test_role_configuration_has_one_coded_default() [error] {
+  for role in ["director", "eval-designer", "eval-manager", "eval-worker", "xsh-swe"] {
+    test.ok(control.role_prefix(role) != "")?
+    test.eq(control.default_provider(role), "openrouter")?
+    test.eq(control.default_model(role), "deepseek/deepseek-v4-flash-0731")?
+    test.eq(control.default_thinking(role), "high")?
+    test.eq(control.default_budget(role), "2")?
+    let expected_tools = if role == "eval-worker" { "read,write,edit,bash" } else { "read,write,edit,bash,grep,find,ls" }
+    test.eq(control.default_tools(role), expected_tools)?
+  }
+  test.eq(control.role_prefix("unknown"), "")?
+  test.eq(control.default_model("unknown"), "")?
 }
 
 proc test_admission_contracts() [error] {
@@ -48,6 +68,20 @@ proc test_report_contract_checks_sections_only() [error] {
   test.ok(control.report_contract_ok(report, ["Branch", "North-star impact"], "ready-for-review"))?
   test.ok(! control.report_contract_ok(report, ["Tests"], "ready-for-review"))?
   test.ok(! control.report_contract_ok(report, ["Branch"], "failed"))?
+}
+
+proc test_role_report_contracts_are_fail_closed() [error] {
+  let swe = "# SWE\n\n## Result\n\nready-for-review\n\n## Branch\n\nbranch\n\n## Commit\n\ncommit\n\n## Files changed\n\nfiles\n\n## Tests\n\npass\n\n## North-star impact\n\nimpact\n\n## Remaining risks\n\nNone.\n"
+  let manager = "## Effort metrics\n\n## Usage and cost\n\n## Thinking evidence\n\n## Timing evidence\n\n## Observation classification\n\n## Handbook decision\n\n## Tickets created\n\n## Next replay\n\n## North-star impact\n"
+  let director = "## Result\n\npass\n\n## Cycle\n\ncycle\n\n## Children\n\nchildren\n\n## Required-output status\n\nstatus\n\n## North-star impact\n\nimpact\n"
+  let executor = "## Result\n\npass\n\n## Failure classification\n\npass\n\n## Trial\n\n1\n\n## Artifact\n\npresent\n\n## Evidence\n\npaths\n"
+  let designer = "## Result\n\nready-for-review\n\n## Proposal\n\nproposal\n\n## Dry run\n\npass\n\n## North-star impact\n\nimpact\n\n## Known risks\n\nNone.\n\n## Review path\n\npath\n"
+  test.ok(control.swe_report_contract_ok(swe))?
+  test.ok(! control.swe_report_contract_ok(swe.replace("## Tests", "## Missing")))?
+  test.ok(control.manager_report_contract_ok(manager))?
+  test.ok(control.director_report_contract_ok(director))?
+  test.ok(control.executor_report_contract_ok(executor))?
+  test.ok(control.designer_report_contract_ok(designer))?
 }
 
 proc test_checked_in_templates_are_the_provenance_source(ctx: TestContext) [fs, error] {
@@ -98,4 +132,18 @@ proc test_controller_assignment_inlines_one_ticket_and_forbids_selection(ctx: Te
     "/factory/runs/run-test", "task-tags-002", message_path, "/xsh-worktree", rendered
   ))?
   let _ = ctx
+}
+
+proc test_runtime_lock_and_handbook_admission_are_deterministic(ctx: TestContext) [fs, error] {
+  let root = test.temp_dir(ctx, name: "runtime-contract")?
+  let lock = runtime.acquire_run_lock(root)?
+  test.ok(fs.exists(fp"${root}/runs/factory.lock")?)?
+  fs.mkdir(fp"${root}/runtime")?
+  let handbook = fp"${root}/runtime/handbook.md"
+  fs.write(handbook, "approved handbook\n")?
+  let sha = hash.sha256(handbook)?.hex()
+  test.ok(runtime.verify_factory_handbook(root, sha)?)?
+  fs.write(handbook, "changed handbook\n")?
+  test.ok(! runtime.verify_factory_handbook(root, sha)?)?
+  let _ = lock
 }

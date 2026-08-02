@@ -41,7 +41,6 @@ only the requested artifact unless the task explicitly says otherwise.
 - Do not hard-code an oracle’s current result when the task asks for a
   general computation.
 
-
 ## Task Review
 
 At the end of the task, after the requested artifact is in place, open

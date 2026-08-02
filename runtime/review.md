@@ -22,10 +22,10 @@ under-specified for this task. Each entry is a `### <title>` followed by a
 ## xsht friction
 
 Toolchain problems, especially `xsht api` contracts that were underspecified
-or plain wrong. Each entry is a `### <title>` followed by a `**Symptom.**`
-paragraph (exactly what you queried or ran and what came back) and an
-`**Expectation.**` paragraph (what the contract should have said). Note any
-workaround you used.
+or plain wrong. Each entry should be a `### <title>` followed by a
+`**Symptom.**` paragraph (exactly what you queried or ran and what came back)
+and an `**Expectation.**` paragraph (what the contract should have said). Note
+any workaround you used.
 
 ### <title>
 

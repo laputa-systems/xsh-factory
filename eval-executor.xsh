@@ -1,6 +1,8 @@
 ##! Shared host-side eval executor. Eval wrappers only select the eval id;
 ##! this file owns the isolated Docker worker/evaluator protocol and report.
 
+use factory_control as control
+
 proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   let factory_dir = env.path("FACTORY_DIR")?
   let eval_id = if argv.len() > 0 { argv[0] } else { env.get_or("FACTORY_EVAL_ID", "")? }
@@ -13,20 +15,21 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   let work_dir = fp"${worker_dir}/work"
   let docker = env.get_or("DOCKER", "docker")?
   let platform = env.get_or("FACTORY_PLATFORM", "linux/arm64")?
-  let default_image = if eval_id == "task-tags" {
-    env.get_or("FACTORY_TASK_TAGS_IMAGE", "xsh-factory-task-tags:latest")?
-  } else {
-    env.get_or("FACTORY_TASK_ECOUNT_IMAGE", "xsh-factory-task-ecount:latest")?
-  }
-  let image = env.get_or("FACTORY_EVAL_IMAGE", default_image)?
+  let base_image = env.get_or("FACTORY_BASE_IMAGE", "xsh-factory-base:latest")?
+  let image = env.get_or("FACTORY_EVAL_IMAGE", base_image)?
   let auth_file = env.path("PI_AUTH_FILE")?
-  let provider = env.get_or("FACTORY_EVAL_WORKER_PROVIDER", "openrouter")?
-  let model = env.get_or("FACTORY_EVAL_WORKER_MODEL", "deepseek/deepseek-v4-flash-0731")?
-  let thinking = env.get_or("FACTORY_EVAL_WORKER_THINKING", "high")?
-  let budget = env.get_or("FACTORY_EVAL_WORKER_BUDGET_USD", "2")?
+  let provider = env.get_or("FACTORY_EVAL_WORKER_PROVIDER", control.default_provider("eval-worker"))?
+  let model = env.get_or("FACTORY_EVAL_WORKER_MODEL", control.default_model("eval-worker"))?
+  let thinking = env.get_or("FACTORY_EVAL_WORKER_THINKING", control.default_thinking("eval-worker"))?
+  let budget = env.get_or("FACTORY_EVAL_WORKER_BUDGET_USD", control.default_budget("eval-worker"))?
+  let tools = env.get_or("FACTORY_EVAL_WORKER_TOOLS", control.default_tools("eval-worker"))?
   let trial_id = env.get_or("FACTORY_TRIAL_ID", "1")?
-  let task_file = if eval_id == "task-tags" { "task-tags.md" } else { "task-ecount.md" }
-  let artifact_file = if eval_id == "task-tags" { "tag.xsh" } else { "ecount.xsh" }
+  let task_file = "task.md"
+  let artifact_file = fs.read_text(fp"${eval_dir}/runtime/artifact.md")?.trim()
+  if artifact_file == "" or artifact_file.contains("/") or artifact_file.contains("\\") {
+    eprint f"eval ${eval_id} has invalid runtime/artifact.md"
+    abort(2)
+  }
   let handbook_file = env.path("FACTORY_HANDBOOK_FILE", fp"${factory_dir}/runtime/handbook.md")?
   let session = fp"${worker_dir}/session.jsonl"
   let agent_cidfile = fp"${worker_dir}/agent.cid"
@@ -34,7 +37,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   fs.mkdir(worker_dir)?
   fs.mkdir(work_dir)?
   for name in ["agents.md", "review.md"] {
-    fs.copy(fp"${eval_dir}/runtime/${name}", fp"${work_dir}/${name}", overwrite: true)?
+    fs.copy(fp"${factory_dir}/runtime/${name}", fp"${work_dir}/${name}", overwrite: true)?
   }
   fs.copy(fp"${eval_dir}/runtime/${task_file}", fp"${work_dir}/${task_file}", overwrite: true)?
   fs.copy(handbook_file, fp"${work_dir}/handbook.md", overwrite: true)?
@@ -61,6 +64,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     "--env", f"PI_PROVIDER=${provider}",
     "--env", f"PI_MODEL=${model}",
     "--env", f"PI_THINKING=${thinking}",
+    "--env", f"PI_TOOLS=${tools}",
     "--env", "PI_COMMAND=pi",
     "--env", "PI_CODING_AGENT_DIR=/run/pi-agent",
   ]
@@ -133,7 +137,24 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   let artifact_state = if fs.exists(fp"${work_dir}/${artifact_file}")? { "present" } else { "missing" }
   let review_state = if fs.exists(fp"${work_dir}/review.md")? { "present" } else { "missing" }
   let reporting_state = if report_status.ok { "pass" } else { "fail" }
-  fs.write(fp"${worker_dir}/EXECUTOR-REPORT.md", f"# Executor report\n\n## Result\n\n${result}\n\n## Failure classification\n\n- Primary: `${classification}`\n- Worker container: `${agent_state}`\n- Evaluator container: `${eval_state}`\n- Session reporting: `${reporting_state}`\n- Evaluator manifest: `${manifest_state}`\n\n## Trial\n\n- Eval: ${eval_id}\n- Trial: ${trial_id}\n- Worker session: `session.jsonl`\n- Agent wall time: ${agent_wall}\n\n## Artifact\n\n- ${artifact_file}: ${artifact_state}\n- review.md: ${review_state}\n\n## Evidence\n\nThe evaluator manifest contains separate protocol, correctness, restriction,\nand timing evidence. The worker session, extracted thinking transcript,\ncontainer logs, and copied artifacts are in this directory.\n")?
+  let report_template = fp"${factory_dir}/templates/EXECUTOR-REPORT.md"
+  let report_values: List[control.TemplateValue] = [
+    {key: "RESULT", value: result},
+    {key: "CLASSIFICATION", value: classification},
+    {key: "AGENT_STATE", value: agent_state},
+    {key: "EVAL_STATE", value: eval_state},
+    {key: "REPORTING_STATE", value: reporting_state},
+    {key: "MANIFEST_STATE", value: manifest_state},
+    {key: "EVAL_ID", value: eval_id},
+    {key: "TRIAL_ID", value: trial_id},
+    {key: "AGENT_WALL", value: agent_wall.float().format(precision: 0)},
+    {key: "ARTIFACT_FILE", value: artifact_file},
+    {key: "ARTIFACT_STATE", value: artifact_state},
+    {key: "REVIEW_STATE", value: review_state},
+  ]
+  fs.write(fp"${worker_dir}/EXECUTOR-REPORT.md", control.fill_template(
+    report_template.read_text()?, report_values
+  ))?
   print f"${eval_id} executor: ${result}"
   abort(if result == "pass" { 0 } else { 1 })
 }

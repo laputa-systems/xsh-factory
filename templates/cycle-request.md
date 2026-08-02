@@ -15,6 +15,10 @@ without a corresponding product hypothesis.
 
 - `task-tags`
 
+## Trial plan
+
+- Count: `1`
+
 ## New eval proposals
 
 - Count: `0`

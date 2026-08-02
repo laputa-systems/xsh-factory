@@ -12,6 +12,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   let pi_provider = env.get_or("PI_PROVIDER", "openrouter")?
   let pi_model = env.get_or("PI_MODEL", "deepseek/deepseek-v4-flash-0731")?
   let pi_thinking = env.get_or("PI_THINKING", "high")?
+  let pi_tools = env.get_or("PI_TOOLS", "read,write,edit,bash")?
   let pi = process.which(pi_command)?
   let _ = pi
 
@@ -29,7 +30,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     "--no-prompt-templates",
     "--no-themes",
     "--no-context-files",
-    "--tools", "read,write,edit,bash",
+    "--tools", pi_tools,
     "--session", session.display(),
     "--print",
     f"@${task_path.display()}",

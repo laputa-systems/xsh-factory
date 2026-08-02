@@ -27,8 +27,11 @@ general rule that removes repeated agent friction over a large collection of
 recipes. A product ticket must describe a general XSH ergonomics or correctness
 problem, not merely the easiest way to pass this eval.
 
-Finish a Markdown manager report stating the result, effort metrics, thinking
-evidence, timing evidence, `## North-star impact`, the shared-handbook
-decision, tickets created, and what the next replay must verify. A candidate is
-global: explain which future evals should replay it before it is promoted to
-`runtime/handbook.md`.
+Finish `MANAGER-REPORT.md` with exactly these headings: `## Result`,
+`## Effort metrics`, `## Usage and cost`, `## Thinking evidence`,
+`## Timing evidence`, `## Observation classification`, `## Handbook decision`,
+`## Tickets created`, `## Next replay`, and `## North-star impact`. Include
+turns, tool calls, errors, session span, token buckets, provider-reported
+reasoning when available, dollars, candidate/oracle timing, and the reason for
+each classification. A candidate is global: explain which future evals should
+replay it before it is promoted to `runtime/handbook.md`.

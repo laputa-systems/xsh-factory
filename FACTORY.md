@@ -79,16 +79,18 @@ one `xsh-swe` worker per worktree. The branch is validated and left pending
 user review; no merge or ticket-status mutation is automatic. Each run records
 stage callbacks as Markdown files under `events/`.
 
-The default eval pipeline is:
+The controller-owned eval pipeline is:
 
-1. run each active eval-manager for its configured trial count;
-2. ask eval-designer for one new eval with a staged dry run;
-3. launch one xsh-swe per open ticket that existed at cycle start;
-4. collect all worker reports, branches, and costs;
-5. fail with partial evidence when a required stage cannot complete.
+1. parse the explicit trial and proposal counts;
+2. write an ordered `DISPATCH.md` containing exactly the requested
+   eval-manager and optional eval-designer rows;
+3. launch those rows through the shared runner;
+4. collect all worker reports and costs;
+5. validate the full report contracts and handbook lineage;
+6. fail with partial evidence when a required stage cannot complete.
 
 New manager tickets become open for the next cycle. They are not dispatched to
-SWE in the same cycle, which keeps diagnosis and implementation separate.
+SWE in the same eval cycle, which keeps diagnosis and implementation separate.
 
 Ticket-only cycles intentionally omit the eval pipeline. They are for an
 explicitly approved implementation handoff and produce reviewable branches;
@@ -129,8 +131,10 @@ hypothesis, proposed change, acceptance criteria, and post-merge evaluation.
 There is one factory-wide handbook lineage. Each eval trial receives an
 immutable snapshot of that shared handbook. A manager may stage a candidate
 under its run lineage, but promotion replaces `runtime/handbook.md` for every
-eval only after a user-approved replay and handbook decision. User rejection
-leaves the shared handbook at its last approved version.
+eval only after a user-approved replay and handbook decision. The controller
+locks the run, snapshots the approved handbook, and verifies both that snapshot
+and the checked-in handbook are unchanged at validation. User rejection leaves
+the shared handbook at its last approved version.
 
 XSH SWE branches contain product changes and tests. The user alone merges them
 into XSH main. After merge, the linked eval-manager performs a controlled
@@ -155,9 +159,10 @@ fails that worker while preserving its partial session.
 
 ## Launcher contract
 
-`run.xsh` and `run-agent.xsh` are the executable configuration. The runner
+`factory_control.xsh`, `run.xsh`, and `run-agent.xsh` are the executable
+configuration. The runner
 accepts these role-specific environment variables; defaults are explicit in
-`run-agent.xsh` and all five Pi roles default to provider `openrouter`, model
+`factory_control.xsh` and all five Pi roles default to provider `openrouter`, model
 `deepseek/deepseek-v4-flash-0731`, thinking `high`, and a `$2` worker budget:
 
 ```text

@@ -58,8 +58,8 @@ diagnostic until a stable envelope is established.
 
 ## Manager policy
 
-Use one trial by default. Classify repeated friction as handbook guidance or a
-product issue only when it is generalizable; do not create a ticket for an
-ordinary short-task miss or evaluator noise. A handbook change must name the
-concept it teaches and be replayed before it is trusted.
-
+Use one trial by default; the controller-owned `## Trial plan` in the cycle
+request may explicitly raise this to two. Classify repeated friction as
+handbook guidance or a product issue only when it is generalizable; do not
+create a ticket for an ordinary short-task miss or evaluator noise. A handbook
+change must name the concept it teaches and be replayed before it is trusted.
