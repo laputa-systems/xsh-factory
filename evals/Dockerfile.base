@@ -20,5 +20,5 @@ RUN echo "$PI_RELEASE_SHA256  /usr/local/bin/pi" | sha256sum -c -
 
 WORKDIR /work
 
-COPY eval-worker.xsh evaluate_common.xsh /usr/local/lib/xsh-factory/
+COPY eval-worker.xsh .dist/evaluate_common.xsh /usr/local/lib/xsh-factory/
 RUN chmod 0755 /usr/local/lib/xsh-factory/eval-worker.xsh /usr/local/lib/xsh-factory/evaluate_common.xsh

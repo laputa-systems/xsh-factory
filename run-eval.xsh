@@ -97,7 +97,10 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   let stage_xsht = process.run(process.command_argv(
     "cp", ["cp", "-fL", dist_xsht.display(), fp"${staged_dir}/xsht".display()],
   ))?
-  if ! stage_xsh.ok or ! stage_xsht.ok {
+  let stage_common = process.run(process.command_argv(
+    "cp", ["cp", "-fL", fp"${factory_dir}/evaluate_common.xsh".display(), fp"${staged_dir}/evaluate_common.xsh".display()],
+  ))?
+  if ! stage_xsh.ok or ! stage_xsht.ok or ! stage_common.ok {
     eprint f"unable to stage local XSH binaries for the ${eval_id} image"
     abort(1)
   }
