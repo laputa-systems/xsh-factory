@@ -7,7 +7,9 @@ and prefer a useful systems-administration or programming workflow.
 For a good minimal example of eval structure, read
 `evals/task-tags/EVAL.md` and its `runtime/` directory. It is intentionally
 small while still showing the task contract, isolated agent boundary, external
-oracle, hidden cases, review protocol, and manager metrics.
+oracle, hidden cases, review protocol, and manager metrics. The handbook is
+not eval-local; every proposed executor must consume the factory-wide
+`runtime/handbook.md`.
 
 Design an eval as a capability hypothesis, not as a leaderboard obstacle. It
 should reveal something about XSH ergonomics, learnability, practical systems

@@ -80,6 +80,8 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   let process_registry_file = fp"${process_registry}/${role}-${worker_id}.pids"
   let session = fp"${worker_dir}/session.jsonl"
   let report = fp"${worker_dir}/WORKER-REPORT.md"
+  let configured_workdir = env.get_or("FACTORY_WORKDIR", "")?
+  let workdir = if configured_workdir == "" { fs.cwd()? } else { Path(configured_workdir) }
   let budget = role_setting(role, "BUDGET_USD", default_budget(role))?
   let provider = role_setting(role, "PROVIDER", default_provider(role))?
   let model = role_setting(role, "MODEL", default_model(role))?
@@ -90,13 +92,14 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   let _ = pi_path
   let self_pid = process.current_pid()?
   let parent = env.get_or("FACTORY_PARENT_ID", "unknown")?
+  let mode = env.get_or("FACTORY_MODE", "")?
   let eval_id = env.get_or("FACTORY_EVAL_ID", "")?
   let ticket_id = env.get_or("FACTORY_TICKET_ID", "")?
   let tools = role_setting(role, "TOOLS", default_tools(role))?
   fs.mkdir(process_registry)?
   fs.write(process_registry_file, f"${self_pid}\n")?
   fs.mkdir(worker_dir)?
-  fs.write(fp"${worker_dir}/WORKER.md", f"# Worker\n\n- Role: `${role}`\n- Worker: `${worker_id}`\n- Parent: `${parent}`\n- Eval: `${eval_id}`\n- Ticket: `${ticket_id}`\n- Provider: `${provider}`\n- Model: `${model}`\n- Thinking: `${thinking}`\n- Budget: `${budget}`\n")?
+  fs.write(fp"${worker_dir}/WORKER.md", f"# Worker\n\n- Role: `${role}`\n- Worker: `${worker_id}`\n- Parent: `${parent}`\n- Mode: `${mode}`\n- Eval: `${eval_id}`\n- Ticket: `${ticket_id}`\n- Working directory: `${workdir.display()}`\n- Provider: `${provider}`\n- Model: `${model}`\n- Thinking: `${thinking}`\n- Budget: `${budget}`\n")?
 
   let pi_argv = [
     pi_command,
@@ -125,13 +128,12 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     FACTORY_ROLE: role,
     FACTORY_WORKER_ID: worker_id,
     FACTORY_PARENT_ID: parent,
+    FACTORY_MODE: mode,
     FACTORY_EVAL_ID: eval_id,
     FACTORY_TICKET_ID: ticket_id,
+    FACTORY_WORKDIR: workdir.display(),
     FACTORY_XSH_REPO: env.get("FACTORY_XSH_REPO")?,
     FACTORY_XSH_COMMIT: env.get_or("FACTORY_XSH_COMMIT", "unknown")?,
-    FACTORY_XSH_GIT_STATUS: env.get_or("FACTORY_XSH_GIT_STATUS", "unknown")?,
-    FACTORY_XSH_BIN_SHA256: env.get_or("FACTORY_XSH_BIN_SHA256", "unknown")?,
-    FACTORY_XSHT_BIN_SHA256: env.get_or("FACTORY_XSHT_BIN_SHA256", "unknown")?,
     FACTORY_IMAGE_ID: env.get_or("FACTORY_IMAGE_ID", "unknown")?,
     FACTORY_EVAL_DIR: env.get_or("FACTORY_EVAL_DIR", "")?,
     FACTORY_EVAL_IMAGE: env.get_or("FACTORY_EVAL_IMAGE", "")?,
@@ -172,6 +174,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   let handle = spawn process.command_argv(
     pi_command,
     pi_argv,
+    cwd: workdir,
     env: child_env,
     stdout: fp"${worker_dir}/stdout.log",
     stderr: fp"${worker_dir}/stderr.log",

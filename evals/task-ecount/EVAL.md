@@ -2,7 +2,7 @@
 
 ## Status
 
-Approved upper-bound seed (ported from `../../xsh/gym`).
+Approved.
 
 ## Purpose
 
@@ -69,8 +69,3 @@ language/tooling observation that generalizes beyond this filesystem shape.
 Handbook changes are provisional until replayed with the same oracle and a
 nearby filesystem case.
 
-## Staged dry run
-
-The source `../../xsh/gym` implementation, task contract, and evaluator are the
-porting reference. Record the first factory executor run and its timing ratio
-before changing the task or its oracle.

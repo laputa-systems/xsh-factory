@@ -30,8 +30,17 @@ provider, model, thinking level, tools, and budget from the role-specific
 `FACTORY_<ROLE>_*` variables. Do not invent a second launcher or invoke Pi
 directly.
 
-Run active eval-managers, then one eval-designer when requested, then xsh-swe
-for tickets that were already open at cycle start. Newly created tickets wait
-for the next cycle. Collect every child report and finish `RUN.md` with the
+The cycle request selects the workflow mode. In `ticket-implementation` mode,
+the controller has already admitted accepted tickets, created their worktrees,
+and written `TICKET-DISPATCH.md`. Do not discover more tickets, run evals, or
+modify the ticket status. Launch exactly one `xsh-swe` child per dispatch entry,
+passing its `FACTORY_TICKET_ID`, `FACTORY_WORKDIR`, and assignment file to the
+shared runner. Wait for each child process to finish, inspect its
+`SWE-REPORT.md`, and record the branch and commit without merging.
+
+In eval mode, run active eval-managers and the other stages requested by the
+cycle. Newly created tickets wait for the next cycle. Every stage completion is
+an event recorded by the controller; do not implement a polling loop in an
+agent. Collect every child report and finish `DIRECTOR-REPORT.md` with the
 required-output status, `## North-star impact`, and links to the worker tree.
 Do not invent a ticket when the evidence does not support one.

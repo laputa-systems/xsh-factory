@@ -134,8 +134,6 @@ proc main() [fs, process, env, time, error, io] {
     eval_id: env.get_or("FACTORY_EVAL_ID", "unknown")?,
     trial_id: env.get_or("FACTORY_TRIAL_ID", "unknown")?,
     xsh_commit: env.get_or("FACTORY_XSH_COMMIT", "unknown")?,
-    xsh_bin_sha256: env.get_or("FACTORY_XSH_BIN_SHA256", "unknown")?,
-    xsht_bin_sha256: env.get_or("FACTORY_XSHT_BIN_SHA256", "unknown")?,
     result: result,
     classification: classification,
     session: "/session/session.jsonl",

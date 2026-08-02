@@ -15,7 +15,7 @@ proc main() [fs, process, env, time, error, io] {
   let budget = env.get_or("FACTORY_EVAL_WORKER_BUDGET_USD", "2")?
   let eval_id = env.get_or("FACTORY_EVAL_ID", "task-ecount")?
   let trial_id = env.get_or("FACTORY_TRIAL_ID", "1")?
-  let handbook_file = env.path("FACTORY_HANDBOOK_FILE", fp"${factory_dir}/evals/task-ecount/runtime/handbook.md")?
+  let handbook_file = env.path("FACTORY_HANDBOOK_FILE", fp"${factory_dir}/runtime/handbook.md")?
   let session = fp"${worker_dir}/session.jsonl"
   let agent_cidfile = fp"${worker_dir}/agent.cid"
   let evaluator_cidfile = fp"${worker_dir}/evaluator.cid"
@@ -83,8 +83,6 @@ proc main() [fs, process, env, time, error, io] {
     "--env", f"FACTORY_EVAL_ID=${eval_id}",
     "--env", f"FACTORY_TRIAL_ID=${trial_id}",
     "--env", f"FACTORY_XSH_COMMIT=${env.get_or("FACTORY_XSH_COMMIT", "unknown")?}",
-    "--env", f"FACTORY_XSH_BIN_SHA256=${env.get_or("FACTORY_XSH_BIN_SHA256", "unknown")?}",
-    "--env", f"FACTORY_XSHT_BIN_SHA256=${env.get_or("FACTORY_XSHT_BIN_SHA256", "unknown")?}",
     "--env", f"FACTORY_IMAGE_ID=${env.get_or("FACTORY_IMAGE_ID", "unknown")?}",
     "--env", f"FACTORY_PLATFORM=${platform}",
     "--env", f"FACTORY_EVAL_WORKER_PROVIDER=${provider}",

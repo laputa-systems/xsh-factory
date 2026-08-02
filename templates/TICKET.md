@@ -7,7 +7,7 @@ Open.
 ## Source eval and manager
 
 - Eval:
-- Eval version or lineage:
+- Shared handbook lineage:
 - Manager run:
 - Executor run:
 - XSH baseline commit:

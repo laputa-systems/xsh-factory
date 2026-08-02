@@ -2,7 +2,7 @@
 
 ## Status
 
-Approved seed (ported from `../../xsh/gym`).
+Approved.
 
 ## Purpose
 
@@ -63,8 +63,3 @@ product issue only when it is generalizable; do not create a ticket for an
 ordinary short-task miss or evaluator noise. A handbook change must name the
 concept it teaches and be replayed before it is trusted.
 
-## Staged dry run
-
-The source `../../xsh/gym` implementation and task contract are the porting
-reference. Record the first factory executor run before requesting changes to
-the task or its evaluator.

@@ -7,6 +7,10 @@ factory path and produces evidence toward `NORTH-STAR.md`. Keep the cycle
 cheap and preserve all worker evidence; do not create activity or tickets
 without a corresponding product hypothesis.
 
+## Mode
+
+- `eval`
+
 ## Active evals
 
 - `task-tags`
@@ -21,6 +25,10 @@ without a corresponding product hypothesis.
 
 - Dispatch tickets present at cycle start: `yes`
 - Dispatch newly created tickets in this cycle: `no`
+
+## Approved tickets
+
+- None.
 
 ## Role overrides
 

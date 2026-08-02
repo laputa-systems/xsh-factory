@@ -51,7 +51,8 @@ Every cycle should connect a capability hypothesis to evidence:
    documentation; the user decides whether to merge it.
 6. The linked eval-manager replays the merged change and accepts or rejects the
    result. A handbook claim becomes trusted only after repeated evidence across
-   the relevant eval lineage.
+   the shared handbook lineage, including replay by more than one relevant eval
+   when the claim is intended to generalize.
 
 ## Alignment test
 

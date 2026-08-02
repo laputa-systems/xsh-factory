@@ -35,8 +35,8 @@ strict runtime envelope.
 
 ## Manager policy
 
-Trial count, handbook lineage, evidence threshold, and post-merge acceptance
-procedure.
+Trial count against the factory-wide shared handbook, evidence threshold, and
+post-merge acceptance procedure.
 
 ## Staged dry run
 

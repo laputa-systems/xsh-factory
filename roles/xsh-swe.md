@@ -11,7 +11,39 @@ more efficient for real systems-glue work. Preserve explicit boundaries and
 composability; do not paper over a task-specific symptom with an opaque
 special case.
 
-Before finishing, run the narrowest relevant checks and write a concise report
-in the run directory naming the branch, commit, files changed, tests run,
-`## North-star impact`, and remaining risks. The director records the branch
-on the ticket for user review.
+Before finishing, run the narrowest relevant checks and write
+`$FACTORY_WORKER_DIR/SWE-REPORT.md` using these exact headings:
+
+```markdown
+## Result
+
+ready-for-review
+
+## Branch
+
+<branch name>
+
+## Commit
+
+<commit hash>
+
+## Files changed
+
+<short list>
+
+## Tests
+
+<commands and results>
+
+## North-star impact
+
+<how this improves XSH or agent use>
+
+## Remaining risks
+
+<known limitations, or None.>
+```
+
+Use `ready-for-review` only when the branch is committed, the worktree is
+clean, and the relevant checks passed. Do not merge the branch or update the
+ticket status; the deterministic cycle controller records it for user review.

@@ -1,5 +1,9 @@
 ##! Runs one complete Markdown-directed factory cycle.
 
+use factory_control as control
+
+error ControllerError = InvalidTransition(subject: Str, current: Str, next: Str) : InvalidData
+
 proc cleanup_active_run() [fs, process, env, error] -> Result[Unit] {
   let configured_factory = env.get_or("FACTORY_DIR", "")?
   let factory_dir = if configured_factory == "" { fs.cwd()? } else { Path(configured_factory) }
@@ -36,25 +40,233 @@ pure supported_eval(eval_id: Str) -> Bool {
   return eval_id == "task-tags" or eval_id == "task-ecount"
 }
 
-proc request_eval(request: Path) [fs, error] -> Result[Str] {
-  var in_active_evals = false
-  for line in request.read_text()?.lines() {
-    let trimmed = line.trim()
-    if trimmed == "## Active evals" {
-      in_active_evals = true
-      continue
+proc emit_event(
+  template: Path,
+  run_dir: Path,
+  name: Str,
+  subject: Str,
+  state: Str,
+  attempt: Int,
+  caused_by: Str,
+  detail: Str,
+) [fs, error] -> Result[Unit] {
+  let events = fp"${run_dir}/events"
+  let states = fp"${run_dir}/states"
+  let state_file = fp"${states}/${subject}.state"
+  fs.mkdir(events)?
+  fs.mkdir(states)?
+  let current = if fs.exists(state_file)? { fs.read_text(state_file)?.trim() } else { "created" }
+  if ! control.transition_allowed(current, state) {
+    return Err(ControllerError.InvalidTransition(subject: subject, current: current, next: state))
+  }
+  let values: List[control.TemplateValue] = [
+    {key: "EVENT_ID", value: name},
+    {key: "RUN_ID", value: run_dir.display()},
+    {key: "KIND", value: name},
+    {key: "SUBJECT", value: subject},
+    {key: "STATE", value: state},
+    {key: "ATTEMPT", value: attempt.float().format(precision: 0)},
+    {key: "CAUSED_BY", value: caused_by},
+    {key: "DETAIL", value: detail},
+  ]
+  fs.write_atomic(fp"${events}/${name}.md", control.fill_template(template.read_text()?, values))?
+  fs.write_atomic(state_file, state + "\n")?
+  return Ok()
+}
+
+proc accepted_ticket(ticket_path: Path) [fs, error] -> Result[Bool] {
+  if ! fs.exists(ticket_path)? {
+    return false
+  }
+  return control.ticket_is_accepted(fs.read_text(ticket_path)?)
+}
+
+proc run_ticket_cycle(
+  request: Path,
+  factory_dir: Path,
+  xsh_repo: Path,
+  auth_file: Path,
+  run_agent: Path,
+  pi_command: Str,
+) [fs, process, env, time, error, io] -> Result[Int] {
+  let tickets = control.request_tickets(request.read_text()?)
+  if tickets.len() == 0 {
+    eprint "ticket-implementation cycle has no approved tickets"
+    return 1
+  }
+  let xsh_path = process.which("xsh")?
+  let stamp = time.now()
+  let run_dir = fp"${factory_dir}/runs/run-${stamp}"
+  let active_run = fp"${factory_dir}/runs/ACTIVE"
+  let worktree_root = fp"${run_dir}/worktrees"
+  let event_template = fp"${factory_dir}/templates/EVENT.md"
+  let provenance_template = fp"${factory_dir}/templates/PROVENANCE.md"
+  let platform = env.get_or("FACTORY_PLATFORM", "linux/arm64")?
+  fs.mkdir(fp"${factory_dir}/runs")?
+  fs.mkdir(run_dir)?
+  fs.mkdir(worktree_root)?
+  fs.mkdir(fp"${run_dir}/messages")?
+  fs.mkdir(fp"${run_dir}/tickets")?
+  fs.write(active_run, run_dir.display() + "\n")?
+  defer fs.remove(active_run, missing_ok: true)?
+  fs.copy(request, fp"${run_dir}/CYCLE-REQUEST.md", overwrite: true)?
+  emit_event(event_template, run_dir, "00-cycle-started", "ticket-implementation", "started", 1, "controller", "approved ticket dispatch")?
+
+  let xsh_commit = run.text "git" "-C" $xsh_repo.display() "rev-parse" "HEAD" ?
+  let xsh_git_status = run.text "git" "-C" $xsh_repo.display() "status" "--porcelain" ?
+  if xsh_git_status.trim() != "" {
+    eprint "ticket-implementation requires a clean XSH worktree at admission"
+    return 1
+  }
+
+  var dispatch = "# Approved ticket dispatch\n\n"
+  var ticket_names = ""
+  var ticket_snapshots = ""
+  for ticket_id in tickets {
+    if ! control.valid_ticket_id(ticket_id) {
+      eprint f"unsafe ticket id: ${ticket_id}"
+      return 1
     }
-    if in_active_evals and trimmed.starts_with("## ") {
-      return ""
+    let ticket_path = fp"${factory_dir}/tickets/${ticket_id}.md"
+    if ! accepted_ticket(ticket_path)? {
+      eprint f"ticket is missing or not accepted: ${ticket_id}"
+      emit_event(event_template, run_dir, f"ticket-${ticket_id}-rejected", ticket_id, "failed", 1, "admission", "ticket is not checked-in with Accepted status")?
+      return 1
     }
-    if in_active_evals and trimmed.starts_with("- `") {
-      let parts = trimmed.split("`")
-      if parts.len() >= 2 {
-        return parts[1]
-      }
+    let worktree = fp"${worktree_root}/${ticket_id}"
+    let branch = f"factory/${ticket_id}/${stamp}"
+    let worktree_stdout = fp"${run_dir}/worktrees/${ticket_id}.stdout"
+    let worktree_stderr = fp"${run_dir}/worktrees/${ticket_id}.stderr"
+    let worktree_status = process.run(process.command_argv(
+      "git",
+      ["git", "-C", xsh_repo.display(), "worktree", "add", "-b", branch, worktree.display(), xsh_commit.trim()],
+      stdout: worktree_stdout,
+      stderr: worktree_stderr,
+    ))?
+    if ! worktree_status.ok {
+      eprint f"unable to create XSH worktree for ${ticket_id}"
+      emit_event(event_template, run_dir, f"ticket-${ticket_id}-worktree", ticket_id, "failed", 1, "admission", "git worktree add failed")?
+      return 1
+    }
+    fs.copy(ticket_path, fp"${run_dir}/tickets/${ticket_id}.md", overwrite: true)?
+    let ticket_sha = hash.sha256(ticket_path)?.hex()
+    ticket_snapshots = if ticket_snapshots == "" { f"${ticket_id}: ${ticket_sha}" } else { ticket_snapshots + f"\n${ticket_id}: ${ticket_sha}" }
+    let message = f"# XSH SWE assignment: `${ticket_id}`\n\nRead `NORTH-STAR.md`, the copied ticket at `${run_dir}/tickets/${ticket_id}.md`, the linked eval and manager evidence, and the XSH repository's `AGENTS.md` and `docs/CHAPTER-01-why-xsh.md`.\n\nYour current working directory is the dedicated XSH worktree `${worktree.display()}` on branch `${branch}`, based at `${xsh_commit.trim()}`. Work only in this worktree. Do not edit XSH main, the factory main tree, or the ticket diagnosis.\n\nImplement the accepted ticket, add the narrowest appropriate product tests and canonical documentation, and run the relevant checks. Commit the product change on this branch. Before finishing, write `${run_dir}/workers/xsh-swe/${ticket_id}/SWE-REPORT.md` with the exact headings `## Result` (use `ready-for-review` only when the branch is committed and tested), `## Branch`, `## Commit`, `## Files changed`, `## Tests`, `## North-star impact`, and `## Remaining risks`.\n"
+    fs.write(fp"${run_dir}/messages/${ticket_id}.md", message)?
+    dispatch = dispatch + f"- Ticket: `${ticket_id}`\n  - Source: `tickets/${ticket_id}.md`\n  - Worktree: `${worktree.display()}`\n  - Branch: `${branch}`\n  - Base commit: `${xsh_commit.trim()}`\n  - Assignment: `messages/${ticket_id}.md`\n\n"
+    ticket_names = if ticket_names == "" { ticket_id } else { ticket_names + ", " + ticket_id }
+    emit_event(event_template, run_dir, f"10-ticket-${ticket_id}-admitted", ticket_id, "admitted", 1, "admission", f"worktree ${worktree.display()} on ${branch}")?
+  }
+  fs.write(fp"${run_dir}/TICKET-DISPATCH.md", dispatch)?
+  let provenance_values: List[control.TemplateValue] = [
+    {key: "RUN_ID", value: run_dir.display()},
+    {key: "MODE", value: "ticket-implementation"},
+    {key: "REQUEST", value: "CYCLE-REQUEST.md"},
+    {key: "XSH_COMMIT", value: xsh_commit.trim()},
+    {key: "IMAGE", value: "not-used-ticket-cycle"},
+    {key: "IMAGE_ID", value: "not-used-ticket-cycle"},
+    {key: "PLATFORM", value: platform},
+    {key: "APPROVED_HANDBOOK_SHA", value: "not-used-ticket-cycle"},
+    {key: "CANDIDATE_HANDBOOK_SHA", value: "not-used-ticket-cycle"},
+    {key: "TICKET_SNAPSHOT_SHA", value: ticket_snapshots},
+  ]
+  fs.write(fp"${run_dir}/PROVENANCE.md", control.fill_template(provenance_template.read_text()?, provenance_values))?
+
+  let director_message = f"# Director assignment\n\nRead `NORTH-STAR.md`, the cycle request at `${run_dir}/CYCLE-REQUEST.md`, `PROVENANCE.md`, `TICKET-DISPATCH.md`, and the shared Pi-session briefing. This is a `ticket-implementation` cycle; do not launch an eval-manager, eval-worker, or eval-designer.\n\nFor every admitted ticket in `TICKET-DISPATCH.md`, launch exactly one `xsh-swe` through the shared runner, using its recorded assignment and worktree:\n\n```sh\nFACTORY_PARENT_ID=director FACTORY_TICKET_ID=<ticket-id> FACTORY_WORKDIR=<worktree> xsh `${run_agent.display()}` -- xsh-swe <ticket-id> `${factory_dir}/roles/xsh-swe.md` `${run_dir}/messages/<ticket-id>.md`\n```\n\nWait for each child process to finish, inspect its session report and `SWE-REPORT.md`, and do not merge any branch. Finish `${run_dir}/DIRECTOR-REPORT.md` with the child result table, branch and commit links, required-output status, and an exact `## North-star impact` section. A branch is pending user review; do not alter the accepted ticket's diagnosis or status.\n"
+  fs.write(fp"${run_dir}/DIRECTOR-REQUEST.md", director_message)?
+
+  let director_env = {
+    PATH: env.get("PATH")?,
+    HOME: env.get("HOME")?,
+    FACTORY_DIR: factory_dir.display(),
+    FACTORY_RUN_DIR: run_dir.display(),
+    FACTORY_RUN_AGENT: run_agent.display(),
+    FACTORY_XSH_REPO: xsh_repo.display(),
+    FACTORY_XSH_COMMIT: xsh_commit.trim(),
+    FACTORY_MODE: "ticket-implementation",
+    FACTORY_EVAL_ID: "",
+    FACTORY_TICKET_ID: "",
+    FACTORY_WORKDIR: "",
+    FACTORY_PLATFORM: platform,
+    PI_AUTH_FILE: auth_file.display(),
+    PI_COMMAND: pi_command,
+    FACTORY_DIRECTOR_PROVIDER: env.get_or("FACTORY_DIRECTOR_PROVIDER", "openrouter")?,
+    FACTORY_DIRECTOR_MODEL: env.get_or("FACTORY_DIRECTOR_MODEL", "deepseek/deepseek-v4-flash-0731")?,
+    FACTORY_DIRECTOR_THINKING: env.get_or("FACTORY_DIRECTOR_THINKING", "high")?,
+    FACTORY_DIRECTOR_BUDGET_USD: env.get_or("FACTORY_DIRECTOR_BUDGET_USD", "2")?,
+    FACTORY_DIRECTOR_TOOLS: env.get_or("FACTORY_DIRECTOR_TOOLS", "read,write,edit,bash,grep,find,ls")?,
+    FACTORY_XSH_SWE_PROVIDER: env.get_or("FACTORY_XSH_SWE_PROVIDER", "openrouter")?,
+    FACTORY_XSH_SWE_MODEL: env.get_or("FACTORY_XSH_SWE_MODEL", "deepseek/deepseek-v4-flash-0731")?,
+    FACTORY_XSH_SWE_THINKING: env.get_or("FACTORY_XSH_SWE_THINKING", "high")?,
+    FACTORY_XSH_SWE_BUDGET_USD: env.get_or("FACTORY_XSH_SWE_BUDGET_USD", "2")?,
+    FACTORY_XSH_SWE_TOOLS: env.get_or("FACTORY_XSH_SWE_TOOLS", "read,write,edit,bash,grep,find,ls")?,
+  }
+  emit_event(event_template, run_dir, "20-director-started", "director", "started", 1, "controller", "dispatching admitted XSH SWE workers")?
+  for ticket_id in tickets {
+    emit_event(event_template, run_dir, f"20-ticket-${ticket_id}-started", ticket_id, "started", 1, "director", "dispatching xsh-swe worker")?
+  }
+  let director_status = process.run(process.command_argv(
+    xsh_path,
+    [xsh_path.display(), run_agent.display(), "--", "director", "director",
+      fp"${factory_dir}/roles/director.md".display(), fp"${run_dir}/DIRECTOR-REQUEST.md".display()],
+    cwd: factory_dir,
+    env: director_env,
+    stdout: fp"${run_dir}/director.stdout",
+    stderr: fp"${run_dir}/director.stderr",
+  ))?
+  emit_event(event_template, run_dir, "80-director-completed", "director", if director_status.ok { "completed" } else { "failed" }, 1, "director", "director process returned")?
+
+  let cost_status = process.run(process.command_argv(
+    xsh_path,
+    [xsh_path.display(), fp"${factory_dir}/tools/session-report.xsh", "--", "run", "--run-dir", run_dir.display(),
+      "--output", fp"${run_dir}/COST.md".display()],
+  ))?
+  var all_tickets_ok = true
+  var results = "# SWE dispatch results\n\n| Ticket | Worker report | Branch | Commit | Worktree clean | Result |\n| --- | --- | --- | --- | --- | --- |\n"
+  for ticket_id in tickets {
+    let worktree = fp"${worktree_root}/${ticket_id}"
+    let worker_dir = fp"${run_dir}/workers/xsh-swe/${ticket_id}"
+    let swe_report = fp"${worker_dir}/SWE-REPORT.md"
+    let session = fp"${worker_dir}/session.jsonl"
+    let report_ok = fs.exists(swe_report)? and fs.read_text(swe_report)?.contains("## Result\n\nready-for-review") and
+      fs.read_text(swe_report)?.contains("## North-star impact")
+    let branch = run.text "git" "-C" $worktree.display() "branch" "--show-current" ?
+    let head = run.text "git" "-C" $worktree.display() "rev-parse" "HEAD" ?
+    let status = run.text "git" "-C" $worktree.display() "status" "--porcelain" ?
+    let branch_ok = branch.trim() == f"factory/${ticket_id}/${stamp}"
+    let commit_ok = head.trim() != xsh_commit.trim()
+    let clean = status.trim() == ""
+    let ticket_ok = fs.exists(session)? and report_ok and branch_ok and commit_ok and clean
+    if ! ticket_ok { all_tickets_ok = false }
+    let state = if ticket_ok { "ready-for-review" } else { "failed" }
+    let report_state = if fs.exists(swe_report)? { "present" } else { "missing" }
+    results = results + f"| `${ticket_id}` | `${report_state}` | `${branch.trim()}` | `${head.trim()}` | `${clean}` | `${state}` |\n"
+    if ticket_ok {
+      emit_event(event_template, run_dir, f"80-ticket-${ticket_id}-completed", ticket_id, "completed", 1, "xsh-swe", f"branch ${branch.trim()} at ${head.trim()}")?
+      emit_event(event_template, run_dir, f"85-ticket-${ticket_id}-validated", ticket_id, "validated", 1, "controller", "report, branch, commit, and clean-worktree checks passed")?
+      emit_event(event_template, run_dir, f"90-ticket-${ticket_id}-ready", ticket_id, "ready-for-review", 1, "controller", "branch is pending user review")?
+    } else {
+      emit_event(event_template, run_dir, f"80-ticket-${ticket_id}-failed", ticket_id, "failed", 1, "controller", f"worker output validation failed for ${ticket_id}")?
     }
   }
-  return ""
+  fs.write(fp"${run_dir}/SWE-RESULTS.md", results)?
+  let director_report = fp"${run_dir}/DIRECTOR-REPORT.md"
+  let director_report_ok = fs.exists(director_report)? and fs.read_text(director_report)?.contains("## North-star impact")
+  let result = if director_status.ok and cost_status.ok and all_tickets_ok and director_report_ok { "pass" } else { "fail" }
+  let director_state = if fs.exists(fp"${run_dir}/workers/director/director/session.jsonl")? { "present" } else { "missing" }
+  let cost_state = if cost_status.ok { "present" } else { "failed" }
+  let swe_state = if all_tickets_ok { "ready-for-review" } else { "failed" }
+  let director_report_state = if director_report_ok { "present" } else { "missing north-star section" }
+  let run_report = f"# Factory run ${stamp}\n\n## Result\n\n${result}\n\n## Mode\n\n`ticket-implementation`\n\n## North-star status\n\nThis cycle implements user-approved XSH tickets in isolated worktrees. It does not merge product changes or claim that an implementation is accepted; the branch remains pending user review.\n\n## Cycle\n\n- Request: `CYCLE-REQUEST.md`\n- Approved tickets: `${ticket_names}`\n- XSH base commit: `${xsh_commit.trim()}`\n\n## Required outputs\n\n- Director session: `${director_state}`\n- SWE dispatch: `${swe_state}`\n- Cost report: `${cost_state}`\n- Director report: `${director_report_state}`\n\nAll product worktrees remain under `worktrees/` for user review. See `TICKET-DISPATCH.md`, `SWE-RESULTS.md`, `DIRECTOR-REPORT.md`, `PROVENANCE.md`, and `COST.md`.\n"
+  fs.write(fp"${run_dir}/RUN.md", run_report)?
+  if result == "pass" {
+    emit_event(event_template, run_dir, "90-cycle-completed", "ticket-implementation", "completed", 1, "controller", "run report and review branches written")?
+    emit_event(event_template, run_dir, "95-cycle-validated", "ticket-implementation", "validated", 1, "controller", "all required review outputs passed")?
+  } else {
+    emit_event(event_template, run_dir, "90-cycle-failed", "ticket-implementation", "failed", 1, "controller", "one or more required outputs failed")?
+  }
+  print f"factory run: ${run_dir} (${result})"
+  return if result == "pass" { 0 } else { 1 }
 }
 
 proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
@@ -64,7 +276,20 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   }
   let factory_dir = env.path("FACTORY_DIR", fs.cwd()?)?
   let request = Path(argv[0])
-  let requested_eval = if argv.len() >= 2 { argv[1] } else { request_eval(request)? }
+  let mode = control.request_mode(request.read_text()?)
+  if mode == "ticket-implementation" {
+    let xsh_repo = env.path("FACTORY_XSH_REPO", fp"${factory_dir}/../xsh")?
+    let home = env.get("HOME")?
+    let auth_file = env.path("PI_AUTH_FILE", fp"${home}/.pi/agent/auth.json")?
+    let run_agent = fp"${factory_dir}/run-agent.xsh"
+    let pi_command = env.get_or("PI_COMMAND", "pi")?
+    abort(run_ticket_cycle(request, factory_dir, xsh_repo, auth_file, run_agent, pi_command)?)
+  }
+  if mode != "eval" {
+    eprint f"unsupported cycle mode: `${mode}`"
+    abort(2)
+  }
+  let requested_eval = if argv.len() >= 2 { argv[1] } else { control.request_eval(request.read_text()?) }
   if ! supported_eval(requested_eval) {
     eprint f"cycle request selected unsupported or missing eval: `${requested_eval}`"
     abort(2)
@@ -93,20 +318,26 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   let run_dir = fp"${factory_dir}/runs/run-${stamp}"
   let worker_root = fp"${run_dir}/workers"
   let active_run = fp"${factory_dir}/runs/ACTIVE"
-  let lineage_dir = fp"${run_dir}/lineage/${eval_id}"
-  let baseline_handbook = fp"${lineage_dir}/approved-handbook.md"
-  let candidate_handbook = fp"${lineage_dir}/provisional-handbook.md"
+  let event_template = fp"${factory_dir}/templates/EVENT.md"
+  let provenance_template = fp"${factory_dir}/templates/PROVENANCE.md"
+  let lineage_dir = fp"${run_dir}/lineage"
+  let baseline_handbook = fp"${lineage_dir}/handbook-approved.md"
+  let candidate_handbook = fp"${lineage_dir}/handbook-candidate.md"
   fs.mkdir(fp"${factory_dir}/runs")?
   fs.mkdir(worker_root)?
   fs.mkdir(lineage_dir)?
   fs.write(active_run, run_dir.display() + "\n")?
   defer fs.remove(active_run, missing_ok: true)?
+  emit_event(event_template, run_dir, "00-cycle-started", eval_id, "started", 1, "controller", "eval-manager cycle")?
   fs.copy(request, fp"${run_dir}/CYCLE-REQUEST.md", overwrite: true)?
-  fs.copy(fp"${eval_dir}/runtime/handbook.md", baseline_handbook, overwrite: true)?
+  fs.copy(fp"${factory_dir}/runtime/handbook.md", baseline_handbook, overwrite: true)?
 
   let xsh_commit = run.text "git" "-C" $xsh_repo.display() "rev-parse" "HEAD" ?
   let xsh_git_status = run.text "git" "-C" $xsh_repo.display() "status" "--porcelain" ?
-  let xsh_state = if xsh_git_status.trim() == "" { "clean" } else { "dirty" }
+  if xsh_git_status.trim() != "" {
+    eprint "eval cycle requires a clean XSH worktree at admission"
+    abort(2)
+  }
   let dist_dir = fp"${xsh_repo}/target/docker-${target}-release/${target}/dist"
   let dist_xsh = fp"${dist_dir}/xsh"
   let dist_xsht = fp"${dist_dir}/xsht"
@@ -124,9 +355,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
       abort(build.exit_code() ?? 1)
     }
   }
-  let xsh_sha = hash.sha256(dist_xsh)?.hex()
-  let xsht_sha = hash.sha256(dist_xsht)?.hex()
-  let staged_dir = fp"${eval_dir}/.dist"
+  let staged_dir = fp"${factory_dir}/evals/.dist"
   fs.mkdir(staged_dir)?
   let stage_xsh = process.run(process.command_argv(
     "cp", ["cp", "-fL", dist_xsh.display(), fp"${staged_dir}/xsh".display()],
@@ -138,9 +367,21 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     eprint f"unable to stage local XSH binaries for the ${eval_id} image"
     abort(1)
   }
+  let base_image = env.get_or("FACTORY_BASE_IMAGE", "xsh-factory-base:latest")?
+  let base_status = process.run(process.command_argv(
+    docker,
+    [docker, "build", "--platform", platform, "-t", base_image,
+      "-f", fp"${factory_dir}/evals/Dockerfile.base".display(), fp"${factory_dir}/evals".display()],
+    stdout: fp"${run_dir}/base-image-build.stdout",
+    stderr: fp"${run_dir}/base-image-build.stderr",
+  ))?
+  if ! base_status.ok {
+    eprint "unable to build the shared factory eval base image"
+    abort(base_status.exit_code() ?? 1)
+  }
   let image_status = process.run(process.command_argv(
     docker,
-    [docker, "build", "--platform", platform, "-t", image,
+    [docker, "build", "--platform", platform, "--build-arg", f"BASE_IMAGE=${base_image}", "-t", image,
       "-f", fp"${eval_dir}/Dockerfile".display(), eval_dir.display()],
     stdout: fp"${run_dir}/image-build.stdout",
     stderr: fp"${run_dir}/image-build.stderr",
@@ -150,15 +391,27 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     abort(image_status.exit_code() ?? 1)
   }
   let image_id = run.text docker image inspect "--format" "{{.Id}}" $image ?
-  let provenance = f"# Factory provenance\n\n## Eval\n\n- Eval: `${eval_id}`\n- Cycle request: `CYCLE-REQUEST.md`\n- Image: `${image}`\n- Image ID: `${image_id.trim()}`\n- Platform: `${platform}`\n\n## XSH input\n\n- Repository: `${xsh_repo.display()}`\n- Commit: `${xsh_commit.trim()}`\n- Working tree: `${xsh_state}`\n- Git status: `${xsh_git_status.trim()}`\n- xsh distribution SHA-256: `${xsh_sha}`\n- xsht distribution SHA-256: `${xsht_sha}`\n\n## Handbook lineage\n\n- Approved input: `lineage/${eval_id}/approved-handbook.md`\n- Provisional candidate: `lineage/${eval_id}/provisional-handbook.md`\n"
-  fs.write(fp"${run_dir}/PROVENANCE.md", provenance)?
+  let approved_handbook_sha = hash.sha256(baseline_handbook)?.hex()
+  let provenance_values: List[control.TemplateValue] = [
+    {key: "RUN_ID", value: run_dir.display()},
+    {key: "MODE", value: "eval"},
+    {key: "REQUEST", value: "CYCLE-REQUEST.md"},
+    {key: "XSH_COMMIT", value: xsh_commit.trim()},
+    {key: "IMAGE", value: image},
+    {key: "IMAGE_ID", value: image_id.trim()},
+    {key: "PLATFORM", value: platform},
+    {key: "APPROVED_HANDBOOK_SHA", value: approved_handbook_sha},
+    {key: "CANDIDATE_HANDBOOK_SHA", value: "pending-manager"},
+    {key: "TICKET_SNAPSHOT_SHA", value: "not-ticket-cycle"},
+  ]
+  fs.write(fp"${run_dir}/PROVENANCE.md", control.fill_template(provenance_template.read_text()?, provenance_values))?
 
   let xsh_path = process.which("xsh")?
   let run_agent = fp"${factory_dir}/run-agent.xsh"
   let director_message = fp"${run_dir}/DIRECTOR-REQUEST.md"
   fs.write(director_message, f"# Director assignment\n\nRead `NORTH-STAR.md`, the cycle request at `${run_dir}/CYCLE-REQUEST.md`, `PROVENANCE.md`, and the shared Pi-session briefing before running the bounded cycle. The selected eval is `${eval_id}`. The durable objective is to improve XSH and agents' ability to use it.\n\nLaunch its eval-manager with:\n\n```sh\nFACTORY_ROLE=eval-manager FACTORY_WORKER_ID=${eval_id} FACTORY_PARENT_ID=director FACTORY_EVAL_ID=${eval_id} xsh \"${run_agent}\" -- eval-manager ${eval_id} \"${factory_dir}/roles/eval-manager.md\" \"${run_dir}/messages/${eval_id}-manager.md\"\n```\n\nThe manager must run two fresh trials through `${eval_dir}/executor.xsh`: trial 1 with the approved handbook and trial 2 with a provisional handbook candidate, even when the candidate is an unchanged copy. It must write its manager report in `$FACTORY_WORKER_DIR`. If the request asks for a designer, launch it through the same runner after the manager. Do not launch xsh-swe unless an open ticket existed at cycle start. Finish by writing `$FACTORY_RUN_DIR/DIRECTOR-REPORT.md` with the child results, `## North-star impact`, and required-output status.\n")?
   fs.mkdir(fp"${run_dir}/messages")?
-  fs.write(fp"${run_dir}/messages/${eval_id}-manager.md", f"# ${eval_id} manager assignment\n\nRead `NORTH-STAR.md`, `roles/pi-session-briefing.md`, `${eval_dir}/EVAL.md`, and `PROVENANCE.md`. The executor is a black box. Run exactly two fresh trials and preserve separate evidence:\n\n## Trial 1\n\nUse the approved handbook snapshot:\n\n```sh\nFACTORY_EVAL_ID=${eval_id} FACTORY_TRIAL_ID=1 FACTORY_EVAL_WORKER_DIR=\"$FACTORY_RUN_DIR/workers/eval-worker/${eval_id}-1\" FACTORY_HANDBOOK_FILE=\"$FACTORY_RUN_DIR/lineage/${eval_id}/approved-handbook.md\" xsh \"${eval_dir}/executor.xsh\"\n```\n\nInspect the executor report, worker report, thinking transcript, evaluator manifest, artifact, and quantitative session results. If a handbook change is justified, write it to `$FACTORY_RUN_DIR/lineage/${eval_id}/provisional-handbook.md`; otherwise copy the approved snapshot there unchanged. Do not edit the approved snapshot or the checked-in eval handbook.\n\n## Trial 2\n\nRun a fresh worker with the provisional snapshot:\n\n```sh\nFACTORY_EVAL_ID=${eval_id} FACTORY_TRIAL_ID=2 FACTORY_EVAL_WORKER_DIR=\"$FACTORY_RUN_DIR/workers/eval-worker/${eval_id}-2\" FACTORY_HANDBOOK_FILE=\"$FACTORY_RUN_DIR/lineage/${eval_id}/provisional-handbook.md\" xsh \"${eval_dir}/executor.xsh\"\n```\n\nCompare the two trials. Classify correctness, restriction, timing, worker friction, handbook guidance, product/tooling defect, harness mismatch, evaluator failure, or noise. Write `$FACTORY_WORKER_DIR/MANAGER-REPORT.md` with both trial results, handbook hashes, effort and thinking metrics, candidate/oracle timing, a `## North-star impact` section, the handbook decision, tickets, and the next replay.\n")?
+  fs.write(fp"${run_dir}/messages/${eval_id}-manager.md", f"# ${eval_id} manager assignment\n\nRead `NORTH-STAR.md`, `roles/pi-session-briefing.md`, `${eval_dir}/EVAL.md`, and `PROVENANCE.md`. The executor is a black box. All evals consume the one factory-wide handbook; do not look for or create an eval-local handbook. Run exactly two fresh trials and preserve separate evidence:\n\n## Trial 1\n\nUse the approved shared-handbook snapshot:\n\n```sh\nFACTORY_EVAL_ID=${eval_id} FACTORY_TRIAL_ID=1 FACTORY_EVAL_WORKER_DIR=\"$FACTORY_RUN_DIR/workers/eval-worker/${eval_id}-1\" FACTORY_HANDBOOK_FILE=\"$FACTORY_RUN_DIR/lineage/handbook-approved.md\" xsh \"${eval_dir}/executor.xsh\"\n```\n\nInspect the executor report, worker report, thinking transcript, evaluator manifest, artifact, and quantitative session results. If a handbook change is justified, write it to `$FACTORY_RUN_DIR/lineage/handbook-candidate.md`; otherwise copy the approved snapshot there unchanged. Do not edit the approved snapshot or the checked-in `runtime/handbook.md`.\n\n## Trial 2\n\nRun a fresh worker with the shared-handbook candidate:\n\n```sh\nFACTORY_EVAL_ID=${eval_id} FACTORY_TRIAL_ID=2 FACTORY_EVAL_WORKER_DIR=\"$FACTORY_RUN_DIR/workers/eval-worker/${eval_id}-2\" FACTORY_HANDBOOK_FILE=\"$FACTORY_RUN_DIR/lineage/handbook-candidate.md\" xsh \"${eval_dir}/executor.xsh\"\n```\n\nCompare the two trials. Classify correctness, restriction, timing, worker friction, handbook guidance, product/tooling defect, harness mismatch, evaluator failure, or noise. Write `$FACTORY_WORKER_DIR/MANAGER-REPORT.md` with both trial results, handbook hashes, effort and thinking metrics, candidate/oracle timing, a `## North-star impact` section, the shared-handbook decision, tickets, and the next replay. A promoted candidate becomes `runtime/handbook.md` for every eval only after review.\n")?
 
   let director_env = {
     PATH: env.get("PATH")?,
@@ -168,9 +421,6 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     FACTORY_RUN_AGENT: run_agent.display(),
     FACTORY_XSH_REPO: xsh_repo.display(),
     FACTORY_XSH_COMMIT: xsh_commit.trim(),
-    FACTORY_XSH_GIT_STATUS: xsh_git_status.trim(),
-    FACTORY_XSH_BIN_SHA256: xsh_sha,
-    FACTORY_XSHT_BIN_SHA256: xsht_sha,
     FACTORY_IMAGE_ID: image_id.trim(),
     FACTORY_EVAL_ID: eval_id,
     FACTORY_EVAL_DIR: eval_dir.display(),
@@ -209,12 +459,14 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     FACTORY_XSH_SWE_BUDGET_USD: env.get_or("FACTORY_XSH_SWE_BUDGET_USD", "2")?,
     FACTORY_XSH_SWE_TOOLS: env.get_or("FACTORY_XSH_SWE_TOOLS", "read,write,edit,bash,grep,find,ls")?,
   }
+  emit_event(event_template, run_dir, "20-director-started", "director", "started", 1, "controller", "dispatching eval-manager")?
   let director_status = process.run(process.command_argv(
     xsh_path,
     [xsh_path.display(), run_agent, "--", "director", "director",
       fp"${factory_dir}/roles/director.md".display(), director_message.display()],
     env: director_env,
   ))?
+  emit_event(event_template, run_dir, "80-director-completed", "director", if director_status.ok { "completed" } else { "failed" }, 1, "director", "director process returned")?
 
   let cost_status = process.run(process.command_argv(
     xsh_path,
@@ -229,7 +481,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   let candidate_exists = fs.exists(candidate_handbook)?
   let trial1_report_ok = fs.exists(trial1_report)? and fs.read_text(trial1_report)?.contains("## Result\n\npass")
   let trial2_report_ok = fs.exists(trial2_report)? and fs.read_text(trial2_report)?.contains("## Result\n\npass")
-  let baseline_sha = hash.sha256(baseline_handbook)?.hex()
+  let baseline_sha = approved_handbook_sha
   let candidate_sha = if candidate_exists { hash.sha256(candidate_handbook)?.hex() } else { "" }
   let trial1_sha = if fs.exists(trial1_handbook)? { hash.sha256(trial1_handbook)?.hex() } else { "" }
   let trial2_sha = if fs.exists(trial2_handbook)? { hash.sha256(trial2_handbook)?.hex() } else { "" }
@@ -248,9 +500,15 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   let trial2_state = if trial2_report_ok { "pass" } else { "fail" }
   let lineage_state = if lineage_ok { "pass" } else { "fail" }
   let cost_state = if cost_status.ok { "present" } else { "failed" }
-  let run_report = f"# Factory run ${stamp}\n\n## Result\n\n${result}\n\n## North-star status\n\nThis `${eval_id}` cycle measures a practical XSH capability and preserves the evidence needed for durable handbook or product decisions. See `DIRECTOR-REPORT.md` and the manager report for the explicit mission impact.\n\n## Cycle\n\n- Request: `CYCLE-REQUEST.md`\n- Eval: `${eval_id}`\n- XSH repository: `${xsh_repo.display()}`\n- XSH commit: `${xsh_commit.trim()}`\n- Working tree: `${xsh_state}`\n- Image: `${image}`\n- Image ID: `${image_id.trim()}`\n\n## Required outputs\n\n- Director session: `${director_state}`\n- Eval-manager session: `${manager_state}`\n- Trial 1 executor: `${trial1_state}`\n- Trial 2 executor: `${trial2_state}`\n- Handbook lineage: `${lineage_state}`\n- Cost report: `${cost_state}`\n\n## Handbook hashes\n\n- Approved snapshot: `${baseline_sha}`\n- Provisional snapshot: `${candidate_sha}`\n- Trial 1 staged handbook: `${trial1_sha}`\n- Trial 2 staged handbook: `${trial2_sha}`\n\n## Evidence\n\nAll Pi sessions, extracted thinking transcripts, worker reports, evaluator\nmanifests, container logs, and artifacts are under `workers/`. See\n`PROVENANCE.md`, `LINEAGE.md`, and `COST.md` for the run inputs and accounting.\n"
-  fs.write(fp"${run_dir}/LINEAGE.md", f"# Handbook lineage\n\n## Eval\n\n`${eval_id}`\n\n## Snapshots\n\n- Approved: `${baseline_sha}`\n- Provisional: `${candidate_sha}`\n- Trial 1 used: `${trial1_sha}`\n- Trial 2 used: `${trial2_sha}`\n\n## Result\n\n`${lineage_state}`\n\nTrial 1 must use the approved snapshot and trial 2 must use the provisional snapshot.\n")?
+  let run_report = f"# Factory run ${stamp}\n\n## Result\n\n${result}\n\n## North-star status\n\nThis `${eval_id}` cycle measures a practical XSH capability and preserves the evidence needed for durable handbook or product decisions. See `DIRECTOR-REPORT.md` and the manager report for the explicit mission impact.\n\n## Cycle\n\n- Request: `CYCLE-REQUEST.md`\n- Eval: `${eval_id}`\n- XSH commit: `${xsh_commit.trim()}`\n- Image: `${image}`\n- Image ID: `${image_id.trim()}`\n\n## Required outputs\n\n- Director session: `${director_state}`\n- Eval-manager session: `${manager_state}`\n- Trial 1 executor: `${trial1_state}`\n- Trial 2 executor: `${trial2_state}`\n- Handbook lineage: `${lineage_state}`\n- Cost report: `${cost_state}`\n\n## Handbook hashes\n\n- Approved snapshot: `${baseline_sha}`\n- Provisional snapshot: `${candidate_sha}`\n- Trial 1 staged handbook: `${trial1_sha}`\n- Trial 2 staged handbook: `${trial2_sha}`\n\n## Evidence\n\nAll Pi sessions, extracted thinking transcripts, worker reports, evaluator\nmanifests, container logs, and artifacts are under `workers/`. See\n`PROVENANCE.md`, `LINEAGE.md`, and `COST.md` for the run inputs and accounting.\n"
+  fs.write(fp"${run_dir}/LINEAGE.md", f"# Shared handbook lineage\n\n## Factory handbook\n\nAll evals in this factory consume `runtime/handbook.md`. This run snapshots that one approved document and tests one candidate against it.\n\n## Snapshots\n\n- Approved: `lineage/handbook-approved.md` (`${baseline_sha}`)\n- Candidate: `lineage/handbook-candidate.md` (`${candidate_sha}`)\n- Trial 1 used: `${trial1_sha}`\n- Trial 2 used: `${trial2_sha}`\n\n## Result\n\n`${lineage_state}`\n\nTrial 1 must use the approved shared snapshot and trial 2 must use the candidate shared snapshot. Promotion, if approved, updates the single checked-in `runtime/handbook.md`; it is never eval-local.\n")?
   fs.write(fp"${run_dir}/RUN.md", run_report)?
+  if result == "pass" {
+    emit_event(event_template, run_dir, "90-cycle-completed", eval_id, "completed", 1, "controller", "run report and cost report written")?
+    emit_event(event_template, run_dir, "95-cycle-validated", eval_id, "validated", 1, "controller", "all required outputs passed")?
+  } else {
+    emit_event(event_template, run_dir, "90-cycle-failed", eval_id, "failed", 1, "controller", "one or more required outputs failed")?
+  }
   print f"factory run: ${run_dir} (${result})"
   abort(if result == "pass" { 0 } else { 1 })
 }

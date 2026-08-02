@@ -31,6 +31,11 @@ The standing Pi-session briefing in `roles/pi-session-briefing.md` explains
 how to interpret session messages, thinking blocks, tool results, usage, cost,
 and timing. Eval-managers read it before inspecting a run.
 
+The deterministic control plane and tools have native XSH coverage under
+`tests/`. Run it from this repository with `XSH_MODULE_PATH=. xsht test`; the
+tests use synthetic sessions and process/container doubles, so they do not
+launch Pi.
+
 ## North star
 
 `NORTH-STAR.md` is the durable mission briefing for every role. It translates
@@ -49,18 +54,32 @@ The detailed layer contracts and outputs are in
 
 ## One cycle
 
-Run one organization cycle with:
+Run an eval cycle with:
 
 ```sh
 xsh run.xsh cycle-request.md
 ```
 
 `run.xsh` creates `runs/run-<id>/`, starts the director, and produces a
-run-level report and cost report. The director resolves the current XSH main
-commit once at cycle start. Every executor and SWE worktree records that
-snapshot or its explicitly named candidate commit.
+run-level report and cost report. The director resolves one clean XSH commit
+once at cycle start. Every executor and SWE worktree records that snapshot or
+its explicitly named candidate commit.
 
-The default bounded pipeline is:
+For an approved ticket implementation cycle, use a request with
+`## Mode` set to `ticket-implementation` and an explicit `## Approved tickets`
+list:
+
+```sh
+xsh run.xsh cycle-ticket-task-tags-001.md
+```
+
+The controller admits only tickets whose checked-in status is `Accepted.`,
+creates one isolated XSH worktree per ticket, and asks the director to launch
+one `xsh-swe` worker per worktree. The branch is validated and left pending
+user review; no merge or ticket-status mutation is automatic. Each run records
+stage callbacks as Markdown files under `events/`.
+
+The default eval pipeline is:
 
 1. run each active eval-manager for its configured trial count;
 2. ask eval-designer for one new eval with a staged dry run;
@@ -71,6 +90,10 @@ The default bounded pipeline is:
 New manager tickets become open for the next cycle. They are not dispatched to
 SWE in the same cycle, which keeps diagnosis and implementation separate.
 
+Ticket-only cycles intentionally omit the eval pipeline. They are for an
+explicitly approved implementation handoff and produce reviewable branches;
+post-merge acceptance remains a later controlled eval replay.
+
 ## Evals
 
 An eval contract defines a practical task, agent-facing files, the image and
@@ -79,6 +102,11 @@ quantitative metrics, and manager policy. Ecount is the current upper bound on
 acceptable difficulty. Code quality remains qualitative; objective gates are
 correctness, restrictions, protocol output, agent effort, and candidate/oracle
 execution time.
+
+All eval images inherit `evals/Dockerfile.base`, which owns the pinned Alpine
+runtime, locally built `xsh` and `xsht`, and Pi. An eval Dockerfile only adds
+task-specific packages and runtime files; `task-ecount` adds `fd` on top of the
+same cached base image.
 
 For strict timing tasks:
 
@@ -94,13 +122,15 @@ proposal branch.
 ## Tickets and changes
 
 An eval-manager may create a ticket after one strong reproducible observation.
-The ticket must link the exact eval, manager lineage, manager session, executor
-run, and XSH baseline. It must state an observation, evidence, diagnosis or
+The ticket must link the exact eval, shared-handbook lineage, manager session,
+executor run, and XSH baseline. It must state an observation, evidence, diagnosis or
 hypothesis, proposed change, acceptance criteria, and post-merge evaluation.
 
-Manager lineages are provisional branches per eval. Later runs may follow the
-latest provisional handbook before approval. User rejection returns the eval to
-the last approved lineage.
+There is one factory-wide handbook lineage. Each eval trial receives an
+immutable snapshot of that shared handbook. A manager may stage a candidate
+under its run lineage, but promotion replaces `runtime/handbook.md` for every
+eval only after a user-approved replay and handbook decision. User rejection
+leaves the shared handbook at its last approved version.
 
 XSH SWE branches contain product changes and tests. The user alone merges them
 into XSH main. After merge, the linked eval-manager performs a controlled
@@ -143,3 +173,8 @@ FACTORY_XSH_SWE_{PROVIDER,MODEL,THINKING,BUDGET_USD,TOOLS}
 registers SIGINT and SIGTERM with a zero pre-cancel budget, so an interrupted
 cycle immediately cancels the active child process groups and their nested Pi
 workers before writing the partial run evidence.
+
+`FACTORY_WORKDIR` is an internal runner setting used for product workers. When
+present, `run-agent.xsh` starts Pi with that directory as its actual process
+working directory and records it in `WORKER.md`; this is what makes an
+`xsh-swe` worktree boundary enforceable rather than prompt-only.
