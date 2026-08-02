@@ -90,7 +90,24 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   }
   let xsh_commit_short = xsh_commit.trim().byte_slice(0, 12)
   let factory_control_sha = hash.sha256(fp"${factory_dir}/factory_control.xsh")?.hex()
-  let build_id = f"${xsh_commit.trim()}-${factory_control_sha.byte_slice(0, 12)}"
+  let factory_runtime_sha = hash.sha256(fp"${factory_dir}/factory_runtime.xsh")?.hex()
+  let evaluate_common_sha = hash.sha256(fp"${factory_dir}/evaluate_common.xsh")?.hex()
+  let eval_worker_sha = hash.sha256(fp"${factory_dir}/evals/eval-worker.xsh")?.hex()
+  let base_dockerfile_sha = hash.sha256(fp"${factory_dir}/evals/Dockerfile.base")?.hex()
+  let eval_dockerfile = fp"${eval_dir}/Dockerfile"
+  let has_eval_dockerfile = fs.exists(eval_dockerfile)?
+  let eval_dockerignore = fp"${eval_dir}/.dockerignore"
+  let eval_dockerignore_sha = if fs.exists(eval_dockerignore)? {
+    hash.sha256(eval_dockerignore)?.hex()
+  } else {
+    "none"
+  }
+  let base_dockerignore = fp"${factory_dir}/evals/.dockerignore"
+  let base_dockerignore_sha = if fs.exists(base_dockerignore)? {
+    hash.sha256(base_dockerignore)?.hex()
+  } else {
+    "none"
+  }
   let xsh_git_status = run.text "git" "-C" $xsh_repo.display() "status" "--porcelain" ?
   if xsh_git_status.trim() != "" {
     eprint "eval cycle requires a clean XSH worktree at admission"
@@ -106,16 +123,26 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   let toolchain_image = env.get_or("XSH_TEST_IMAGE", "xsh-test")?
   let force_toolchain_rebuild = env.get_or("FACTORY_FORCE_XSH_TOOLCHAIN_REBUILD", "false")? == "true"
   let force_image_rebuild = env.get_or("FACTORY_FORCE_IMAGE_REBUILD", "false")? == "true"
-  let image_tag = f"${xsh_commit_short}-${stamp.float().format(precision: 0)}"
+  let base_tag = control.factory_image_tag(
+    xsh_commit.trim(), factory_control_sha, factory_runtime_sha, evaluate_common_sha,
+    eval_worker_sha, base_dockerfile_sha, toolchain_dockerfile_sha, toolchain_makefile_sha,
+    target, platform, "", base_dockerignore_sha,
+  )
+  let eval_tag = control.factory_image_tag(
+    xsh_commit.trim(), factory_control_sha, factory_runtime_sha, evaluate_common_sha,
+    eval_worker_sha, base_dockerfile_sha, toolchain_dockerfile_sha, toolchain_makefile_sha,
+    target, platform,
+    if has_eval_dockerfile { hash.sha256(eval_dockerfile)?.hex() } else { "none" },
+    eval_dockerignore_sha,
+  )
+  let build_id = f"${xsh_commit.trim()}-${base_tag}"
   let configured_base_image = env.get_or("FACTORY_BASE_IMAGE", "")?
   let base_image = if configured_base_image == "" {
-    f"xsh-factory-base:${image_tag}"
+    f"xsh-factory-base:${base_tag}"
   } else {
     configured_base_image
   }
-  let eval_dockerfile = fp"${eval_dir}/Dockerfile"
-  let has_eval_dockerfile = fs.exists(eval_dockerfile)?
-  let default_image = f"xsh-factory-${eval_id}:${image_tag}"
+  let default_image = f"xsh-factory-${eval_id}:${eval_tag}"
   let image = env.get_or("FACTORY_EVAL_IMAGE", if has_eval_dockerfile { default_image } else { base_image })?
   let eval_build_lock = fs.lock(fp"${factory_dir}/runs/eval-build.lock")?
   let toolchain_present = if force_toolchain_rebuild {
@@ -220,7 +247,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   let toolchain_state = if toolchain_cache_hit { "cache-hit" } else { "rebuilt" }
   let image_state = if force_image_rebuild { "forced-rebuild" } else { "cached-build" }
   fs.write(fp"${run_dir}/xsh-build.state",
-    f"toolchain=${toolchain_state}\nimage=${image_state}\nwall-ms=${build_elapsed}\n")?
+    f"toolchain=${toolchain_state}\nimage=${image_state}\nbase-image=${base_image}\neval-image=${image}\nbase-tag=${base_tag}\neval-tag=${eval_tag}\nbuild-id=${build_id}\nwall-ms=${build_elapsed}\n")?
   fs.unlock(eval_build_lock)?
   let approved_handbook_sha = hash.sha256(baseline_handbook)?.hex()
   let provenance_values: List[control.TemplateValue] = [
@@ -418,9 +445,13 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   let lineage_ok = candidate_exists and approved_snapshot_unchanged and checked_in_handbook_unchanged and
     trial1_sha == baseline_sha and trial_lineage_ok
   let director_report = fp"${run_dir}/DIRECTOR-REPORT.md"
-  let director_report_ok = fs.exists(director_report)? and control.director_report_contract_ok(fs.read_text(director_report)?)
+  let director_report_marker = fp"${run_dir}/workers/director/director/REPORT-MISSING"
+  let director_report_ok = fs.exists(director_report)? and ! fs.exists(director_report_marker)? and
+    control.director_report_contract_ok(fs.read_text(director_report)?)
   let manager_report = fp"${run_dir}/workers/eval-manager/${eval_id}/MANAGER-REPORT.md"
-  let manager_report_ok = fs.exists(manager_report)? and control.manager_report_contract_ok(fs.read_text(manager_report)?)
+  let manager_report_marker = fp"${run_dir}/workers/eval-manager/${eval_id}/REPORT-MISSING"
+  let manager_report_ok = fs.exists(manager_report)? and ! fs.exists(manager_report_marker)? and
+    control.manager_report_contract_ok(fs.read_text(manager_report)?)
   let designer_session = fp"${run_dir}/workers/eval-designer/${designer_worker}/session.jsonl"
   let designer_worker_report = fp"${run_dir}/workers/eval-designer/${designer_worker}/WORKER-REPORT.md"
   let designer_report = fp"${run_dir}/workers/eval-designer/proposal-1/DESIGNER-REPORT.md"
@@ -428,6 +459,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     true
   } else {
     fs.exists(designer_session)? and fs.exists(designer_worker_report)? and
+      ! fs.exists(fp"${run_dir}/workers/eval-designer/${designer_worker}/REPORT-MISSING")? and
       fs.exists(designer_report)? and control.designer_report_contract_ok(fs.read_text(designer_report)?)
   }
   if fs.exists(manager_session)? {

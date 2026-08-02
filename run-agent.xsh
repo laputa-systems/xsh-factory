@@ -135,7 +135,6 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     FACTORY_WORKDIR: workdir.display(),
     FACTORY_HANDBOOK_FILE: handbook_file.display(),
     FACTORY_NORTH_STAR_FILE: north_star_file.display(),
-    FACTORY_REQUIRED_REPORT: required_report,
     FACTORY_XSH_REPO: env.get("FACTORY_XSH_REPO")?,
     FACTORY_XSH_COMMIT: env.get_or("FACTORY_XSH_COMMIT", "unknown")?,
     FACTORY_IMAGE_ID: env.get_or("FACTORY_IMAGE_ID", "unknown")?,

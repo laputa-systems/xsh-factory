@@ -45,6 +45,11 @@ reuses the locally cached `Dockerfile.test` toolchain and Docker layers. The
 cache key includes the product build files, target, and host architecture;
 set `FACTORY_FORCE_XSH_TOOLCHAIN_REBUILD=true` and
 `FACTORY_FORCE_IMAGE_REBUILD=true` when a deliberate full rebuild is needed.
+The base and eval image tags are content-addressed by the XSH commit, staged
+factory modules, Dockerfiles, toolchain inputs, target, and platform, so
+repeated cycles reuse the same image names instead of creating timestamped
+images. Each eval run records the resolved tags and whether the toolchain was
+rebuilt or reused in `xsh-build.state`.
 Every child Pi session and the run-level cost report are saved under
 `runs/run-<id>/`.
 

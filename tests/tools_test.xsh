@@ -422,7 +422,7 @@ proc test_audit_run_preserves_separate_evaluator_outcomes(ctx: TestContext) [fs,
     {key: "CHECKED_IN_HANDBOOK_UNCHANGED", value: "true"},
     {key: "LINEAGE_STATE", value: "pass"},
   ]))?
-  fs.write(fp"${run_dir}/COST.md", "# Run cost report\n\n## Workers\n\n## Role totals\n\n## Run total\n\n- Budget failures or unknown costs: 0\n")?
+  fs.write(fp"${run_dir}/COST.md", "# Run cost report\n\n## Workers\n\nfixture\n\n## Role totals\n\nfixture\n\n## Run total\n\nfixture\n\n- Budget failures or unknown costs: 0\n")?
   fs.write(fp"${run_dir}/DIRECTOR-REPORT.md", "# Director report\n\n## Result\n\npass\n\n## Cycle\n\nfixture\n\n## Children\n\nfixture\n\n## Required-output status\n\npass\n\n## North-star impact\n\nfixture\n")?
   fs.write(fp"${run_dir}/workers/eval-manager/task-tags/MANAGER-REPORT.md", "# Manager report\n\n## Result\n\npass\n\n## Effort metrics\n\nfixture\n\n## Usage and cost\n\nfixture\n\n## Thinking evidence\n\nfixture\n\n## Timing evidence\n\nfixture\n\n## Observation classification\n\nfixture\n\n## Handbook decision\n\nfixture\n\n## Tickets created\n\nfixture\n\n## Post-merge decisions\n\nfixture\n\n## Next replay\n\nfixture\n\n## North-star impact\n\nfixture\n")?
 
@@ -475,6 +475,15 @@ proc test_audit_run_preserves_separate_evaluator_outcomes(ctx: TestContext) [fs,
   test.eq(control.audit_result(audit), "pass")?
   test.contains(audit, "protocol=pass; correctness=true; restrictions=true")?
   test.contains(audit, "timing=ratio=1.000; gate=unknown")?
+
+  fs.write(fp"${manager_dir}/REPORT-MISSING", "required report missing\n")?
+  let marker_audit_status = process.run(process.command_argv(
+    xsh, [xsh.display(), audit_tool.display(), "--", run_dir.display(), "eval"],
+  ))?
+  test.ok(marker_audit_status.ok, "audit should still render marker evidence")?
+  let marker_audit = fs.read_text(fp"${run_dir}/AUDIT.md")?
+  test.eq(control.audit_result(marker_audit), "fail")?
+  fs.remove(fp"${manager_dir}/REPORT-MISSING")?
 
   fs.write(fp"${worker_dir}/run.json", r"""
 {
@@ -803,7 +812,7 @@ proc test_audit_run_accepts_standalone_eval_design_evidence(ctx: TestContext) [f
     {key: "CANDIDATE_HANDBOOK_SHA", value: "not-used"},
     {key: "TICKET_SNAPSHOT_SHA", value: "not-used"},
   ]))?
-  fs.write(fp"${run_dir}/COST.md", "# Cost\n\n## Workers\n\n## Role totals\n\n## Run total\n\n- Budget failures or unknown costs: 0\n")?
+  fs.write(fp"${run_dir}/COST.md", "# Cost\n\n## Workers\n\nfixture\n\n## Role totals\n\nfixture\n\n## Run total\n\nfixture\n\n- Budget failures or unknown costs: 0\n")?
   fs.write(fp"${run_dir}/proposals/proposal-1/EVAL.md", "proposal\n")?
   fs.write(fp"${worker_dir}/DESIGNER-REPORT.md", "# Designer\n\n## Result\n\nready-for-review\n\n## Proposal\n\nproposal\n\n## Dry run\n\nevidence\n\n## North-star impact\n\nimpact\n\n## Known risks\n\nnone\n\n## Review path\n\npath\n")?
   fs.write(fp"${worker_dir}/session.jsonl", r"""

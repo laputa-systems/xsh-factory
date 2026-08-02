@@ -254,7 +254,9 @@ proc audit_run(run_dir: Path, requested_mode: Str, factory_dir: Path) [fs, error
     let report = fp"${worker_dir}/WORKER-REPORT.md"
     let report_present = fs.exists(report)?
     let report_text = if report_present { report.read_text()? } else { "" }
-    let report_contract = report_present and control.worker_report_contract_ok(report_text)
+    let report_marker = fp"${worker_dir}/REPORT-MISSING"
+    let report_contract = report_present and ! fs.exists(report_marker)? and
+      control.worker_report_contract_ok(report_text)
     let role = if report_present { report_value(report_text, "- Role:", "unknown") } else { "unknown" }
     let worker_id = if report_present { report_value(report_text, "- Worker:", "unknown") } else { "unknown" }
     let identity = session_identity(run_name, session, role, worker_id)
@@ -388,11 +390,11 @@ proc audit_run(run_dir: Path, requested_mode: Str, factory_dir: Path) [fs, error
     true
   } else {
     fs.exists(director_report)? and control.director_report_contract_ok(director_report.read_text()?) and
-      control.report_field(director_report.read_text()?, "Result") == "pass"
+      control.report_result_is(director_report.read_text()?, "pass")
   }
   let manager_ok = if requested_mode == "eval" {
     manager_reports.len() > 0 and control.manager_report_contract_ok(manager_reports[0].read_text()?) and
-      control.report_field(manager_reports[0].read_text()?, "Result") == "pass"
+      control.report_result_is(manager_reports[0].read_text()?, "pass")
   } else {
     true
   }
@@ -400,7 +402,7 @@ proc audit_run(run_dir: Path, requested_mode: Str, factory_dir: Path) [fs, error
     (requested_mode == "eval" and request_exists and control.request_new_eval_count(request_text)? > 0)
   let designer_ok = if designer_required {
     designer_reports.len() > 0 and control.designer_report_contract_ok(designer_reports[0].read_text()?) and
-      control.report_field(designer_reports[0].read_text()?, "Result") == "ready-for-review"
+      control.report_result_is(designer_reports[0].read_text()?, "ready-for-review")
   } else {
     true
   }

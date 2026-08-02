@@ -34,8 +34,10 @@ Alpine runtime, locally built `xsh` and `xsht`, and Pi. An eval Dockerfile is a
 thin layer for task-specific packages and runtime files. `task-ecount` adds
 only `fd`. The `Dockerfile.test` toolchain is keyed by its product build files,
 target, and host architecture; a short build lock protects shared staging,
-while unique phase image tags let independent eval phases run their Pi work in
-parallel without sharing mutable image names.
+while content-addressed phase image tags let independent eval phases run their
+Pi work in parallel without accumulating a new timestamped image name on every
+cycle. Each phase records the resolved tags and cache decision in
+`xsh-build.state`.
 
 ## Outer loop: eval-manager
 

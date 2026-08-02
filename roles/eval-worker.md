@@ -28,3 +28,8 @@ boundary, record that exact friction in `review.md` for the manager. After two
 failed attempts at the same concept, stop guessing and use one exact API query
 or the local contract; do not spend turns on random discovery. The goal is a
 correct artifact plus evidence that improves the next agent's first attempt.
+
+Before stopping, reopen `review.md`. Confirm both required section headings
+remain, replace `None.` only when you have evidence to report, and ensure no
+template marker such as `<title>` remains. A correct artifact with an
+unfinished review is an incomplete eval result.

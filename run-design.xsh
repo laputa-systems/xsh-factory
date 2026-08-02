@@ -188,8 +188,10 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
       "--run-dir", run_dir.display(), "--output", fp"${run_dir}/COST.md".display()],
   ))?
   let session_ok = fs.exists(session)?
-  let worker_report_ok = fs.exists(worker_report)? and control.worker_report_contract_ok(worker_report.read_text()?)
-  let designer_report_ok = fs.exists(designer_report)? and control.designer_report_contract_ok(designer_report.read_text()?)
+  let worker_report_ok = fs.exists(worker_report)? and ! fs.exists(fp"${run_dir}/workers/eval-designer/${worker_id}/REPORT-MISSING")? and
+    control.worker_report_contract_ok(worker_report.read_text()?)
+  let designer_report_ok = fs.exists(designer_report)? and ! fs.exists(fp"${run_dir}/workers/eval-designer/${worker_id}/REPORT-MISSING")? and
+    control.designer_report_contract_ok(designer_report.read_text()?)
   let north_star_read_ok = runtime.session_read_path(session, fp"${factory_dir}/NORTH-STAR.md")?
   let handbook_read_ok = runtime.session_read_path(session, fp"${factory_dir}/runtime/handbook.md")?
   let proposal_ok = fs.exists(proposal_dir)?

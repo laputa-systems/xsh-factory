@@ -181,6 +181,39 @@ export pure toolchain_cache_valid(
   return ! force_rebuild and stamp_exists and cached_key == expected_key and image_present
 }
 
+## Creates a stable Docker tag from every input that can change the shared image.
+export pure factory_image_tag(
+  xsh_commit: Str,
+  factory_control_sha: Str,
+  factory_runtime_sha: Str,
+  evaluate_common_sha: Str,
+  eval_worker_sha: Str,
+  base_dockerfile_sha: Str,
+  toolchain_dockerfile_sha: Str,
+  toolchain_makefile_sha: Str,
+  target: Str,
+  platform: Str,
+  eval_dockerfile_sha: Str = "",
+  eval_dockerignore_sha: Str = "",
+) -> Str {
+  let identity = [
+    "xsh=" + xsh_commit,
+    "factory-control=" + factory_control_sha,
+    "factory-runtime=" + factory_runtime_sha,
+    "evaluate-common=" + evaluate_common_sha,
+    "eval-worker=" + eval_worker_sha,
+    "base-dockerfile=" + base_dockerfile_sha,
+    "toolchain-dockerfile=" + toolchain_dockerfile_sha,
+    "toolchain-makefile=" + toolchain_makefile_sha,
+    "target=" + target,
+    "platform=" + platform,
+    "eval-dockerfile=" + eval_dockerfile_sha,
+    "eval-dockerignore=" + eval_dockerignore_sha,
+  ].join("\n")
+  let digest = hash.sha256(bytes.from_text(identity)).hex()
+  return "v" + digest.byte_slice(0, 16)
+}
+
 ## Builds the pinned task-ecount oracle command and its failure boundary.
 export pure ecount_oracle_command() -> List[Str] {
   return [
@@ -411,6 +444,13 @@ export pure report_field(text: Str, heading: Str) -> Str {
   return ""
 }
 
+## Matches a report result while allowing a narrative sentence after the status.
+export pure report_result_is(text: Str, expected: Str) -> Bool {
+  let value = report_field(text, "Result")
+  return value == expected or value.starts_with(f"${expected}. ") or
+    value.starts_with(f"${expected} ")
+}
+
 ## Extracts one exact Markdown section from a checked-in template.
 export pure section_text(text: Str, heading: Str) -> Str {
   let marker = f"## ${heading}"
@@ -555,17 +595,47 @@ export pure retry_allowed(failure_class: Str, attempt: Int, max_attempts: Int) -
     failure_class == "budget-breach"
 }
 
+## Returns the trimmed body of one level-two report section.
+export pure report_section(report: Str, heading: Str) -> Str {
+  let marker = f"## ${heading}"
+  var found = false
+  var content = ""
+  for line in report.lines() {
+    let trimmed = line.trim()
+    if trimmed == marker {
+      found = true
+      continue
+    }
+    if found and trimmed.starts_with("## ") {
+      return content.trim()
+    }
+    if found {
+      content = content + line + "\n"
+    }
+  }
+  return if found { content.trim() } else { "" }
+}
+
 ## Validates a Markdown report without interpreting its narrative content.
 export pure report_contract_ok(report: Str, required_sections: List[Str], expected_result: Str) -> Bool {
-  if expected_result != "" and ! report.contains(f"## Result\n\n${expected_result}") {
+  if report.contains("{{") or report.contains("}}") {
+    return false
+  }
+  if expected_result != "" and report_section(report, "Result") != expected_result {
     return false
   }
   for section in required_sections {
-    if ! report.contains(f"## ${section}") {
+    if report_section(report, section) == "" {
       return false
     }
   }
   return true
+}
+
+## Validates an agent-authored report that must include a substantive result.
+export pure narrative_report_contract_ok(report: Str, required_sections: List[Str]) -> Bool {
+  return report_section(report, "Result") != "" and
+    report_contract_ok(report, required_sections, "")
 }
 
 ## Validates every required xsh-swe report heading and result.
@@ -577,16 +647,16 @@ export pure swe_report_contract_ok(report: Str) -> Bool {
 
 ## Validates the evidence headings required from an eval-manager.
 export pure manager_report_contract_ok(report: Str) -> Bool {
-  return report_contract_ok(report,
+  return narrative_report_contract_ok(report,
     ["Effort metrics", "Usage and cost", "Thinking evidence", "Timing evidence",
       "Observation classification", "Handbook decision", "Tickets created",
-      "Post-merge decisions", "Next replay", "North-star impact"], "")
+      "Post-merge decisions", "Next replay", "North-star impact"])
 }
 
 ## Validates the coordination headings required from a director.
 export pure director_report_contract_ok(report: Str) -> Bool {
-  return report_contract_ok(report,
-    ["Cycle", "Children", "Required-output status", "North-star impact"], "")
+  return narrative_report_contract_ok(report,
+    ["Cycle", "Children", "Required-output status", "North-star impact"])
 }
 
 ## Validates the deterministic executor summary written for one trial.

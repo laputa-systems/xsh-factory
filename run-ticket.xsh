@@ -227,7 +227,8 @@ proc run_ticket_cycle(
     let session = fp"${worker_dir}/session.jsonl"
     let north_star_read_ok = runtime.session_read_path(session, fp"${factory_dir}/NORTH-STAR.md")?
     let handbook_read_ok = runtime.session_read_path(session, fp"${factory_dir}/runtime/handbook.md")?
-    let report_ok = fs.exists(swe_report)? and control.swe_report_contract_ok(fs.read_text(swe_report)?)
+    let report_ok = fs.exists(swe_report)? and ! fs.exists(fp"${worker_dir}/REPORT-MISSING")? and
+      control.swe_report_contract_ok(fs.read_text(swe_report)?)
     let branch = run.text "git" "-C" $worktree.display() "branch" "--show-current" ?
     let head = run.text "git" "-C" $worktree.display() "rev-parse" "HEAD" ?
     let status = run.text "git" "-C" $worktree.display() "status" "--porcelain" ?
@@ -301,7 +302,9 @@ proc run_ticket_cycle(
     results_template.read_text()?, [{key: "ROWS", value: result_rows}]
   ))?
   let director_report = fp"${run_dir}/DIRECTOR-REPORT.md"
-  let director_report_ok = fs.exists(director_report)? and control.director_report_contract_ok(fs.read_text(director_report)?)
+  let director_report_ok = fs.exists(director_report)? and
+    ! fs.exists(fp"${run_dir}/workers/director/director/REPORT-MISSING")? and
+    control.director_report_contract_ok(fs.read_text(director_report)?)
   let audit_status = process.run(process.command_argv(
     xsh_path,
     [xsh_path.display(), fp"${factory_dir}/audit-run.xsh", "--", run_dir.display(), "ticket-implementation"],

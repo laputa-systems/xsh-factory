@@ -234,25 +234,39 @@ proc test_retry_policy_is_bounded_and_classified() [error] {
   test.ok(! control.retry_allowed("worker-failed", 0, 3))?
 }
 
-proc test_report_contract_checks_sections_only() [error] {
+proc test_report_contract_requires_result_and_section_content() [error] {
   let report = "# Report\n\n## Result\n\nready-for-review\n\n## Branch\n\nfactory/task/1\n\n## North-star impact\n\nExplicit boundary.\n"
   test.ok(control.report_contract_ok(report, ["Branch", "North-star impact"], "ready-for-review"))?
   test.ok(! control.report_contract_ok(report, ["Tests"], "ready-for-review"))?
   test.ok(! control.report_contract_ok(report, ["Branch"], "failed"))?
+  test.ok(! control.report_contract_ok(report.replace("## Branch\n\nfactory/task/1", "## Branch\n\n"), ["Branch"], "ready-for-review"))?
+  test.ok(! control.report_contract_ok(report.replace("## Result\n\nready-for-review\n\n", ""), ["Branch"], "ready-for-review"))?
+  test.ok(! control.report_contract_ok(report + "\n{{UNRESOLVED}}\n", ["Branch"], "ready-for-review"))?
 }
 
 proc test_role_report_contracts_are_fail_closed() [error] {
   let swe = "# SWE\n\n## Result\n\nready-for-review\n\n## Branch\n\nbranch\n\n## Commit\n\ncommit\n\n## Files changed\n\nfiles\n\n## Tests\n\npass\n\n## North-star impact\n\nimpact\n\n## Remaining risks\n\nNone.\n"
-  let manager = "## Effort metrics\n\n## Usage and cost\n\n## Thinking evidence\n\n## Timing evidence\n\n## Observation classification\n\n## Handbook decision\n\n## Tickets created\n\n## Post-merge decisions\n\n## Next replay\n\n## North-star impact\n"
+  let manager = "## Result\n\npass\n\n## Effort metrics\n\nturns and tools\n\n## Usage and cost\n\nprovider cost\n\n## Thinking evidence\n\nthinking blocks\n\n## Timing evidence\n\nratio\n\n## Observation classification\n\nreusable signal\n\n## Handbook decision\n\nunchanged\n\n## Tickets created\n\nzero\n\n## Post-merge decisions\n\nnone\n\n## Next replay\n\nnext eval\n\n## North-star impact\n\npractical XSH\n"
   let director = "## Result\n\npass\n\n## Cycle\n\ncycle\n\n## Children\n\nchildren\n\n## Required-output status\n\nstatus\n\n## North-star impact\n\nimpact\n"
   let executor = "## Result\n\npass\n\n## Failure classification\n\npass\n\n## Trial\n\n1\n\n## Artifact\n\npresent\n\n## Evidence\n\npaths\n"
   let designer = "## Result\n\nready-for-review\n\n## Proposal\n\nproposal\n\n## Dry run\n\npass\n\n## North-star impact\n\nimpact\n\n## Known risks\n\nNone.\n\n## Review path\n\npath\n"
   test.ok(control.swe_report_contract_ok(swe))?
   test.ok(! control.swe_report_contract_ok(swe.replace("## Tests", "## Missing")))?
   test.ok(control.manager_report_contract_ok(manager))?
+  test.ok(control.report_result_is("## Result\n\npass. The evidence is good.\n", "pass"))?
+  test.ok(! control.report_result_is("## Result\n\npassenger\n", "pass"))?
   test.ok(control.director_report_contract_ok(director))?
   test.ok(control.executor_report_contract_ok(executor))?
   test.ok(control.designer_report_contract_ok(designer))?
+  test.ok(! control.manager_report_contract_ok(manager.replace("## Thinking evidence\n\nthinking blocks", "## Thinking evidence\n\n")))?
+  test.ok(! control.manager_report_contract_ok(manager.replace("## Result\n\npass\n\n", "")))?
+}
+
+proc test_missing_manager_report_fails_closed(ctx: TestContext) [fs, error] {
+  let root = test.temp_dir(ctx, name: "missing-manager-report")?
+  let report = fp"${root}/workers/eval-manager/task-tags/MANAGER-REPORT.md"
+  let report_ok = fs.exists(report)? and control.manager_report_contract_ok(fs.read_text(report)?)
+  test.ok(! report_ok)?
 }
 
 proc test_checked_in_templates_are_the_provenance_source(ctx: TestContext) [fs, error] {
@@ -266,6 +280,11 @@ proc test_checked_in_templates_are_the_provenance_source(ctx: TestContext) [fs, 
   test.ok(rendered.contains("run-test"))?
   test.ok(rendered.contains("ticket-implementation"))?
   test.ok(rendered.contains("{{XSH_COMMIT}}"))?
+  let review = fs.read_text(fp"${fs.cwd()?}/runtime/review.md")?
+  test.contains(review, "## XSH language proposals")?
+  test.contains(review, "## xsht friction")?
+  test.contains(review, "None.")?
+  test.ok(! review.contains("<title>"))?
   let _ = ctx
 }
 
@@ -338,21 +357,54 @@ proc test_eval_overlay_build_uses_local_base_without_pull() {
   test.ok(! control.toolchain_cache_valid(true, true, "key", "key", true))?
 }
 
+proc test_factory_image_tags_are_stable_and_content_addressed() [error] {
+  let base = control.factory_image_tag(
+    "xsh-commit", "control", "runtime", "common", "worker", "base",
+    "toolchain-docker", "toolchain-make", "aarch64-unknown-linux-musl", "linux/arm64",
+  )
+  let same = control.factory_image_tag(
+    "xsh-commit", "control", "runtime", "common", "worker", "base",
+    "toolchain-docker", "toolchain-make", "aarch64-unknown-linux-musl", "linux/arm64",
+  )
+  let changed = control.factory_image_tag(
+    "different-commit", "control", "runtime", "common", "worker", "base",
+    "toolchain-docker", "toolchain-make", "aarch64-unknown-linux-musl", "linux/arm64",
+  )
+  let overlay = control.factory_image_tag(
+    "xsh-commit", "control", "runtime", "common", "worker", "base",
+    "toolchain-docker", "toolchain-make", "aarch64-unknown-linux-musl", "linux/arm64",
+    "eval-dockerfile", "eval-dockerignore",
+  )
+  test.eq(base, same)?
+  test.ok(base != changed)?
+  test.ok(base != overlay)?
+  test.ok(base.starts_with("v"))?
+  test.ok(! base.contains("/"))?
+  test.ok(! base.contains(":"))?
+}
+
 proc test_controller_outputs_and_build_cache_are_explicit() [fs, error] {
   let factory = fs.cwd()?
   let runner = fs.read_text(fp"${factory}/run-agent.xsh")?
   let worker_template = fs.read_text(fp"${factory}/templates/WORKER.md")?
   let eval_controller = fs.read_text(fp"${factory}/run-eval.xsh")?
+  let audit_controller = fs.read_text(fp"${factory}/audit-run.xsh")?
   let organization = fs.read_text(fp"${factory}/run-organization.xsh")?
   let product_makefile = fs.read_text(fp"${factory}/../xsh/Makefile")?
   let base_dockerfile = fs.read_text(fp"${factory}/evals/Dockerfile.base")?
   test.contains(runner, "FACTORY_REQUIRED_REPORT")?
+  test.ok(! runner.contains("FACTORY_REQUIRED_REPORT: required_report"))?
   test.contains(runner, "REPORT-MISSING")?
   test.contains(worker_template, "Required narrative report")?
   test.contains(eval_controller, "eval-build.lock")?
   test.contains(eval_controller, "XSH_TEST_IMAGE_BUILD")?
   test.contains(eval_controller, "FACTORY_FORCE_XSH_TOOLCHAIN_REBUILD")?
   test.contains(eval_controller, "xsh-build.state")?
+  test.contains(eval_controller, "factory_image_tag")?
+  test.contains(eval_controller, "base-tag")?
+  test.contains(eval_controller, "eval-tag")?
+  test.contains(eval_controller, "REPORT-MISSING")?
+  test.contains(audit_controller, "REPORT-MISSING")?
   test.contains(eval_controller, "uname")?
   test.contains(organization, "let independent_eval_handle = spawn_child")?
   test.contains(organization, "primary_ok = wait_child(primary_handle)")?

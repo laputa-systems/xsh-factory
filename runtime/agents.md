@@ -44,12 +44,11 @@ only the requested artifact unless the task explicitly says otherwise.
 ## Task Review
 
 At the end of the task, after the requested artifact is in place, open
-`/work/review.md` and fill it out in place. The file is a review template:
-keep its section headings (`## XSH language proposals` and
-`## xsht friction`) and replace the placeholder entries under each section
-with your actual review. It is an expected deliverable like any other task
-output; the evaluator checks that it exists and keeps the template's
-sections.
+`/work/review.md` and fill it out in place. Keep its section headings (`## XSH
+language proposals` and `## xsht friction`). Replace `None.` with concise,
+evidence-based findings when the session exposed a reusable issue; otherwise
+leave `None.`. It is an expected deliverable like any other task output, and
+the evaluator checks that it exists and keeps both sections.
 
 The review is an honest engineering report of this session. Write `None.`
 under a section when you have nothing for it; do not invent entries.
