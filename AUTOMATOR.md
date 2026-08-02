@@ -120,7 +120,8 @@ Inspect the latest run before planning new work.
 
 - Reconcile product tickets against `../xsh` and let the controller update a
   ticket to `Merged.` only when its recorded implementation commit is proven
-  to be an ancestor of XSH `HEAD`.
+  to be an ancestor of XSH `HEAD` or its portable SWE patch is proven
+  equivalent by Git patch comparison.
 - Read the latest `RUN.md`, `COST.md`, `AUDIT.md`, phase reports, manager
   reports, SWE reports, evaluator manifests, handbook lineage, and raw session
   evidence for any open decision.
@@ -165,13 +166,13 @@ For a completed SWE branch, merge only when all of the following hold:
 
 - the branch is the controller-assigned branch for the linked ticket;
 - the diff is scoped, simple, tested, and has no unexplained churn;
-- the worktree is clean and the reported commit is exact;
+- the reported commit is exact and the portable patch is present and scoped;
 - the pre-merge linked eval passes its correctness, restriction, protocol, and
   applicable timing gates;
 - the manager's decision is evidence-backed and no unresolved regression is
   visible in the session or product tests.
 
-After a merge, the next linked replay remains mandatory. If that replay
+After applying or merging a patch, the next linked replay remains mandatory. If that replay
 rejects the change, record the exact merged commit and choose a revert or a
 focused follow-up; never silently leave an accepted-but-failing change in the
 product.

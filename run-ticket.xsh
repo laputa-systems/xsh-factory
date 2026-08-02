@@ -28,6 +28,7 @@ proc run_ticket_cycle(
   let lock_path = env.path("FACTORY_LOCK_PATH", fp"${factory_dir}/runs/factory.lock")?
   let _run_lock = runtime.acquire_run_lock_at(lock_path)?
   let worktree_root = fp"${run_dir}/worktrees"
+  let patch_root = fp"${run_dir}/patches"
   let event_template = fp"${factory_dir}/templates/EVENT.md"
   let provenance_template = fp"${factory_dir}/templates/PROVENANCE.md"
   let assignment_template = fp"${factory_dir}/templates/XSH-SWE-ASSIGNMENT.md"
@@ -40,10 +41,12 @@ proc run_ticket_cycle(
   }
   fs.mkdir(run_dir)?
   fs.mkdir(worktree_root)?
+  fs.mkdir(patch_root)?
   fs.mkdir(fp"${run_dir}/messages")?
   fs.mkdir(fp"${run_dir}/tickets")?
   runtime.register_cycle_controller(run_dir)?
   let skip_cycle_budget = env.get_or("FACTORY_SKIP_CYCLE_BUDGET", "false")? == "true"
+  let retain_worktree = env.get_or("FACTORY_RETAIN_WORKTREE", "false")? == "true"
   if ! skip_cycle_budget {
     let _cycle_budget_watch = runtime.start_cycle_budget_watch(factory_dir, run_dir)?
   }
@@ -215,6 +218,7 @@ proc run_ticket_cycle(
       "--output", fp"${run_dir}/COST.md".display()],
   ))?
   var all_tickets_ok = true
+  var all_patches_ok = true
   var result_rows = ""
   for ticket_id in tickets {
     let worktree = fp"${worktree_root}/${ticket_id}"
@@ -231,9 +235,45 @@ proc run_ticket_cycle(
     let commit_ok = head.trim() != xsh_commit.trim()
     let clean = status.trim() == ""
     let ticket_ok = fs.exists(session)? and report_ok and north_star_read_ok and handbook_read_ok and branch_ok and commit_ok and clean
-    if ! ticket_ok { all_tickets_ok = false }
-    let state = if ticket_ok { "ready-for-review" } else { "failed" }
+    let patch_path = fp"${patch_root}/${ticket_id}.diff"
+    let patch_stderr = fp"${patch_root}/${ticket_id}.stderr"
+    let patch_ok = if ticket_ok {
+      runtime.write_swe_patch(worktree, xsh_commit.trim(), head.trim(), patch_path, patch_stderr)?
+    } else {
+      false
+    }
+    let worktree_action = if ! ticket_ok {
+      "retained-after-validation-failure"
+    } else if ! patch_ok {
+      "retained-after-patch-failure"
+    } else if retain_worktree {
+      "retained-for-linked-reevaluation"
+    } else if runtime.remove_clean_worktree(xsh_repo, worktree)? {
+      "removed-after-patch"
+    } else {
+      "cleanup-failed"
+    }
+    let final_ticket_ok = ticket_ok and patch_ok and
+      (retain_worktree or worktree_action == "removed-after-patch")
+    if ! final_ticket_ok { all_tickets_ok = false }
+    if ! patch_ok { all_patches_ok = false }
+    let state = if final_ticket_ok { "ready-for-review" } else { "failed" }
     let report_state = if fs.exists(swe_report)? { "present" } else { "missing" }
+    let patch_state = if patch_ok { "present" } else { "missing" }
+    let patch_sha = if patch_ok { hash.sha256(patch_path)?.hex() } else { "missing" }
+    let patch_template = fp"${factory_dir}/templates/SWE-PATCH.md"
+    fs.write(fp"${patch_root}/${ticket_id}.md", control.fill_template(
+      patch_template.read_text()?, [
+        {key: "TICKET_ID", value: ticket_id},
+        {key: "BASE_COMMIT", value: xsh_commit.trim()},
+        {key: "BRANCH", value: branch.trim()},
+        {key: "IMPLEMENTATION_COMMIT", value: head.trim()},
+        {key: "PATCH_PATH", value: patch_path.display()},
+        {key: "PATCH_SHA", value: patch_sha},
+        {key: "PATCH_STATE", value: patch_state},
+        {key: "WORKTREE_ACTION", value: worktree_action},
+      ]
+    ))?
     let result_row_template = fp"${factory_dir}/templates/SWE-RESULTS-ROW.md"
     let result_row_values: List[control.TemplateValue] = [
       {key: "TICKET_ID", value: ticket_id},
@@ -242,16 +282,18 @@ proc run_ticket_cycle(
       {key: "HANDBOOK_READ", value: if handbook_read_ok { "true" } else { "false" }},
       {key: "BRANCH", value: branch.trim()},
       {key: "COMMIT", value: head.trim()},
+      {key: "PATCH", value: if patch_ok { patch_path.display() } else { "missing" }},
+      {key: "WORKTREE_ACTION", value: worktree_action},
       {key: "CLEAN", value: if clean { "true" } else { "false" }},
       {key: "STATE", value: state},
     ]
     result_rows = result_rows + control.fill_template(result_row_template.read_text()?, result_row_values)
-    if ticket_ok {
+    if final_ticket_ok {
       runtime.emit_event(event_template, run_dir, f"80-ticket-${ticket_id}-completed", ticket_id, "completed", 1, "xsh-swe", f"branch ${branch.trim()} at ${head.trim()}; north star and handbook read from session log")?
-      runtime.emit_event(event_template, run_dir, f"85-ticket-${ticket_id}-validated", ticket_id, "validated", 1, "controller", "report, branch, commit, and clean-worktree checks passed")?
-      runtime.emit_event(event_template, run_dir, f"90-ticket-${ticket_id}-ready", ticket_id, "ready-for-review", 1, "controller", "branch is pending user review")?
+      runtime.emit_event(event_template, run_dir, f"85-ticket-${ticket_id}-validated", ticket_id, "validated", 1, "controller", f"report, patch, branch, commit, and worktree checks passed; ${worktree_action}")?
+      runtime.emit_event(event_template, run_dir, f"90-ticket-${ticket_id}-ready", ticket_id, "ready-for-review", 1, "controller", "branch and portable patch are pending user review")?
     } else {
-      runtime.emit_event(event_template, run_dir, f"80-ticket-${ticket_id}-failed", ticket_id, "failed", 1, "controller", f"worker output validation failed for ${ticket_id}")?
+      runtime.emit_event(event_template, run_dir, f"80-ticket-${ticket_id}-failed", ticket_id, "failed", 1, "controller", f"worker output, patch, or worktree validation failed for ${ticket_id}")?
     }
   }
   let results_template = fp"${factory_dir}/templates/SWE-RESULTS.md"
@@ -277,7 +319,7 @@ proc run_ticket_cycle(
     runtime.emit_event(event_template, run_dir, "85-cycle-audited", "ticket-implementation",
       "failed", 1, "controller", "deterministic audit artifact written")?
   }
-  let result = if director_status.ok and cost_status.ok and all_tickets_ok and director_report_ok and audit_pass { "pass" } else { "fail" }
+  let result = if director_status.ok and cost_status.ok and all_tickets_ok and all_patches_ok and director_report_ok and audit_pass { "pass" } else { "fail" }
   let director_state = if fs.exists(fp"${run_dir}/workers/director/director/session.jsonl")? { "present" } else { "missing" }
   let cost_state = if cost_status.ok { "present" } else { "failed" }
   let swe_state = if all_tickets_ok { "ready-for-review" } else { "failed" }
@@ -290,6 +332,7 @@ proc run_ticket_cycle(
     {key: "XSH_COMMIT", value: xsh_commit.trim()},
     {key: "DIRECTOR_STATE", value: director_state},
     {key: "SWE_STATE", value: swe_state},
+    {key: "PATCH_STATE", value: if all_patches_ok { "present" } else { "partial-or-missing" }},
     {key: "COST_STATE", value: cost_state},
     {key: "DIRECTOR_REPORT_STATE", value: director_report_state},
     {key: "AUDIT_STATE", value: if audit_report_ok { "present" } else { "failed" }},

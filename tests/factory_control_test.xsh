@@ -165,6 +165,39 @@ proc test_reconcile_detects_a_merged_provenance_branch(ctx: TestContext) [fs, pr
   test.contains(ticket, "Implementation branch: `factory/reconcile-ticket/1`")?
 }
 
+proc test_reconcile_detects_a_patch_applied_branch(ctx: TestContext) [fs, process, error] {
+  let repo = test.temp_dir(ctx, name: "reconcile-patch-repo")?
+  let factory = test.temp_dir(ctx, name: "reconcile-patch-factory")?
+  let git = process.which("git")?
+  test.ok(run_git(git, ["git", "init", "-q", "-b", "main", repo.display()])?)?
+  test.ok(run_git(git, ["git", "-C", repo.display(), "config", "user.email", "factory@test"])?)?
+  test.ok(run_git(git, ["git", "-C", repo.display(), "config", "user.name", "Factory Test"])?)?
+  fs.write(fp"${repo}/README", "base\n")?
+  test.ok(run_git(git, ["git", "-C", repo.display(), "add", "README"])?)?
+  test.ok(run_git(git, ["git", "-C", repo.display(), "commit", "-qm", "base"])?)?
+  let branch = "factory/reconcile-patch/1"
+  test.ok(run_git(git, ["git", "-C", repo.display(), "checkout", "-q", "-b", branch])?)?
+  fs.write(fp"${repo}/README", "applied change\n")?
+  test.ok(run_git(git, ["git", "-C", repo.display(), "add", "README"])?)?
+  test.ok(run_git(git, ["git", "-C", repo.display(), "commit", "-qm", "implementation"])?)?
+  let implementation = run.text "git" "-C" $repo.display() "rev-parse" "HEAD" ?
+  test.ok(run_git(git, ["git", "-C", repo.display(), "checkout", "-q", "main"])?)?
+  fs.write(fp"${repo}/README", "applied change\n")?
+  test.ok(run_git(git, ["git", "-C", repo.display(), "add", "README"])?)?
+  test.ok(run_git(git, ["git", "-C", repo.display(), "commit", "-qm", "applied patch"])?)?
+  let head = run.text "git" "-C" $repo.display() "rev-parse" "HEAD" ?
+
+  fs.mkdir(fp"${factory}/tickets")?
+  fs.mkdir(fp"${factory}/templates")?
+  fs.copy(fp"${fs.cwd()?}/templates/TICKET.md", fp"${factory}/templates/TICKET.md", overwrite: true)?
+  fs.write(fp"${factory}/tickets/reconcile-patch.md", f"# Ticket\n\n## Status\n\nApproved.\n\n## Merge record\n\n- Implementation branch: `${branch}`\n- Implementation commit: `${implementation.trim()}`\n")?
+  let merged = runtime.reconcile_tickets(factory, repo, head.trim())?
+  test.eq(merged.len(), 1, "a patch-applied branch should reconcile as merged")?
+  let ticket = fs.read_text(fp"${factory}/tickets/reconcile-patch.md")?
+  test.ok(control.ticket_is_merged(ticket))?
+  test.contains(ticket, f"Implementation branch: `${branch}`")?
+}
+
 proc test_lifecycle_rejects_improvised_transitions() [error] {
   test.ok(control.transition_allowed("created", "admitted"))?
   test.ok(control.transition_allowed("created", "started"))?

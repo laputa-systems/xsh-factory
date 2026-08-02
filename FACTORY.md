@@ -16,7 +16,7 @@ director
 run-organization.xsh
   ├─ primary: run-ticket.xsh or run-eval.xsh
   ├─ candidate re-evaluation: run-eval.xsh, only after a ticket passes
-  └─ eval-design: run-design.xsh, exactly one proposal
+  └─ eval-design: run-design.xsh, when one proposal is requested
 ```
 
 The `eval-executor` is a harness, not a Pi employee. Its Pi employee is the
@@ -108,11 +108,11 @@ XSH_MODULE_PATH=. xsh run.xsh cycle-organization.md
 
 `run.xsh` creates one parent `runs/run-<id>/` and dispatches the phases. The
 organization controller reconciles product branches, admits at most one
-approved ticket, and starts the independent `eval-design` phase alongside the
-primary ticket or eval phase. Ticket implementation must finish before its
-linked candidate replay; the independent active eval remains a separate
-phase. When no ticket is admitted, that independent eval is the primary phase
-and design still overlaps it. Each child phase has its own run directory,
+approved ticket, and starts `eval-design` alongside the primary phase only when
+the request contains one proposal. Ticket implementation must finish before
+its linked candidate replay; the independent active eval remains a separate
+phase. When no ticket is admitted, that independent eval is the primary phase.
+Each child phase has its own run directory,
 provenance, audit, sessions, lock, and cost report; the parent also writes an
 aggregate cost report and `RUN.md`.
 
@@ -138,10 +138,14 @@ The controller admits only tickets whose checked-in status is `Approved.`;
 `Accepted.` remains a legacy-compatible status,
 creates one isolated XSH worktree per ticket, and asks the director to launch
 one `xsh-swe` worker per worktree. The branch is validated and left pending
-user review; the controller never merges it. On a later reconciliation, an
-implementation commit proven to be an ancestor of XSH `HEAD` changes that
-same ticket's status to `Merged.` and fills its merge-record fields. Each run
-records stage callbacks as Markdown files under `events/`.
+user review; the controller never merges or applies it. The validated phase
+writes a portable patch under `patches/`; standalone ticket cycles remove the
+clean temporary worktree immediately, while organization cycles retain it
+through candidate replay and remove it afterward. On a later reconciliation,
+an implementation commit proven to be an ancestor of XSH `HEAD`, or an
+equivalent patch applied on XSH `HEAD`, changes that same ticket's status to
+`Merged.` and fills its merge-record fields. Each run records stage callbacks
+as Markdown files under `events/`.
 
 The controller-owned eval pipeline is:
 

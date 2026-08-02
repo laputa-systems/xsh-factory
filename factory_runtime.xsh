@@ -105,6 +105,39 @@ export proc stop_cycle_budget_watch(run_dir: Path) [fs, error] -> Result[Unit] {
   return Ok()
 }
 
+## Captures the committed SWE change as a portable patch before any worktree cleanup.
+export proc write_swe_patch(
+  worktree: Path,
+  base_commit: Str,
+  head_commit: Str,
+  patch_path: Path,
+  stderr_path: Path,
+) [fs, process, error] -> Result[Bool] {
+  let status = process.run(process.command_argv(
+    "git",
+    ["git", "-C", worktree.display(), "diff", "--binary", "--no-ext-diff",
+      f"${base_commit}..${head_commit}"],
+    stdout: patch_path,
+    stderr: stderr_path,
+  ))?
+  if ! status.ok or ! fs.exists(patch_path)? {
+    return false
+  }
+  return fs.metadata(patch_path)?.size > 0
+}
+
+## Removes a clean temporary worktree while leaving its review branch intact.
+export proc remove_clean_worktree(xsh_repo: Path, worktree: Path) [fs, process, error] -> Result[Bool] {
+  if ! fs.exists(worktree)? {
+    return true
+  }
+  let status = process.run(process.command_argv(
+    "git",
+    ["git", "-C", xsh_repo.display(), "worktree", "remove", worktree.display()],
+  ))?
+  return status.ok and ! fs.exists(worktree)?
+}
+
 ## Writes one event and advances its subject state atomically.
 export proc emit_event(
   template: Path,
@@ -263,6 +296,23 @@ proc commit_is_ancestor(xsh_repo: Path, commit: Str) [process, error] -> Result[
   return status.ok
 }
 
+proc commit_is_patch_applied(xsh_repo: Path, branch: Str, commit: Str) [process, error] -> Result[Bool] {
+  if branch == "" or commit == "" {
+    return false
+  }
+  let cherry = run.text "git" "-C" $xsh_repo.display() "cherry" "-v" "HEAD" $branch ?
+  for line in cherry.lines() {
+    if line.starts_with(f"- ${commit} ") {
+      return true
+    }
+  }
+  return false
+}
+
+proc commit_is_merged(xsh_repo: Path, branch: Str, commit: Str) [process, error] -> Result[Bool] {
+  return commit_is_ancestor(xsh_repo, commit)? or commit_is_patch_applied(xsh_repo, branch, commit)?
+}
+
 proc find_merged_implementation(
   factory_dir: Path,
   xsh_repo: Path,
@@ -286,7 +336,7 @@ proc find_merged_implementation(
       }
       let branch = control.report_field(report_text, "Branch")
       let commit = control.report_field(report_text, "Commit")
-      if branch != "" and commit != "" and commit_is_ancestor(xsh_repo, commit)? {
+      if branch != "" and commit != "" and commit_is_merged(xsh_repo, branch, commit)? {
         return {
           merged: true,
           ticket_id: ticket_id,
@@ -307,7 +357,7 @@ proc find_merged_implementation(
       continue
     }
     let commit = run.text "git" "-C" $xsh_repo.display() "rev-parse" $branch ?
-    if commit_is_ancestor(xsh_repo, commit.trim())? {
+    if commit_is_merged(xsh_repo, branch, commit.trim())? {
       return {
         merged: true,
         ticket_id: ticket_id,

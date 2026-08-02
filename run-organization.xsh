@@ -375,7 +375,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     auth_file, pi_command, docker, target, platform,
     [f"FACTORY_MODE=${primary_mode}", f"FACTORY_EVAL_ID=${selected_eval}",
       "FACTORY_REEVAL_TICKET=not-reevaluation", "FACTORY_REEVAL_WORKTREE=not-reevaluation",
-      "FACTORY_SKIP_TICKET_RECONCILE=false"],
+      "FACTORY_SKIP_TICKET_RECONCILE=false", "FACTORY_RETAIN_WORKTREE=true"],
     fp"${run_dir}/primary.stdout", fp"${run_dir}/primary.stderr"
   )?
   let primary_report_ok = phase_run_pass(primary_phase, if selected_ticket == "" { "RUN.md" } else { "RUN.md" })?
@@ -389,6 +389,13 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
 
   var reeval_state = if selected_ticket == "" { "not-applicable" } else { "skipped" }
   var reeval_report_state = if selected_ticket == "" { "not-applicable" } else { "not-run" }
+  var patch_artifact = if selected_ticket == "" {
+    "not-applicable"
+  } else {
+    fp"${primary_phase}/patches/${selected_ticket}.diff".display()
+  }
+  var worktree_cleanup_state = if selected_ticket == "" { "not-applicable" } else { "retained-until-reevaluation" }
+  var worktree_cleanup_ok = selected_ticket == ""
   if selected_ticket != "" and primary_pass {
     runtime.emit_event(event_template, run_dir, "10-reeval-started", f"${selected_ticket}-reevaluation", "started", 1, "organization", "validated SWE worktree is available")?
     let reeval_ok = run_child(
@@ -409,6 +416,26 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
       if reeval_pass { "completed" } else { "failed" }, 1, "controller", "candidate re-evaluation returned")?
     if reeval_pass {
       runtime.emit_event(event_template, run_dir, "85-reeval-validated", f"${selected_ticket}-reevaluation", "validated", 1, "controller", "candidate re-evaluation RUN.md passed")?
+    }
+  }
+
+  if selected_ticket != "" {
+    let patch_ready = primary_pass and fs.exists(Path(patch_artifact))?
+    if patch_ready and reeval_state == "pass" {
+      worktree_cleanup_ok = runtime.remove_clean_worktree(
+        xsh_repo, Path(candidate_worktree)
+      )?
+      worktree_cleanup_state = if worktree_cleanup_ok {
+        "removed-after-reevaluation"
+      } else {
+        "cleanup-failed"
+      }
+    } else if ! primary_pass {
+      worktree_cleanup_state = "retained-after-primary-failure"
+    } else if reeval_state != "pass" {
+      worktree_cleanup_state = "retained-after-reevaluation-failure"
+    } else {
+      worktree_cleanup_state = "retained-after-patch-failure"
     }
   }
 
@@ -460,7 +487,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   let reeval_pass_for_result = if selected_ticket == "" { true } else { reeval_state == "pass" }
   let independent_eval_pass_for_result = if selected_ticket == "" { true } else { independent_eval_state == "pass" }
   let design_pass_for_result = design_state == "pass" or design_state == "not-requested"
-  let result = if primary_pass and reeval_pass_for_result and independent_eval_pass_for_result and design_pass_for_result and cost_status.ok { "pass" } else { "fail" }
+  let result = if primary_pass and reeval_pass_for_result and independent_eval_pass_for_result and design_pass_for_result and worktree_cleanup_ok and cost_status.ok { "pass" } else { "fail" }
   let run_template = fp"${factory_dir}/templates/RUN-ORGANIZATION.md"
   let run_values: List[control.TemplateValue] = [
     {key: "RUN_ID", value: stamp.float().format(precision: 0)},
@@ -483,6 +510,8 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     {key: "INDEPENDENT_EVAL_REPORT_STATE", value: independent_eval_report_state},
     {key: "DESIGN_REPORT_STATE", value: design_report_state},
     {key: "COST_STATE", value: cost_state},
+    {key: "PATCH_ARTIFACT", value: patch_artifact},
+    {key: "WORKTREE_STATE", value: worktree_cleanup_state},
   ]
   fs.write(fp"${run_dir}/RUN.md", control.fill_template(run_template.read_text()?, run_values))?
   runtime.emit_event(event_template, run_dir, if result == "pass" { "90-cycle-completed" } else { "90-cycle-failed" },

@@ -2,6 +2,7 @@
 ##! harmless subprocesses; they never launch Pi.
 
 use factory_control as control
+use factory_runtime as runtime
 
 proc test_session_report_uses_synthetic_pi_session(ctx: TestContext) [fs, process, error] {
   let root = test.temp_dir(ctx, name: "session-report")?
@@ -72,6 +73,46 @@ proc test_eval_image_stages_shared_factory_modules(ctx: TestContext) [fs, error]
   test.contains(controller, "stage_control")?
   test.contains(controller, "stage_runtime")?
   let _ = ctx
+}
+
+proc test_swe_patch_artifact_survives_worktree_cleanup(ctx: TestContext) [fs, process, error] {
+  let root = test.temp_dir(ctx, name: "swe-patch-cleanup")?
+  let product = fp"${root}/xsh"
+  let worktree = fp"${root}/worktree"
+  let patch_file = fp"${root}/patches/task.diff"
+  let patch_stderr = fp"${root}/patches/task.stderr"
+  fs.mkdir(fp"${root}/patches")?
+  fs.mkdir(product)?
+  let init = process.run(process.command_argv("git", ["git", "-C", product.display(), "init", "-b", "main"]))?
+  test.ok(init.ok, "fixture product repository should initialize")?
+  for setting in [["user.email", "factory@test.invalid"], ["user.name", "Factory Test"]] {
+    let configured = process.run(process.command_argv("git", ["git", "-C", product.display(), "config", setting[0], setting[1]]))?
+    test.ok(configured.ok, "fixture repository should have an author")?
+  }
+  fs.write(fp"${product}/README", "base\n")?
+  let base_commit_status = process.run(process.command_argv("git", ["git", "-C", product.display(), "add", "README"]))?
+  test.ok(base_commit_status.ok)?
+  let base_commit_write = process.run(process.command_argv("git", ["git", "-C", product.display(), "commit", "-m", "base"]))?
+  test.ok(base_commit_write.ok)?
+  let base = run.text "git" "-C" $product.display() "rev-parse" "HEAD" ?
+  let branch = "factory/test-patch"
+  let add_worktree = process.run(process.command_argv(
+    "git", ["git", "-C", product.display(), "worktree", "add", "-b", branch, worktree.display(), base.trim()],
+  ))?
+  test.ok(add_worktree.ok, "fixture SWE worktree should initialize")?
+  fs.write(fp"${worktree}/README", "base\nchanged\n")?
+  let add_change = process.run(process.command_argv("git", ["git", "-C", worktree.display(), "add", "README"]))?
+  test.ok(add_change.ok)?
+  let commit_change = process.run(process.command_argv("git", ["git", "-C", worktree.display(), "commit", "-m", "change"]))?
+  test.ok(commit_change.ok)?
+  let head = run.text "git" "-C" $worktree.display() "rev-parse" "HEAD" ?
+  let patch_ok = runtime.write_swe_patch(worktree, base.trim(), head.trim(), patch_file, patch_stderr)?
+  test.ok(patch_ok, "validated SWE output should produce a non-empty patch")?
+  test.contains(fs.read_text(patch_file)?, "+changed")?
+  test.ok(runtime.remove_clean_worktree(product, worktree)?, "clean SWE worktree should be removable")?
+  test.ok(! fs.exists(worktree)?, "worktree contents should be removed")?
+  let branches = run.text "git" "-C" $product.display() "branch" "--list" $branch ?
+  test.contains(branches, branch, "review branch must survive worktree cleanup")?
 }
 
 proc test_run_dispatcher_fails_preflight_before_agent_launch(ctx: TestContext) [fs, process, env, error] {
@@ -785,4 +826,86 @@ proc test_cleanup_run_can_leave_the_handling_controller_alive(ctx: TestContext) 
   let kill_status = process.kill(controller.pid, signal: "TERM")
   let controller_status = wait controller?
   test.ok(! controller_status.ok, "test controller should be terminated explicitly")?
+}
+
+proc test_clean_factory_removes_runs_and_dist_but_keeps_branches(ctx: TestContext) [fs, process, env, error] {
+  let root = test.temp_dir(ctx, name: "clean-factory")?
+  let factory = fs.cwd()?
+  let product = fp"${root}/xsh"
+  let run_dir = fp"${root}/runs/run-1"
+  let worktrees = fp"${run_dir}/worktrees"
+  let worktree = fp"${worktrees}/task"
+  fs.mkdir(product)?
+  fs.mkdir(worktrees)?
+  let init = process.run(process.command_argv("git", ["git", "-C", product.display(), "init", "-b", "main"]))?
+  test.ok(init.ok)?
+  for setting in [["user.email", "factory@test.invalid"], ["user.name", "Factory Test"]] {
+    let configured = process.run(process.command_argv("git", ["git", "-C", product.display(), "config", setting[0], setting[1]]))?
+    test.ok(configured.ok)?
+  }
+  fs.write(fp"${product}/README", "base\n")?
+  test.ok((process.run(process.command_argv("git", ["git", "-C", product.display(), "add", "README"]))?).ok)?
+  test.ok((process.run(process.command_argv("git", ["git", "-C", product.display(), "commit", "-m", "base"]))?).ok)?
+  let base = run.text "git" "-C" $product.display() "rev-parse" "HEAD" ?
+  let branch = "factory/clean-test"
+  let add_worktree = process.run(process.command_argv(
+    "git", ["git", "-C", product.display(), "worktree", "add", "-b", branch, worktree.display(), base.trim()],
+  ))?
+  test.ok(add_worktree.ok)?
+  fs.write(fp"${worktree}/README", "temporary\n")?
+  test.ok((process.run(process.command_argv("git", ["git", "-C", worktree.display(), "add", "README"]))?).ok)?
+  test.ok((process.run(process.command_argv("git", ["git", "-C", worktree.display(), "commit", "-m", "temporary"]))?).ok)?
+  fs.mkdir(fp"${root}/evals")?
+  fs.mkdir(fp"${root}/evals/task-tags")?
+  fs.mkdir(fp"${root}/evals/.dist")?
+  fs.mkdir(fp"${root}/evals/task-tags/.dist")?
+  fs.write(fp"${root}/evals/.dist/xsh", "staged")?
+  fs.write(fp"${root}/evals/task-tags/.dist/xsht", "staged")?
+  let tool = fp"${factory}/tools/clean-factory.xsh"
+  let xsh = process.which("xsh")?
+  let status = process.run(process.command_argv(
+    xsh,
+    [xsh.display(), tool.display()],
+    cwd: root,
+    env: {
+      PATH: env.get("PATH")?,
+      FACTORY_DIR: root.display(),
+      FACTORY_XSH_REPO: product.display(),
+      XSH_MODULE_PATH: factory.display(),
+    },
+  ))?
+  test.ok(status.ok, "clean factory command should complete")?
+  test.ok(! fs.exists(run_dir)?, "clean should remove generated run state")?
+  test.ok(! fs.exists(fp"${root}/evals/.dist")?, "clean should remove shared build staging")?
+  test.ok(! fs.exists(fp"${root}/evals/task-tags/.dist")?, "clean should remove eval build staging")?
+  test.ok(! fs.exists(worktree)?, "clean should remove product worktree contents")?
+  let branches = run.text "git" "-C" $product.display() "branch" "--list" $branch ?
+  test.contains(branches, branch, "clean should retain the review branch")?
+}
+
+proc test_clean_factory_refuses_active_state(ctx: TestContext) [fs, process, env, error] {
+  let root = test.temp_dir(ctx, name: "clean-factory-active")?
+  let factory = fs.cwd()?
+  let product = fp"${root}/xsh"
+  fs.mkdir(product)?
+  let init = process.run(process.command_argv("git", ["git", "-C", product.display(), "init", "-b", "main"]))?
+  test.ok(init.ok)?
+  fs.mkdir(fp"${root}/runs")?
+  fs.mkdir(fp"${root}/runs/run-1")?
+  fs.write(fp"${root}/runs/ACTIVE", f"${root}/runs/run-1\n")?
+  let tool = fp"${factory}/tools/clean-factory.xsh"
+  let xsh = process.which("xsh")?
+  let status = process.run(process.command_argv(
+    xsh,
+    [xsh.display(), tool.display()],
+    cwd: root,
+    env: {
+      PATH: env.get("PATH")?,
+      FACTORY_DIR: root.display(),
+      FACTORY_XSH_REPO: product.display(),
+      XSH_MODULE_PATH: factory.display(),
+    },
+  ))?
+  test.ok(! status.ok, "clean must refuse an active factory run")?
+  test.ok(fs.exists(fp"${root}/runs/run-1")?, "active clean refusal must preserve state")?
 }

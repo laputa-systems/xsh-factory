@@ -85,12 +85,39 @@ XSH_MODULE_PATH=. xsh run.xsh cycle-ticket-task-tags-001.md
 ```
 
 The controller creates one worktree and one exact assignment per ticket. It
-never merges the product branch. After the user merges the branch into XSH,
+never merges or applies the product branch. After the user applies the patch
+or merges the branch into XSH,
 the next reconciliation changes that ticket's `## Status` from `Approved.` (or
 legacy `Accepted.`) to
 `Merged.` and records the implementation branch, commit, source run, and
 detected XSH commit in the same ticket file. Do not run the implementation
 cycle again for a merged ticket; run its linked eval cycle for acceptance.
+
+Every validated ticket cycle also writes a portable patch under the run's
+`patches/` directory and removes its temporary worktree once the linked
+re-evaluation has passed. The review branch remains available, but applying
+the patch is the compact review path:
+
+```sh
+git -C ../xsh apply --check "$PWD/runs/run-<id>/patches/<ticket>.diff"
+git -C ../xsh apply "$PWD/runs/run-<id>/patches/<ticket>.diff"
+git -C ../xsh commit -am "Apply <ticket> factory patch"
+XSH_MODULE_PATH=. xsh reconcile.xsh
+```
+
+Reconciliation recognizes either the original implementation commit or an
+equivalent patch applied on XSH main. Inspect and approve the patch before
+applying it; the factory never mutates XSH main automatically.
+
+Clear generated factory state after inspecting the evidence:
+
+```sh
+make clean
+```
+
+This refuses to run during an active cycle, removes `runs/` evidence, local
+eval build staging, and factory worktree contents, and retains product
+branches, tickets, evals, and the shared handbook.
 
 Inspect the latest run:
 

@@ -7,8 +7,8 @@
 ## North-star status
 
 This bounded cycle connects approved ticket implementation, pre-merge
-re-evaluation, and one eval-design proposal without allowing a worker to select
-its own work.
+re-evaluation, and an optional eval-design proposal without allowing a worker
+to select its own work.
 
 ## Admission
 
@@ -31,6 +31,8 @@ its own work.
 - Re-evaluation phase report: `{{REEVAL_REPORT_STATE}}`
 - Independent eval phase report: `{{INDEPENDENT_EVAL_REPORT_STATE}}`
 - Eval-design phase report: `{{DESIGN_REPORT_STATE}}`
+- Patch artifact: `{{PATCH_ARTIFACT}}`
+- Worktree lifecycle: `{{WORKTREE_STATE}}`
 - Aggregate cost report: `{{COST_STATE}}`
 
 Each phase retains its own `RUN.md`, `AUDIT.md`, provenance, session reports,
