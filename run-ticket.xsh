@@ -247,7 +247,19 @@ proc run_ticket_cycle(
   ))?
   let director_report = fp"${run_dir}/DIRECTOR-REPORT.md"
   let director_report_ok = fs.exists(director_report)? and control.director_report_contract_ok(fs.read_text(director_report)?)
-  let result = if director_status.ok and cost_status.ok and all_tickets_ok and director_report_ok { "pass" } else { "fail" }
+  let audit_status = process.run(process.command_argv(
+    xsh_path,
+    [xsh_path.display(), fp"${factory_dir}/audit-run.xsh", "--", run_dir.display(), "ticket-implementation"],
+    cwd: factory_dir,
+  ))?
+  let audit_file = fp"${run_dir}/AUDIT.md"
+  let audit_report_ok = audit_status.ok and fs.exists(audit_file)? and
+    control.audit_report_contract_ok(fs.read_text(audit_file)?)
+  let audit_result = if audit_report_ok { control.audit_result(fs.read_text(audit_file)?) } else { "missing" }
+  let audit_pass = audit_report_ok and audit_result == "pass"
+  runtime.emit_event(event_template, run_dir, "85-cycle-audited", "ticket-implementation",
+    if audit_pass { "validated" } else { "failed" }, 1, "controller", "deterministic audit artifact written")?
+  let result = if director_status.ok and cost_status.ok and all_tickets_ok and director_report_ok and audit_pass { "pass" } else { "fail" }
   let director_state = if fs.exists(fp"${run_dir}/workers/director/director/session.jsonl")? { "present" } else { "missing" }
   let cost_state = if cost_status.ok { "present" } else { "failed" }
   let swe_state = if all_tickets_ok { "ready-for-review" } else { "failed" }
@@ -262,6 +274,8 @@ proc run_ticket_cycle(
     {key: "SWE_STATE", value: swe_state},
     {key: "COST_STATE", value: cost_state},
     {key: "DIRECTOR_REPORT_STATE", value: director_report_state},
+    {key: "AUDIT_STATE", value: if audit_report_ok { "present" } else { "failed" }},
+    {key: "AUDIT_RESULT", value: audit_result},
   ]
   let run_report = control.fill_template(run_template.read_text()?, run_values)
   fs.write(fp"${run_dir}/RUN.md", run_report)?

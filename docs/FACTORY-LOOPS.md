@@ -109,6 +109,15 @@ eval designer row appears only when the request explicitly sets
 `New eval proposals` to one; newly created tickets are never sent to SWE in
 the same cycle.
 
+After child completion, `audit-run.xsh` compiles the run into one
+`AUDIT.md`. It reads the canonical session JSONL, derived worker reports,
+evaluator `run.json` manifests, controller reports, cost report, and
+provenance. Worker effort is shown separately from each evaluator's protocol,
+correctness, restriction, and timing states. The audit is deterministic and
+does not promote a handbook candidate, accept a ticket, or reinterpret a
+qualitative manager decision. It gives later agents one concise index while
+preserving the original evidence files.
+
 ## Layer outputs
 
 | Layer | Input | Durable output |
@@ -117,7 +126,7 @@ the same cycle.
 | eval-manager | executor trials and Pi metrics | shared-handbook candidate, manager report, evidence-backed tickets |
 | xsh-swe | one controller-assigned ticket snapshot and worktree | branch/worktree, tests, implementation, completion report |
 | eval-designer | factory mission and practical task idea | proposed eval contract, scaffolding, dry-run evidence |
-| director | approved cycle request | child reports, dispatch status, north-star impact, run summary and cost report |
+| director | approved cycle request | child reports, dispatch status, north-star impact, run summary, cost report, and deterministic audit |
 | user | proposed evals and completed branches | approval or rejection, merge or revert decision |
 
 The system is Markdown-first at the organizational layer. JSON is retained as

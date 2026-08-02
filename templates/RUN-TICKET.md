@@ -26,7 +26,8 @@ branch remains pending user review.
 - SWE dispatch: `{{SWE_STATE}}`
 - Cost report: `{{COST_STATE}}`
 - Director report: `{{DIRECTOR_REPORT_STATE}}`
+- Deterministic audit: `{{AUDIT_STATE}}` (`{{AUDIT_RESULT}}`)
 
 All product worktrees remain under `worktrees/` for user review. See
 `TICKET-DISPATCH.md`, `SWE-RESULTS.md`, `DIRECTOR-REPORT.md`, `PROVENANCE.md`,
-and `COST.md`.
+`COST.md`, and `AUDIT.md`.

@@ -29,6 +29,7 @@ evidence needed for durable handbook or product decisions. See
 - Trial 2 executor: `{{TRIAL2_STATE}}`
 - Handbook lineage: `{{LINEAGE_STATE}}`
 - Cost report: `{{COST_STATE}}`
+- Deterministic audit: `{{AUDIT_STATE}}` (`{{AUDIT_RESULT}}`)
 
 ## Handbook validation
 
@@ -42,5 +43,5 @@ evidence needed for durable handbook or product decisions. See
 
 All Pi sessions, extracted thinking transcripts, worker reports, evaluator
 manifests, container logs, and artifacts are under `workers/`. See
-`PROVENANCE.md`, `LINEAGE.md`, `DISPATCH.md`, and `COST.md` for the run inputs
-and accounting.
+`PROVENANCE.md`, `LINEAGE.md`, `DISPATCH.md`, `COST.md`, and `AUDIT.md` for the
+run inputs, normalized outcomes, and accounting.

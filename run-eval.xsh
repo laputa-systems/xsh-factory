@@ -354,11 +354,6 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
       runtime.emit_event(event_template, run_dir, "80-designer-failed", "eval-designer", "failed", 1, "controller", "designer report is missing")?
     }
   }
-  let required = fs.exists(manager_session)? and fs.exists(trial1_report)? and
-    (trial_count == 1 or fs.exists(trial2_report)?) and
-    cost_status.ok and candidate_exists and lineage_ok and trial1_report_ok and trial2_report_ok and
-    director_report_ok and manager_report_ok and designer_output_ok
-  let result = if director_status.ok and required { "pass" } else { "fail" }
   let director_state = if fs.exists(fp"${run_dir}/workers/director/director/session.jsonl")? { "present" } else { "missing" }
   let manager_state = if fs.exists(manager_session)? { "present" } else { "missing" }
   let trial1_state = if trial1_report_ok { "pass" } else { "fail" }
@@ -372,6 +367,34 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   if new_eval_count == 1 and designer_output_ok {
     runtime.emit_event(event_template, run_dir, "85-designer-validated", "eval-designer", "validated", 1, "controller", "designer report contract passed")?
   }
+  let lineage_values: List[control.TemplateValue] = [
+    {key: "BASELINE_SHA", value: baseline_sha},
+    {key: "CANDIDATE_SHA", value: candidate_sha},
+    {key: "TRIAL1_SHA", value: trial1_sha},
+    {key: "TRIAL2_SHA", value: trial2_sha},
+    {key: "APPROVED_SNAPSHOT_UNCHANGED", value: if approved_snapshot_unchanged { "true" } else { "false" }},
+    {key: "CHECKED_IN_HANDBOOK_UNCHANGED", value: if checked_in_handbook_unchanged { "true" } else { "false" }},
+    {key: "LINEAGE_STATE", value: lineage_state},
+  ]
+  let lineage_template = fp"${factory_dir}/templates/LINEAGE.md"
+  fs.write(fp"${run_dir}/LINEAGE.md", control.fill_template(lineage_template.read_text()?, lineage_values))?
+  let audit_status = process.run(process.command_argv(
+    xsh_path,
+    [xsh_path.display(), fp"${factory_dir}/audit-run.xsh", "--", run_dir.display(), "eval"],
+    cwd: factory_dir,
+  ))?
+  let audit_file = fp"${run_dir}/AUDIT.md"
+  let audit_report_ok = audit_status.ok and fs.exists(audit_file)? and
+    control.audit_report_contract_ok(fs.read_text(audit_file)?)
+  let audit_result = if audit_report_ok { control.audit_result(fs.read_text(audit_file)?) } else { "missing" }
+  let audit_pass = audit_report_ok and audit_result == "pass"
+  let required = fs.exists(manager_session)? and fs.exists(trial1_report)? and
+    (trial_count == 1 or fs.exists(trial2_report)?) and
+    cost_status.ok and candidate_exists and lineage_ok and trial1_report_ok and trial2_report_ok and
+    director_report_ok and manager_report_ok and designer_output_ok and audit_pass
+  let result = if director_status.ok and required { "pass" } else { "fail" }
+  runtime.emit_event(event_template, run_dir, "85-cycle-audited", eval_id,
+    if audit_pass { "validated" } else { "failed" }, 1, "controller", "deterministic audit artifact written")?
   let run_template = fp"${factory_dir}/templates/RUN-EVAL.md"
   let run_values: List[control.TemplateValue] = [
     {key: "RUN_ID", value: stamp.float().format(precision: 0)},
@@ -389,6 +412,8 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     {key: "TRIAL2_STATE", value: trial2_state},
     {key: "LINEAGE_STATE", value: lineage_state},
     {key: "COST_STATE", value: cost_state},
+    {key: "AUDIT_STATE", value: if audit_report_ok { "present" } else { "failed" }},
+    {key: "AUDIT_RESULT", value: audit_result},
     {key: "APPROVED_SNAPSHOT_UNCHANGED", value: if approved_snapshot_unchanged { "true" } else { "false" }},
     {key: "CHECKED_IN_HANDBOOK_UNCHANGED", value: if checked_in_handbook_unchanged { "true" } else { "false" }},
     {key: "CANDIDATE_SHA", value: candidate_sha},
@@ -396,17 +421,6 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     {key: "TRIAL2_SHA", value: trial2_sha},
   ]
   let run_report = control.fill_template(run_template.read_text()?, run_values)
-  let lineage_values: List[control.TemplateValue] = [
-    {key: "BASELINE_SHA", value: baseline_sha},
-    {key: "CANDIDATE_SHA", value: candidate_sha},
-    {key: "TRIAL1_SHA", value: trial1_sha},
-    {key: "TRIAL2_SHA", value: trial2_sha},
-    {key: "APPROVED_SNAPSHOT_UNCHANGED", value: if approved_snapshot_unchanged { "true" } else { "false" }},
-    {key: "CHECKED_IN_HANDBOOK_UNCHANGED", value: if checked_in_handbook_unchanged { "true" } else { "false" }},
-    {key: "LINEAGE_STATE", value: lineage_state},
-  ]
-  let lineage_template = fp"${factory_dir}/templates/LINEAGE.md"
-  fs.write(fp"${run_dir}/LINEAGE.md", control.fill_template(lineage_template.read_text()?, lineage_values))?
   fs.write(fp"${run_dir}/RUN.md", run_report)?
   if result == "pass" {
     runtime.emit_event(event_template, run_dir, "90-cycle-completed", eval_id, "completed", 1, "controller", "run report and cost report written")?

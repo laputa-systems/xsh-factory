@@ -440,6 +440,27 @@ export pure designer_report_contract_ok(report: Str) -> Bool {
     "ready-for-review")
 }
 
+## Validates the deterministic run audit produced from raw evidence.
+export pure audit_report_contract_ok(report: Str) -> Bool {
+  let result = report_field(report, "Result")
+  return (result == "pass" or result == "fail") and
+    report_contract_ok(report,
+      ["Scope", "Integrity", "Evidence", "Findings"], "") and
+    ! report.contains("{{") and ! report.contains("}}")
+}
+
+## Reads the normalized result from a run audit.
+export pure audit_result(report: Str) -> Str {
+  return report_field(report, "Result")
+}
+
+## Validates the worker report generated from one canonical Pi session.
+export pure worker_report_contract_ok(report: Str) -> Bool {
+  return report_contract_ok(report,
+    ["Identity", "Session metrics", "Usage and cost", "Tool profile"], "") and
+    report.contains("The complete thinking transcript is in `thinking.md`")
+}
+
 ## Fills a checked-in Markdown template without embedding its contract in code.
 export pure fill_template(template: Str, values: List[TemplateValue]) -> Str {
   var rendered = template

@@ -58,11 +58,23 @@ Inspect the latest run:
 ls -td runs/run-* | head -1
 less runs/run-<id>/RUN.md
 less runs/run-<id>/COST.md
+less runs/run-<id>/AUDIT.md
+```
+
+Rebuild only the deterministic audit for an existing run:
+
+```sh
+XSH_MODULE_PATH=. xsh audit-run.xsh runs/run-<id> eval
 ```
 
 The important evidence includes `PROVENANCE.md`, `DISPATCH.md`, child
 `session.jsonl` files, `thinking.md`, worker reports, evaluator `run.json`,
-`MANAGER-REPORT.md`, and `DIRECTOR-REPORT.md`.
+`MANAGER-REPORT.md`, `DIRECTOR-REPORT.md`, and the deterministic audit.
+
+The audit is derived after child completion. It keeps worker effort metrics
+separate from evaluator protocol, correctness, restriction, and timing facts;
+the raw Pi JSONL and evaluator manifests remain canonical. A failed audit is
+an evidence or outcome failure, not a reason to discard the run directory.
 
 ## Safety and control
 
