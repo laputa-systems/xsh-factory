@@ -20,17 +20,26 @@ diagnostic evidence—not as goals independent of correctness and clarity. Open 
 ticket only for one strong reproducible observation. Use the fixed headings in
 `templates/TICKET.md`; link the exact eval, lineage, session, executor run, and
 XSH commit. A new ticket is open for the next cycle, not for same-cycle SWE
-dispatch.
+dispatch. Leave the `## Merge record` placeholders untouched; reconciliation
+fills them after the user merges the implementation branch.
 
 The handbook is a hypothesis until replay supports it. Prefer a short,
 general rule that removes repeated agent friction over a large collection of
 recipes. A product ticket must describe a general XSH ergonomics or correctness
 problem, not merely the easiest way to pass this eval.
 
+The controller reconciles ticket provenance before each cycle. When an
+approved ticket's recorded implementation commit is an ancestor of the XSH
+commit under test, it updates that ticket's `## Status` to `Merged.` and adds
+the merge fields in the same ticket. Treat it as a post-merge acceptance
+assignment, never as new SWE work. Record the decision and evidence in
+`## Post-merge decisions`.
+
 Finish `MANAGER-REPORT.md` with exactly these headings: `## Result`,
 `## Effort metrics`, `## Usage and cost`, `## Thinking evidence`,
 `## Timing evidence`, `## Observation classification`, `## Handbook decision`,
-`## Tickets created`, `## Next replay`, and `## North-star impact`. Include
+`## Tickets created`, `## Post-merge decisions`, `## Next replay`, and
+`## North-star impact`. Include
 turns, tool calls, errors, session span, token buckets, provider-reported
 reasoning when available, dollars, candidate/oracle timing, and the reason for
 each classification. A candidate is global: explain which future evals should

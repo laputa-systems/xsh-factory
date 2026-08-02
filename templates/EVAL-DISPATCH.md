@@ -19,4 +19,10 @@
    - Command:
      `FACTORY_PARENT_ID=director FACTORY_MODE=eval FACTORY_EVAL_ID={{EVAL_ID}} FACTORY_WORKER_ID={{EVAL_ID}} xsh "{{RUN_AGENT}}" -- eval-manager {{EVAL_ID}} "{{FACTORY_DIR}}/roles/eval-manager.md" "{{MANAGER_MESSAGE}}"`
 
-{{DESIGNER_ROW}}
+2. Optional role: `eval-designer`
+   - Dispatch status: `{{DESIGNER_STATUS}}`
+   - Worker ID: `{{DESIGNER_WORKER}}`
+   - System prompt: `{{FACTORY_DIR}}/roles/eval-designer.md`
+   - Message: `{{DESIGNER_MESSAGE}}`
+   - Command:
+     `FACTORY_PARENT_ID=director FACTORY_MODE=eval FACTORY_EVAL_ID= FACTORY_WORKER_ID={{DESIGNER_WORKER}} xsh "{{RUN_AGENT}}" -- eval-designer {{DESIGNER_WORKER}} "{{FACTORY_DIR}}/roles/eval-designer.md" "{{DESIGNER_MESSAGE}}"`

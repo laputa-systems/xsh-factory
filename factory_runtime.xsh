@@ -4,6 +4,25 @@ use factory_control as control
 
 error RuntimeError = InvalidTransition(subject: Str, current: Str, next: Str) : InvalidData
 
+type MergeEvidence = {
+  merged: Bool,
+  ticket_id: Str,
+  branch: Str,
+  implementation_commit: Str,
+  source_run: Str,
+  detected_xsh_commit: Str,
+}
+
+## One ticket whose implementation commit is already in XSH HEAD.
+export type MergedTicket = {
+  ticket_id: Str,
+  eval_id: Str,
+  branch: Str,
+  implementation_commit: Str,
+  source_run: Str,
+  detected_xsh_commit: Str,
+}
+
 ## Terminates all registered children of the active run.
 export proc cleanup_active_run() [fs, process, env, error] -> Result[Unit] {
   let configured_factory = env.get_or("FACTORY_DIR", "")?
@@ -64,6 +83,144 @@ export proc accepted_ticket(ticket_path: Path) [fs, error] -> Result[Bool] {
     return false
   }
   return control.ticket_is_accepted(fs.read_text(ticket_path)?)
+}
+
+proc commit_is_ancestor(xsh_repo: Path, commit: Str) [process, error] -> Result[Bool] {
+  if commit == "" {
+    return false
+  }
+  let status = process.run(process.command_argv(
+    "git",
+    ["git", "-C", xsh_repo.display(), "merge-base", "--is-ancestor", commit, "HEAD"],
+  ))?
+  return status.ok
+}
+
+proc find_merged_implementation(
+  factory_dir: Path,
+  xsh_repo: Path,
+  ticket_id: Str,
+  detected_xsh_commit: Str,
+) [fs, process, error] -> Result[MergeEvidence] {
+  let runs = fp"${factory_dir}/runs"
+  if fs.exists(runs)? {
+    for run_entry in fs.dirs(runs, gitignore: false, hidden: true)? {
+      let run_dir = run_entry.path
+      let summary = fp"${run_dir}/RUN.md"
+      let report = fp"${run_dir}/workers/xsh-swe/${ticket_id}/SWE-REPORT.md"
+      if ! fs.exists(summary)? or ! fs.exists(report)? {
+        continue
+      }
+      let summary_text = fs.read_text(summary)?
+      let report_text = fs.read_text(report)?
+      if ! summary_text.contains("## Result\n\npass") or
+        ! control.swe_report_contract_ok(report_text) {
+        continue
+      }
+      let branch = control.report_field(report_text, "Branch")
+      let commit = control.report_field(report_text, "Commit")
+      if branch != "" and commit != "" and commit_is_ancestor(xsh_repo, commit)? {
+        return {
+          merged: true,
+          ticket_id: ticket_id,
+          branch: branch,
+          implementation_commit: commit,
+          source_run: run_dir.display(),
+          detected_xsh_commit: detected_xsh_commit,
+        }
+      }
+    }
+  }
+
+  let branch_prefix = f"refs/heads/factory/${ticket_id}/"
+  let refs = run.text "git" "-C" $xsh_repo.display() "for-each-ref" "--format=%(refname:short)" $branch_prefix ?
+  for branch_line in refs.lines() {
+    let branch = branch_line.trim()
+    if branch == "" {
+      continue
+    }
+    let commit = run.text "git" "-C" $xsh_repo.display() "rev-parse" $branch ?
+    if commit_is_ancestor(xsh_repo, commit.trim())? {
+      return {
+        merged: true,
+        ticket_id: ticket_id,
+        branch: branch,
+        implementation_commit: commit.trim(),
+        source_run: "git branch provenance",
+        detected_xsh_commit: detected_xsh_commit,
+      }
+    }
+  }
+
+  return {
+    merged: false,
+    ticket_id: ticket_id,
+    branch: "",
+    implementation_commit: "",
+    source_run: "",
+    detected_xsh_commit: detected_xsh_commit,
+  }
+}
+
+## Reconciles accepted tickets against the current XSH HEAD.
+export proc reconcile_tickets(
+  factory_dir: Path,
+  xsh_repo: Path,
+  detected_xsh_commit: Str,
+) [fs, process, error] -> Result[List[MergedTicket]] {
+  let ticket_dir = fp"${factory_dir}/tickets"
+  var merged: List[MergedTicket] = []
+  if ! fs.exists(ticket_dir)? {
+    return merged
+  }
+  let ticket_template = fp"${factory_dir}/templates/TICKET.md"
+  let merge_section_template = control.section_text(ticket_template.read_text()?, "Merge record")
+  if merge_section_template == "" {
+    return Err(RuntimeError.InvalidTransition(
+      subject: "ticket-template",
+      current: "missing-merge-record",
+      next: "reconcile",
+    ))
+  }
+  for entry in fs.files(ticket_dir, gitignore: false, hidden: true)? {
+    if ! entry.name.ends_with(".md") {
+      continue
+    }
+    let ticket_id = entry.name.replace(".md", "")
+    let ticket_path = entry.path
+    let ticket_text = fs.read_text(ticket_path)?
+    let status = control.ticket_status(ticket_text)
+    if status != "Accepted." and status != "Merged." {
+      continue
+    }
+    let evidence = find_merged_implementation(
+      factory_dir, xsh_repo, ticket_id, detected_xsh_commit
+    )?
+    if ! evidence.merged {
+      continue
+    }
+    let values: List[control.TemplateValue] = [
+      {key: "IMPLEMENTATION_BRANCH", value: evidence.branch},
+      {key: "IMPLEMENTATION_COMMIT", value: evidence.implementation_commit},
+      {key: "DETECTED_XSH_COMMIT", value: detected_xsh_commit},
+      {key: "IMPLEMENTATION_RUN", value: evidence.source_run},
+    ]
+    let merge_record = control.fill_template(merge_section_template, values)
+    let updated_status = control.replace_ticket_status(ticket_text, "Merged.")
+    let updated_ticket = control.replace_ticket_section(updated_status, "Merge record", merge_record)
+    if updated_ticket != ticket_text {
+      fs.write(ticket_path, updated_ticket)?
+    }
+    merged = merged.push({
+      ticket_id: evidence.ticket_id,
+      eval_id: control.ticket_eval(ticket_text),
+      branch: evidence.branch,
+      implementation_commit: evidence.implementation_commit,
+      source_run: evidence.source_run,
+      detected_xsh_commit: evidence.detected_xsh_commit,
+    })
+  }
+  return merged
 }
 
 ## Proves that a Pi session called the read tool for one exact path.

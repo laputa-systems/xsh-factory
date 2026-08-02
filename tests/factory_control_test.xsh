@@ -40,6 +40,63 @@ proc test_admission_contracts() [error] {
   test.ok(! control.ticket_is_accepted("# Ticket\n\n## Status\n\nOpen.\n"))?
 }
 
+proc test_ticket_merge_fields_are_idempotent(ctx: TestContext) [fs, error] {
+  let accepted = "# Ticket\n\n## Status\n\nAccepted.\n\n## Source eval and manager\n\n- Eval: `task-tags`\n"
+  test.eq(control.ticket_status(accepted), "Accepted.")?
+  test.eq(control.ticket_eval(accepted), "task-tags")?
+  let template = fs.read_text(fp"${fs.cwd()?}/templates/TICKET.md")?
+  let merge_template = control.section_text(template, "Merge record")
+  let replacement = control.fill_template(merge_template, [
+    {key: "IMPLEMENTATION_BRANCH", value: "factory/task-tags-001/run"},
+    {key: "IMPLEMENTATION_COMMIT", value: "impl-sha"},
+    {key: "DETECTED_XSH_COMMIT", value: "merge-sha"},
+    {key: "IMPLEMENTATION_RUN", value: "/factory/runs/run"},
+  ])
+  var merged = control.replace_ticket_status(accepted, "Merged.")
+  merged = control.replace_ticket_section(merged, "Merge record", replacement)
+  test.ok(control.ticket_is_merged(merged))?
+  test.contains(merged, "Implementation commit: `impl-sha`")?
+  test.eq(control.replace_ticket_status(merged, "Merged."), merged)?
+  test.eq(control.replace_ticket_section(merged, "Merge record", replacement), merged)?
+  let _ = ctx
+}
+
+proc run_git(git: Path, args: List[Str]) [process, error] -> Result[Bool] {
+  let status = process.run(process.command_argv(git, args))?
+  return status.ok
+}
+
+proc test_reconcile_detects_a_merged_provenance_branch(ctx: TestContext) [fs, process, error] {
+  let repo = test.temp_dir(ctx, name: "reconcile-repo")?
+  let factory = test.temp_dir(ctx, name: "reconcile-factory")?
+  let git = process.which("git")?
+  test.ok(run_git(git, ["git", "init", "-q", repo.display()])?)?
+  test.ok(run_git(git, ["git", "-C", repo.display(), "config", "user.email", "factory@test"])?)?
+  test.ok(run_git(git, ["git", "-C", repo.display(), "config", "user.name", "Factory Test"])?)?
+  fs.write(fp"${repo}/README", "base\n")?
+  test.ok(run_git(git, ["git", "-C", repo.display(), "add", "README"])?)?
+  test.ok(run_git(git, ["git", "-C", repo.display(), "commit", "-qm", "base"])?)?
+  let base_branch = run.text "git" "-C" $repo.display() "branch" "--show-current" ?
+  let branch = "factory/reconcile-ticket/1"
+  test.ok(run_git(git, ["git", "-C", repo.display(), "checkout", "-q", "-b", branch])?)?
+  fs.write(fp"${repo}/README", "implementation\n")?
+  test.ok(run_git(git, ["git", "-C", repo.display(), "add", "README"])?)?
+  test.ok(run_git(git, ["git", "-C", repo.display(), "commit", "-qm", "implementation"])?)?
+  test.ok(run_git(git, ["git", "-C", repo.display(), "checkout", "-q", base_branch.trim()])?)?
+  test.ok(run_git(git, ["git", "-C", repo.display(), "merge", "-q", "--no-ff", branch, "-m", "merge"])?)?
+  let head = run.text "git" "-C" $repo.display() "rev-parse" "HEAD" ?
+
+  fs.mkdir(fp"${factory}/tickets")?
+  fs.mkdir(fp"${factory}/templates")?
+  fs.copy(fp"${fs.cwd()?}/templates/TICKET.md", fp"${factory}/templates/TICKET.md", overwrite: true)?
+  fs.write(fp"${factory}/tickets/reconcile-ticket.md", "# Ticket\n\n## Status\n\nAccepted.\n")?
+  let merged = runtime.reconcile_tickets(factory, repo, head.trim())?
+  test.eq(merged.len(), 1)?
+  let ticket = fs.read_text(fp"${factory}/tickets/reconcile-ticket.md")?
+  test.ok(control.ticket_is_merged(ticket))?
+  test.contains(ticket, "Implementation branch: `factory/reconcile-ticket/1`")?
+}
+
 proc test_lifecycle_rejects_improvised_transitions() [error] {
   test.ok(control.transition_allowed("created", "admitted"))?
   test.ok(control.transition_allowed("created", "started"))?
@@ -72,7 +129,7 @@ proc test_report_contract_checks_sections_only() [error] {
 
 proc test_role_report_contracts_are_fail_closed() [error] {
   let swe = "# SWE\n\n## Result\n\nready-for-review\n\n## Branch\n\nbranch\n\n## Commit\n\ncommit\n\n## Files changed\n\nfiles\n\n## Tests\n\npass\n\n## North-star impact\n\nimpact\n\n## Remaining risks\n\nNone.\n"
-  let manager = "## Effort metrics\n\n## Usage and cost\n\n## Thinking evidence\n\n## Timing evidence\n\n## Observation classification\n\n## Handbook decision\n\n## Tickets created\n\n## Next replay\n\n## North-star impact\n"
+  let manager = "## Effort metrics\n\n## Usage and cost\n\n## Thinking evidence\n\n## Timing evidence\n\n## Observation classification\n\n## Handbook decision\n\n## Tickets created\n\n## Post-merge decisions\n\n## Next replay\n\n## North-star impact\n"
   let director = "## Result\n\npass\n\n## Cycle\n\ncycle\n\n## Children\n\nchildren\n\n## Required-output status\n\nstatus\n\n## North-star impact\n\nimpact\n"
   let executor = "## Result\n\npass\n\n## Failure classification\n\npass\n\n## Trial\n\n1\n\n## Artifact\n\npresent\n\n## Evidence\n\npaths\n"
   let designer = "## Result\n\nready-for-review\n\n## Proposal\n\nproposal\n\n## Dry run\n\npass\n\n## North-star impact\n\nimpact\n\n## Known risks\n\nNone.\n\n## Review path\n\npath\n"

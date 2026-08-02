@@ -67,6 +67,8 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   fs.copy(fp"${factory_dir}/runtime/handbook.md", baseline_handbook, overwrite: true)?
 
   let xsh_commit = run.text "git" "-C" $xsh_repo.display() "rev-parse" "HEAD" ?
+  let merged_tickets = runtime.reconcile_tickets(factory_dir, xsh_repo, xsh_commit.trim())?
+  let build_id = f"${xsh_commit.trim()}-${stamp.float().format(precision: 0)}"
   let xsh_git_status = run.text "git" "-C" $xsh_repo.display() "status" "--porcelain" ?
   if xsh_git_status.trim() != "" {
     eprint "eval cycle requires a clean XSH worktree at admission"
@@ -75,19 +77,17 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   let dist_dir = fp"${xsh_repo}/target/docker-${target}-release/${target}/dist"
   let dist_xsh = fp"${dist_dir}/xsh"
   let dist_xsht = fp"${dist_dir}/xsht"
-  if ! fs.exists(dist_xsh)? or ! fs.exists(dist_xsht)? {
-    let build = process.run(
-      process.command_argv(
-        "make",
-        ["make", "-C", xsh_repo.display(), "dist-Linux-docker", f"TARGET=${target}"],
-        stdout: fp"${run_dir}/xsh-build.stdout",
-        stderr: fp"${run_dir}/xsh-build.stderr",
-      ),
-    )?
-    if ! build.ok {
-      eprint "unable to build the local XSH distribution"
-      abort(build.exit_code() ?? 1)
-    }
+  let build = process.run(
+    process.command_argv(
+      "make",
+      ["make", "-C", xsh_repo.display(), "dist-Linux-docker", f"TARGET=${target}"],
+      stdout: fp"${run_dir}/xsh-build.stdout",
+      stderr: fp"${run_dir}/xsh-build.stderr",
+    ),
+  )?
+  if ! build.ok {
+    eprint "unable to build the local XSH distribution"
+    abort(build.exit_code() ?? 1)
   }
   let staged_dir = fp"${factory_dir}/evals/.dist"
   fs.mkdir(staged_dir)?
@@ -104,7 +104,8 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   let base_image = env.get_or("FACTORY_BASE_IMAGE", "xsh-factory-base:latest")?
   let base_status = process.run(process.command_argv(
     docker,
-    [docker, "build", "--platform", platform, "-t", base_image,
+    [docker, "build", "--pull", "--no-cache", "--platform", platform,
+      "--build-arg", f"FACTORY_BUILD_ID=${build_id}", "-t", base_image,
       "-f", fp"${factory_dir}/evals/Dockerfile.base".display(), fp"${factory_dir}/evals".display()],
     stdout: fp"${run_dir}/base-image-build.stdout",
     stderr: fp"${run_dir}/base-image-build.stderr",
@@ -122,7 +123,9 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   } else {
     process.run(process.command_argv(
       docker,
-      [docker, "build", "--platform", platform, "--build-arg", f"BASE_IMAGE=${base_image}", "-t", image,
+      [docker, "build", "--pull", "--no-cache", "--platform", platform,
+        "--build-arg", f"BASE_IMAGE=${base_image}",
+        "--build-arg", f"FACTORY_BUILD_ID=${build_id}", "-t", image,
         "-f", eval_dockerfile.display(), eval_dir.display()],
       stdout: fp"${run_dir}/image-build.stdout",
       stderr: fp"${run_dir}/image-build.stderr",
@@ -138,6 +141,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     {key: "RUN_ID", value: run_dir.display()},
     {key: "MODE", value: "eval"},
     {key: "REQUEST", value: "CYCLE-REQUEST.md"},
+    {key: "BUILD_ID", value: build_id},
     {key: "XSH_COMMIT", value: xsh_commit.trim()},
     {key: "IMAGE", value: image},
     {key: "IMAGE_ID", value: image_id.trim()},
@@ -152,18 +156,27 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   let run_agent = fp"${factory_dir}/run-agent.xsh"
   let messages_dir = fp"${run_dir}/messages"
   fs.mkdir(messages_dir)?
+  var merged_ticket_paths = "none"
+  for ticket in merged_tickets {
+    if ticket.eval_id != eval_id {
+      continue
+    }
+    let ticket_path = fp"${factory_dir}/tickets/${ticket.ticket_id}.md"
+    merged_ticket_paths = if merged_ticket_paths == "none" {
+      ticket_path.display()
+    } else {
+      merged_ticket_paths + ", " + ticket_path.display()
+    }
+  }
   if new_eval_count > 0 {
     fs.mkdir(fp"${run_dir}/proposals")?
   }
 
-  let trial_template = if trial_count == 1 {
-    fp"${factory_dir}/templates/EVAL-TRIAL-ONE.md"
-  } else {
-    fp"${factory_dir}/templates/EVAL-TRIAL-TWO.md"
-  }
+  let trial_template = fp"${factory_dir}/templates/EVAL-TRIAL.md"
   let trial_values: List[control.TemplateValue] = [
     {key: "EVAL_ID", value: eval_id},
     {key: "EVAL_DIR", value: eval_dir.display()},
+    {key: "TRIAL_COUNT", value: trial_count.float().format(precision: 0)},
   ]
   let trial_instructions = control.fill_template(trial_template.read_text()?, trial_values)
 
@@ -176,12 +189,13 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     {key: "RUN_DIR", value: run_dir.display()},
     {key: "TRIAL_COUNT", value: trial_count.float().format(precision: 0)},
     {key: "TRIAL_INSTRUCTIONS", value: trial_instructions},
+    {key: "MERGED_TICKET_PATHS", value: merged_ticket_paths},
   ]
   fs.write(manager_message, control.fill_template(manager_template.read_text()?, manager_values))?
 
   var designer_message = p""
   let designer_worker = "proposal-1"
-  var designer_row = ""
+  let designer_status = if new_eval_count == 1 { "dispatched" } else { "not-requested" }
   if new_eval_count == 1 {
     designer_message = fp"${messages_dir}/eval-designer-${designer_worker}.md"
     let designer_template = fp"${factory_dir}/templates/EVAL-DESIGNER-ASSIGNMENT.md"
@@ -191,14 +205,6 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
       {key: "WORKER_ID", value: designer_worker},
     ]
     fs.write(designer_message, control.fill_template(designer_template.read_text()?, designer_values))?
-    let designer_row_template = fp"${factory_dir}/templates/EVAL-DISPATCH-DESIGNER-ROW.md"
-    let designer_row_values: List[control.TemplateValue] = [
-      {key: "WORKER_ID", value: designer_worker},
-      {key: "FACTORY_DIR", value: factory_dir.display()},
-      {key: "RUN_AGENT", value: run_agent.display()},
-      {key: "DESIGNER_MESSAGE", value: designer_message.display()},
-    ]
-    designer_row = control.fill_template(designer_row_template.read_text()?, designer_row_values)
   }
   let dispatch_values: List[control.TemplateValue] = [
     {key: "EVAL_ID", value: eval_id},
@@ -209,16 +215,20 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     {key: "FACTORY_DIR", value: factory_dir.display()},
     {key: "MANAGER_MESSAGE", value: fp"${messages_dir}/${eval_id}-manager.md".display()},
     {key: "RUN_AGENT", value: run_agent.display()},
-    {key: "DESIGNER_ROW", value: designer_row},
+    {key: "DESIGNER_STATUS", value: designer_status},
+    {key: "DESIGNER_WORKER", value: designer_worker},
+    {key: "DESIGNER_MESSAGE", value: if new_eval_count == 1 { designer_message.display() } else { "not-requested" }},
   ]
   let dispatch_template = fp"${factory_dir}/templates/EVAL-DISPATCH.md"
   fs.write(fp"${run_dir}/DISPATCH.md", control.fill_template(dispatch_template.read_text()?, dispatch_values))?
   let director_message = fp"${run_dir}/DIRECTOR-REQUEST.md"
-  let director_template = fp"${factory_dir}/templates/DIRECTOR-EVAL-REQUEST.md"
+  let director_template = fp"${factory_dir}/templates/DIRECTOR-REQUEST.md"
   let director_values: List[control.TemplateValue] = [
     {key: "FACTORY_DIR", value: factory_dir.display()},
     {key: "RUN_DIR", value: run_dir.display()},
     {key: "RUN_AGENT", value: run_agent.display()},
+    {key: "MODE", value: "eval"},
+    {key: "DISPATCH_FILE", value: "DISPATCH.md"},
   ]
   fs.write(director_message, control.fill_template(director_template.read_text()?, director_values))?
 
@@ -383,12 +393,6 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     {key: "TRIAL2_SHA", value: trial2_sha},
   ]
   let run_report = control.fill_template(run_template.read_text()?, run_values)
-  let lineage_rule_template = if trial_count == 1 {
-    fp"${factory_dir}/templates/LINEAGE-TRIAL-ONE.md"
-  } else {
-    fp"${factory_dir}/templates/LINEAGE-TRIAL-TWO.md"
-  }
-  let trial_rule = fs.read_text(lineage_rule_template)?.trim()
   let lineage_values: List[control.TemplateValue] = [
     {key: "BASELINE_SHA", value: baseline_sha},
     {key: "CANDIDATE_SHA", value: candidate_sha},
@@ -397,7 +401,6 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     {key: "APPROVED_SNAPSHOT_UNCHANGED", value: if approved_snapshot_unchanged { "true" } else { "false" }},
     {key: "CHECKED_IN_HANDBOOK_UNCHANGED", value: if checked_in_handbook_unchanged { "true" } else { "false" }},
     {key: "LINEAGE_STATE", value: lineage_state},
-    {key: "TRIAL_RULE", value: trial_rule},
   ]
   let lineage_template = fp"${factory_dir}/templates/LINEAGE.md"
   fs.write(fp"${run_dir}/LINEAGE.md", control.fill_template(lineage_template.read_text()?, lineage_values))?

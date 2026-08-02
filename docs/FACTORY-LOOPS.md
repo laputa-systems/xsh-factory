@@ -96,9 +96,11 @@ nested Pi workers, before returning partial evidence.
 
 The director coordinates eval-managers, eval-designers, and already-open
 ticket work. It does not merge XSH changes. The user approves new evals and
-merges completed XSH SWE branches. A ticket links its reporting eval, manager
-lineage, executor evidence, and XSH baseline; after a merge, that eval-manager
-accepts or rejects the change with a controlled replay.
+merges completed XSH SWE branches. Reconciliation compares each accepted
+ticket's recorded implementation commit with XSH `HEAD`; when it is an
+ancestor, reconciliation updates that same `TICKET.md` to `Merged.` and fills
+its merge record. The linked eval-manager then accepts or rejects the change
+with a controlled replay.
 
 The controller writes `DISPATCH.md` for eval cycles and `TICKET-DISPATCH.md`
 for ticket cycles. These are the authoritative ordered child lists. The
@@ -151,7 +153,7 @@ not a second agent-facing state database, and an agent must not infer authority
 from a session transcript or poll another worker's files.
 
 Ticket implementation is therefore a reviewable state transition. The
-controller renders one inline assignment per ticket, records its SHA-256 in
+controller renders one assignment file per ticket, records its SHA-256 in
 `TICKET-DISPATCH.md`, and the shared runner verifies that exact assignment and
 claims the worker slot before starting Pi. The cycle validator also requires
 the session JSONL to show `read` tool calls for the exact factory north-star
@@ -163,13 +165,17 @@ Accepted ticket
   -> isolated worktree at recorded XSH commit
   -> xsh-swe process completion
   -> branch/commit/clean-worktree/report validation
-  -> ready-for-review branch (never auto-merged)
+  -> ready-for-review branch
+  -> user merges product branch
+  -> reconciliation proves implementation commit is in XSH HEAD
+  -> same TICKET.md becomes Merged.
+  -> linked eval-manager replay accepts or rejects
 ```
 
 The current controller contract uses one admissible input, one durable event,
 one validator, and one callback/output at each cycle boundary. The remaining
-human-gated transitions are eval approval, SWE acceptance/rejection, and
-post-merge replay. Those should add the same durable event and validator shape
-without moving judgment out of the user or the eval-manager. Pi remains useful
-for judgment and diagnosis, but it does not invent the organization's state
-machine.
+human-gated transitions are eval approval, SWE acceptance/rejection, and the
+eval-manager's post-merge decision. Branch merging is still user-owned;
+reconciliation only proves and records what already happened. Pi remains
+useful for judgment and diagnosis, but it does not invent the organization's
+state machine.

@@ -3,6 +3,48 @@
 ## One placeholder value used to fill a checked-in Markdown template.
 export type TemplateValue = {key: Str, value: Str}
 
+## Reads the current lifecycle marker from a ticket.
+export pure ticket_status(text: Str) -> Str {
+  var in_status = false
+  for line in text.lines() {
+    let trimmed = line.trim()
+    if trimmed == "## Status" {
+      in_status = true
+      continue
+    }
+    if in_status and trimmed.starts_with("## ") {
+      return ""
+    }
+    if in_status and trimmed != "" {
+      return trimmed
+    }
+  }
+  return ""
+}
+
+## Reads the eval identifier linked from a ticket.
+export pure ticket_eval(text: Str) -> Str {
+  var in_source = false
+  for line in text.lines() {
+    let trimmed = line.trim()
+    if trimmed == "## Source eval and manager" {
+      in_source = true
+      continue
+    }
+    if in_source and trimmed.starts_with("## ") {
+      return ""
+    }
+    if in_source and trimmed.starts_with("- Eval:") {
+      let parts = trimmed.split("`")
+      if parts.len() >= 2 {
+        return parts[1]
+      }
+      return trimmed.replace("- Eval:", "").trim()
+    }
+  }
+  return ""
+}
+
 ## The role names and defaults are the single launcher configuration source.
 export pure role_prefix(role: Str) -> Str {
   if role == "director" { return "DIRECTOR" }
@@ -205,7 +247,122 @@ export pure valid_ticket_id(ticket_id: Str) -> Bool {
 
 ## Requires the checked-in approval state used for cycle admission.
 export pure ticket_is_accepted(text: Str) -> Bool {
-  return text.contains("## Status\n\nAccepted.")
+  return ticket_status(text) == "Accepted."
+}
+
+## Identifies a ticket waiting for post-merge evaluation.
+export pure ticket_is_merged(text: Str) -> Bool {
+  return ticket_status(text) == "Merged."
+}
+
+## Reads the first value below one exact report heading.
+export pure report_field(text: Str, heading: Str) -> Str {
+  var in_section = false
+  for line in text.lines() {
+    let trimmed = line.trim()
+    if trimmed == f"## ${heading}" {
+      in_section = true
+      continue
+    }
+    if in_section and trimmed.starts_with("## ") {
+      return ""
+    }
+    if in_section and trimmed != "" {
+      return trimmed.replace("`", "")
+    }
+  }
+  return ""
+}
+
+## Extracts one exact Markdown section from a checked-in template.
+export pure section_text(text: Str, heading: Str) -> Str {
+  let marker = f"## ${heading}"
+  var in_section = false
+  var lines: List[Str] = []
+  for line in text.lines() {
+    let trimmed = line.trim()
+    if trimmed == marker {
+      in_section = true
+      lines = lines.push(line)
+      continue
+    }
+    if in_section and trimmed.starts_with("## ") {
+      break
+    }
+    if in_section {
+      lines = lines.push(line)
+    }
+  }
+  return lines.join("\n")
+}
+
+## Replaces one ticket status value while preserving the ticket body.
+export pure replace_ticket_status(text: Str, replacement: Str) -> Str {
+  let current = ticket_status(text)
+  if current == "" {
+    return text
+  }
+  let clean_replacement = replacement.trim()
+  if current == clean_replacement {
+    return text
+  }
+  var in_status = false
+  var lines: List[Str] = []
+  for line in text.lines() {
+    let trimmed = line.trim()
+    if trimmed == "## Status" {
+      in_status = true
+      lines = lines.push(line)
+      continue
+    }
+    if in_status and trimmed.starts_with("## ") {
+      in_status = false
+      lines = lines.push(line)
+      continue
+    }
+    if in_status and trimmed == current {
+      lines = lines.push(clean_replacement)
+      in_status = false
+      continue
+    }
+    lines = lines.push(line)
+  }
+  return lines.join("\n") + "\n"
+}
+
+## Replaces or appends one ticket section from an on-disk template.
+export pure replace_ticket_section(text: Str, heading: Str, replacement: Str) -> Str {
+  let marker = f"## ${heading}"
+  let clean_replacement = replacement.trim()
+  var in_section = false
+  var found = false
+  var lines: List[Str] = []
+  for line in text.lines() {
+    let trimmed = line.trim()
+    if ! in_section and trimmed == marker {
+      lines = lines.push(clean_replacement)
+      in_section = true
+      found = true
+      continue
+    }
+    if in_section and trimmed.starts_with("## ") {
+      in_section = false
+      lines = lines.push("")
+      lines = lines.push(line)
+      continue
+    }
+    if ! in_section {
+      lines = lines.push(line)
+    }
+  }
+  if found {
+    return lines.join("\n") + "\n"
+  }
+  let existing = lines.join("\n").trim()
+  if existing == "" {
+    return clean_replacement + "\n"
+  }
+  return existing + "\n\n" + clean_replacement + "\n"
 }
 
 ## Defines the controller's legal lifecycle transitions.
@@ -261,7 +418,7 @@ export pure manager_report_contract_ok(report: Str) -> Bool {
   return report_contract_ok(report,
     ["Effort metrics", "Usage and cost", "Thinking evidence", "Timing evidence",
       "Observation classification", "Handbook decision", "Tickets created",
-      "Next replay", "North-star impact"], "")
+      "Post-merge decisions", "Next replay", "North-star impact"], "")
 }
 
 ## Validates the coordination headings required from a director.

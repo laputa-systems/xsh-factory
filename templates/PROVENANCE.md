@@ -5,6 +5,7 @@
 - Run: `{{RUN_ID}}`
 - Mode: `{{MODE}}`
 - Request: `{{REQUEST}}`
+- Build ID: `{{BUILD_ID}}`
 
 ## XSH input
 

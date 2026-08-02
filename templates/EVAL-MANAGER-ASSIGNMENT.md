@@ -2,9 +2,14 @@
 
 Read `{{FACTORY_DIR}}/NORTH-STAR.md`, `{{FACTORY_DIR}}/roles/pi-session-briefing.md`,
 `{{EVAL_DIR}}/EVAL.md`, `{{RUN_DIR}}/PROVENANCE.md`, and
-`{{RUN_DIR}}/DISPATCH.md`. The executor is a black box. Every eval consumes
-the one factory-wide handbook; do not look for or create an eval-local
-handbook.
+`{{RUN_DIR}}/DISPATCH.md`. The reconciler found these merged ticket files:
+`{{MERGED_TICKET_PATHS}}`. Read each listed ticket directly when the value is
+not `none`. The executor is a black box. Every eval consumes the one
+factory-wide handbook; do not look for or create an eval-local handbook.
+
+Each merged ticket is a post-merge acceptance assignment. Evaluate its exact
+acceptance criteria against this cycle's XSH commit and record an explicit
+decision. Do not dispatch a merged ticket back to SWE.
 
 The controller requires exactly `{{TRIAL_COUNT}}` fresh trial(s). Preserve
 separate evidence under `{{RUN_DIR}}/workers/eval-worker/` and inspect each
@@ -68,6 +73,12 @@ unchanged or provisional candidate, the general lesson, and replay scope
 
 zero or a list of standardized linked ticket paths
 
+## Post-merge decisions
+
+For each reconciled merged ticket: ticket ID, implementation commit,
+accept/reject or needs-replay decision, evidence, and any required revert
+proposal.
+
 ## Next replay
 
 the exact eval, handbook lineage, and post-merge or falsification check
@@ -79,5 +90,6 @@ how this advances practical, learnable, ergonomic, trustworthy XSH
 
 A ticket must use `templates/TICKET.md`, link this eval, this manager run,
 the executor evidence, the handbook lineage, and the XSH baseline. New
-tickets are for the next cycle. A handbook candidate is global and becomes
-trusted only after review and replay.
+tickets are for the next cycle. Leave the ticket template's merge-record
+placeholders unchanged. A handbook candidate is global and becomes trusted
+only after review and replay.

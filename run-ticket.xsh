@@ -47,6 +47,7 @@ proc run_ticket_cycle(
     eprint "ticket-implementation requires a clean XSH worktree at admission"
     return 1
   }
+  let _merged_tickets = runtime.reconcile_tickets(factory_dir, xsh_repo, xsh_commit.trim())?
 
   var dispatch_rows = ""
   var ticket_names = ""
@@ -58,7 +59,12 @@ proc run_ticket_cycle(
     }
     let ticket_path = fp"${factory_dir}/tickets/${ticket_id}.md"
     if ! runtime.accepted_ticket(ticket_path)? {
-      eprint f"ticket is missing or not accepted: ${ticket_id}"
+      let ticket_text = if fs.exists(ticket_path)? { ticket_path.read_text()? } else { "" }
+      if control.ticket_is_merged(ticket_text) {
+        eprint f"ticket ${ticket_id} is already Merged; run its linked eval cycle for acceptance"
+      } else {
+        eprint f"ticket is missing or not accepted: ${ticket_id}"
+      }
       runtime.emit_event(event_template, run_dir, f"ticket-${ticket_id}-rejected", ticket_id, "failed", 1, "admission", "ticket is not checked-in with Accepted status")?
       return 1
     }
@@ -124,6 +130,7 @@ proc run_ticket_cycle(
     {key: "RUN_ID", value: run_dir.display()},
     {key: "MODE", value: "ticket-implementation"},
     {key: "REQUEST", value: "CYCLE-REQUEST.md"},
+    {key: "BUILD_ID", value: "not-used-ticket-cycle"},
     {key: "XSH_COMMIT", value: xsh_commit.trim()},
     {key: "IMAGE", value: "not-used-ticket-cycle"},
     {key: "IMAGE_ID", value: "not-used-ticket-cycle"},
@@ -135,11 +142,13 @@ proc run_ticket_cycle(
   fs.write(fp"${run_dir}/PROVENANCE.md", control.fill_template(provenance_template.read_text()?, provenance_values))?
 
   let director_message = fp"${run_dir}/DIRECTOR-REQUEST.md"
-  let director_template = fp"${factory_dir}/templates/DIRECTOR-TICKET-REQUEST.md"
+  let director_template = fp"${factory_dir}/templates/DIRECTOR-REQUEST.md"
   let director_values: List[control.TemplateValue] = [
     {key: "FACTORY_DIR", value: factory_dir.display()},
     {key: "RUN_DIR", value: run_dir.display()},
     {key: "RUN_AGENT", value: run_agent.display()},
+    {key: "MODE", value: "ticket-implementation"},
+    {key: "DISPATCH_FILE", value: "TICKET-DISPATCH.md"},
   ]
   fs.write(director_message, control.fill_template(director_template.read_text()?, director_values))?
 

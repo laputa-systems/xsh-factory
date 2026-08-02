@@ -18,4 +18,8 @@ that one approved document and validates the requested candidate lineage.
 - Checked-in handbook unchanged: `{{CHECKED_IN_HANDBOOK_UNCHANGED}}`
 - Lineage result: `{{LINEAGE_STATE}}`
 
-{{TRIAL_RULE}}
+Trial 1 always uses the approved snapshot. With one configured trial, the
+candidate must be byte-identical to that snapshot. With two configured trials,
+trial 2 uses the candidate snapshot. Promotion is never performed by the
+controller; an approved candidate becomes the shared handbook only through
+the documented review step.

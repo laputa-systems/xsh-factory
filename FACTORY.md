@@ -52,6 +52,47 @@ an agent's ability to use it, supported by evidence and a named next replay.
 The detailed layer contracts and outputs are in
 [`docs/FACTORY-LOOPS.md`](docs/FACTORY-LOOPS.md).
 
+## Factory engineering rules
+
+The factory has a high quality bar because it is intended to improve the
+language that will run other automation. Every change must preserve the
+following rules:
+
+- Simplicity is a requirement, not a future cleanup task. Prefer one clear
+  owner, one state transition, one durable output, and one parameterized
+  template over parallel variants, wrapper layers, or per-case files. Delete
+  abstractions when a direct path is clearer.
+- Controller XSH must not contain inline Markdown report, prompt, assignment,
+  or event bodies. Put Markdown on disk in `templates/`, then fill explicit
+  placeholders. Markdown headings in parsers, validators, and test fixtures
+  are contracts and are the exception; they must not become a second output
+  mechanism.
+- Separate orchestration from judgment. `run.xsh`, `run-eval.xsh`, and
+  `run-ticket.xsh` own admission, process boundaries, state transitions,
+  cancellation, and validation. Pi roles own interpretation and decisions.
+  No role may discover work that the controller did not assign.
+- Keep orchestration testable without Pi. Pure parsing and lifecycle rules
+  belong in `factory_control.xsh`; process, filesystem, and reconciliation
+  boundaries belong in `factory_runtime.xsh` or a focused XSH tool. Add native
+  XSH tests with synthetic sessions, fake processes, or mocked commands before
+  considering an agent-backed check.
+- Dogfood XSH. Factory control scripts and tools must be written in XSH. Use
+  external commands only at explicit system boundaries such as Git, Docker,
+  the local XSH distribution build, or a test double. Do not add Python or a
+  second orchestration language.
+- Fail closed at boundaries. Validate exact assignments, paths, commits,
+  report headings, handbook lineage, image identity, and required evidence.
+  Never silently fall back to a different ticket, eval, handbook, model, or
+  product worktree.
+- Preserve the evidence chain. A run must identify its XSH commit, freshly
+  staged binaries, image ID, inputs, child sessions, reports, costs, and
+  decision. User approval remains required for evals, merges, handbook
+  promotion, and reversions.
+
+These rules apply to new roles, evals, templates, tools, and controller code.
+When a proposed design needs an exception, document the boundary and add the
+native test that makes the exception observable.
+
 ## One cycle
 
 Run an eval cycle with:
@@ -60,10 +101,11 @@ Run an eval cycle with:
 xsh run.xsh cycle-request.md
 ```
 
-`run.xsh` creates `runs/run-<id>/`, starts the director, and produces a
-run-level report and cost report. The director resolves one clean XSH commit
-once at cycle start. Every executor and SWE worktree records that snapshot or
-its explicitly named candidate commit.
+`run.xsh` creates `runs/run-<id>/`, reconciles product branches against the
+current XSH HEAD, starts the director, and produces a run-level report and
+cost report. The director resolves one clean XSH commit once at cycle start.
+Every executor and SWE worktree records that snapshot or its explicitly named
+candidate commit.
 
 For an approved ticket implementation cycle, use a request with
 `## Mode` set to `ticket-implementation` and an explicit `## Approved tickets`
@@ -76,18 +118,22 @@ xsh run.xsh cycle-ticket-task-tags-001.md
 The controller admits only tickets whose checked-in status is `Accepted.`,
 creates one isolated XSH worktree per ticket, and asks the director to launch
 one `xsh-swe` worker per worktree. The branch is validated and left pending
-user review; no merge or ticket-status mutation is automatic. Each run records
-stage callbacks as Markdown files under `events/`.
+user review; the controller never merges it. On a later reconciliation, an
+implementation commit proven to be an ancestor of XSH `HEAD` changes that
+same ticket's status to `Merged.` and fills its merge-record fields. Each run
+records stage callbacks as Markdown files under `events/`.
 
 The controller-owned eval pipeline is:
 
-1. parse the explicit trial and proposal counts;
-2. write an ordered `DISPATCH.md` containing exactly the requested
+1. resolve the clean XSH admission commit and reconcile merged tickets;
+2. parse the explicit trial and proposal counts;
+3. rebuild and stage the local `xsh` and `xsht` image inputs;
+4. write an ordered `DISPATCH.md` containing exactly the requested
    eval-manager and optional eval-designer rows;
-3. launch those rows through the shared runner;
-4. collect all worker reports and costs;
-5. validate the full report contracts and handbook lineage;
-6. fail with partial evidence when a required stage cannot complete.
+5. launch those rows through the shared runner;
+6. collect all worker reports and costs;
+7. validate the full report contracts and handbook lineage;
+8. fail with partial evidence when a required stage cannot complete.
 
 New manager tickets become open for the next cycle. They are not dispatched to
 SWE in the same eval cycle, which keeps diagnosis and implementation separate.
@@ -137,9 +183,11 @@ and the checked-in handbook are unchanged at validation. User rejection leaves
 the shared handbook at its last approved version.
 
 XSH SWE branches contain product changes and tests. The user alone merges them
-into XSH main. After merge, the linked eval-manager performs a controlled
-replay and records acceptance or rejection. A rejection names the exact merged
-commit and creates a linked revert proposal; it does not silently mutate main.
+into XSH main. Reconciliation detects that merge from the recorded
+implementation commit and updates the linked ticket in place. After that, the
+linked eval-manager performs a controlled replay and records acceptance or
+rejection. A rejection names the exact merged commit and creates a linked
+revert proposal; it does not silently mutate main.
 
 ## Run accounting
 

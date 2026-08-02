@@ -4,6 +4,13 @@
 
 Open.
 
+## Merge record
+
+- Implementation branch: `{{IMPLEMENTATION_BRANCH}}`
+- Implementation commit: `{{IMPLEMENTATION_COMMIT}}`
+- Detected at XSH commit: `{{DETECTED_XSH_COMMIT}}`
+- Implementation run: `{{IMPLEMENTATION_RUN}}`
+
 ## Source eval and manager
 
 - Eval:
