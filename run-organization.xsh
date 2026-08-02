@@ -1,4 +1,4 @@
-##! Sequential organization-cycle controller.
+##! Organization-cycle controller with independent phase overlap.
 
 use factory_control as control
 use factory_runtime as runtime
@@ -13,7 +13,7 @@ on SIGTERM --pre-cancel=0ms [fs, process, env, error] {
   abort(143)
 }
 
-proc run_child(
+proc spawn_child(
   child: Path,
   request: Path,
   phase_dir: Path,
@@ -30,8 +30,9 @@ proc run_child(
   extra_env: List[Str],
   stdout: Path,
   stderr: Path,
-) [fs, process, env, error] -> Result[Bool] {
+) [fs, process, env, error] -> Result[ProcessHandle] {
   let xsh_path = process.which("xsh")?
+  let child_runner = env.path("FACTORY_CHILD_RUNNER", xsh_path)?
   let env_path = process.which("env")?
   let base_image = env.get_or("FACTORY_BASE_IMAGE", "xsh-factory-base:latest")?
   var assignments: List[Str] = [
@@ -52,6 +53,8 @@ proc run_child(
     "DOCKER=" + docker,
     "XSH_MODULE_PATH=" + factory_dir.display(),
   ]
+  assignments = assignments.push("FACTORY_ACTIVE_RUN=" + fp"${phase_dir}/ACTIVE".display())
+  assignments = assignments.push("FACTORY_LOCK_PATH=" + fp"${phase_dir}/factory.lock".display())
   for role in ["director", "eval-designer", "eval-manager", "eval-worker", "xsh-swe"] {
     let prefix = control.role_prefix(role)
     assignments = assignments.push(f"FACTORY_${prefix}_PROVIDER=${control.configured_role_setting(role, "PROVIDER")?}")
@@ -61,16 +64,46 @@ proc run_child(
     assignments = assignments.push(f"FACTORY_${prefix}_TOOLS=${control.configured_role_setting(role, "TOOLS")?}")
   }
   let child_args = assignments.extend(extra_env).extend([
-    xsh_path.display(), child.display(), "--", request.display()
+    child_runner.display(), child.display(), "--", request.display()
   ])
-  let status = process.run(process.command_argv(
+  return spawn process.command_argv(
     env_path,
     [env_path.display()].extend(child_args),
     cwd: factory_dir,
     stdout: stdout,
     stderr: stderr,
-  ))?
+  )
+}
+
+proc wait_child(handle: ProcessHandle) [process, error] -> Result[Bool] {
+  let status = wait handle?
   return status.ok
+}
+
+proc run_child(
+  child: Path,
+  request: Path,
+  phase_dir: Path,
+  factory_dir: Path,
+  xsh_repo: Path,
+  parent_run: Path,
+  base_commit: Str,
+  run_agent: Path,
+  auth_file: Path,
+  pi_command: Str,
+  docker: Str,
+  target: Str,
+  platform: Str,
+  extra_env: List[Str],
+  stdout: Path,
+  stderr: Path,
+) [fs, process, env, error] -> Result[Bool] {
+  let handle = spawn_child(
+    child, request, phase_dir, factory_dir, xsh_repo, parent_run, base_commit,
+    run_agent, auth_file, pi_command, docker, target, platform, extra_env,
+    stdout, stderr,
+  )?
+  return wait_child(handle)
 }
 
 proc phase_run_pass(phase_dir: Path, report_name: Str) [fs, error] -> Result[Bool] {
@@ -219,6 +252,13 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   let event_template = fp"${factory_dir}/templates/EVENT.md"
   let phase_template = fp"${factory_dir}/templates/ORGANIZATION-PHASE-REQUEST.md"
   let run_agent = fp"${factory_dir}/run-agent.xsh"
+  let default_primary_controller = if selected_ticket == "" {
+    fp"${factory_dir}/run-eval.xsh"
+  } else {
+    fp"${factory_dir}/run-ticket.xsh"
+  }
+  let primary_controller = env.path("FACTORY_PRIMARY_CONTROLLER", default_primary_controller)?
+  let design_controller = env.path("FACTORY_DESIGN_CONTROLLER", fp"${factory_dir}/run-design.xsh")?
   let home = env.get("HOME")?
   let auth_file = env.path("PI_AUTH_FILE", fp"${home}/.pi/agent/auth.json")?
   let pi_command = env.get_or("PI_COMMAND", "pi")?
@@ -236,7 +276,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   fs.write(active_run, run_dir.display() + "\n")?
   defer fs.remove(active_run, missing_ok: true)?
   fs.copy(request, fp"${run_dir}/CYCLE-REQUEST.md", overwrite: true)?
-  runtime.emit_event(event_template, run_dir, "00-cycle-started", "organization", "started", 1, "controller", "bounded sequential organization cycle")?
+  runtime.emit_event(event_template, run_dir, "00-cycle-started", "organization", "started", 1, "controller", "bounded organization cycle with independent eval-design overlap")?
 
   let ticket_value = if selected_ticket == "" { "None." } else { f"`${selected_ticket}`" }
   let primary_objective = if selected_ticket == "" {
@@ -295,10 +335,18 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   ]
   fs.write(fp"${run_dir}/ORGANIZATION-PLAN.md", control.fill_template(plan_template.read_text()?, plan_values))?
 
+  runtime.emit_event(event_template, run_dir, "10-design-started", "eval-design", "started", 1, "organization", "one independent eval-design phase is mandatory")?
+  let design_handle = spawn_child(
+    design_controller, design_request, design_phase, factory_dir, xsh_repo,
+    run_dir, xsh_commit.trim(), run_agent, auth_file, pi_command, docker, target, platform,
+    ["FACTORY_MODE=eval-design", f"FACTORY_EVAL_ID=${requested_eval}"],
+    fp"${run_dir}/design.stdout", fp"${run_dir}/design.stderr"
+  )?
+
   let primary_subject = if selected_ticket == "" { selected_eval } else { selected_ticket }
   runtime.emit_event(event_template, run_dir, "10-primary-started", primary_subject, "started", 1, "organization", primary_mode)?
   let primary_ok = run_child(
-    if selected_ticket == "" { fp"${factory_dir}/run-eval.xsh" } else { fp"${factory_dir}/run-ticket.xsh" },
+    primary_controller,
     primary_request, primary_phase, factory_dir, xsh_repo, run_dir, xsh_commit.trim(), run_agent,
     auth_file, pi_command, docker, target, platform,
     [f"FACTORY_MODE=${primary_mode}", f"FACTORY_EVAL_ID=${selected_eval}",
@@ -363,13 +411,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     }
   }
 
-  runtime.emit_event(event_template, run_dir, "10-design-started", "eval-design", "started", 1, "organization", "one eval-design phase is mandatory")?
-  let design_ok = run_child(
-    fp"${factory_dir}/run-design.xsh", design_request, design_phase, factory_dir, xsh_repo,
-    run_dir, xsh_commit.trim(), run_agent, auth_file, pi_command, docker, target, platform,
-    ["FACTORY_MODE=eval-design", f"FACTORY_EVAL_ID=${requested_eval}"],
-    fp"${run_dir}/design.stdout", fp"${run_dir}/design.stderr"
-  )?
+  let design_ok = wait_child(design_handle)?
   let design_report_ok = phase_run_pass(design_phase, "RUN-DESIGN.md")?
   let design_pass = design_ok and design_report_ok
   let design_state = if design_pass { "pass" } else { "fail" }
@@ -417,7 +459,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   runtime.emit_event(event_template, run_dir, if result == "pass" { "90-cycle-completed" } else { "90-cycle-failed" },
     "organization", if result == "pass" { "completed" } else { "failed" }, 1, "controller", "organization RUN.md and aggregate COST.md written")?
   if result == "pass" {
-    runtime.emit_event(event_template, run_dir, "95-cycle-validated", "organization", "validated", 1, "controller", "all required sequential phases passed")?
+    runtime.emit_event(event_template, run_dir, "95-cycle-validated", "organization", "validated", 1, "controller", "all required phases passed")?
   }
   print f"factory organization run: ${run_dir} (${result})"
   abort(if result == "pass" { 0 } else { 1 })

@@ -106,14 +106,15 @@ Run a standard bounded organization cycle with:
 XSH_MODULE_PATH=. xsh run.xsh cycle-organization.md
 ```
 
-`run.xsh` creates one parent `runs/run-<id>/` and dispatches the phases
-sequentially. `run-organization.xsh` reconciles product branches, admits at
-most one approved ticket, runs its linked candidate replay, then runs the
-independent eval listed in the request against XSH main. When no ticket is
-admitted, that independent eval is the primary phase instead. It always
-dispatches one standalone `eval-design` phase. Each child phase has its own
-run directory, provenance, audit, sessions, and cost report; the parent also
-writes an aggregate cost report and `RUN.md`.
+`run.xsh` creates one parent `runs/run-<id>/` and dispatches the phases. The
+organization controller reconciles product branches, admits at most one
+approved ticket, and starts the independent `eval-design` phase alongside the
+primary ticket or eval phase. Ticket implementation must finish before its
+linked candidate replay; the independent active eval remains a separate
+phase. When no ticket is admitted, that independent eval is the primary phase
+and design still overlaps it. Each child phase has its own run directory,
+provenance, audit, sessions, lock, and cost report; the parent also writes an
+aggregate cost report and `RUN.md`.
 
 The organization controller resolves one clean XSH commit once at admission.
 Every executor and SWE worktree records that snapshot or its explicitly named

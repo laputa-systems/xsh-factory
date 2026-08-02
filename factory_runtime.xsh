@@ -27,17 +27,27 @@ export type MergedTicket = {
 export proc cleanup_active_run() [fs, process, env, error] -> Result[Unit] {
   let configured_factory = env.get_or("FACTORY_DIR", "")?
   let factory_dir = if configured_factory == "" { fs.cwd()? } else { Path(configured_factory) }
-  let active_run = fp"${factory_dir}/runs/ACTIVE"
-  if fs.exists(active_run)? {
-    let run_text = fs.read_text(active_run)?.trim()
-    if run_text != "" {
-      let xsh_path = process.which("xsh")?
-      let cleanup = fp"${factory_dir}/tools/cleanup-run.xsh"
-      let _ = process.run(process.command_argv(
-        xsh_path,
-        [xsh_path.display(), cleanup.display(), "--", run_text],
-      ))?
-    }
+  let default_active_run = fp"${factory_dir}/runs/ACTIVE"
+  let configured_active_run = env.path("FACTORY_ACTIVE_RUN", default_active_run)?
+  let organization_run = fp"${factory_dir}/runs/ORGANIZATION-ACTIVE"
+  let active_marker = if fs.exists(configured_active_run)? {
+    configured_active_run
+  } else if fs.exists(organization_run)? {
+    organization_run
+  } else {
+    default_active_run
+  }
+  if ! fs.exists(active_marker)? {
+    return Ok()
+  }
+  let run_text = fs.read_text(active_marker)?.trim()
+  if run_text != "" {
+    let xsh_path = process.which("xsh")?
+    let cleanup = fp"${factory_dir}/tools/cleanup-run.xsh"
+    let _ = process.run(process.command_argv(
+      xsh_path,
+      [xsh_path.display(), cleanup.display(), "--", run_text],
+    ))?
   }
   return Ok()
 }
@@ -257,11 +267,16 @@ export proc session_read_path(session: Path, expected: Path) [fs, error] -> Resu
   return found
 }
 
-## Acquires the single-factory run lock and rejects concurrent cycles.
+## Acquires a run lock at an explicit scope.
+export proc acquire_run_lock_at(lock_path: Path) [fs, error] -> Result[Record] {
+  return fs.lock(lock_path, nonblocking: true)
+}
+
+## Acquires the single-factory run lock and rejects concurrent direct cycles.
 export proc acquire_run_lock(factory_dir: Path) [fs, error] -> Result[Record] {
   let runs = fp"${factory_dir}/runs"
   fs.mkdir(runs)?
-  return fs.lock(fp"${runs}/factory.lock", nonblocking: true)
+  return acquire_run_lock_at(fp"${runs}/factory.lock")
 }
 
 ## Verifies the checked-in handbook has not changed during a run.

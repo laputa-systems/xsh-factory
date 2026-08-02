@@ -18,12 +18,12 @@ its own work.
 - Independent eval: `{{INDEPENDENT_EVAL_ID}}`
 - XSH base commit: `{{XSH_COMMIT}}`
 
-## Ordered phases
+## Phase schedule
 
-1. `{{PRIMARY_MODE}}`: `{{PRIMARY_STATE}}` at `{{PRIMARY_PHASE}}`
-2. Ticket re-evaluation: `{{REEVAL_STATE}}` at `{{REEVAL_PHASE}}`
-3. Independent eval: `{{INDEPENDENT_EVAL_STATE}}` at `{{INDEPENDENT_EVAL_PHASE}}`
-4. Eval design: `{{DESIGN_STATE}}` at `{{DESIGN_PHASE}}`
+1. Primary phase: `{{PRIMARY_MODE}}` is `{{PRIMARY_STATE}}` at `{{PRIMARY_PHASE}}`
+2. Eval design: `{{DESIGN_STATE}}` at `{{DESIGN_PHASE}}` and overlaps the primary
+3. Ticket re-evaluation: `{{REEVAL_STATE}}` at `{{REEVAL_PHASE}}`
+4. Independent eval: `{{INDEPENDENT_EVAL_STATE}}` at `{{INDEPENDENT_EVAL_PHASE}}`
 
 ## Required outputs
 

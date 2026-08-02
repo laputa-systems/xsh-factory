@@ -1,11 +1,10 @@
 ##! Drain the process and container registry for an interrupted factory run.
 
 proc signal_registry(run_dir: Path, signal: Str) [fs, process, error] -> Result[Unit] {
-  let registry = fp"${run_dir}/processes"
-  if ! fs.exists(registry)? {
+  if ! fs.exists(run_dir)? {
     return Ok()
   }
-  for entry in fs.files(registry, gitignore: false, hidden: true)? {
+  for entry in fs.walk(run_dir, gitignore: false, hidden: true)? |> where .kind == "file" {
     if entry.name.ends_with(".pids") {
       for line in entry.path.read_text()?.lines() {
         let text = line.trim()
@@ -30,7 +29,7 @@ proc signal_registry(run_dir: Path, signal: Str) [fs, process, error] -> Result[
 
 proc stop_containers(run_dir: Path) [fs, process, env, error] -> Result[Unit] {
   let docker = env.get_or("DOCKER", "docker")?
-  for entry in fs.files(run_dir, gitignore: false, hidden: true)? {
+  for entry in fs.walk(run_dir, gitignore: false, hidden: true)? |> where .kind == "file" {
     if entry.name.ends_with(".cid") {
       let container_id = entry.path.read_text()?.trim()
       if container_id != "" {
@@ -55,6 +54,8 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   time.sleep(250ms)?
   signal_registry(run_dir, "KILL")?
   stop_containers(run_dir)?
+  fs.remove(fp"${run_dir}/ACTIVE", missing_ok: true)?
   fs.remove(fp"${run_dir.parent()}/ACTIVE", missing_ok: true)?
+  fs.remove(fp"${run_dir.parent()}/ORGANIZATION-ACTIVE", missing_ok: true)?
   abort(0)
 }

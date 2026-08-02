@@ -6,7 +6,8 @@ Run the smallest complete organization cycle that proves the requested
 factory path and produces evidence toward `NORTH-STAR.md`. Keep the cycle
 cheap and preserve all worker evidence; do not create activity or tickets
 without a corresponding product hypothesis. When a ticket is admitted, run
-its linked re-evaluation and the independent active eval sequentially.
+its linked re-evaluation and independent active eval, while the independent
+eval-design phase runs alongside the primary phase.
 
 ## Mode
 

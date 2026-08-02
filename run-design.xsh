@@ -1,4 +1,4 @@
-##! Standalone eval-design controller. The parent organization run owns sequencing.
+##! Standalone eval-design controller.
 
 use factory_control as control
 use factory_runtime as runtime
@@ -32,8 +32,9 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   } else {
     Path(configured_phase_dir)
   }
-  let active_run = fp"${factory_dir}/runs/ACTIVE"
-  let _run_lock = runtime.acquire_run_lock(factory_dir)?
+  let active_run = env.path("FACTORY_ACTIVE_RUN", fp"${factory_dir}/runs/ACTIVE")?
+  let lock_path = env.path("FACTORY_LOCK_PATH", fp"${factory_dir}/runs/factory.lock")?
+  let _run_lock = runtime.acquire_run_lock_at(lock_path)?
   let event_template = fp"${factory_dir}/templates/EVENT.md"
   let provenance_template = fp"${factory_dir}/templates/PROVENANCE.md"
   let assignment_template = fp"${factory_dir}/templates/EVAL-DESIGNER-ASSIGNMENT.md"

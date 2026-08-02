@@ -78,8 +78,8 @@ broken.
 `run.xsh` is a thin signal-safe dispatcher. It selects `run-organization.xsh`,
 `run-eval.xsh`, `run-ticket.xsh`, or `run-design.xsh`; those mode controllers
 own admission, dispatch, validation, and reports. An organization run owns a
-separate organization lock while its child phases take the ordinary factory
-run lock one at a time. It records `runs/ORGANIZATION-ACTIVE`, so a second
+separate organization lock while each child phase takes its own phase-scoped
+lock and active marker. It records `runs/ORGANIZATION-ACTIVE`, so a second
 top-level cycle cannot overlap it. The eval controller selects the first eval
 listed under `## Active evals` in its phase request, or accepts an explicit eval
 ID, then snapshots provenance before launching Pi:
@@ -105,10 +105,12 @@ ancestor, reconciliation updates that same `TICKET.md` to `Merged.` and fills
 its merge record. The linked eval-manager then accepts or rejects the change
 with a controlled replay.
 
-For the standard request with an approved ticket, the parent sequence is
-`ticket implementation -> linked candidate re-evaluation -> independent active
-eval on XSH main -> eval-design`. Without an approved ticket, the active eval
-occupies the primary phase and the candidate phase is not created.
+For the standard request with an approved ticket, the parent starts
+`ticket implementation` and `eval-design` concurrently. After the ticket
+implementation passes, it runs the linked candidate re-evaluation; the
+independent active eval then runs against XSH main. Without an approved ticket,
+the active eval occupies the primary phase while `eval-design` runs alongside
+it, and the candidate phase is not created.
 
 The controller writes `DISPATCH.md` for eval cycles, `TICKET-DISPATCH.md` for
 ticket cycles, and a one-row `DISPATCH.md` for standalone eval-design cycles.
@@ -165,9 +167,10 @@ Cycle requests select a mode. The current modes are:
   one XSH worktree per ticket, and
   dispatch one `xsh-swe` worker per worktree.
 - `organization`: admit at most one approved ticket automatically or from the
-  request; run its implementation, linked pre-merge re-evaluation, and the
-  independent eval listed in the request in order, or run that eval as the
-  primary phase when no ticket is admitted; then run one eval-design phase.
+  request; start its implementation and one eval-design phase concurrently,
+  run the linked pre-merge re-evaluation after implementation, and run the
+  independent eval listed in the request, or run that eval as the primary phase
+  when no ticket is admitted.
 - `eval-design`: dispatch exactly one eval-designer proposal and dry run.
 
 Each run also has an `events/` ledger of small Markdown event records. The

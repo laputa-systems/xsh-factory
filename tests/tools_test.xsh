@@ -50,6 +50,61 @@ proc test_run_dispatcher_fails_preflight_before_agent_launch(ctx: TestContext) [
   test.ok(! fs.exists(fp"${root}/runs/ORGANIZATION-ACTIVE")?)?
 }
 
+proc test_organization_overlaps_design_with_primary_using_fake_children(ctx: TestContext) [fs, process, env, error] {
+  let root = test.temp_dir(ctx, name: "organization-schedule")?
+  let factory = fs.cwd()?
+  fs.mkdir(fp"${root}/evals")?
+  fs.mkdir(fp"${root}/runtime")?
+  fs.mkdir(fp"${root}/tools")?
+  let copied_templates = fs.copy_tree(fp"${factory}/templates", fp"${root}/templates")?
+  let copied_eval = fs.copy_tree(fp"${factory}/evals/task-tags", fp"${root}/evals/task-tags")?
+  fs.copy(fp"${factory}/NORTH-STAR.md", fp"${root}/NORTH-STAR.md", overwrite: true)?
+  fs.copy(fp"${factory}/runtime/handbook.md", fp"${root}/runtime/handbook.md", overwrite: true)?
+  fs.copy(fp"${factory}/tools/session-report.xsh", fp"${root}/tools/session-report.xsh", overwrite: true)?
+
+  let fake_child = fp"${root}/fake-child.sh"
+  fs.write(fake_child, r"""#!/bin/sh
+set -eu
+printf 'start:%s\n' "$FACTORY_PHASE_DIR" >> "$FACTORY_TEST_LOG"
+sleep 1
+printf 'end:%s\n' "$FACTORY_PHASE_DIR" >> "$FACTORY_TEST_LOG"
+cp "$FACTORY_TEST_REPORT" "$FACTORY_PHASE_DIR/RUN.md"
+cp "$FACTORY_TEST_REPORT" "$FACTORY_PHASE_DIR/RUN-DESIGN.md"
+""")?
+  let chmod = process.run(process.command_argv("chmod", ["chmod", "+x", fake_child.display()]))?
+  test.ok(chmod.ok, "fake organization child should be executable")?
+  let request = fp"${root}/cycle.md"
+  fs.copy(fp"${factory}/tests/fixtures/organization-no-ticket.md", request, overwrite: true)?
+  let log = fp"${root}/schedule.log"
+  let report = fp"${factory}/tests/fixtures/organization-pass.md"
+  let xsh = process.which("xsh")?
+  let product = fp"${factory}/../xsh"
+  let status = process.run(process.command_argv(
+    xsh,
+    [xsh.display(), fp"${factory}/run-organization.xsh".display(), "--", request.display()],
+    cwd: root,
+    env: {
+      PATH: env.get("PATH")?,
+      HOME: env.get("HOME")?,
+      FACTORY_DIR: root.display(),
+      XSH_MODULE_PATH: factory.display(),
+      FACTORY_XSH_REPO: product.display(),
+      FACTORY_CHILD_RUNNER: "/bin/sh",
+      FACTORY_PRIMARY_CONTROLLER: fake_child.display(),
+      FACTORY_DESIGN_CONTROLLER: fake_child.display(),
+      FACTORY_TEST_LOG: log.display(),
+      FACTORY_TEST_REPORT: report.display(),
+    },
+  ))?
+  test.ok(status.ok, "fake organization cycle should complete")?
+  let schedule = fs.read_text(log)?
+  let first_start = schedule.find("start:")
+  let second_start = schedule.find("start:", first_start + 1)
+  let first_end = schedule.find("end:")
+  test.ok(first_start >= 0 and second_start > first_start, "both phases should start")?
+  test.ok(first_end > second_start, "design and primary must overlap")?
+}
+
 proc test_audit_run_preserves_separate_evaluator_outcomes(ctx: TestContext) [fs, process, error] {
   let root = test.temp_dir(ctx, name: "audit-run")?
   let run_dir = fp"${root}/run-1"
@@ -241,8 +296,11 @@ proc test_cleanup_run_uses_a_mock_container_command(ctx: TestContext) [fs, proce
   let fake_docker = fp"${run_dir}/fake-docker"
   let docker_log = fp"${run_dir}/docker.log"
   fs.mkdir(registry)?
+  fs.mkdir(fp"${run_dir}/phases/01/processes")?
   fs.write(fp"${registry}/worker.pids", "2147483647\nnot-a-pid\n")?
+  fs.write(fp"${run_dir}/phases/01/processes/worker.pids", "2147483646\n")?
   fs.write(fp"${run_dir}/worker.cid", "fake-container\n")?
+  fs.write(fp"${run_dir}/phases/01/worker.cid", "fake-phase-container\n")?
   fs.write(fp"${run_dir.parent()}/ACTIVE", run_dir.display() + "\n")?
   fs.write(fake_docker, f"#!/bin/sh\nprintf called >> '${docker_log.display()}'\n")?
   let chmod = process.run(process.command_argv("chmod", ["chmod", "+x", fake_docker.display()]))?
@@ -256,5 +314,5 @@ proc test_cleanup_run_uses_a_mock_container_command(ctx: TestContext) [fs, proce
   ))?
   test.ok(status.ok, "cleanup should tolerate stale and malformed registry entries")?
   test.ok(! (fs.exists(fp"${run_dir.parent()}/ACTIVE")?))?
-  test.eq(fs.read_text(docker_log)?, "calledcalled")?
+  test.eq(fs.read_text(docker_log)?, "calledcalledcalledcalled")?
 }

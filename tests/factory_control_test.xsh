@@ -223,3 +223,25 @@ proc test_runtime_lock_and_handbook_admission_are_deterministic(ctx: TestContext
   test.ok(! runtime.verify_factory_handbook(root, sha)?)?
   let _ = lock
 }
+
+proc test_eval_overlay_build_uses_local_base_without_pull() {
+  let build_args = control.eval_overlay_build_args(
+    "xsh-factory-base:latest", "build-1", "xsh-factory-task:latest",
+    "linux/arm64", p"evals/Dockerfile", p"evals/task",
+  )
+  test.ok("--no-cache" in build_args)?
+  test.ok(! ("--pull" in build_args))?
+  test.ok("BASE_IMAGE=xsh-factory-base:latest" in build_args)?
+}
+
+proc test_runtime_phase_locks_allow_independent_children(ctx: TestContext) [fs, error] {
+  let root = test.temp_dir(ctx, name: "phase-locks")?
+  let first_dir = fp"${root}/phase-one"
+  let second_dir = fp"${root}/phase-two"
+  fs.mkdir(first_dir)?
+  fs.mkdir(second_dir)?
+  let first = runtime.acquire_run_lock_at(fp"${first_dir}/factory.lock")?
+  let second = runtime.acquire_run_lock_at(fp"${second_dir}/factory.lock")?
+  test.ok(fs.exists(fp"${first_dir}/factory.lock")?)?
+  test.ok(fs.exists(fp"${second_dir}/factory.lock")?)?
+}

@@ -51,8 +51,9 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     Path(configured_phase_dir)
   }
   let worker_root = fp"${run_dir}/workers"
-  let active_run = fp"${factory_dir}/runs/ACTIVE"
-  let _run_lock = runtime.acquire_run_lock(factory_dir)?
+  let active_run = env.path("FACTORY_ACTIVE_RUN", fp"${factory_dir}/runs/ACTIVE")?
+  let lock_path = env.path("FACTORY_LOCK_PATH", fp"${factory_dir}/runs/factory.lock")?
+  let _run_lock = runtime.acquire_run_lock_at(lock_path)?
   let event_template = fp"${factory_dir}/templates/EVENT.md"
   let provenance_template = fp"${factory_dir}/templates/PROVENANCE.md"
   let lineage_dir = fp"${run_dir}/lineage"
@@ -138,10 +139,9 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   } else {
     process.run(process.command_argv(
       docker,
-      [docker, "build", "--pull", "--no-cache", "--platform", platform,
-        "--build-arg", f"BASE_IMAGE=${base_image}",
-        "--build-arg", f"FACTORY_BUILD_ID=${build_id}", "-t", image,
-        "-f", eval_dockerfile.display(), eval_dir.display()],
+      [docker].extend(control.eval_overlay_build_args(
+        base_image, build_id, image, platform, eval_dockerfile, eval_dir
+      )),
       stdout: fp"${run_dir}/image-build.stdout",
       stderr: fp"${run_dir}/image-build.stderr",
     ))?

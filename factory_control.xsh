@@ -108,6 +108,27 @@ export proc configured_role_setting(role: Str, key: Str) [env, error] -> Result[
   return env.get_or(f"FACTORY_${prefix}_${key}", fallback)
 }
 
+## Builds an eval overlay from the local base image without a registry pull.
+export pure eval_overlay_build_args(
+  base_image: Str,
+  build_id: Str,
+  image: Str,
+  platform: Str,
+  dockerfile: Path,
+  context: Path,
+) -> List[Str] {
+  return [
+    "build",
+    "--no-cache",
+    "--platform", platform,
+    "--build-arg", f"BASE_IMAGE=${base_image}",
+    "--build-arg", f"FACTORY_BUILD_ID=${build_id}",
+    "-t", image,
+    "-f", dockerfile.display(),
+    context.display(),
+  ]
+}
+
 ## Reads the deterministic workflow mode from a cycle request.
 export pure request_mode(text: Str) -> Str {
   var in_mode = false
