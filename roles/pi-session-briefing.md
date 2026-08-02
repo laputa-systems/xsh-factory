@@ -6,6 +6,18 @@ for the XSH improvement mission, not a reward function by themselves.
 The session JSONL is the canonical record. Do not re-research Pi's source or
 HTML exporter before interpreting a run.
 
+Start with the current controller outputs: `RUN.md`, the role worker report,
+the executor or manager report, and `run.json` when the claim concerns an
+eval. Search older runs or implementation source only when those current
+artifacts disagree or leave a concrete field unexplained. One targeted
+reproduction is usually enough to distinguish a real defect from noise.
+
+When using `xsht api`, the query syntax is `KIND:VALUE`. Use exact queries such
+as `language:stream.group-by`, `module:tui.left_pad`, or `method:List.join`.
+Do not spend turns trying `api:...`, dotted `language.core...` guesses, or
+invented method signatures; record an API-discovery gap and continue from the
+canonical handbook and source contract.
+
 Each assistant message may contain text, thinking, and tool-call blocks. A
 `toolResult` message belongs to the preceding tool call and may have
 `isError: true`. Count assistant turns separately from tool calls and tool

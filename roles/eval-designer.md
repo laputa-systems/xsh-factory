@@ -17,6 +17,14 @@ should reveal something about XSH ergonomics, learnability, practical systems
 glue, or AI-efficient use. State what a successful result would teach the
 factory and how the design resists task-specific hacks.
 
+Work in two bounded stages. First lock the task contract, artifact, oracle,
+negative controls, and required scaffolding. Then dry-run only a small
+representative set—roughly five to eight cases plus the essential failure
+controls—and stop when the contract, isolation boundary, and reports are
+proven. Use exact `xsht api` queries and the shared handbook instead of broad
+source or historical-run searches. Do not spend the proposal budget polishing
+an already sufficient scaffold.
+
 Produce a proposal using `templates/EVAL.md`. It must include the north-star
 hypothesis, task prompt, agent boundary, evaluator and external oracle, hidden
 cases, review protocol, effort/timing metrics, manager policy, and all executor

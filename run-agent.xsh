@@ -1,6 +1,7 @@
 ##! Shared Pi worker runner. Every factory Pi session goes through this file.
 
 use factory_control as control
+use factory_runtime as runtime
 
 proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   if argv.len() < 4 {
@@ -187,6 +188,13 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
       "--session", session.display(), "--output", report.display(), "--role", role,
       "--worker-id", worker_id, "--budget-usd", budget],
   ))?
+  let budget_breach = fs.exists(fp"${worker_dir}/BUDGET-BREACH")?
+  if budget_breach and role == "xsh-swe" {
+    let closed = runtime.close_ticket_too_difficult(factory_dir, ticket_id, worker_dir)?
+    if ! closed {
+      eprint f"unable to close over-budget ticket: ${ticket_id}"
+    }
+  }
   let code = if ! status.ok or ! watcher_status.ok or ! report_status.ok { 1 } else { 0 }
   abort(code)
 }

@@ -2,6 +2,7 @@
 ##! this file owns the isolated Docker worker/evaluator protocol and report.
 
 use factory_control as control
+use factory_runtime as runtime
 
 proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   let factory_dir = env.path("FACTORY_DIR")?
@@ -11,6 +12,11 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     abort(2)
   }
   let eval_dir = fp"${factory_dir}/evals/${eval_id}"
+  let eval_manifest = fp"${eval_dir}/EVAL.md"
+  if fs.exists(eval_manifest)? and control.eval_is_disabled(eval_manifest.read_text()?) {
+    eprint f"eval ${eval_id} is disabled"
+    abort(2)
+  }
   let worker_dir = env.path("FACTORY_EVAL_WORKER_DIR")?
   let work_dir = fp"${worker_dir}/work"
   let docker = env.get_or("DOCKER", "docker")?
@@ -21,7 +27,8 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   let provider = env.get_or("FACTORY_EVAL_WORKER_PROVIDER", control.default_provider("eval-worker"))?
   let model = env.get_or("FACTORY_EVAL_WORKER_MODEL", control.default_model("eval-worker"))?
   let thinking = env.get_or("FACTORY_EVAL_WORKER_THINKING", control.default_thinking("eval-worker"))?
-  let budget = env.get_or("FACTORY_EVAL_WORKER_BUDGET_USD", control.default_budget("eval-worker"))?
+  let configured_budget = env.get_or("FACTORY_EVAL_WORKER_BUDGET_USD", control.default_budget("eval-worker"))?
+  let budget = control.clamp_budget("eval-worker", configured_budget)?
   let tools = env.get_or("FACTORY_EVAL_WORKER_TOOLS", control.default_tools("eval-worker"))?
   let trial_id = env.get_or("FACTORY_TRIAL_ID", "1")?
   let task_file = "task.md"
@@ -31,9 +38,11 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     abort(2)
   }
   let handbook_file = env.path("FACTORY_HANDBOOK_FILE", fp"${factory_dir}/runtime/handbook.md")?
+  let xsh_path = process.which("xsh")?
   let session = fp"${worker_dir}/session.jsonl"
   let agent_cidfile = fp"${worker_dir}/agent.cid"
   let evaluator_cidfile = fp"${worker_dir}/evaluator.cid"
+  let agent_process_registry = fp"${worker_dir}/eval-worker.pids"
   fs.mkdir(worker_dir)?
   fs.mkdir(work_dir)?
   for name in ["agents.md", "review.md"] {
@@ -73,13 +82,31 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     "/session/session.jsonl", f"/work/${task_file}",
   ])
   let agent_started = time.now()
-  let agent_status = process.run(process.command_argv(
+  let agent_handle = spawn process.command_argv(
     docker,
     [docker].extend(agent_argv),
     stdout: fp"${worker_dir}/container.stdout",
     stderr: fp"${worker_dir}/container.stderr",
-  ))?
+  )?
+  fs.write(agent_process_registry, f"${agent_handle.pid}\n")?
+  let watcher = spawn process.command_argv(
+    xsh_path,
+    [xsh_path.display(), fp"${factory_dir}/tools/budget-watch.xsh", "--",
+      "--session", session.display(), "--pid", f"${agent_handle.pid}",
+      "--budget-usd", budget, "--marker", fp"${worker_dir}/BUDGET-BREACH".display()],
+  )?
+  fs.write(agent_process_registry, f"${agent_handle.pid}\n${watcher.pid}\n")?
+  let agent_status = wait agent_handle?
+  let watcher_status = wait watcher?
   let agent_wall = time.now() - agent_started
+  fs.remove(agent_process_registry, missing_ok: true)?
+  let budget_breach = fs.exists(fp"${worker_dir}/BUDGET-BREACH")?
+  if budget_breach {
+    let disabled = runtime.disable_eval(factory_dir, eval_id, worker_dir)?
+    if ! disabled {
+      eprint f"unable to disable over-budget eval: ${eval_id}"
+    }
+  }
 
   let eval_flags = [
     "run", "--rm", "--platform", platform,
@@ -113,19 +140,21 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     stderr: fp"${worker_dir}/evaluator.stderr",
   ))?
 
-  let xsh_path = process.which("xsh")?
   let report_status = process.run(process.command_argv(
     xsh_path,
     [xsh_path.display(), fp"${factory_dir}/tools/session-report.xsh", "--", "worker", "--session", session.display(),
       "--output", fp"${worker_dir}/WORKER-REPORT.md".display(), "--role", "eval-worker",
       "--worker-id", f"${eval_id}-${trial_id}", "--budget-usd", budget],
   ))?
-  let result = if agent_status.ok and eval_status.ok and report_status.ok { "pass" } else { "fail" }
-  let agent_state = if agent_status.ok { "pass" } else { "fail" }
+  let result = if agent_status.ok and watcher_status.ok and eval_status.ok and report_status.ok { "pass" } else { "fail" }
+  let agent_state = if agent_status.ok and watcher_status.ok { "pass" } else { "fail" }
   let eval_state = if eval_status.ok { "pass" } else { "fail" }
+  let budget_state = if budget_breach { "breached" } else { "pass" }
   let manifest = fp"${worker_dir}/run.json"
   let manifest_state = if fs.exists(manifest)? { "present" } else { "missing" }
-  let classification = if ! agent_status.ok {
+  let classification = if budget_breach {
+    "budget_breach"
+  } else if ! agent_status.ok {
     "worker_failed"
   } else if ! eval_status.ok {
     "evaluator_failed"
@@ -143,6 +172,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     {key: "CLASSIFICATION", value: classification},
     {key: "AGENT_STATE", value: agent_state},
     {key: "EVAL_STATE", value: eval_state},
+    {key: "BUDGET_STATE", value: budget_state},
     {key: "REPORTING_STATE", value: reporting_state},
     {key: "MANIFEST_STATE", value: manifest_state},
     {key: "EVAL_ID", value: eval_id},

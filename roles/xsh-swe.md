@@ -25,6 +25,13 @@ more efficient for real systems-glue work. Preserve explicit boundaries and
 composability; do not paper over a task-specific symptom with an opaque
 special case.
 
+Keep the implementation session mechanically disciplined: use small shell
+commands with one concern each, validate every patch immediately, and run the
+narrowest relevant check before a broader test. Do not put redirections in a
+shell `for` clause; run a separate command when output needs filtering. Stop
+when the assigned acceptance criteria are met instead of exploring unrelated
+factory history or product areas.
+
 Before finishing, run the narrowest relevant checks and write
 `$FACTORY_WORKER_DIR/SWE-REPORT.md` using these exact headings:
 

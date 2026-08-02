@@ -73,8 +73,10 @@ proc preflight(
 
   if mode == "eval" or mode == "organization" or mode == "eval-design" {
     let eval_id = control.request_eval(request_text)
-    let eval_exists = fs.exists(fp"${factory_dir}/evals/${eval_id}/EVAL.md")?
-    if ! control.valid_eval_id(eval_id) or ! eval_exists {
+    let eval_path = fp"${factory_dir}/evals/${eval_id}/EVAL.md"
+    let eval_exists = fs.exists(eval_path)?
+    let eval_disabled = eval_exists and control.eval_is_disabled(eval_path.read_text()?)
+    if ! control.valid_eval_id(eval_id) or ! eval_exists or eval_disabled {
       eprint f"cycle request selected unsupported or missing eval: ${eval_id}"
       return false
     }

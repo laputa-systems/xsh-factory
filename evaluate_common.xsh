@@ -1,6 +1,8 @@
 ##! Shared evaluator implementation. Thin eval wrappers select the task; this
 ##! file owns result copying, review protocol, manifests, and timing evidence.
 
+use factory_control as control
+
 proc copy_results(artifact: Str) [fs, error] -> Result[Unit] {
   # /session and /export are two views of the same host worker directory.
   for name in [artifact, "review.md"] {
@@ -172,20 +174,29 @@ proc run_task_ecount() [fs, process, env, time, error, io] -> Result[Int] {
     candidate_system_ns = candidate.system_ns
     let candidate_status = candidate.status
     if ! candidate_status.ok { eval_status = candidate_status.exit_code() ?? 1 }
+    let oracle_args = control.ecount_oracle_command()
     let oracle = time.measure(process.command_argv(
-      "sh", ["sh", "-c", "fd --color=never -tf . /usr/share | awk -F. 'NF > 1 {print tolower(\\$NF)}' | sort | uniq -c | sort -n"],
+      oracle_args[0], oracle_args,
       stdout: p"/session/oracle.stdout",
     ))?
     oracle_wall_ns = oracle.wall_ns
     oracle_user_ns = oracle.user_ns
     oracle_system_ns = oracle.system_ns
-    if ! oracle.status.ok { eval_status = 1 } else { oracle_ok = true }
+    let oracle_output = if fs.exists(p"/session/oracle.stdout")? {
+      fs.read_text(p"/session/oracle.stdout")?
+    } else {
+      ""
+    }
+    oracle_ok = control.ecount_oracle_ok(oracle.status.ok, oracle_output)
+    if ! oracle_ok {
+      eprint "task-ecount oracle failed or produced empty output"
+      eval_status = 1
+    }
     let source = fs.read_text(p"/work/ecount.xsh")?
     forbidden_operations = ! source.contains("process.") and
       ! source.contains("spawn ") and ! source.contains("run ")
-    if candidate_status.ok and oracle.status.ok {
+    if candidate_status.ok and oracle_ok {
       let candidate_output = fs.read_text(p"/session/candidate.stdout")?
-      let oracle_output = fs.read_text(p"/session/oracle.stdout")?
       if candidate_output == oracle_output {
         exact_output = true
         print "task-ecount evaluation passed"
@@ -209,21 +220,11 @@ proc run_task_ecount() [fs, process, env, time, error, io] -> Result[Int] {
   let correctness_ok = artifact_present and oracle_ok and exact_output
   let restriction_ok = artifact_present and forbidden_operations
   let timing_ratio = if oracle_wall_ns > 0 { candidate_wall_ns.float() / oracle_wall_ns.float() } else { 0.0 }
-  let timing_ok = oracle_wall_ns > 0 and timing_ratio >= 0.90 and timing_ratio <= 1.10
+  let timing_ok = oracle_ok and oracle_wall_ns > 0 and timing_ratio >= 0.90 and timing_ratio <= 1.10
   if ! timing_ok { eval_status = 1 }
-  let classification = if ! artifact_present {
-    "worker_missing_artifact"
-  } else if ! review_ok {
-    "protocol_failed"
-  } else if ! restriction_ok {
-    "restriction_failed"
-  } else if ! correctness_ok {
-    "candidate_failed"
-  } else if ! timing_ok {
-    "timing_failed"
-  } else {
-    "pass"
-  }
+  let classification = control.ecount_classification(
+    artifact_present, review_ok, restriction_ok, oracle_ok, correctness_ok, timing_ok,
+  )
   let agents_sha = hash.sha256(p"/work/agents.md")?.hex()
   let handbook_sha = hash.sha256(p"/work/handbook.md")?.hex()
   let task_sha = hash.sha256(p"/work/task.md")?.hex()

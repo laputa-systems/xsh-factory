@@ -91,7 +91,9 @@ ID, then snapshots provenance before launching Pi:
 
 The director launches children through `run-agent.xsh`, which is the only
 authorized Pi launcher. Role-specific provider, model, thinking level, tools,
-and budget are environment settings with explicit defaults. Ctrl-C is handled
+and budget are environment settings with explicit defaults; budget ceilings are
+`$0.06` for director, `$0.15` for eval-manager, `$0.25` for xsh-swe, `$0.30` for
+eval-designer, and `$0.50` for eval-worker. Ctrl-C is handled
 at the cycle boundary and terminates the owned child process groups, including
 nested Pi workers, before returning partial evidence.
 

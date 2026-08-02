@@ -95,6 +95,77 @@ export proc accepted_ticket(ticket_path: Path) [fs, error] -> Result[Bool] {
   return control.ticket_is_accepted(fs.read_text(ticket_path)?)
 }
 
+proc budget_breach_section(
+  factory_dir: Path,
+  worker_dir: Path,
+  reason: Str,
+  worker_label: Str,
+) [fs, error] -> Result[Str] {
+  let worker_run = control.factory_relative_path(
+    factory_dir.display(), fp"${worker_dir}/WORKER-REPORT.md"
+  )
+  let template = fp"${factory_dir}/templates/BUDGET-BREACH.md"
+  let values: List[control.TemplateValue] = [
+    {key: "REASON", value: reason},
+    {key: "WORKER_LABEL", value: worker_label},
+    {key: "WORKER_RUN", value: worker_run},
+  ]
+  return control.fill_template(template.read_text()?, values)
+}
+
+## Closes an over-budget xsh-swe assignment in its checked-in ticket.
+export proc close_ticket_too_difficult(
+  factory_dir: Path,
+  ticket_id: Str,
+  worker_dir: Path,
+) [fs, error] -> Result[Bool] {
+  if ! control.valid_ticket_id(ticket_id) {
+    return false
+  }
+  let ticket_path = fp"${factory_dir}/tickets/${ticket_id}.md"
+  if ! fs.exists(ticket_path)? {
+    return false
+  }
+  let ticket_text = ticket_path.read_text()?
+  if control.ticket_is_merged(ticket_text) {
+    return false
+  }
+  let breach = budget_breach_section(
+    factory_dir, worker_dir, "too difficult", "xsh-swe run"
+  )?
+  var updated = control.replace_status(ticket_text, "Closed.")
+  updated = control.replace_section(updated, "Budget breach", breach)
+  if updated != ticket_text {
+    fs.write_atomic(ticket_path, updated)?
+  }
+  return true
+}
+
+## Disables an eval whose isolated eval-worker exceeded its hard budget.
+export proc disable_eval(
+  factory_dir: Path,
+  eval_id: Str,
+  worker_dir: Path,
+) [fs, error] -> Result[Bool] {
+  if ! control.valid_eval_id(eval_id) {
+    return false
+  }
+  let eval_path = fp"${factory_dir}/evals/${eval_id}/EVAL.md"
+  if ! fs.exists(eval_path)? {
+    return false
+  }
+  let eval_text = eval_path.read_text()?
+  let breach = budget_breach_section(
+    factory_dir, worker_dir, "eval-worker budget exceeded", "eval-worker run"
+  )?
+  var updated = control.replace_eval_status(eval_text, "Disabled.")
+  updated = control.replace_section(updated, "Budget breach", breach)
+  if updated != eval_text {
+    fs.write_atomic(eval_path, updated)?
+  }
+  return true
+}
+
 ## Selects the first explicitly approved ticket for an organization cycle.
 export proc first_approved_ticket(factory_dir: Path) [fs, error] -> Result[Str] {
   let ticket_dir = fp"${factory_dir}/tickets"

@@ -4,6 +4,10 @@
 
 Draft.
 
+## Budget breach
+
+None.
+
 ## Purpose
 
 What coding-agent capability this eval measures.

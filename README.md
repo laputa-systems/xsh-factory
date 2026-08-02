@@ -16,9 +16,13 @@ Read [NORTH-STAR.md](NORTH-STAR.md) for the mission and
 - Have Pi installed and authenticated at `~/.pi/agent/auth.json`.
 - Keep the product checkout at `../xsh`.
 
-The default provider, model, thinking level, tools, and budget are coded in
-`factory_control.xsh`. Override one role at invocation time with variables
-such as `FACTORY_EVAL_MANAGER_MODEL` or `FACTORY_XSH_SWE_THINKING`.
+The default provider, model, thinking level, tools, and role budget are coded
+in `factory_control.xsh`. The default budgets are `$0.06` for the director,
+`$0.15` for the eval-manager, `$0.25` for xsh-swe, `$0.30` for the
+eval-designer, and `$0.50` for the eval-worker. Budget overrides can lower a
+ceiling but cannot raise it. Override other role settings at invocation time
+with variables such as `FACTORY_EVAL_MANAGER_MODEL` or
+`FACTORY_XSH_SWE_THINKING`.
 
 ## Common actions
 
@@ -115,6 +119,11 @@ New eval proposals remain pending review. Ticket branches remain pending user
 review until merged. The eval-manager decides whether a merged product change
 meets its acceptance criteria; a rejection must name the merged commit and
 propose a revert or follow-up.
+
+If a worker crosses its hard budget, the controller preserves the partial run
+and records the durable consequence: an eval-worker disables its eval, while
+an xsh-swe worker closes its assigned ticket as too difficult with a link to
+the attempted run.
 
 Run the cheap non-agent checks with:
 

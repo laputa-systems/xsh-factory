@@ -9,6 +9,7 @@
 - Primary: `{{CLASSIFICATION}}`
 - Worker container: `{{AGENT_STATE}}`
 - Evaluator container: `{{EVAL_STATE}}`
+- Budget watcher: `{{BUDGET_STATE}}`
 - Session reporting: `{{REPORTING_STATE}}`
 - Evaluator manifest: `{{MANIFEST_STATE}}`
 

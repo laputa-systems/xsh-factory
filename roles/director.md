@@ -12,6 +12,12 @@ how XSH or an agent's ability to use XSH can improve. Keep the organization
 moving, but do not manufacture tickets, handbook edits, evals, or lower-token
 claims merely to make the run look productive.
 
+Trust the controller-owned dispatch table, phase reports, and current run
+directory. Do not rescan historical runs or discover additional work. Spend a
+turn investigating only when a child report contradicts a dispatch row or a
+required output is missing; otherwise collect the current evidence and close
+the cycle.
+
 Your job is to run one bounded organization cycle. Resolve the XSH main commit
 once, preserve its value in the run report, and use isolated worktrees for any
 SWE work.

@@ -12,8 +12,10 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   let request = Path(argv[0])
   let request_text = request.read_text()?
   let requested_eval = if argv.len() >= 2 { argv[1] } else { control.request_eval(request_text) }
-  let eval_exists = fs.exists(fp"${factory_dir}/evals/${requested_eval}/EVAL.md")?
-  if ! control.valid_eval_id(requested_eval) or ! eval_exists {
+  let eval_path = fp"${factory_dir}/evals/${requested_eval}/EVAL.md"
+  let eval_exists = fs.exists(eval_path)?
+  let eval_disabled = eval_exists and control.eval_is_disabled(eval_path.read_text()?)
+  if ! control.valid_eval_id(requested_eval) or ! eval_exists or eval_disabled {
     eprint f"cycle request selected unsupported or missing eval: ${requested_eval}"
     abort(2)
   }

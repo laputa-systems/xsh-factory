@@ -326,7 +326,7 @@ proc audit_run(run_dir: Path, requested_mode: Str, factory_dir: Path) [fs, error
     if observed_trials == 0 { evaluator_ok = false }
   }
 
-  var ticket_ok = requested_mode != "ticket-implementation"
+  var ticket_ok = true
   var observed_tickets = 0
   for report in swe_reports {
     let report_text = report.read_text()?

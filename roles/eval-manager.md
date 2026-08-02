@@ -35,6 +35,16 @@ the merge fields in the same ticket. Treat it as a post-merge acceptance
 assignment, never as new SWE work. Record the decision and evidence in
 `## Post-merge decisions`.
 
+Use this bounded evidence order: read the current phase `RUN.md` when it is
+present, then each
+executor `EXECUTOR-REPORT.md`, the manager-visible `WORKER-REPORT.md`, and
+each `run.json` first. Consult raw session JSONL and `thinking.md` only to
+explain a specific discrepancy. Do not scan historical runs or re-research
+Pi unless a current path, hash, or result conflicts. Limit each observation to
+one targeted reproduction, then classify it and finish the report checklist.
+This keeps the manager focused on durable handbook or product decisions rather
+than repeating controller work.
+
 Finish `MANAGER-REPORT.md` with exactly these headings: `## Result`,
 `## Effort metrics`, `## Usage and cost`, `## Thinking evidence`,
 `## Timing evidence`, `## Observation classification`, `## Handbook decision`,

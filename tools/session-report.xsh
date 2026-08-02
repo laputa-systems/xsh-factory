@@ -1,5 +1,7 @@
 ##! Render Pi session JSONL as Markdown reports using only XSH.
 
+use factory_control as control
+
 type Usage = {
   input_tokens: Float,
   output_tokens: Float,
@@ -659,7 +661,8 @@ proc run_worker(argv: List[Str]) [fs, error] -> Result[Int] {
   let output = Path(argv[4])
   let role = argv[6]
   let worker_id = argv[8]
-  let budget = if argv.len() > 10 { parse_budget(argv[10])? } else { 2.0 }
+  let requested_budget = if argv.len() > 10 { argv[10] } else { control.default_budget(role) }
+  let budget = parse_budget(control.clamp_budget(role, requested_budget)?)?
   if ! fs.exists(session)? {
     eprint f"missing session: ${session.display()}"
     return Ok(1)

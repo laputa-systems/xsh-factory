@@ -210,8 +210,11 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   } else {
     ""
   }
-  let independent_eval_exists = fs.exists(fp"${factory_dir}/evals/${requested_eval}/EVAL.md")?
-  if ! control.valid_eval_id(requested_eval) or ! independent_eval_exists {
+  let independent_eval_path = fp"${factory_dir}/evals/${requested_eval}/EVAL.md"
+  let independent_eval_exists = fs.exists(independent_eval_path)?
+  let independent_eval_disabled = independent_eval_exists and
+    control.eval_is_disabled(independent_eval_path.read_text()?)
+  if ! control.valid_eval_id(requested_eval) or ! independent_eval_exists or independent_eval_disabled {
     eprint f"organization cycle selected unsupported or missing independent eval: ${requested_eval}"
     abort(2)
   }
@@ -220,7 +223,14 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   } else {
     fs.exists(fp"${factory_dir}/evals/${ticket_eval}/EVAL.md")?
   }
-  if selected_ticket != "" and (! control.valid_eval_id(ticket_eval) or ! ticket_eval_exists) {
+  let ticket_eval_path = fp"${factory_dir}/evals/${ticket_eval}/EVAL.md"
+  let ticket_eval_disabled = if selected_ticket == "" or ! ticket_eval_exists {
+    false
+  } else {
+    control.eval_is_disabled(ticket_eval_path.read_text()?)
+  }
+  if selected_ticket != "" and
+    (! control.valid_eval_id(ticket_eval) or ! ticket_eval_exists or ticket_eval_disabled) {
     eprint f"ticket ${selected_ticket} links unsupported or missing eval: ${ticket_eval}"
     abort(2)
   }

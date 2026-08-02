@@ -75,8 +75,26 @@ export pure default_thinking(role: Str) -> Str {
 
 ## Selects the default dollar budget for a known factory role.
 export pure default_budget(role: Str) -> Str {
-  if role_prefix(role) != "" { return "2" }
+  if role == "director" { return "0.06" }
+  if role == "eval-designer" { return "0.30" }
+  if role == "eval-manager" { return "0.15" }
+  if role == "eval-worker" { return "0.50" }
+  if role == "xsh-swe" { return "0.25" }
   return ""
+}
+
+## Clamps an operator-supplied budget to the role's hard ceiling.
+export pure clamp_budget(role: Str, configured: Str) -> Result[Str] {
+  let ceiling_text = default_budget(role)
+  if ceiling_text == "" {
+    return Ok(configured)
+  }
+  let requested = configured.parse_float()?
+  let ceiling = ceiling_text.parse_float()?
+  if requested > ceiling {
+    return Ok(ceiling_text)
+  }
+  return Ok(configured)
 }
 
 ## Selects the default Pi tool set for a known factory role.
@@ -105,7 +123,11 @@ export proc configured_role_setting(role: Str, key: Str) [env, error] -> Result[
   } else {
     ""
   }
-  return env.get_or(f"FACTORY_${prefix}_${key}", fallback)
+  let configured = env.get_or(f"FACTORY_${prefix}_${key}", fallback)?
+  if key == "BUDGET_USD" {
+    return clamp_budget(role, configured)
+  }
+  return Ok(configured)
 }
 
 ## Builds an eval overlay from the local base image without a registry pull.
@@ -127,6 +149,38 @@ export pure eval_overlay_build_args(
     "-f", dockerfile.display(),
     context.display(),
   ]
+}
+
+## Builds the pinned task-ecount oracle command and its failure boundary.
+export pure ecount_oracle_command() -> List[Str] {
+  return [
+    "sh",
+    "-c",
+    "set -o pipefail; fd --color=never -tf . /usr/share | awk -F. 'NF > 1 {print tolower($NF)}' | sort | uniq -c | sort -n",
+  ]
+}
+
+## An ecount oracle is trusted only when it exits successfully and emits data.
+export pure ecount_oracle_ok(status_ok: Bool, output: Str) -> Bool {
+  return status_ok and output != ""
+}
+
+## Classifies ecount failures without treating a broken oracle as a candidate failure.
+export pure ecount_classification(
+  artifact_present: Bool,
+  review_ok: Bool,
+  restriction_ok: Bool,
+  oracle_ok: Bool,
+  correctness_ok: Bool,
+  timing_ok: Bool,
+) -> Str {
+  if ! artifact_present { return "worker_missing_artifact" }
+  if ! review_ok { return "protocol_failed" }
+  if ! restriction_ok { return "restriction_failed" }
+  if ! oracle_ok { return "evaluator_failed" }
+  if ! correctness_ok { return "candidate_failed" }
+  if ! timing_ok { return "timing_failed" }
+  return "pass"
 }
 
 ## Reads the deterministic workflow mode from a cycle request.
@@ -288,6 +342,16 @@ export pure valid_ticket_id(ticket_id: Str) -> Bool {
     ! ticket_id.contains("\\") and ! ticket_id.contains(" ")
 }
 
+## Identifies a disabled eval that must not be admitted to a new cycle.
+export pure eval_is_disabled(text: Str) -> Bool {
+  return ticket_status(text) == "Disabled."
+}
+
+## Identifies a ticket closed by a durable factory decision.
+export pure ticket_is_closed(text: Str) -> Bool {
+  return ticket_status(text) == "Closed."
+}
+
 ## Requires the checked-in approval state used for cycle admission.
 export pure ticket_is_accepted(text: Str) -> Bool {
   return ticket_status(text) == "Accepted." or ticket_status(text) == "Approved."
@@ -340,7 +404,7 @@ export pure section_text(text: Str, heading: Str) -> Str {
 }
 
 ## Replaces one ticket status value while preserving the ticket body.
-export pure replace_ticket_status(text: Str, replacement: Str) -> Str {
+export pure replace_status(text: Str, replacement: Str) -> Str {
   let current = ticket_status(text)
   if current == "" {
     return text
@@ -373,8 +437,18 @@ export pure replace_ticket_status(text: Str, replacement: Str) -> Str {
   return lines.join("\n") + "\n"
 }
 
-## Replaces or appends one ticket section from an on-disk template.
-export pure replace_ticket_section(text: Str, heading: Str, replacement: Str) -> Str {
+## Replaces one ticket status value while preserving the ticket body.
+export pure replace_ticket_status(text: Str, replacement: Str) -> Str {
+  return replace_status(text, replacement)
+}
+
+## Replaces one eval status value while preserving the eval body.
+export pure replace_eval_status(text: Str, replacement: Str) -> Str {
+  return replace_status(text, replacement)
+}
+
+## Replaces or appends one Markdown section from an on-disk template.
+export pure replace_section(text: Str, heading: Str, replacement: Str) -> Str {
   let marker = f"## ${heading}"
   let clean_replacement = replacement.trim()
   var in_section = false
@@ -406,6 +480,21 @@ export pure replace_ticket_section(text: Str, heading: Str, replacement: Str) ->
     return clean_replacement + "\n"
   }
   return existing + "\n\n" + clean_replacement + "\n"
+}
+
+## Replaces or appends one ticket section from an on-disk template.
+export pure replace_ticket_section(text: Str, heading: Str, replacement: Str) -> Str {
+  return replace_section(text, heading, replacement)
+}
+
+## Produces a Markdown link target relative to the factory root.
+export pure factory_relative_path(factory_dir: Str, target: Path) -> Str {
+  let root = if factory_dir.ends_with("/") { factory_dir } else { factory_dir + "/" }
+  let value = target.display()
+  if value.starts_with(root) {
+    return value.replace(root, "")
+  }
+  return value
 }
 
 ## Defines the controller's legal lifecycle transitions.

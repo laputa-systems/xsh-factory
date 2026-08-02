@@ -26,15 +26,27 @@ proc test_cycle_request_parsing() [error] {
   test.eq(control.request_new_eval_count(eval_request)?, 0)?
 }
 
-proc test_role_configuration_has_one_coded_default() [error] {
-  for role in ["director", "eval-designer", "eval-manager", "eval-worker", "xsh-swe"] {
-    test.ok(control.role_prefix(role) != "")?
-    test.eq(control.default_provider(role), "openrouter")?
-    test.eq(control.default_model(role), "deepseek/deepseek-v4-flash-0731")?
-    test.eq(control.default_thinking(role), "high")?
-    test.eq(control.default_budget(role), "2")?
-    let expected_tools = if role == "eval-worker" { "read,write,edit,bash" } else { "read,write,edit,bash,grep,find,ls" }
-    test.eq(control.default_tools(role), expected_tools)?
+proc test_role_configuration_has_one_coded_default() [env, error] {
+  for entry in [
+    {role: "director", budget: "0.06"},
+    {role: "eval-designer", budget: "0.30"},
+    {role: "eval-manager", budget: "0.15"},
+    {role: "eval-worker", budget: "0.50"},
+    {role: "xsh-swe", budget: "0.25"},
+  ] {
+    test.ok(control.role_prefix(entry.role) != "")?
+    test.eq(control.default_provider(entry.role), "openrouter")?
+    test.eq(control.default_model(entry.role), "deepseek/deepseek-v4-flash-0731")?
+    test.eq(control.default_thinking(entry.role), "high")?
+    test.eq(control.default_budget(entry.role), entry.budget)?
+    let expected_tools = if entry.role == "eval-worker" { "read,write,edit,bash" } else { "read,write,edit,bash,grep,find,ls" }
+    test.eq(control.default_tools(entry.role), expected_tools)?
+  }
+  env FACTORY_DIRECTOR_BUDGET_USD="2" {
+    test.eq(control.configured_role_setting("director", "BUDGET_USD")?, "0.06")?
+  }
+  env FACTORY_DIRECTOR_BUDGET_USD="0.01" {
+    test.eq(control.configured_role_setting("director", "BUDGET_USD")?, "0.01")?
   }
   test.eq(control.role_prefix("unknown"), "")?
   test.eq(control.default_model("unknown"), "")?
@@ -48,6 +60,8 @@ proc test_admission_contracts() [error] {
   test.ok(control.ticket_is_accepted("# Ticket\n\n## Status\n\nAccepted.\n"))?
   test.ok(control.ticket_is_accepted("# Ticket\n\n## Status\n\nApproved.\n"))?
   test.ok(! control.ticket_is_accepted("# Ticket\n\n## Status\n\nOpen.\n"))?
+  test.ok(control.ticket_is_closed("# Ticket\n\n## Status\n\nClosed.\n"))?
+  test.ok(control.eval_is_disabled("# Eval\n\n## Status\n\nDisabled.\n"))?
 }
 
 proc test_first_approved_ticket_is_deterministic(ctx: TestContext) [fs, error] {
@@ -78,6 +92,37 @@ proc test_ticket_merge_fields_are_idempotent(ctx: TestContext) [fs, error] {
   test.eq(control.replace_ticket_status(merged, "Merged."), merged)?
   test.eq(control.replace_ticket_section(merged, "Merge record", replacement), merged)?
   let _ = ctx
+}
+
+proc test_budget_breach_transitions_are_durable_and_idempotent(ctx: TestContext) [fs, error] {
+  let factory = test.temp_dir(ctx, name: "budget-transitions")?
+  fs.mkdir(fp"${factory}/tickets")?
+  fs.mkdir(fp"${factory}/evals/task-tags")?
+  fs.mkdir(fp"${factory}/templates")?
+  fs.mkdir(fp"${factory}/runs/run-1/workers/xsh-swe/task-tags-002")?
+  fs.mkdir(fp"${factory}/runs/run-2/workers/eval-worker/task-tags-1")?
+  fs.copy(fp"${fs.cwd()?}/templates/BUDGET-BREACH.md", fp"${factory}/templates/BUDGET-BREACH.md", overwrite: true)?
+  fs.write(fp"${factory}/tickets/task-tags-002.md", "# Ticket task-tags-002\n\n## Status\n\nApproved.\n")?
+  fs.write(fp"${factory}/evals/task-tags/EVAL.md", "# Eval task-tags\n\n## Status\n\nApproved.\n")?
+
+  let ticket_worker = fp"${factory}/runs/run-1/workers/xsh-swe/task-tags-002"
+  let eval_worker = fp"${factory}/runs/run-2/workers/eval-worker/task-tags-1"
+  test.ok(runtime.close_ticket_too_difficult(factory, "task-tags-002", ticket_worker)?)?
+  let closed = fs.read_text(fp"${factory}/tickets/task-tags-002.md")?
+  test.ok(control.ticket_is_closed(closed))?
+  test.contains(closed, "Reason: too difficult")?
+  test.contains(closed, "runs/run-1/workers/xsh-swe/task-tags-002/WORKER-REPORT.md")?
+  let closed_again = runtime.close_ticket_too_difficult(factory, "task-tags-002", ticket_worker)?
+  test.ok(closed_again)?
+  test.eq(fs.read_text(fp"${factory}/tickets/task-tags-002.md")?, closed)?
+
+  test.ok(runtime.disable_eval(factory, "task-tags", eval_worker)?)?
+  let disabled = fs.read_text(fp"${factory}/evals/task-tags/EVAL.md")?
+  test.ok(control.eval_is_disabled(disabled))?
+  test.contains(disabled, "Reason: eval-worker budget exceeded")?
+  test.contains(disabled, "runs/run-2/workers/eval-worker/task-tags-1/WORKER-REPORT.md")?
+  test.ok(runtime.disable_eval(factory, "task-tags", eval_worker)?)?
+  test.eq(fs.read_text(fp"${factory}/evals/task-tags/EVAL.md")?, disabled)?
 }
 
 proc run_git(git: Path, args: List[Str]) [process, error] -> Result[Bool] {
@@ -232,6 +277,20 @@ proc test_eval_overlay_build_uses_local_base_without_pull() {
   test.ok("--no-cache" in build_args)?
   test.ok(! ("--pull" in build_args))?
   test.ok("BASE_IMAGE=xsh-factory-base:latest" in build_args)?
+}
+
+proc test_ecount_oracle_command_has_a_fail_closed_awk_boundary() [error] {
+  let command = control.ecount_oracle_command()
+  test.eq(command[0], "sh")?
+  test.eq(command[1], "-c")?
+  test.ok(command[2].contains("set -o pipefail"))?
+  test.ok(command[2].contains("tolower($NF)"))?
+  test.ok(! command[2].contains("\\$NF"))?
+  test.ok(control.ecount_oracle_ok(true, "oracle output"))?
+  test.ok(! control.ecount_oracle_ok(true, ""))?
+  test.ok(! control.ecount_oracle_ok(false, "oracle output"))?
+  test.eq(control.ecount_classification(true, true, true, false, false, false), "evaluator_failed")?
+  test.eq(control.ecount_classification(true, true, true, true, false, true), "candidate_failed")?
 }
 
 proc test_runtime_phase_locks_allow_independent_children(ctx: TestContext) [fs, error] {

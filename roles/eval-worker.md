@@ -13,3 +13,11 @@ You are helping test whether XSH can be a clear, practical systems-glue
 language that an agent can learn and use efficiently. Favor explicit data and
 process boundaries, and report genuine language or tooling friction when the
 review asks for it. Do not trade correctness for fewer turns or tokens.
+
+Use a bounded investigation. Read the task, `agents.md`, and the shared
+handbook first; then implement the smallest correct artifact and run the
+required checks. If API discovery is needed, use `xsht api` with exact
+`KIND:VALUE` queries such as `language:stream.group-by` or
+`method:List.join`. Do not brute-force malformed query shapes or broad
+historical searches. Once the artifact, checks, and review are complete, stop
+exploring and leave the evidence on disk.

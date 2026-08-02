@@ -4,6 +4,10 @@
 
 Open.
 
+## Budget breach
+
+None.
+
 ## Merge record
 
 - Implementation branch: `{{IMPLEMENTATION_BRANCH}}`
