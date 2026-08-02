@@ -8,6 +8,13 @@ Draft.
 
 What coding-agent capability this eval measures.
 
+## North-star hypothesis
+
+What practical XSH capability, language ergonomics, learnability, or
+AI-efficient behavior this eval probes; what a successful result would teach;
+and how the design distinguishes a general improvement from a task-specific
+workaround.
+
 ## Task
 
 The user-facing task prompt and expected artifact.

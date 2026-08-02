@@ -1,5 +1,8 @@
 # Pi session reporting briefing
 
+Read `NORTH-STAR.md` before interpreting a run. Session metrics are evidence
+for the XSH improvement mission, not a reward function by themselves.
+
 The session JSONL is the canonical record. Do not re-research Pi's source or
 HTML exporter before interpreting a run.
 
@@ -12,10 +15,18 @@ worker; use the wrapper status and final report as well as the transcript.
 Usage fields are provider-reported per assistant response:
 
 - `input`, `output`, `cacheRead`, and `cacheWrite` are token buckets;
-- `reasoning` is a provider-reported reasoning-token field when available;
-- `totalTokens` in a provider response is not a substitute for summing the
-  buckets in the report;
-- `cost.total` is the authoritative dollar amount when present.
+- `reasoning` is an optional provider-reported thinking-token count. It is a
+  subset of `output`, so never add it to output or total tokens;
+- `totalTokens` is Pi's provider-reported total for that usage record. The
+  report also calculates a bucket total (`input + output + cacheRead +
+  cacheWrite`) and exposes both so a mismatch is visible;
+- `cost.input`, `cost.output`, `cost.cacheRead`, `cost.cacheWrite`, and
+  `cost.total` are provider-reported dollar fields. Missing fields remain
+  unknown rather than being presented as zero;
+- Pi does not derive exact thinking-token counts from the thinking text. When
+  the provider omits `reasoning`, the report must say that reasoning tokens
+  are unavailable. Thinking-block count and transcript text are qualitative
+  evidence, not a token estimate.
 
 Thinking blocks are qualitative evidence about what the worker considered, not
 proof that its explanation is correct. Correlate them with tool errors,
@@ -30,5 +41,7 @@ agent session was long.
 
 The manager should classify evidence as agent friction, reusable handbook
 guidance, product/tooling defect, image or harness mismatch, evaluator failure,
-or ordinary stochastic noise. Only open a product ticket when one strong
-reproducible observation supports a general change.
+or ordinary stochastic noise. Ask whether the observation advances the
+north-star objective and whether it generalizes beyond the task. Only open a
+product ticket when one strong reproducible observation supports a general
+change.

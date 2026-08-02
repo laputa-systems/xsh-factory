@@ -1,0 +1,20 @@
+# The factory stages locally built XSH and XSHT binaries in .dist. Pi remains
+# a separately pinned worker dependency; no XSH release is downloaded here.
+FROM alpine:3.24.1@sha256:28bd5fe8b56d1bd048e5babf5b10710ebe0bae67db86916198a6eec434943f8b
+
+ARG PI_RELEASE_URL=https://github.com/joshuarli/pi/releases/download/v0.83.0/pi-776ea644a-bun-1.3.14-linux-arm64-musl
+ARG PI_RELEASE_SHA256=9d881d312d1b7ff478d679e5f04cbe605f92a2c40cc5a78653412ef282dc1ca1
+
+RUN apk add --no-cache ca-certificates curl libstdc++
+ARG FD_VERSION=10.2.0-r3
+RUN apk add --no-cache "fd=${FD_VERSION}"
+
+COPY .dist/xsh /usr/local/bin/xsh
+COPY .dist/xsht /usr/local/bin/xsht
+RUN chmod 0755 /usr/local/bin/xsh /usr/local/bin/xsht
+
+ADD --chmod=755 "$PI_RELEASE_URL" /usr/local/bin/pi
+RUN echo "$PI_RELEASE_SHA256  /usr/local/bin/pi" | sha256sum -c -
+
+WORKDIR /work
+COPY runtime/agents.md runtime/handbook.md runtime/review.md /work/

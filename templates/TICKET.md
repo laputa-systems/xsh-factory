@@ -26,6 +26,12 @@ and quantitative metrics that establish the observation.
 Explain why this looks like a reusable XSH language/tooling issue rather than
 task-specific confusion or evaluator noise.
 
+## North-star impact
+
+Explain how resolving this ticket would improve XSH ergonomics, correctness,
+learnability, practical systems-glue capability, or efficient agent use. State
+what evidence would show that it generalized beyond the source eval.
+
 ## Proposed XSH change
 
 Describe the smallest candidate implementation or bug fix. Do not claim that

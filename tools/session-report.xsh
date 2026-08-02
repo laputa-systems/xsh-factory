@@ -6,8 +6,34 @@ type Usage = {
   cache_read_tokens: Float,
   cache_write_tokens: Float,
   reasoning_tokens: Float,
+  reasoning_seen: Bool,
+  provider_total_tokens: Float,
+  provider_total_seen: Bool,
+  input_cost_usd: Float,
+  output_cost_usd: Float,
+  cache_read_cost_usd: Float,
+  cache_write_cost_usd: Float,
+  cost_components_seen: Bool,
   cost_usd: Float,
   total_tokens: Float,
+}
+
+type UsageDelta = {
+  input_tokens: Float,
+  output_tokens: Float,
+  cache_read_tokens: Float,
+  cache_write_tokens: Float,
+  reasoning_tokens: Float,
+  reasoning_seen: Bool,
+  provider_total_tokens: Float,
+  provider_total_seen: Bool,
+  input_cost_usd: Float,
+  output_cost_usd: Float,
+  cache_read_cost_usd: Float,
+  cache_write_cost_usd: Float,
+  cost_usd: Float,
+  cost_seen: Bool,
+  cost_components_seen: Bool,
 }
 
 type ThinkingBlock = {turn: Int, text: Str}
@@ -58,6 +84,83 @@ pure json_is_number(value: Any) -> Bool {
   }
 }
 
+pure usage_delta(value: Any) -> UsageDelta {
+  match value {
+    usage is Record => {
+      let raw_reasoning = json.get(usage, ["reasoning"], null)
+      let raw_provider_total = json.get(usage, ["totalTokens"], null)
+      let input = json_number(json.get(usage, ["input"], null))
+      let output = json_number(json.get(usage, ["output"], null))
+      let cache_read = json_number(json.get(usage, ["cacheRead"], null))
+      let cache_write = json_number(json.get(usage, ["cacheWrite"], null))
+      let reasoning_seen = json_is_number(raw_reasoning)
+      let provider_total_seen = json_is_number(raw_provider_total)
+      match json.get(usage, ["cost"], null) {
+        cost is Record => {
+          let raw_input = json.get(cost, ["input"], null)
+          let raw_output = json.get(cost, ["output"], null)
+          let raw_cache_read = json.get(cost, ["cacheRead"], null)
+          let raw_cache_write = json.get(cost, ["cacheWrite"], null)
+          let raw_total = json.get(cost, ["total"], null)
+          return {
+            input_tokens: input,
+            output_tokens: output,
+            cache_read_tokens: cache_read,
+            cache_write_tokens: cache_write,
+            reasoning_tokens: json_number(raw_reasoning),
+            reasoning_seen: reasoning_seen,
+            provider_total_tokens: json_number(raw_provider_total),
+            provider_total_seen: provider_total_seen,
+            input_cost_usd: json_number(raw_input),
+            output_cost_usd: json_number(raw_output),
+            cache_read_cost_usd: json_number(raw_cache_read),
+            cache_write_cost_usd: json_number(raw_cache_write),
+            cost_usd: json_number(raw_total),
+            cost_seen: json_is_number(raw_total),
+            cost_components_seen: json_is_number(raw_input) or
+              json_is_number(raw_output) or json_is_number(raw_cache_read) or
+              json_is_number(raw_cache_write),
+          }
+        }
+        _ => return {
+          input_tokens: input,
+          output_tokens: output,
+          cache_read_tokens: cache_read,
+          cache_write_tokens: cache_write,
+          reasoning_tokens: json_number(raw_reasoning),
+          reasoning_seen: reasoning_seen,
+          provider_total_tokens: json_number(raw_provider_total),
+          provider_total_seen: provider_total_seen,
+          input_cost_usd: 0.0,
+          output_cost_usd: 0.0,
+          cache_read_cost_usd: 0.0,
+          cache_write_cost_usd: 0.0,
+          cost_usd: 0.0,
+          cost_seen: false,
+          cost_components_seen: false,
+        }
+      }
+    }
+    _ => return {
+      input_tokens: 0.0,
+      output_tokens: 0.0,
+      cache_read_tokens: 0.0,
+      cache_write_tokens: 0.0,
+      reasoning_tokens: 0.0,
+      reasoning_seen: false,
+      provider_total_tokens: 0.0,
+      provider_total_seen: false,
+      input_cost_usd: 0.0,
+      output_cost_usd: 0.0,
+      cache_read_cost_usd: 0.0,
+      cache_write_cost_usd: 0.0,
+      cost_usd: 0.0,
+      cost_seen: false,
+      cost_components_seen: false,
+    }
+  }
+}
+
 proc iso_component(value: Str, offset: Int, length: Int) [error] -> Result[Int] {
   return value.byte_slice(offset, length).parse_int()
 }
@@ -104,6 +207,14 @@ proc read_session(session_path: Path) [fs, error] -> Result[SessionReport] {
   var cache_read_tokens = 0.0
   var cache_write_tokens = 0.0
   var reasoning_tokens = 0.0
+  var reasoning_seen = false
+  var provider_total_tokens = 0.0
+  var provider_total_seen = false
+  var input_cost_usd = 0.0
+  var output_cost_usd = 0.0
+  var cache_read_cost_usd = 0.0
+  var cache_write_cost_usd = 0.0
+  var cost_components_seen = false
   var cost_usd = 0.0
   var cost_seen = false
   var start_ms = -1
@@ -141,6 +252,22 @@ proc read_session(session_path: Path) [fs, error] -> Result[SessionReport] {
                   if json_text(json.get(message, ["isError"], false)) == "true" {
                     tool_errors += 1
                   }
+                  let delta = usage_delta(json.get(message, ["usage"], null))
+                  input_tokens += delta.input_tokens
+                  output_tokens += delta.output_tokens
+                  cache_read_tokens += delta.cache_read_tokens
+                  cache_write_tokens += delta.cache_write_tokens
+                  reasoning_tokens += delta.reasoning_tokens
+                  if delta.reasoning_seen { reasoning_seen = true }
+                  provider_total_tokens += delta.provider_total_tokens
+                  if delta.provider_total_seen { provider_total_seen = true }
+                  input_cost_usd += delta.input_cost_usd
+                  output_cost_usd += delta.output_cost_usd
+                  cache_read_cost_usd += delta.cache_read_cost_usd
+                  cache_write_cost_usd += delta.cache_write_cost_usd
+                  if delta.cost_components_seen { cost_components_seen = true }
+                  cost_usd += delta.cost_usd
+                  if delta.cost_seen { cost_seen = true }
                 } else if role == "assistant" {
                   assistant_turns += 1
                   let turn = assistant_turns
@@ -182,30 +309,45 @@ proc read_session(session_path: Path) [fs, error] -> Result[SessionReport] {
                     _ => {}
                   }
 
-                  match json.get(message, ["usage"], null) {
-                    usage is Record => {
-                      input_tokens += json_number(json.get(usage, ["input"], null))
-                      output_tokens += json_number(json.get(usage, ["output"], null))
-                      cache_read_tokens += json_number(json.get(usage, ["cacheRead"], null))
-                      cache_write_tokens += json_number(json.get(usage, ["cacheWrite"], null))
-                      reasoning_tokens += json_number(json.get(usage, ["reasoning"], null))
-                      match json.get(usage, ["cost"], null) {
-                        cost is Record => {
-                          let raw_total = json.get(cost, ["total"], null)
-                          if json_is_number(raw_total) {
-                            cost_usd += json_number(raw_total)
-                            cost_seen = true
-                          }
-                        }
-                        _ => {}
-                      }
-                    }
-                    _ => {}
-                  }
+                  let delta = usage_delta(json.get(message, ["usage"], null))
+                  input_tokens += delta.input_tokens
+                  output_tokens += delta.output_tokens
+                  cache_read_tokens += delta.cache_read_tokens
+                  cache_write_tokens += delta.cache_write_tokens
+                  reasoning_tokens += delta.reasoning_tokens
+                  if delta.reasoning_seen { reasoning_seen = true }
+                  provider_total_tokens += delta.provider_total_tokens
+                  if delta.provider_total_seen { provider_total_seen = true }
+                  input_cost_usd += delta.input_cost_usd
+                  output_cost_usd += delta.output_cost_usd
+                  cache_read_cost_usd += delta.cache_read_cost_usd
+                  cache_write_cost_usd += delta.cache_write_cost_usd
+                  if delta.cost_components_seen { cost_components_seen = true }
+                  cost_usd += delta.cost_usd
+                  if delta.cost_seen { cost_seen = true }
                 }
               }
               _ => malformed_lines += 1
             }
+          }
+          let entry_type = json_text(json.get(entry, ["type"], null))
+          if entry_type == "compaction" or entry_type == "branch_summary" {
+            let delta = usage_delta(json.get(entry, ["usage"], null))
+            input_tokens += delta.input_tokens
+            output_tokens += delta.output_tokens
+            cache_read_tokens += delta.cache_read_tokens
+            cache_write_tokens += delta.cache_write_tokens
+            reasoning_tokens += delta.reasoning_tokens
+            if delta.reasoning_seen { reasoning_seen = true }
+            provider_total_tokens += delta.provider_total_tokens
+            if delta.provider_total_seen { provider_total_seen = true }
+            input_cost_usd += delta.input_cost_usd
+            output_cost_usd += delta.output_cost_usd
+            cache_read_cost_usd += delta.cache_read_cost_usd
+            cache_write_cost_usd += delta.cache_write_cost_usd
+            if delta.cost_components_seen { cost_components_seen = true }
+            cost_usd += delta.cost_usd
+            if delta.cost_seen { cost_seen = true }
           }
         }
       }
@@ -231,6 +373,14 @@ proc read_session(session_path: Path) [fs, error] -> Result[SessionReport] {
       cache_read_tokens: cache_read_tokens,
       cache_write_tokens: cache_write_tokens,
       reasoning_tokens: reasoning_tokens,
+      reasoning_seen: reasoning_seen,
+      provider_total_tokens: provider_total_tokens,
+      provider_total_seen: provider_total_seen,
+      input_cost_usd: input_cost_usd,
+      output_cost_usd: output_cost_usd,
+      cache_read_cost_usd: cache_read_cost_usd,
+      cache_write_cost_usd: cache_write_cost_usd,
+      cost_components_seen: cost_components_seen,
       cost_usd: cost_usd,
       total_tokens: input_tokens + output_tokens + cache_read_tokens + cache_write_tokens,
     },
@@ -285,6 +435,25 @@ proc render_worker(
   let stop_text = render_counts(report.stop_reasons)
   let tools_text = render_counts(report.tool_names)
   let cost_text = if report.cost_seen { "$" + usage.cost_usd.format(precision: 6) } else { "unknown" }
+  let provider_total_text = if usage.provider_total_seen {
+    usage.provider_total_tokens.format(precision: 0)
+  } else {
+    "unknown"
+  }
+  let reasoning_text = if usage.reasoning_seen {
+    usage.reasoning_tokens.format(precision: 0)
+  } else {
+    "unknown (provider did not report)"
+  }
+  let visible_output_text = if usage.reasoning_seen {
+    f"${(usage.output_tokens - usage.reasoning_tokens).format(precision: 0)} (derived)"
+  } else {
+    "unknown (reasoning unavailable)"
+  }
+  let input_cost_text = if usage.cost_components_seen { "$" + usage.input_cost_usd.format(precision: 6) } else { "unknown" }
+  let output_cost_text = if usage.cost_components_seen { "$" + usage.output_cost_usd.format(precision: 6) } else { "unknown" }
+  let cache_read_cost_text = if usage.cost_components_seen { "$" + usage.cache_read_cost_usd.format(precision: 6) } else { "unknown" }
+  let cache_write_cost_text = if usage.cost_components_seen { "$" + usage.cache_write_cost_usd.format(precision: 6) } else { "unknown" }
   let budget_text = "$" + budget.format(precision: 2)
   let budget_status = if report.cost_seen and usage.cost_usd <= budget { "pass" } else { "fail-closed" }
   let lines: List[Str] = [
@@ -313,8 +482,14 @@ proc render_worker(
     f"- Output tokens: ${usage.output_tokens.format(precision: 0)}",
     f"- Cache-read tokens: ${usage.cache_read_tokens.format(precision: 0)}",
     f"- Cache-write tokens: ${usage.cache_write_tokens.format(precision: 0)}",
-    f"- Reasoning tokens: ${usage.reasoning_tokens.format(precision: 0)}",
+    f"- Provider-reported total tokens: ${provider_total_text}",
+    f"- Reasoning/thinking tokens (provider subset of output): ${reasoning_text}",
+    f"- Visible output estimate: ${visible_output_text}",
     f"- Total bucket tokens: ${usage.total_tokens.format(precision: 0)}",
+    f"- Input cost: ${input_cost_text}",
+    f"- Output cost: ${output_cost_text}",
+    f"- Cache-read cost: ${cache_read_cost_text}",
+    f"- Cache-write cost: ${cache_write_cost_text}",
     f"- Provider cost: ${cost_text}",
     f"- Budget: ${budget_text}",
     f"- Budget status: ${budget_status}",
@@ -351,12 +526,21 @@ proc render_cost(run_dir: Path, output: Path, reports: List[SessionReport]) [fs,
     "",
     "## Workers",
     "",
-    "| Role | Worker | Model | Turns | Thinking | Tool errors | Total tokens | Cost | Budget |",
-    "| --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |",
+    "| Role | Worker | Model | Turns | Thinking blocks | Reasoning tokens | Provider total | Bucket total | Tool errors | Cost | Budget |",
+    "| --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
   ]
   var roles: List[Str] = []
   var total_cost = 0.0
   var total_tokens = 0.0
+  var total_provider_tokens = 0.0
+  var total_reasoning_tokens = 0.0
+  var provider_total_unknown = 0
+  var reasoning_unknown = 0
+  var total_input_cost = 0.0
+  var total_output_cost = 0.0
+  var total_cache_read_cost = 0.0
+  var total_cache_write_cost = 0.0
+  var cost_components_unknown = 0
   var failed = 0
   for report in reports {
     let identity = worker_identity(report.path)
@@ -366,37 +550,85 @@ proc render_cost(run_dir: Path, output: Path, reports: List[SessionReport]) [fs,
     if ! report.cost_seen or usage.cost_usd > 2.0 { failed += 1 }
     total_cost += usage.cost_usd
     total_tokens += usage.total_tokens
+    if usage.provider_total_seen {
+      total_provider_tokens += usage.provider_total_tokens
+    } else {
+      provider_total_unknown += 1
+    }
+    if usage.reasoning_seen {
+      total_reasoning_tokens += usage.reasoning_tokens
+    } else {
+      reasoning_unknown += 1
+    }
+    if usage.cost_components_seen {
+      total_input_cost += usage.input_cost_usd
+      total_output_cost += usage.output_cost_usd
+      total_cache_read_cost += usage.cache_read_cost_usd
+      total_cache_write_cost += usage.cache_write_cost_usd
+    } else {
+      cost_components_unknown += 1
+    }
     let model_text = if report.models.len() == 0 { "unknown" } else { report.models.join(", ") }
+    let provider_total_text = if usage.provider_total_seen { usage.provider_total_tokens.format(precision: 0) } else { "unknown" }
+    let reasoning_text = if usage.reasoning_seen { usage.reasoning_tokens.format(precision: 0) } else { "unknown" }
     lines = lines.push(
-      f"| `${identity.role}` | `${identity.worker_id}` | ${model_text} | ${report.assistant_turns} | ${report.thinking_blocks} | ${report.tool_errors} | ${usage.total_tokens.format(precision: 0)} | ${cost_text} | $2.00 |",
+      f"| `${identity.role}` | `${identity.worker_id}` | ${model_text} | ${report.assistant_turns} | ${report.thinking_blocks} | ${reasoning_text} | ${provider_total_text} | ${usage.total_tokens.format(precision: 0)} | ${report.tool_errors} | ${cost_text} | $2.00 |",
     )
   }
   lines = lines.push("")
   lines = lines.push("## Role totals")
   lines = lines.push("")
-  lines = lines.push("| Role | Workers | Total tokens | Cost |")
-  lines = lines.push("| --- | ---: | ---: | ---: |")
+  lines = lines.push("| Role | Workers | Provider total | Reasoning tokens | Bucket total | Cost |")
+  lines = lines.push("| --- | ---: | ---: | ---: | ---: | ---: |")
   for role in roles {
     var workers = 0
     var role_tokens = 0.0
+    var role_provider_tokens = 0.0
+    var role_reasoning_tokens = 0.0
+    var role_provider_unknown = false
+    var role_reasoning_unknown = false
     var role_cost = 0.0
     for report in reports {
       if worker_identity(report.path).role == role {
         workers += 1
         role_tokens += report.usage.total_tokens
+        if report.usage.provider_total_seen {
+          role_provider_tokens += report.usage.provider_total_tokens
+        } else {
+          role_provider_unknown = true
+        }
+        if report.usage.reasoning_seen {
+          role_reasoning_tokens += report.usage.reasoning_tokens
+        } else {
+          role_reasoning_unknown = true
+        }
         role_cost += report.usage.cost_usd
       }
     }
     let role_cost_text = "$" + role_cost.format(precision: 6)
-    lines = lines.push(f"| `${role}` | ${workers} | ${role_tokens.format(precision: 0)} | ${role_cost_text} |")
+    let role_provider_text = if role_provider_unknown { "unknown" } else { role_provider_tokens.format(precision: 0) }
+    let role_reasoning_text = if role_reasoning_unknown { "unknown" } else { role_reasoning_tokens.format(precision: 0) }
+    lines = lines.push(f"| `${role}` | ${workers} | ${role_provider_text} | ${role_reasoning_text} | ${role_tokens.format(precision: 0)} | ${role_cost_text} |")
   }
   lines = lines.push("")
   lines = lines.push("## Run total")
   lines = lines.push("")
   lines = lines.push(f"- Workers: ${reports.len()}")
+  let provider_total_text = if provider_total_unknown == 0 { total_provider_tokens.format(precision: 0) } else { f"unknown (${provider_total_unknown} worker(s) did not report it)" }
+  let reasoning_total_text = if reasoning_unknown == 0 { total_reasoning_tokens.format(precision: 0) } else { f"unknown (${reasoning_unknown} worker(s) did not report it)" }
+  lines = lines.push(f"- Provider-reported total tokens: ${provider_total_text}")
+  lines = lines.push(f"- Provider-reported reasoning/thinking tokens: ${reasoning_total_text}")
   lines = lines.push(f"- Total bucket tokens: ${total_tokens.format(precision: 0)}")
   let total_cost_text = "$" + total_cost.format(precision: 6)
   lines = lines.push(f"- Total provider cost: ${total_cost_text}")
+  if cost_components_unknown == 0 {
+    lines = lines.push(f"- Input cost: ${total_input_cost.format(precision: 6)}")
+    lines = lines.push(f"- Output cost: ${total_output_cost.format(precision: 6)}")
+    lines = lines.push(f"- Cache-read cost: ${total_cache_read_cost.format(precision: 6)}")
+    lines = lines.push(f"- Cache-write cost: ${total_cache_write_cost.format(precision: 6)}")
+  } else {
+    lines = lines.push(f"- Cost component breakdown: unknown (${cost_components_unknown} worker(s) did not report components)")
+  }
   lines = lines.push(f"- Budget failures or unknown costs: ${failed}")
   fs.write(output, lines.join("\n") + "\n")?
   return Ok(if failed == 0 { 0 } else { 2 })

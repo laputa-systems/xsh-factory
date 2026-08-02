@@ -31,6 +31,22 @@ The standing Pi-session briefing in `roles/pi-session-briefing.md` explains
 how to interpret session messages, thinking blocks, tool results, usage, cost,
 and timing. Eval-managers read it before inspecting a run.
 
+## North star
+
+`NORTH-STAR.md` is the durable mission briefing for every role. It translates
+the ethos in `docs/CHAPTER-01-why-xsh.md` into an operating standard:
+improve XSH ergonomics, practical systems-glue capability, learnability,
+AI/token efficiency, and trustworthiness. Role prompts require a
+`## North-star impact` section so that each narrative output connects its local
+work to that mission or explicitly records that it produced no product signal.
+
+The factory must not optimize pass rate, activity, handbook size, or token
+count in isolation. A useful result is a reproducible improvement in XSH or in
+an agent's ability to use it, supported by evidence and a named next replay.
+
+The detailed layer contracts and outputs are in
+[`docs/FACTORY-LOOPS.md`](docs/FACTORY-LOOPS.md).
+
 ## One cycle
 
 Run one organization cycle with:
@@ -70,8 +86,10 @@ For strict timing tasks:
 0.90 <= median(candidate wall time) / median(oracle wall time) <= 1.10
 ```
 
-The current ecount eval is the first approved seed. New evals remain pending
-review until the user approves their proposal branch.
+Ecount is the reference upper bound for difficulty. The task-tags eval is the
+approved low-cost capability seed; task-ecount is the approved upper-bound
+seed. New capability evals remain pending review until the user approves their
+proposal branch.
 
 ## Tickets and changes
 
@@ -97,10 +115,13 @@ ticket, model, thinking level, session JSONL, extracted thinking transcript,
 and worker report.
 
 The run cost report includes one row per worker, role totals, eval/ticket
-totals, and the grand total. It includes input, output, cache, reasoning, and
-total tokens, provider-reported dollars, turns, tools, errors, wall time,
-model, and thinking level. Missing provider cost fails closed. A budget breach
-stops and fails that worker while preserving its partial session.
+totals, and the grand total. It includes input, output, cache, provider-total,
+bucket-total, and provider-reported reasoning tokens; cost components and
+total dollars; turns, tools, errors, wall time, model, and thinking level.
+Reasoning is a subset of output and is shown as unknown when the provider did
+not report it. Thinking-block count and transcript text are qualitative, not a
+token count. Missing provider cost fails closed. A budget breach stops and
+fails that worker while preserving its partial session.
 
 ## Launcher contract
 

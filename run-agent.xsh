@@ -46,7 +46,7 @@ pure default_budget(role: Str) -> Str {
 }
 
 pure default_tools(role: Str) -> Str {
-  if role == "eval-worker" { return "read,write,edit,bash" }
+  if role == "eval-worker" { return "read,write,edit,bash,grep,find,ls" }
   if role == "director" { return "read,write,edit,bash,grep,find,ls" }
   if role == "eval-designer" { return "read,write,edit,bash,grep,find,ls" }
   if role == "eval-manager" { return "read,write,edit,bash,grep,find,ls" }
@@ -76,6 +76,8 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   let factory_dir = env.path("FACTORY_DIR")?
   let run_dir = env.path("FACTORY_RUN_DIR")?
   let worker_dir = fp"${run_dir}/workers/${role}/${worker_id}"
+  let process_registry = fp"${run_dir}/processes"
+  let process_registry_file = fp"${process_registry}/${role}-${worker_id}.pids"
   let session = fp"${worker_dir}/session.jsonl"
   let report = fp"${worker_dir}/WORKER-REPORT.md"
   let budget = role_setting(role, "BUDGET_USD", default_budget(role))?
@@ -86,10 +88,13 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   let xsh_path = process.which("xsh")?
   let pi_path = process.which(pi_command)?
   let _ = pi_path
+  let self_pid = process.current_pid()?
   let parent = env.get_or("FACTORY_PARENT_ID", "unknown")?
   let eval_id = env.get_or("FACTORY_EVAL_ID", "")?
   let ticket_id = env.get_or("FACTORY_TICKET_ID", "")?
   let tools = role_setting(role, "TOOLS", default_tools(role))?
+  fs.mkdir(process_registry)?
+  fs.write(process_registry_file, f"${self_pid}\n")?
   fs.mkdir(worker_dir)?
   fs.write(fp"${worker_dir}/WORKER.md", f"# Worker\n\n- Role: `${role}`\n- Worker: `${worker_id}`\n- Parent: `${parent}`\n- Eval: `${eval_id}`\n- Ticket: `${ticket_id}`\n- Provider: `${provider}`\n- Model: `${model}`\n- Thinking: `${thinking}`\n- Budget: `${budget}`\n")?
 
@@ -123,7 +128,18 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     FACTORY_EVAL_ID: eval_id,
     FACTORY_TICKET_ID: ticket_id,
     FACTORY_XSH_REPO: env.get("FACTORY_XSH_REPO")?,
-    FACTORY_HELLO_IMAGE: env.get_or("FACTORY_HELLO_IMAGE", "xsh-factory-hello:latest")?,
+    FACTORY_XSH_COMMIT: env.get_or("FACTORY_XSH_COMMIT", "unknown")?,
+    FACTORY_XSH_GIT_STATUS: env.get_or("FACTORY_XSH_GIT_STATUS", "unknown")?,
+    FACTORY_XSH_BIN_SHA256: env.get_or("FACTORY_XSH_BIN_SHA256", "unknown")?,
+    FACTORY_XSHT_BIN_SHA256: env.get_or("FACTORY_XSHT_BIN_SHA256", "unknown")?,
+    FACTORY_IMAGE_ID: env.get_or("FACTORY_IMAGE_ID", "unknown")?,
+    FACTORY_EVAL_DIR: env.get_or("FACTORY_EVAL_DIR", "")?,
+    FACTORY_EVAL_IMAGE: env.get_or("FACTORY_EVAL_IMAGE", "")?,
+    FACTORY_EVAL_TASK_FILE: env.get_or("FACTORY_EVAL_TASK_FILE", "")?,
+    FACTORY_EVAL_ARTIFACT: env.get_or("FACTORY_EVAL_ARTIFACT", "")?,
+    FACTORY_LINEAGE_DIR: env.get_or("FACTORY_LINEAGE_DIR", "")?,
+    FACTORY_TASK_TAGS_IMAGE: env.get_or("FACTORY_TASK_TAGS_IMAGE", "xsh-factory-task-tags:latest")?,
+    FACTORY_TASK_ECOUNT_IMAGE: env.get_or("FACTORY_TASK_ECOUNT_IMAGE", "xsh-factory-task-ecount:latest")?,
     FACTORY_PLATFORM: env.get_or("FACTORY_PLATFORM", "linux/arm64")?,
     FACTORY_DIRECTOR_PROVIDER: role_setting("director", "PROVIDER", default_provider("director"))?,
     FACTORY_DIRECTOR_MODEL: role_setting("director", "MODEL", default_model("director"))?,
@@ -166,6 +182,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
       "--session", session.display(), "--pid", f"${handle.pid}",
       "--budget-usd", budget, "--marker", fp"${worker_dir}/BUDGET-BREACH".display()],
   )?
+  fs.write(process_registry_file, f"${self_pid}\n${handle.pid}\n${watcher.pid}\n")?
   let status = wait handle?
   let watcher_status = wait watcher?
   if fs.exists(session)? {

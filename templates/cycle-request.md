@@ -3,11 +3,13 @@
 ## Objective
 
 Run the smallest complete organization cycle that proves the requested
-factory path. Keep the cycle cheap and preserve all worker evidence.
+factory path and produces evidence toward `NORTH-STAR.md`. Keep the cycle
+cheap and preserve all worker evidence; do not create activity or tickets
+without a corresponding product hypothesis.
 
 ## Active evals
 
-- `hello`
+- `task-tags`
 
 ## New eval proposals
 
@@ -28,7 +30,8 @@ environment override in the invocation, using names such as
 
 ## Required outputs
 
-- hello executor pass;
+- task-tags executor pass;
 - a worker session report and extracted thinking transcript;
 - a run-level cost report covering every Pi session;
+- a `## North-star impact` section in each narrative role report;
 - a concise `RUN.md` result.
