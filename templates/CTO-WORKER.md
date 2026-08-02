@@ -1,0 +1,3 @@
+- `{{IDENTIFIER}}` (`{{ROLE}}`): result `{{RESULT}}`; report `{{REPORT}}`
+  - Turns: `{{TURNS}}`; bucket tokens: `{{TOKENS}}`; thinking blocks: `{{THINKING}}`
+  - Tool errors: `{{TOOL_ERRORS}}`; cost: `{{COST}}`; budget: `{{BUDGET}}`

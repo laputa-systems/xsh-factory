@@ -1,18 +1,34 @@
-##! Render one deterministic CTO briefing from a completed factory run.
+##! Render one human briefing from the structured run report and employee narratives.
 
 use factory_control as control
+use report_schema as schema
 
-pure first_nonempty(text: Str, fallback: Str) -> Str {
-  for line in text.lines() {
-    let trimmed = line.trim()
-    if trimmed != "" {
-      return trimmed
-    }
-  }
-  return fallback
+pure text(value: Any, fallback: Str = "unknown") -> Str {
+  let result = schema.value_text(value)
+  return if result == "" { fallback } else { result }
 }
 
-pure section_value(text: Str, headings: List[Str], fallback: Str) -> Str {
+pure relative_path(run_dir: Path, target: Path) -> Str {
+  return control.factory_relative_path(run_dir.display(), target)
+}
+
+pure worker_identifier(run_dir: Path, report: Path) -> Str {
+  let parts = relative_path(run_dir, report).split("/")
+  if parts.len() >= 3 and parts[0] == "workers" {
+    return f"${parts[1]}/${parts[2]}"
+  }
+  return relative_path(run_dir, report)
+}
+
+pure worker_role(run_dir: Path, report: Path) -> Str {
+  let parts = relative_path(run_dir, report).split("/")
+  if parts.len() >= 3 and parts[0] == "workers" {
+    return parts[1]
+  }
+  return "unknown"
+}
+
+pure narrative_section(text: Str, headings: List[Str], fallback: Str) -> Str {
   for heading in headings {
     let value = control.report_section(text, heading)
     if value != "" {
@@ -22,72 +38,76 @@ pure section_value(text: Str, headings: List[Str], fallback: Str) -> Str {
   return fallback
 }
 
-pure relative_path(run_dir: Path, target: Path) -> Str {
-  return control.factory_relative_path(run_dir.display(), target)
-}
-
-pure report_identifier(run_dir: Path, report: Path) -> Str {
-  let relative = relative_path(run_dir, report)
-  if report.name() == "DIRECTOR-REPORT.md" {
-    return "director"
-  }
-  let parts = relative.split("/")
-  if parts.len() >= 3 and parts[0] == "workers" {
-    return f"${parts[1]}/${parts[2]}"
-  }
-  return relative
-}
-
-pure report_role(run_dir: Path, report: Path) -> Str {
-  if report.name() == "DIRECTOR-REPORT.md" {
-    return "director"
-  }
-  if report.name() == "MANAGER-REPORT.md" {
-    return "eval-manager"
-  }
-  if report.name() == "DESIGNER-REPORT.md" {
-    return "eval-designer"
-  }
-  if report.name() == "ENGINEER-REPORT.md" {
-    return "engineer"
-  }
-  return "controller"
-}
-
-proc employee_decision(
-  run_dir: Path,
-  report: Path,
-  employee_template: Str,
-  action_template: Str,
-) [fs, error] -> Result[Record] {
-  let text = report.read_text()?
-  let identifier = report_identifier(run_dir, report)
-  let result = first_nonempty(control.report_section(text, "Result"), "not reported")
-  let effort = section_value(text, ["Effort metrics", "Cycle", "Session metrics", "Tests"], "not reported")
-  let handbook = section_value(text, ["Handbook decision", "Proposal"], "not reported")
-  let tickets = section_value(text, ["Tickets created", "Post-merge decisions", "Remaining risks"], "not reported")
-  let next = section_value(text, ["Next replay", "Review path", "Required-output status"], "not reported")
-  let impact = section_value(text, ["North-star impact"], "not reported")
-  let values: List[control.TemplateValue] = [
+proc employee_block(run_dir: Path, report: Path, template: Str) [fs, error] -> Result[Str] {
+  let narrative = report.read_text()?
+  let identifier = worker_identifier(run_dir, report)
+  let role = worker_role(run_dir, report)
+  let result = text(control.report_section(narrative, "Result"), "not reported")
+  return control.fill_template(template, [
     {key: "IDENTIFIER", value: identifier},
-    {key: "ROLE", value: report_role(run_dir, report)},
+    {key: "ROLE", value: role},
     {key: "RESULT", value: result},
     {key: "REPORT", value: relative_path(run_dir, report)},
-    {key: "EFFORT", value: effort},
-    {key: "HANDBOOK", value: handbook},
-    {key: "TICKETS", value: tickets},
-    {key: "NEXT", value: next},
-    {key: "IMPACT", value: impact},
-  ]
-  let rendered = control.fill_template(employee_template, values)
-  let action = control.fill_template(action_template, [
-    {key: "IDENTIFIER", value: identifier},
-    {key: "RESULT", value: result},
-    {key: "NEXT", value: next},
-    {key: "HANDBOOK", value: handbook},
-    {key: "TICKETS", value: tickets},
+    {key: "EFFORT", value: narrative_section(narrative, ["Effort metrics", "Cycle", "Session metrics", "Tests"], "not reported")},
+    {key: "HANDBOOK", value: narrative_section(narrative, ["Handbook decision", "Proposal"], "not reported")},
+    {key: "TICKETS", value: narrative_section(narrative, ["Tickets created", "Post-merge decisions", "Remaining risks"], "not reported")},
+    {key: "NEXT", value: narrative_section(narrative, ["Next replay", "Review path", "Required-output status"], "not reported")},
+    {key: "IMPACT", value: narrative_section(narrative, ["North-star impact"], "not reported")},
   ])
-  return Ok({employee: rendered, action: action})
+}
+
+proc worker_block(run_dir: Path, report: Path, template: Str) [fs, error] -> Result[Str] {
+  let value = json.read(report)?
+  let usage = json.get(value, ["usage"], null)
+  return control.fill_template(template, [
+    {key: "IDENTIFIER", value: worker_identifier(run_dir, report)},
+    {key: "ROLE", value: worker_role(run_dir, report)},
+    {key: "RESULT", value: text(json.get(value, ["result"], "unknown"))},
+    {key: "REPORT", value: relative_path(run_dir, report)},
+    {key: "TURNS", value: text(json.get(usage, ["assistant_turns"], 0), "0")},
+    {key: "TOKENS", value: text(json.get(usage, ["total_bucket_tokens"], 0), "0")},
+    {key: "TOOL_ERRORS", value: text(json.get(usage, ["tool_errors"], 0), "0")},
+    {key: "COST", value: text(json.get(usage, ["cost_usd"], "unknown"))},
+    {key: "BUDGET", value: text(json.get(usage, ["budget_usd"], "unknown"))},
+    {key: "THINKING", value: text(json.get(usage, ["thinking_blocks"], 0), "0")},
+  ])
+}
+
+proc tool_error_blocks(run_dir: Path, reports: List[Path], template: Str) [fs, error] -> Result[Str] {
+  var rows = ""
+  for report in reports {
+    let value = json.read(report)?
+    let errors = json.get(value, ["tool_errors"], [])
+    match errors {
+      values is List[Any] => {
+        for error in values {
+          rows = rows + control.fill_template(template, [
+            {key: "WORKER", value: worker_identifier(run_dir, report)},
+            {key: "REPORT", value: relative_path(run_dir, report)},
+            {key: "TURN", value: text(json.get(error, ["turn"], "unknown"))},
+            {key: "TOOL", value: text(json.get(error, ["tool"], "unknown"))},
+            {key: "SUMMARY", value: text(json.get(error, ["summary"], "(no summary)"), "(no summary)")},
+          ])
+        }
+      }
+      _ => {}
+    }
+  }
+  return if rows == "" { "No nonzero Pi tool results were recorded." } else { rows }
+}
+
+proc phase_blocks(run_dir: Path, reports: List[Path], template: Str) [fs, error] -> Result[Str] {
+  var rows = ""
+  for report in reports {
+    let value = json.read(report)?
+    rows = rows + control.fill_template(template, [
+      {key: "PATH", value: relative_path(run_dir, report)},
+      {key: "RESULT", value: text(json.get(value, ["result"], "unknown"))},
+      {key: "MODE", value: text(json.get(value, ["identity", "mode"], "unknown"))},
+      {key: "REPORT", value: relative_path(run_dir, report)},
+    ])
+  }
+  return if rows == "" { "This report is already a phase boundary; no child phases." } else { rows }
 }
 
 proc main(...argv: List[Str]) [fs, env, error, io] {
@@ -101,82 +121,74 @@ proc main(...argv: List[Str]) [fs, env, error, io] {
   let factory_dir = env.path("FACTORY_DIR", fs.cwd()?)?
   let template = fp"${factory_dir}/templates/CTO-REPORT.md".read_text()?
   let employee_template = fp"${factory_dir}/templates/CTO-EMPLOYEE.md".read_text()?
-  let action_template = fp"${factory_dir}/templates/CTO-ACTION.md".read_text()?
+  let worker_template = fp"${factory_dir}/templates/CTO-WORKER.md".read_text()?
+  let error_template = fp"${factory_dir}/templates/CTO-TOOL-ERROR.md".read_text()?
   let phase_template = fp"${factory_dir}/templates/CTO-PHASE.md".read_text()?
 
+  let root_report = fp"${run_dir}/report.json"
+  let root_exists = fs.exists(root_report)?
+  let root_value = if root_exists { json.read(root_report)? } else { null }
+  if ! root_exists or (! schema.valid(root_value, "phase") and ! schema.valid(root_value, "run")) {
+    eprint "structured run report is missing or invalid"
+    abort(1)
+  }
+  let root = root_value
+  let identity = json.get(root, ["identity"], null)
+  let data = json.get(root, ["data"], null)
   let request_path = fp"${run_dir}/CYCLE-REQUEST.md"
-  let request = if fs.exists(request_path)? { request_path.read_text()? } else { "" }
-  let mode = if request == "" { "unknown" } else { control.request_mode(request) }
-  let audit_path = fp"${run_dir}/AUDIT.md"
-  let audit_text = if fs.exists(audit_path)? { audit_path.read_text()? } else { "" }
-  let audit_result = if audit_text == "" { "missing" } else { control.audit_result(audit_text) }
-  let provenance_path = fp"${run_dir}/PROVENANCE.md"
 
   var phase_reports: List[Path] = []
   var employee_reports: List[Path] = []
+  var worker_reports: List[Path] = []
   for entry in fs.walk(run_dir, gitignore: false, hidden: true)? |> where .kind == "file" {
-    if entry.name == "RUN.md" or entry.name == "RUN-DESIGN.md" {
-      if entry.path.display() != fp"${run_dir}/RUN.md".display() {
-        phase_reports = phase_reports.push(entry.path)
-      }
+    if entry.name == "report.json" and entry.path.display().contains("/phases/") {
+      phase_reports = phase_reports.push(entry.path)
     }
-    if entry.name == "DIRECTOR-REPORT.md" or entry.name == "MANAGER-REPORT.md" or
-      entry.name == "DESIGNER-REPORT.md" or entry.name == "ENGINEER-REPORT.md" {
+    if entry.name == "REPORT.md" and entry.path.display().contains("/workers/") {
       employee_reports = employee_reports.push(entry.path)
+    }
+    if entry.name == "report.json" and entry.path.display().contains("/workers/") {
+      worker_reports = worker_reports.push(entry.path)
     }
   }
   phase_reports = phase_reports |> sort-by .display()
   employee_reports = employee_reports |> sort-by .display()
+  worker_reports = worker_reports |> sort-by .display()
 
-  var phases = ""
-  for report in phase_reports {
-    let text = report.read_text()?
-    phases = phases + control.fill_template(phase_template, [
-      {key: "PATH", value: relative_path(run_dir, report)},
-      {key: "RESULT", value: first_nonempty(control.report_section(text, "Result"), "not reported")},
-      {key: "REPORT", value: relative_path(run_dir, report)},
-    ])
-  }
-  if phases == "" {
-    phases = "No child phase reports were found."
-  }
-
-  var employee_decisions = ""
-  var action_queue = ""
+  var employees = ""
   for report in employee_reports {
-    let decision = employee_decision(run_dir, report, employee_template, action_template)?
-    employee_decisions = employee_decisions + decision.employee + "\n"
-    action_queue = action_queue + decision.action + "\n"
+    employees = employees + employee_block(run_dir, report, employee_template)? + "\n"
   }
-  if employee_decisions == "" {
-    employee_decisions = "No qualitative employee reports were found."
-    action_queue = "No employee action items were reported."
-  }
+  if employees == "" { employees = "No employee narratives were found." }
 
-  let cost_path = fp"${run_dir}/COST.md"
-  let cost = if fs.exists(cost_path)? { cost_path.read_text()? } else { "" }
-  let workers = section_value(cost, ["Workers"], "Cost report is unavailable.")
-  let tool_errors = section_value(cost, ["Tool-error details"], "No worker reported a nonzero Pi tool result.")
-  let role_totals = section_value(cost, ["Role totals"], "Cost report is unavailable.")
-  let run_total = section_value(cost, ["Run total"], "Cost report is unavailable.")
+  var workers = ""
+  for report in worker_reports {
+    workers = workers + worker_block(run_dir, report, worker_template)?
+  }
+  if workers == "" { workers = "No worker reports were found." }
+
+  let usage = json.get(data, ["cost"], json.get(data, ["usage"], null))
+  let cost_summary = control.fill_template(fp"${factory_dir}/templates/CTO-TOTAL.md".read_text()?, [
+    {key: "WORKERS", value: text(json.get(usage, ["workers"], 0), "0")},
+    {key: "TURNS", value: text(json.get(usage, ["assistant_turns"], 0), "0")},
+    {key: "TOKENS", value: text(json.get(usage, ["total_bucket_tokens"], 0), "0")},
+    {key: "COST", value: text(json.get(usage, ["cost_usd"], "unknown"))},
+    {key: "TOOL_ERRORS", value: text(json.get(usage, ["tool_errors"], 0), "0")},
+    {key: "BUDGET_FAILURES", value: text(json.get(usage, ["budget_failures"], 0), "0")},
+  ])
+
   let values: List[control.TemplateValue] = [
     {key: "RUN_ID", value: run_dir.name()},
     {key: "RESULT", value: result},
-    {key: "MODE", value: mode},
+    {key: "MODE", value: text(json.get(identity, ["mode"], "unknown"))},
     {key: "REQUEST", value: if fs.exists(request_path)? { relative_path(run_dir, request_path) } else { "missing" }},
-    {key: "AUDIT_RESULT", value: audit_result},
-    {key: "PROVENANCE", value: if fs.exists(provenance_path)? { "present" } else { "missing" }},
-    {key: "PHASES", value: phases},
+    {key: "REPORT_SCHEMA", value: relative_path(run_dir, root_report)},
+    {key: "PHASES", value: phase_blocks(run_dir, phase_reports, phase_template)?},
     {key: "WORKERS", value: workers},
-    {key: "TOOL_ERRORS", value: tool_errors},
-    {key: "ROLE_TOTALS", value: role_totals},
-    {key: "RUN_TOTAL", value: run_total},
-    {key: "EMPLOYEE_DECISIONS", value: employee_decisions},
-    {key: "ACTION_QUEUE", value: action_queue},
-    {key: "RUN_REPORT", value: if fs.exists(fp"${run_dir}/RUN.md")? { "RUN.md" } else { "pending: RUN.md" }},
-    {key: "COST_REPORT", value: if fs.exists(cost_path)? { "COST.md" } else { "missing: COST.md" }},
-    {key: "AUDIT_REPORT", value: if fs.exists(audit_path)? { "AUDIT.md" } else { "missing: AUDIT.md" }},
-    {key: "PROVENANCE_REPORT", value: if fs.exists(provenance_path)? { "PROVENANCE.md" } else { "missing: PROVENANCE.md" }},
+    {key: "TOOL_ERRORS", value: tool_error_blocks(run_dir, worker_reports, error_template)?},
+    {key: "COST_SUMMARY", value: cost_summary},
+    {key: "EMPLOYEE_DECISIONS", value: employees},
+    {key: "ACTION_QUEUE", value: "Review the structured report and employee narratives before the next paid cycle."},
   ]
   fs.write(output, control.fill_template(template, values))?
   abort(0)

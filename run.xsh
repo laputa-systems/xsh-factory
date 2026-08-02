@@ -1,4 +1,4 @@
-##! Dispatches one complete Markdown-directed factory cycle.
+##! Dispatches one complete factory cycle from a checked-in request.
 
 use factory_control as control
 use factory_runtime as runtime
@@ -34,21 +34,20 @@ proc preflight(
     "run-agent.xsh",
     "factory_control.xsh",
     "factory_runtime.xsh",
+    "factory_report.xsh",
+    "report_schema.xsh",
     "audit-run.xsh",
     "tools/cleanup-run.xsh",
     "tools/cycle-budget-watch.xsh",
     "tools/session-watch.xsh",
-    "templates/TOOL-ERRORS.md",
-    "templates/TOOL-ERROR.md",
-    "templates/CURRENT-EVIDENCE.md",
-    "templates/OPEN-TICKETS.md",
     "tools/cto-report.xsh",
     "templates/POSTMORTEM.md",
     "templates/CTO-REPORT.md",
     "templates/CTO-EMPLOYEE.md",
-    "templates/CTO-ACTION.md",
     "templates/CTO-PHASE.md",
-    "templates/ENGINEER-PATCH.md",
+    "templates/CTO-WORKER.md",
+    "templates/CTO-TOOL-ERROR.md",
+    "templates/CTO-TOTAL.md",
   ] {
     if ! fs.exists(fp"${factory_dir}/${required}")? {
       eprint f"factory prerequisite is missing: ${factory_dir}/${required}"

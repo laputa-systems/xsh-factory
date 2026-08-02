@@ -1,9 +1,7 @@
 # CTO briefing {{RUN_ID}}
 
-This is the deterministic first-pass briefing for the CTO. It consolidates
-controller outcomes, employee accounting, qualitative decisions, and the
-remaining action queue. The underlying session JSONL and reports remain the
-source of truth.
+This is the deterministic first-pass briefing for the CTO. The structured
+`report.json` files and raw Pi sessions remain the source of truth.
 
 ## Result
 
@@ -13,8 +11,7 @@ source of truth.
 
 - Mode: `{{MODE}}`
 - Request: `{{REQUEST}}`
-- Audit result: `{{AUDIT_RESULT}}`
-- Provenance: `{{PROVENANCE}}`
+- Structured report: `{{REPORT_SCHEMA}}`
 
 ## Phase outcomes
 
@@ -22,21 +19,17 @@ source of truth.
 
 ## Employee accounting
 
-### Per-worker metrics
+### Worker metrics
 
 {{WORKERS}}
 
-### Tool-error details
+### Nonzero tool results
 
 {{TOOL_ERRORS}}
 
-### Role totals
-
-{{ROLE_TOTALS}}
-
 ### Cycle total
 
-{{RUN_TOTAL}}
+{{COST_SUMMARY}}
 
 ## Employee decisions
 
@@ -48,8 +41,5 @@ source of truth.
 
 ## Evidence index
 
-- Controller summary: `{{RUN_REPORT}}`
-- Cost report: `{{COST_REPORT}}`
-- Deterministic audit: `{{AUDIT_REPORT}}`
-- Provenance: `{{PROVENANCE_REPORT}}`
-- Raw employee sessions and reports: `workers/`
+- Structured run or phase report: `{{REPORT_SCHEMA}}`
+- Raw employee sessions and structured worker reports: `workers/`

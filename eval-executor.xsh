@@ -153,7 +153,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   let report_status = process.run(process.command_argv(
     xsh_path,
     [xsh_path.display(), fp"${factory_dir}/tools/session-report.xsh", "--", "worker", "--session", session.display(),
-      "--output", fp"${worker_dir}/WORKER-REPORT.md".display(), "--role", "eval-worker",
+      "--output", fp"${worker_dir}/report.json".display(), "--role", "eval-worker",
       "--worker-id", f"${eval_id}-${trial_id}", "--budget-usd", budget],
   ))?
   let result = if agent_status.ok and watcher_status.ok and limit_status.ok and eval_status.ok and report_status.ok { "pass" } else { "fail" }
@@ -178,25 +178,23 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   let artifact_state = if fs.exists(fp"${work_dir}/${artifact_file}")? { "present" } else { "missing" }
   let review_state = if fs.exists(fp"${work_dir}/review.md")? { "present" } else { "missing" }
   let reporting_state = if report_status.ok { "pass" } else { "fail" }
-  let report_template = fp"${factory_dir}/templates/EXECUTOR-REPORT.md"
-  let report_values: List[control.TemplateValue] = [
-    {key: "RESULT", value: result},
-    {key: "CLASSIFICATION", value: classification},
-    {key: "AGENT_STATE", value: agent_state},
-    {key: "EVAL_STATE", value: eval_state},
-    {key: "BUDGET_STATE", value: budget_state},
-    {key: "REPORTING_STATE", value: reporting_state},
-    {key: "MANIFEST_STATE", value: manifest_state},
-    {key: "EVAL_ID", value: eval_id},
-    {key: "TRIAL_ID", value: trial_id},
-    {key: "AGENT_WALL", value: agent_wall.float().format(precision: 0)},
-    {key: "ARTIFACT_FILE", value: artifact_file},
-    {key: "ARTIFACT_STATE", value: artifact_state},
-    {key: "REVIEW_STATE", value: review_state},
-  ]
-  fs.write(fp"${worker_dir}/EXECUTOR-REPORT.md", control.fill_template(
-    report_template.read_text()?, report_values
-  ))?
+  let report_path = fp"${worker_dir}/report.json"
+  if fs.exists(report_path)? {
+    let session_report = json.read(report_path)?
+    let enriched = json.set(session_report, ["execution"], {
+      result: result,
+      classification: classification,
+      agent_state: agent_state,
+      evaluator_state: eval_state,
+      budget_state: budget_state,
+      reporting_state: reporting_state,
+      evaluator_manifest: if fs.exists(manifest)? { manifest.display() } else { "" },
+      agent_wall_ms: agent_wall,
+      artifact: {name: artifact_file, state: artifact_state},
+      review: {state: review_state},
+    })?
+    json.write(report_path, enriched, pretty: true)?
+  }
   print f"${eval_id} executor: ${result}"
   abort(if result == "pass" { 0 } else { 1 })
 }

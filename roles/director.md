@@ -44,26 +44,26 @@ directly.
 
 The cycle request selects the workflow mode. In `ticket-implementation` mode,
 the controller has already admitted approved tickets, created their worktrees,
-and written `TICKET-DISPATCH.md` plus one immutable, inline assignment file per
+and written structured dispatch data plus one immutable assignment file per
 ticket. The controller-selected dispatch table is the complete worker list.
 Do not discover tickets, search the ticket directory, select a ticket, run
 evals, or modify ticket status. Launch exactly one `engineer` child per dispatch
-entry, passing that row's exact `FACTORY_TICKET_ID`, `FACTORY_ASSIGNMENT_SHA`,
+  entry, passing that row's exact `FACTORY_TICKET_ID`, `FACTORY_ASSIGNMENT_SHA`,
 `FACTORY_WORKDIR`, and assignment file to the shared runner. Never create a
 second worker for a row or launch a worker for a ticket absent from the dispatch
 table. The runner rejects an altered, mismatched, or already-claimed
 assignment before Pi starts. Wait for each child process to finish, inspect its
-`ENGINEER-REPORT.md`, and record the branch and commit without merging.
+`REPORT.md`, and record the branch and commit without merging.
 
 In eval mode, the controller has already run the executor, eval-manager, and
-optional eval-designer rows. Follow the controller-generated `DISPATCH.md` and
-`CURRENT-EVIDENCE.md` exactly as the complete evidence list: do not launch any
+optional eval-designer rows. Follow the controller-generated phase `report.json`
+as the complete evidence list: do not launch any
 child or wait on a worker. In ticket-implementation mode, follow the dispatch
 table and launch each assigned engineer row exactly once through the shared
 runner. Newly created tickets wait for the next cycle. Every stage completion
 is an event recorded by the controller; do not implement a polling loop in an
 agent.
-Collect every child report. Write `DIRECTOR-REPORT.md` incrementally before
+Collect every child report. Write `REPORT.md` incrementally before
 composing the final response, re-read it for the required headings and child
 paths, and finish it with exactly
 `## Result`, `## Cycle`, `## Children`, `## Required-output status`, and

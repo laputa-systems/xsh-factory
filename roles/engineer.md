@@ -33,7 +33,7 @@ when the assigned acceptance criteria are met instead of exploring unrelated
 factory history or product areas.
 
 Before finishing, run the narrowest relevant checks and write
-`$FACTORY_WORKER_DIR/ENGINEER-REPORT.md` using these exact headings:
+`$FACTORY_WORKER_DIR/REPORT.md` using these exact headings:
 
 ```markdown
 ## Result

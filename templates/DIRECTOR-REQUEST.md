@@ -1,15 +1,14 @@
 # Director assignment: {{MODE}} cycle
 
 Read `{{FACTORY_DIR}}/NORTH-STAR.md`, `{{RUN_DIR}}/CYCLE-REQUEST.md`,
-`{{RUN_DIR}}/PROVENANCE.md`, `{{RUN_DIR}}/{{DISPATCH_FILE}}`, and
-`{{FACTORY_DIR}}/roles/pi-session-briefing.md` before acting. In eval mode also
-read `{{RUN_DIR}}/CURRENT-EVIDENCE.md` and `{{RUN_DIR}}/OPEN-TICKETS.md`. The durable
+`{{RUN_DIR}}/report.json`, and
+`{{FACTORY_DIR}}/roles/pi-session-briefing.md` before acting. The durable
 objective is to improve XSH and an agent's ability to use it as practical,
 clear, composable systems glue.
 
-The controller-owned `{{DISPATCH_FILE}}` is authoritative. Do not discover
-work, infer additional roles, select a different ticket, or create a second
-worker. {{EXECUTION_DIRECTIVE}}
+The controller-owned structured dispatch and phase `report.json` are
+authoritative. Do not discover work, infer additional roles, select a
+different ticket, or create a second worker. {{EXECUTION_DIRECTIVE}}
 
 Rows marked `not-requested` are records only, not children. In eval mode every
 child row is already complete evidence; in ticket mode launch only the
@@ -20,7 +19,7 @@ branch. Ticket branches remain pending user review; eval proposals and newly
 created tickets wait for the next human-approved transition.
 
 When all rows finish, inspect their session reports and narrative reports.
-Write `{{RUN_DIR}}/DIRECTOR-REPORT.md` incrementally before the final response;
+Write `{{RUN_DIR}}/workers/director/director/REPORT.md` incrementally before the final response;
 re-read it for the required headings and child paths. State the report path and
 result in the final response instead of pasting the report. The report must
 have exactly these headings:

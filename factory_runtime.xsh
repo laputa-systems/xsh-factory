@@ -177,26 +177,29 @@ export proc emit_event(
   caused_by: Str,
   detail: Str,
 ) [fs, error] -> Result[Unit] {
-  let events = fp"${run_dir}/events"
+  let events = fp"${run_dir}/events.jsonl"
   let states = fp"${run_dir}/states"
   let state_file = fp"${states}/${subject}.state"
-  fs.mkdir(events)?
+  fs.mkdir(run_dir)?
   fs.mkdir(states)?
   let current = if fs.exists(state_file)? { fs.read_text(state_file)?.trim() } else { "created" }
   if ! control.transition_allowed(current, state) {
     return Err(RuntimeError.InvalidTransition(subject: subject, current: current, next: state))
   }
-  let values: List[control.TemplateValue] = [
-    {key: "EVENT_ID", value: name},
-    {key: "RUN_ID", value: run_dir.display()},
-    {key: "KIND", value: name},
-    {key: "SUBJECT", value: subject},
-    {key: "STATE", value: state},
-    {key: "ATTEMPT", value: attempt.float().format(precision: 0)},
-    {key: "CAUSED_BY", value: caused_by},
-    {key: "DETAIL", value: detail},
-  ]
-  fs.write_atomic(fp"${events}/${name}.md", control.fill_template(template.read_text()?, values))?
+  let _ = template
+  let event = {
+    schema_version: 1,
+    kind: "event",
+    event_id: name,
+    run_id: run_dir.display(),
+    subject: subject,
+    state: state,
+    attempt: attempt,
+    caused_by: caused_by,
+    detail: detail,
+  }
+  let existing = if fs.exists(events)? { fs.read_text(events)? } else { "" }
+  fs.write_atomic(events, existing + json.encode(event)? + "\n")?
   fs.write_atomic(state_file, state + "\n")?
   return Ok()
 }
@@ -229,7 +232,7 @@ proc budget_breach_section(
   worker_label: Str,
 ) [fs, error] -> Result[Str] {
   let worker_run = control.factory_relative_path(
-    factory_dir.display(), fp"${worker_dir}/WORKER-REPORT.md"
+    factory_dir.display(), fp"${worker_dir}/report.json"
   )
   let template = fp"${factory_dir}/templates/BUDGET-BREACH.md"
   let values: List[control.TemplateValue] = [
@@ -371,14 +374,18 @@ proc find_merged_implementation(
   if fs.exists(runs)? {
     for run_entry in fs.dirs(runs, gitignore: false, hidden: true)? {
       let run_dir = run_entry.path
-      let summary = fp"${run_dir}/RUN.md"
-      let report = fp"${run_dir}/workers/engineer/${ticket_id}/ENGINEER-REPORT.md"
+      let summary = fp"${run_dir}/report.json"
+      let report = fp"${run_dir}/workers/engineer/${ticket_id}/REPORT.md"
       if ! fs.exists(summary)? or ! fs.exists(report)? {
         continue
       }
-      let summary_text = fs.read_text(summary)?
       let report_text = fs.read_text(report)?
-      if ! summary_text.contains("## Result\n\npass") or
+      let summary_value = json.read(summary)?
+      let summary_result = match json.get(summary_value, ["result"], "") {
+        s is Str => s,
+        _ => "",
+      }
+      if summary_result != "pass" or
         ! control.engineer_report_contract_ok(report_text) {
         continue
       }
@@ -522,54 +529,4 @@ export proc acquire_run_lock(factory_dir: Path) [fs, error] -> Result[Record] {
 export proc verify_factory_handbook(factory_dir: Path, expected_sha: Str) [fs, error] -> Result[Bool] {
   let handbook = fp"${factory_dir}/runtime/handbook.md"
   return fs.exists(handbook)? and hash.sha256(handbook)?.hex() == expected_sha
-}
-
-## Writes the bounded ticket view that supervisors consume for one run.
-export proc write_open_ticket_index(factory_dir: Path, output: Path) [fs, error] -> Result[Unit] {
-  let row_template = fp"${factory_dir}/templates/OPEN-TICKET-ROW.md"
-  var rows: List[Str] = []
-  let ticket_dir = fp"${factory_dir}/tickets"
-  if fs.exists(ticket_dir)? {
-    for entry in fs.files(ticket_dir, gitignore: false, hidden: true) |> sort-by .path.display() {
-      if ! entry.name.ends_with(".md") { continue }
-      let text = entry.path.read_text()?
-      let status = control.ticket_status(text)
-      if status == "Closed." or status == "Merged." { continue }
-      rows = rows.push(control.fill_template(row_template.read_text()?, [
-        {key: "TICKET_ID", value: entry.name.replace(".md", "")},
-        {key: "STATUS", value: if status == "" { "unknown" } else { status }},
-        {key: "EVAL_ID", value: if control.ticket_eval(text) == "" { "unknown" } else { control.ticket_eval(text) }},
-        {key: "PATH", value: entry.path.display()},
-      ]))
-    }
-  }
-  let document = fp"${factory_dir}/templates/OPEN-TICKETS.md"
-  let body = if rows.len() == 0 { "No open tickets are currently admitted.\n" } else { rows.join("\n") }
-  fs.write_atomic(output, control.fill_template(document.read_text()?, [{key: "ROWS", value: body}]))?
-  return Ok()
-}
-
-## Writes a current-run evidence packet before any paid supervisor reviews it.
-export proc write_current_evidence(
-  factory_dir: Path,
-  run_dir: Path,
-  eval_id: Str,
-  trial_count: Int,
-  handbook: Path,
-  dispatch: Path,
-  worker_rows: Str,
-) [fs, error] -> Result[Unit] {
-  let open_tickets = fp"${run_dir}/OPEN-TICKETS.md"
-  write_open_ticket_index(factory_dir, open_tickets)?
-  let template = fp"${factory_dir}/templates/CURRENT-EVIDENCE.md"
-  let values: List[control.TemplateValue] = [
-    {key: "EVAL_ID", value: eval_id},
-    {key: "TRIAL_COUNT", value: trial_count.float().format(precision: 0)},
-    {key: "HANDBOOK", value: handbook.display()},
-    {key: "DISPATCH", value: dispatch.display()},
-    {key: "OPEN_TICKETS", value: open_tickets.display()},
-    {key: "WORKER_ROWS", value: worker_rows},
-  ]
-  fs.write_atomic(fp"${run_dir}/CURRENT-EVIDENCE.md", control.fill_template(template.read_text()?, values))?
-  return Ok()
 }

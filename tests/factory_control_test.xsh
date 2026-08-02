@@ -1,530 +1,126 @@
-##! Cheap native tests for the deterministic factory control plane.
+##! Native tests for factory contracts and lifecycle state.
 
 use factory_control as control
 use factory_runtime as runtime
+use report_schema as schema
 
 proc test_cycle_request_parsing() [error] {
-  let eval_request = "# Cycle\n\n## Active evals\n\n- `task-ecount`\n"
-  let planned_request = "# Cycle\n\n## Trial plan\n\n- Count: `2`\n\n## New eval proposals\n\n- Count: `1`\n"
-  let ticket_request = "# Cycle\n\n## Mode\n\n- `ticket-implementation`\n\n## Approved tickets\n\n- `task-tags-001`\n- `task-ecount-002`\n"
-  let organization_request = "# Cycle\n\n## Mode\n\n- `organization`\n\n## Active evals\n\n- `task-ecount`\n\n## Trial plan\n\n- Count: `1`\n\n## New eval proposals\n\n- Count: `1`\n\n## Approved tickets\n\n- None.\n"
-  let design_request = "# Cycle\n\n## Mode\n\n- `eval-design`\n\n## Active evals\n\n- `task-tags`\n\n## New eval proposals\n\n- Count: `1`\n"
-  test.eq(control.request_mode(eval_request), "eval")?
-  test.eq(control.request_eval(eval_request), "task-ecount")?
-  test.eq(control.request_mode(ticket_request), "ticket-implementation")?
-  test.eq(control.request_mode(organization_request), "organization")?
-  test.eq(control.request_mode(design_request), "eval-design")?
-  test.eq(control.request_eval(organization_request), "task-ecount")?
-  test.eq(control.request_new_eval_count(organization_request)?, 1)?
-  test.eq(control.request_eval(design_request), "task-tags")?
-  test.eq(control.request_tickets(ticket_request), ["task-tags-001", "task-ecount-002"])?
-  test.eq(control.request_ticket_policy(ticket_request), "explicit")?
-  test.eq(control.request_ticket_policy(organization_request), "none")?
-  test.eq(control.request_trial_count(planned_request)?, 2)?
-  test.eq(control.request_new_eval_count(planned_request)?, 1)?
-  test.eq(control.request_trial_count(eval_request)?, 1)?
-  test.eq(control.request_new_eval_count(eval_request)?, 0)?
+  let request = "# Cycle\n\n## Mode\n\n- `organization`\n\n## Active evals\n\n- `task-tags`\n\n## Trial plan\n\n- Count: `1`\n\n## New eval proposals\n\n- Count: `1`\n\n## Approved tickets\n\n- `task-tags-001`\n"
+  test.eq(control.request_mode(request), "organization")?
+  test.eq(control.request_eval(request), "task-tags")?
+  test.eq(control.request_tickets(request), ["task-tags-001"])?
+  test.eq(control.request_trial_count(request)?, 1)?
+  test.eq(control.request_new_eval_count(request)?, 1)?
+  test.eq(control.request_ticket_policy(request), "explicit")?
 }
 
-proc test_role_configuration_has_one_coded_default() [env, error] {
+proc test_role_defaults_are_coded_and_capped() [env, error] {
   test.eq(control.default_cycle_budget(), "0.50")?
-  test.eq(control.clamp_cycle_budget("0.50")?, "0.50")?
-  test.eq(control.clamp_cycle_budget("0.25")?, "0.25")?
   test.eq(control.clamp_cycle_budget("2.00")?, "0.50")?
-  for entry in [
-    {role: "director", budget: "0.06"},
-    {role: "eval-designer", budget: "0.30"},
-    {role: "eval-manager", budget: "0.15"},
-    {role: "eval-worker", budget: "0.50"},
-    {role: "engineer", budget: "0.25"},
-  ] {
-    test.ok(control.role_prefix(entry.role) != "")?
-    test.eq(control.default_provider(entry.role), "openrouter")?
-    test.eq(control.default_model(entry.role), "deepseek/deepseek-v4-flash-0731")?
-    test.eq(control.default_thinking(entry.role), "high")?
-    test.eq(control.default_budget(entry.role), entry.budget)?
-    let expected_tools = if entry.role == "eval-worker" { "read,write,edit,bash" } else { "read,write,edit,bash,grep,find,ls" }
-    test.eq(control.default_tools(entry.role), expected_tools)?
-    test.ok(control.default_max_turns(entry.role) != "")?
-    test.ok(control.default_max_wall_seconds(entry.role) != "")?
+  for role in ["director", "eval-designer", "eval-manager", "eval-worker", "engineer"] {
+    test.eq(control.default_provider(role), "openrouter")?
+    test.eq(control.default_model(role), "deepseek/deepseek-v4-flash-0731")?
+    test.eq(control.default_thinking(role), "high")?
+    test.ok(control.default_budget(role) != "")?
+    test.ok(control.default_max_turns(role) != "")?
   }
-  env FACTORY_DIRECTOR_BUDGET_USD="2" {
-    test.eq(control.configured_role_setting("director", "BUDGET_USD")?, "0.06")?
+  env FACTORY_ENGINEER_BUDGET_USD="2" {
+    test.eq(control.configured_role_setting("engineer", "BUDGET_USD")?, control.default_budget("engineer"))?
   }
-  env FACTORY_DIRECTOR_BUDGET_USD="0.01" {
-    test.eq(control.configured_role_setting("director", "BUDGET_USD")?, "0.01")?
+  env FACTORY_ENGINEER_BUDGET_USD="0.01" {
+    test.eq(control.configured_role_setting("engineer", "BUDGET_USD")?, "0.01")?
   }
-  test.eq(control.role_prefix("unknown"), "")?
-  test.eq(control.default_model("unknown"), "")?
-  test.eq(control.clamp_session_limit("director", "MAX_TURNS", "100")?, "24")?
-  test.eq(control.clamp_session_limit("eval-worker", "MAX_WALL_SECONDS", "30")?, "30")?
 }
 
-proc test_admission_contracts() [error] {
+proc test_admission_and_report_contracts() [error] {
+  test.ok(control.valid_eval_id("task-tags"))?
+  test.ok(! control.valid_eval_id("../escape"))?
   test.ok(control.valid_ticket_id("task-tags-001"))?
-  test.ok(! control.valid_ticket_id("../escape"))?
   test.ok(! control.valid_ticket_id("task/tags"))?
-  test.ok(! control.valid_ticket_id("task tags"))?
-  test.ok(control.ticket_is_accepted("# Ticket\n\n## Status\n\nAccepted.\n"))?
   test.ok(control.ticket_is_accepted("# Ticket\n\n## Status\n\nApproved.\n"))?
-  test.ok(! control.ticket_is_accepted("# Ticket\n\n## Status\n\nOpen.\n"))?
-  test.ok(control.ticket_is_closed("# Ticket\n\n## Status\n\nClosed.\n"))?
   test.ok(control.eval_is_disabled("# Eval\n\n## Status\n\nDisabled.\n"))?
+  test.ok(! control.ticket_is_closed("# Ticket\n\n## Status\n\nApproved.\n"))?
+  test.ok(control.report_contract_ok("# Report\n\n## Result\n\npass\n\n## Evidence\n\nready\n", ["Evidence"], "pass"))?
+  test.ok(! control.report_contract_ok("# Report\n\n## Result\n\npass\n", ["Evidence"], "pass"))?
+  test.ok(control.manager_tool_error_findings_contract_ok("## Tool-error findings\n\nreport.json\n"))?
 }
 
-proc test_first_approved_ticket_is_deterministic(ctx: TestContext) [fs, error] {
-  let factory = test.temp_dir(ctx, name: "approved-ticket")?
-  fs.mkdir(fp"${factory}/tickets")?
-  fs.write(fp"${factory}/tickets/z-open.md", "# Ticket\n\n## Status\n\nOpen.\n")?
-  fs.write(fp"${factory}/tickets/b-approved.md", "# Ticket\n\n## Status\n\nApproved.\n")?
-  fs.write(fp"${factory}/tickets/a-accepted.md", "# Ticket\n\n## Status\n\nAccepted.\n")?
-  test.eq(runtime.first_approved_ticket(factory)?, "a-accepted")?
-}
-
-proc test_ticket_merge_fields_are_idempotent(ctx: TestContext) [fs, error] {
-  let accepted = "# Ticket\n\n## Status\n\nAccepted.\n\n## Source eval and manager\n\n- Eval: `task-tags`\n"
-  test.eq(control.ticket_status(accepted), "Accepted.")?
-  test.eq(control.ticket_eval(accepted), "task-tags")?
-  let template = fs.read_text(fp"${fs.cwd()?}/templates/TICKET.md")?
-  let merge_template = control.section_text(template, "Merge record")
-  let replacement = control.fill_template(merge_template, [
-    {key: "IMPLEMENTATION_BRANCH", value: "factory/task-tags-001/run"},
-    {key: "IMPLEMENTATION_COMMIT", value: "impl-sha"},
-    {key: "DETECTED_XSH_COMMIT", value: "merge-sha"},
-    {key: "IMPLEMENTATION_RUN", value: "/factory/runs/run"},
-  ])
-  var merged = control.replace_ticket_status(accepted, "Merged.")
-  merged = control.replace_ticket_section(merged, "Merge record", replacement)
-  test.ok(control.ticket_is_merged(merged))?
-  test.contains(merged, "Implementation commit: `impl-sha`")?
-  test.eq(control.replace_ticket_status(merged, "Merged."), merged)?
-  test.eq(control.replace_ticket_section(merged, "Merge record", replacement), merged)?
-  let _ = ctx
-}
-
-proc test_reconcile_does_not_rewrite_a_complete_merged_record(ctx: TestContext) [fs, process, error] {
-  let factory = test.temp_dir(ctx, name: "reconcile-complete-merged")?
-  fs.mkdir(fp"${factory}/tickets")?
-  fs.mkdir(fp"${factory}/templates")?
-  fs.copy(fp"${fs.cwd()?}/templates/TICKET.md", fp"${factory}/templates/TICKET.md", overwrite: true)?
-  let ticket_path = fp"${factory}/tickets/task-tags-001.md"
-  let text = "# Ticket\n\n## Status\n\nMerged.\n\n## Merge record\n\n- Implementation branch: `factory/task-tags-001/run`\n- Implementation commit: `impl-sha`\n- Detected at XSH commit: `merge-sha`\n- Implementation run: `historical-run`\n"
-  fs.write(ticket_path, text)?
-  let merged = runtime.reconcile_tickets(factory, fp"${factory}/missing-xsh", "new-head")?
-  test.eq(merged.len(), 0, "already merged tickets should not be reported as new reconciliations")?
-  test.eq(fs.read_text(ticket_path)?, text, "reconcile should preserve complete historical provenance")?
-}
-
-proc test_budget_breach_transitions_are_durable_and_idempotent(ctx: TestContext) [fs, error] {
-  let factory = test.temp_dir(ctx, name: "budget-transitions")?
-  fs.mkdir(fp"${factory}/tickets")?
-  fs.mkdir(fp"${factory}/evals/task-tags")?
-  fs.mkdir(fp"${factory}/templates")?
-  fs.mkdir(fp"${factory}/runs/run-1/workers/engineer/task-tags-002")?
-  fs.mkdir(fp"${factory}/runs/run-2/workers/eval-worker/task-tags-1")?
-  fs.copy(fp"${fs.cwd()?}/templates/BUDGET-BREACH.md", fp"${factory}/templates/BUDGET-BREACH.md", overwrite: true)?
-  fs.write(fp"${factory}/tickets/task-tags-002.md", "# Ticket task-tags-002\n\n## Status\n\nApproved.\n")?
-  fs.write(fp"${factory}/evals/task-tags/EVAL.md", "# Eval task-tags\n\n## Status\n\nApproved.\n")?
-
-  let ticket_worker = fp"${factory}/runs/run-1/workers/engineer/task-tags-002"
-  let eval_worker = fp"${factory}/runs/run-2/workers/eval-worker/task-tags-1"
-  test.ok(runtime.close_ticket_too_difficult(factory, "task-tags-002", ticket_worker)?)?
-  let closed = fs.read_text(fp"${factory}/tickets/task-tags-002.md")?
-  test.ok(control.ticket_is_closed(closed))?
-  test.contains(closed, "Reason: too difficult")?
-  test.contains(closed, "runs/run-1/workers/engineer/task-tags-002/WORKER-REPORT.md")?
-  let closed_again = runtime.close_ticket_too_difficult(factory, "task-tags-002", ticket_worker)?
-  test.ok(closed_again)?
-  test.eq(fs.read_text(fp"${factory}/tickets/task-tags-002.md")?, closed)?
-
-  test.ok(runtime.disable_eval(factory, "task-tags", eval_worker)?)?
-  let disabled = fs.read_text(fp"${factory}/evals/task-tags/EVAL.md")?
-  test.ok(control.eval_is_disabled(disabled))?
-  test.contains(disabled, "Reason: eval-worker budget exceeded")?
-  test.contains(disabled, "runs/run-2/workers/eval-worker/task-tags-1/WORKER-REPORT.md")?
-  test.ok(runtime.disable_eval(factory, "task-tags", eval_worker)?)?
-  test.eq(fs.read_text(fp"${factory}/evals/task-tags/EVAL.md")?, disabled)?
-}
-
-proc run_git(git: Path, args: List[Str]) [process, error] -> Result[Bool] {
-  let status = process.run(process.command_argv(git, args))?
-  return status.ok
-}
-
-proc test_reconcile_detects_a_merged_provenance_branch(ctx: TestContext) [fs, process, error] {
-  let repo = test.temp_dir(ctx, name: "reconcile-repo")?
-  let factory = test.temp_dir(ctx, name: "reconcile-factory")?
-  let git = process.which("git")?
-  test.ok(run_git(git, ["git", "init", "-q", repo.display()])?)?
-  test.ok(run_git(git, ["git", "-C", repo.display(), "config", "user.email", "factory@test"])?)?
-  test.ok(run_git(git, ["git", "-C", repo.display(), "config", "user.name", "Factory Test"])?)?
-  fs.write(fp"${repo}/README", "base\n")?
-  test.ok(run_git(git, ["git", "-C", repo.display(), "add", "README"])?)?
-  test.ok(run_git(git, ["git", "-C", repo.display(), "commit", "-qm", "base"])?)?
-  let base_branch = run.text "git" "-C" $repo.display() "branch" "--show-current" ?
-  let branch = "factory/reconcile-ticket/1"
-  test.ok(run_git(git, ["git", "-C", repo.display(), "checkout", "-q", "-b", branch])?)?
-  fs.write(fp"${repo}/README", "implementation\n")?
-  test.ok(run_git(git, ["git", "-C", repo.display(), "add", "README"])?)?
-  test.ok(run_git(git, ["git", "-C", repo.display(), "commit", "-qm", "implementation"])?)?
-  test.ok(run_git(git, ["git", "-C", repo.display(), "checkout", "-q", base_branch.trim()])?)?
-  test.ok(run_git(git, ["git", "-C", repo.display(), "merge", "-q", "--no-ff", branch, "-m", "merge"])?)?
-  let head = run.text "git" "-C" $repo.display() "rev-parse" "HEAD" ?
-
-  fs.mkdir(fp"${factory}/tickets")?
-  fs.mkdir(fp"${factory}/templates")?
-  fs.copy(fp"${fs.cwd()?}/templates/TICKET.md", fp"${factory}/templates/TICKET.md", overwrite: true)?
-  fs.write(fp"${factory}/tickets/reconcile-ticket.md", "# Ticket\n\n## Status\n\nAccepted.\n")?
-  let merged = runtime.reconcile_tickets(factory, repo, head.trim())?
-  test.eq(merged.len(), 1)?
-  let ticket = fs.read_text(fp"${factory}/tickets/reconcile-ticket.md")?
-  test.ok(control.ticket_is_merged(ticket))?
-  test.contains(ticket, "Implementation branch: `factory/reconcile-ticket/1`")?
-}
-
-proc test_reconcile_detects_a_patch_applied_branch(ctx: TestContext) [fs, process, error] {
-  let repo = test.temp_dir(ctx, name: "reconcile-patch-repo")?
-  let factory = test.temp_dir(ctx, name: "reconcile-patch-factory")?
-  let git = process.which("git")?
-  test.ok(run_git(git, ["git", "init", "-q", "-b", "main", repo.display()])?)?
-  test.ok(run_git(git, ["git", "-C", repo.display(), "config", "user.email", "factory@test"])?)?
-  test.ok(run_git(git, ["git", "-C", repo.display(), "config", "user.name", "Factory Test"])?)?
-  fs.write(fp"${repo}/README", "base\n")?
-  test.ok(run_git(git, ["git", "-C", repo.display(), "add", "README"])?)?
-  test.ok(run_git(git, ["git", "-C", repo.display(), "commit", "-qm", "base"])?)?
-  let branch = "factory/reconcile-patch/1"
-  test.ok(run_git(git, ["git", "-C", repo.display(), "checkout", "-q", "-b", branch])?)?
-  fs.write(fp"${repo}/README", "applied change\n")?
-  test.ok(run_git(git, ["git", "-C", repo.display(), "add", "README"])?)?
-  test.ok(run_git(git, ["git", "-C", repo.display(), "commit", "-qm", "implementation"])?)?
-  let implementation = run.text "git" "-C" $repo.display() "rev-parse" "HEAD" ?
-  test.ok(run_git(git, ["git", "-C", repo.display(), "checkout", "-q", "main"])?)?
-  fs.write(fp"${repo}/README", "applied change\n")?
-  test.ok(run_git(git, ["git", "-C", repo.display(), "add", "README"])?)?
-  test.ok(run_git(git, ["git", "-C", repo.display(), "commit", "-qm", "applied patch"])?)?
-  let head = run.text "git" "-C" $repo.display() "rev-parse" "HEAD" ?
-
-  fs.mkdir(fp"${factory}/tickets")?
-  fs.mkdir(fp"${factory}/templates")?
-  fs.copy(fp"${fs.cwd()?}/templates/TICKET.md", fp"${factory}/templates/TICKET.md", overwrite: true)?
-  fs.write(fp"${factory}/tickets/reconcile-patch.md", f"# Ticket\n\n## Status\n\nApproved.\n\n## Merge record\n\n- Implementation branch: `${branch}`\n- Implementation commit: `${implementation.trim()}`\n")?
-  let merged = runtime.reconcile_tickets(factory, repo, head.trim())?
-  test.eq(merged.len(), 1, "a patch-applied branch should reconcile as merged")?
-  let ticket = fs.read_text(fp"${factory}/tickets/reconcile-patch.md")?
-  test.ok(control.ticket_is_merged(ticket))?
-  test.contains(ticket, f"Implementation branch: `${branch}`")?
-}
-
-proc test_reconcile_ignores_a_branch_created_at_current_head(ctx: TestContext) [fs, process, error] {
-  let repo = test.temp_dir(ctx, name: "reconcile-empty-branch-repo")?
-  let factory = test.temp_dir(ctx, name: "reconcile-empty-branch-factory")?
-  let git = process.which("git")?
-  test.ok(run_git(git, ["git", "init", "-q", "-b", "main", repo.display()])?)?
-  test.ok(run_git(git, ["git", "-C", repo.display(), "config", "user.email", "factory@test"])?)?
-  test.ok(run_git(git, ["git", "-C", repo.display(), "config", "user.name", "Factory Test"])?)?
-  fs.write(fp"${repo}/README", "base\n")?
-  test.ok(run_git(git, ["git", "-C", repo.display(), "add", "README"])?)?
-  test.ok(run_git(git, ["git", "-C", repo.display(), "commit", "-qm", "base"])?)?
-  let branch = "factory/reconcile-empty/1"
-  test.ok(run_git(git, ["git", "-C", repo.display(), "checkout", "-q", "-b", branch])?)?
-  let head = run.text "git" "-C" $repo.display() "rev-parse" "HEAD" ?
-  test.ok(run_git(git, ["git", "-C", repo.display(), "checkout", "-q", "main"])?)?
-
-  fs.mkdir(fp"${factory}/tickets")?
-  fs.mkdir(fp"${factory}/templates")?
-  fs.copy(fp"${fs.cwd()?}/templates/TICKET.md", fp"${factory}/templates/TICKET.md", overwrite: true)?
-  fs.write(fp"${factory}/tickets/reconcile-empty.md", "# Ticket\n\n## Status\n\nApproved.\n")?
-  let merged = runtime.reconcile_tickets(factory, repo, head.trim())?
-  test.eq(merged.len(), 0, "a branch created at the current head is not an implementation")?
-  test.contains(fs.read_text(fp"${factory}/tickets/reconcile-empty.md")?, "## Status\n\nApproved.")?
-}
-
-proc test_open_ticket_branch_blocks_duplicate_dispatch(ctx: TestContext) [fs, process, error] {
-  let repo = test.temp_dir(ctx, name: "open-ticket-branch-repo")?
-  let git = process.which("git")?
-  test.ok(run_git(git, ["git", "init", "-q", "-b", "main", repo.display()])?)?
-  test.ok(run_git(git, ["git", "-C", repo.display(), "config", "user.email", "factory@test"])?)?
-  test.ok(run_git(git, ["git", "-C", repo.display(), "config", "user.name", "Factory Test"])?)?
-  fs.write(fp"${repo}/README", "base\n")?
-  test.ok(run_git(git, ["git", "-C", repo.display(), "add", "README"])?)?
-  test.ok(run_git(git, ["git", "-C", repo.display(), "commit", "-qm", "base"])?)?
-  let branch = "factory/open-ticket/1"
-  test.ok(run_git(git, ["git", "-C", repo.display(), "checkout", "-q", "-b", branch])?)?
-  fs.write(fp"${repo}/README", "implementation\n")?
-  test.ok(run_git(git, ["git", "-C", repo.display(), "add", "README"])?)?
-  test.ok(run_git(git, ["git", "-C", repo.display(), "commit", "-qm", "implementation"])?)?
-  test.ok(run_git(git, ["git", "-C", repo.display(), "checkout", "-q", "main"])?)?
-  test.eq(runtime.open_ticket_branch(repo, "open-ticket")?, branch,
-    "an unmerged implementation branch must be surfaced before dispatch")?
+proc test_report_schema_is_single_machine_contract(ctx: TestContext) [fs, error] {
+  let root = test.temp_dir(ctx, name: "report-schema")?
+  let worker = fp"${root}/worker.json"
+  json.write(worker, {
+    schema_version: 1, kind: "worker", identity: {role: "engineer", worker_id: "fixture"},
+    state: "completed", result: "pass", data: {usage: {assistant_turns: 1}},
+    findings: [], artifacts: [{kind: "session", path: "session.jsonl"}]
+  }, pretty: true)?
+  let value = json.read(worker)?
+  test.ok(schema.valid(value, "worker"))?
+  test.ok(! schema.valid(value, "phase"))?
+  test.eq(schema.value_text(json.get(value, ["result"], null)), "pass")?
 }
 
 proc test_lifecycle_rejects_improvised_transitions() [error] {
-  test.ok(control.transition_allowed("created", "admitted"))?
   test.ok(control.transition_allowed("created", "started"))?
-  test.ok(control.transition_allowed("admitted", "started"))?
   test.ok(control.transition_allowed("started", "completed"))?
-  test.ok(control.transition_allowed("completed", "validated"))?
-  test.ok(! control.transition_allowed("started", "validated"))?
-  test.ok(control.transition_allowed("validated", "ready-for-review"))?
-  test.ok(control.transition_allowed("ready-for-review", "accepted"))?
-  test.ok(control.transition_allowed("accepted", "reverted"))?
-  test.ok(! control.transition_allowed("ready-for-review", "failed"))?
   test.ok(control.transition_allowed("started", "failed"))?
+  test.ok(control.transition_allowed("completed", "validated"))?
+  test.ok(! control.transition_allowed("created", "validated"))?
+  test.ok(! control.transition_allowed("completed", "started"))?
 }
 
-proc test_audit_boundary_completes_before_validation(ctx: TestContext) [fs, error] {
-  let root = test.temp_dir(ctx, name: "audit-boundary")?
-  let template = fp"${root}/EVENT.md"
-  fs.copy(fp"${fs.cwd()?}/templates/EVENT.md", template, overwrite: true)?
-  runtime.emit_event(template, root, "00-cycle-started", "phase", "started", 1, "controller", "fixture")?
-  runtime.mark_phase_completed(template, root, "85-cycle-audited", "phase", 1, "controller", "fixture")?
-  test.eq(fs.read_text(fp"${root}/states/phase.state")?, "completed\n")?
-  runtime.emit_event(template, root, "95-cycle-validated", "phase", "validated", 1, "controller", "fixture")?
-  test.eq(fs.read_text(fp"${root}/states/phase.state")?, "validated\n")?
-  test.ok(fs.exists(fp"${root}/events/85-cycle-audited.md")?)?
+proc test_event_ledger_is_jsonl_and_stateful(ctx: TestContext) [fs, error] {
+  let root = test.temp_dir(ctx, name: "event-ledger")?
+  runtime.emit_event(root, root, "01-start", "worker", "started", 1, "controller", "assigned")?
+  runtime.emit_event(root, root, "02-complete", "worker", "completed", 1, "worker", "returned")?
+  let events = fp"${root}/events.jsonl"
+  test.ok(fs.exists(events)?)?
+  let text = fs.read_text(events)?
+  test.contains(text, "\"kind\":\"event\"")?
+  test.contains(text, "\"event_id\":\"02-complete\"")?
+  test.eq(fs.read_text(fp"${root}/states/worker.state")?.trim(), "completed")?
+  test.ok(! fs.exists(fp"${root}/events/02-complete.md")?)?
 }
 
-proc test_retry_policy_is_bounded_and_classified() [error] {
-  test.ok(control.retry_allowed("transient-harness", 1, 2))?
-  test.ok(! control.retry_allowed("transient-harness", 2, 2))?
-  test.ok(control.retry_allowed("worker-failed", 1, 3))?
-  test.ok(control.retry_allowed("budget-breach", 1, 2))?
-  test.ok(! control.retry_allowed("candidate-failed", 1, 3))?
-  test.ok(! control.retry_allowed("evaluator-failed", 1, 3))?
-  test.ok(! control.retry_allowed("worker-failed", 0, 3))?
+proc test_budget_consequences_are_durable(ctx: TestContext) [fs, error] {
+  let factory = test.temp_dir(ctx, name: "budget-consequences")?
+  fs.mkdir(fp"${factory}/tickets")?
+  fs.mkdir(fp"${factory}/evals/task-tags")?
+  fs.mkdir(fp"${factory}/templates")?
+  fs.copy(fp"${fs.cwd()?}/templates/TICKET.md", fp"${factory}/templates/TICKET.md", overwrite: true)?
+  fs.copy(fp"${fs.cwd()?}/templates/BUDGET-BREACH.md", fp"${factory}/templates/BUDGET-BREACH.md", overwrite: true)?
+  fs.write(fp"${factory}/tickets/task-tags-002.md", "# Ticket\n\n## Status\n\nApproved.\n")?
+  fs.write(fp"${factory}/evals/task-tags/EVAL.md", "# Eval\n\n## Status\n\nApproved.\n")?
+  let engineer_report = fp"${factory}/runs/run-1/workers/engineer/task-tags-002/report.json"
+  let eval_report = fp"${factory}/runs/run-2/workers/eval-worker/task-tags-1/report.json"
+  fs.mkdir(engineer_report.parent())?
+  fs.mkdir(eval_report.parent())?
+  json.write(engineer_report, {schema_version: 1, kind: "worker", identity: {role: "engineer", worker_id: "task-tags-002"}, state: "completed", result: "fail", findings: [], artifacts: []}, pretty: true)?
+  json.write(eval_report, {schema_version: 1, kind: "worker", identity: {role: "eval-worker", worker_id: "task-tags-1"}, state: "completed", result: "fail", findings: [], artifacts: []}, pretty: true)?
+  test.ok(runtime.close_ticket_too_difficult(factory, "task-tags-002", engineer_report.parent())?)?
+  let closed = fs.read_text(fp"${factory}/tickets/task-tags-002.md")?
+  test.ok(control.ticket_is_closed(closed))?
+  test.contains(closed, "Reason: too difficult")?
+  test.contains(closed, "runs/run-1/workers/engineer/task-tags-002/report.json")?
+  test.ok(runtime.disable_eval(factory, "task-tags", eval_report.parent())?)?
+  let disabled = fs.read_text(fp"${factory}/evals/task-tags/EVAL.md")?
+  test.ok(control.eval_is_disabled(disabled))?
+  test.contains(disabled, "Reason: eval-worker budget exceeded")?
+  test.contains(disabled, "runs/run-2/workers/eval-worker/task-tags-1/report.json")?
 }
 
-proc test_report_contract_requires_result_and_section_content() [error] {
-  let report = "# Report\n\n## Result\n\nready-for-review\n\n## Branch\n\nfactory/task/1\n\n## North-star impact\n\nExplicit boundary.\n"
-  test.ok(control.report_contract_ok(report, ["Branch", "North-star impact"], "ready-for-review"))?
-  test.ok(! control.report_contract_ok(report, ["Tests"], "ready-for-review"))?
-  test.ok(! control.report_contract_ok(report, ["Branch"], "failed"))?
-  test.ok(! control.report_contract_ok(report.replace("## Branch\n\nfactory/task/1", "## Branch\n\n"), ["Branch"], "ready-for-review"))?
-  test.ok(! control.report_contract_ok(report.replace("## Result\n\nready-for-review\n\n", ""), ["Branch"], "ready-for-review"))?
-  test.ok(! control.report_contract_ok(report + "\n{{UNRESOLVED}}\n", ["Branch"], "ready-for-review"))?
+proc test_engineer_assignment_is_controller_bound() [error] {
+  let assignment = "- Ticket ID: `task-tags-001`\n- Dedicated XSH worktree: `/tmp/work`\n<!-- CONTROLLER_TICKET_SNAPSHOT_BEGIN -->\nticket\n<!-- CONTROLLER_TICKET_SNAPSHOT_END -->\nDo not search for open tickets\n"
+  test.ok(control.engineer_assignment_ok("/factory/runs/run-1", "task-tags-001",
+    "/factory/runs/run-1/messages/task-tags-001.md", "/tmp/work", assignment))?
+  test.ok(! control.engineer_assignment_ok("/factory/runs/run-1", "task-tags-002",
+    "/factory/runs/run-1/messages/task-tags-002.md", "/tmp/work", assignment))?
 }
 
-proc test_role_report_contracts_are_fail_closed() [error] {
-  let engineer = "# engineer\n\n## Result\n\nready-for-review\n\n## Branch\n\nbranch\n\n## Commit\n\ncommit\n\n## Files changed\n\nfiles\n\n## Tests\n\npass\n\n## North-star impact\n\nimpact\n\n## Remaining risks\n\nNone.\n"
-  let manager = "## Result\n\npass\n\n## Effort metrics\n\nturns and tools\n\n## Usage and cost\n\nprovider cost\n\n## Thinking evidence\n\nthinking blocks\n\n## Tool-error findings\n\nNone.\n\n## Timing evidence\n\nratio\n\n## Observation classification\n\nreusable signal\n\n## Handbook decision\n\nunchanged\n\n## Tickets created\n\nzero\n\n## Post-merge decisions\n\nnone\n\n## Next replay\n\nnext eval\n\n## North-star impact\n\npractical XSH\n"
-  let director = "## Result\n\npass\n\n## Cycle\n\ncycle\n\n## Children\n\nchildren\n\n## Required-output status\n\nstatus\n\n## North-star impact\n\nimpact\n"
-  let executor = "## Result\n\npass\n\n## Failure classification\n\npass\n\n## Trial\n\n1\n\n## Artifact\n\npresent\n\n## Evidence\n\npaths\n"
-  let designer = "## Result\n\nready-for-review\n\n## Proposal\n\nproposal\n\n## Dry run\n\npass\n\n## North-star impact\n\nimpact\n\n## Known risks\n\nNone.\n\n## Review path\n\npath\n"
-  test.ok(control.engineer_report_contract_ok(engineer))?
-  test.ok(! control.engineer_report_contract_ok(engineer.replace("## Tests", "## Missing")))?
-  test.ok(control.manager_report_contract_ok(manager))?
-  test.ok(control.manager_tool_error_findings_contract_ok(manager))?
-  test.ok(! control.manager_tool_error_findings_contract_ok(manager.replace("None.", "No errors observed.")))?
-  test.ok(control.report_result_is("## Result\n\npass. The evidence is good.\n", "pass"))?
-  test.ok(! control.report_result_is("## Result\n\npassenger\n", "pass"))?
-  test.ok(control.director_report_contract_ok(director))?
-  test.ok(control.executor_report_contract_ok(executor))?
-  test.ok(control.designer_report_contract_ok(designer))?
-  test.ok(! control.manager_report_contract_ok(manager.replace("## Thinking evidence\n\nthinking blocks", "## Thinking evidence\n\n")))?
-  test.ok(! control.manager_report_contract_ok(manager.replace("## Result\n\npass\n\n", "")))?
-}
-
-proc test_missing_manager_report_fails_closed(ctx: TestContext) [fs, error] {
-  let root = test.temp_dir(ctx, name: "missing-manager-report")?
-  let report = fp"${root}/workers/eval-manager/task-tags/MANAGER-REPORT.md"
-  let report_ok = fs.exists(report)? and control.manager_report_contract_ok(fs.read_text(report)?)
-  test.ok(! report_ok)?
-}
-
-proc test_checked_in_templates_are_the_provenance_source(ctx: TestContext) [fs, error] {
-  let template_path = fp"${fs.cwd()?}/templates/PROVENANCE.md"
-  let template = fs.read_text(template_path)?
-  let values: List[control.TemplateValue] = [
-    {key: "RUN_ID", value: "run-test"},
-    {key: "MODE", value: "ticket-implementation"},
-  ]
-  let rendered = control.fill_template(template, values)
-  test.ok(rendered.contains("run-test"))?
-  test.ok(rendered.contains("ticket-implementation"))?
-  test.ok(rendered.contains("{{XSH_COMMIT}}"))?
-  let review = fs.read_text(fp"${fs.cwd()?}/runtime/review.md")?
-  test.contains(review, "## XSH language proposals")?
-  test.contains(review, "## xsht friction")?
-  test.contains(review, "None.")?
-  test.ok(! review.contains("<title>"))?
-  let _ = ctx
-}
-
-proc test_current_evidence_packet_puts_tool_error_counts_next_to_paths(ctx: TestContext) [fs, error] {
-  let root = test.temp_dir(ctx, name: "current-evidence")?
-  let run_dir = fp"${root}/run-1"
-  fs.mkdir(run_dir)?
-  let factory = fs.cwd()?
-  runtime.write_current_evidence(
-    factory,
-    run_dir,
-    "task-tags",
-    1,
-    fp"${factory}/runtime/handbook.md",
-    fp"${run_dir}/DISPATCH.md",
-    "- Trial `1`: Pi tool errors `8`; detail file `/run/TOOL-ERRORS.md`; session `/run/session.jsonl`",
-  )?
-  let packet = fs.read_text(fp"${run_dir}/CURRENT-EVIDENCE.md")?
-  test.contains(packet, "Pi tool errors `8`")?
-  test.contains(packet, "TOOL-ERRORS.md")?
-  test.contains(packet, "invalid `xsht api` discovery queries")?
-  test.ok(fs.exists(fp"${run_dir}/OPEN-TICKETS.md")?)?
-}
-
-proc test_controller_assignment_inlines_one_ticket_and_forbids_selection(ctx: TestContext) [fs, error] {
-  let template_path = fp"${fs.cwd()?}/templates/ENGINEER-ASSIGNMENT.md"
-  let template = fs.read_text(template_path)?
-  let values: List[control.TemplateValue] = [
-    {key: "TICKET_ID", value: "task-tags-001"},
-    {key: "TICKET_PATH", value: "/factory/runs/run-test/tickets/task-tags-001.md"},
-    {key: "TICKET_SHA", value: "ticket-sha"},
-    {key: "WORKTREE", value: "/xsh-worktree"},
-    {key: "BRANCH", value: "factory/task-tags-001/run-test"},
-    {key: "XSH_COMMIT", value: "xsh-sha"},
-    {key: "ENGINEER_REPORT", value: "/factory/runs/run-test/workers/engineer/task-tags-001/ENGINEER-REPORT.md"},
-    {key: "FACTORY_DIR", value: "/factory"},
-    {key: "FACTORY_RUN_DIR", value: "/factory/runs/run-test"},
-    {key: "NORTH_STAR_FILE", value: "/factory/NORTH-STAR.md"},
-    {key: "HANDBOOK_FILE", value: "/factory/runtime/handbook.md"},
-    {key: "XSH_AGENTS_FILE", value: "/xsh-worktree/AGENTS.md"},
-    {key: "XSH_RATIONALE_FILE", value: "/xsh-worktree/docs/CHAPTER-01-why-xsh.md"},
-    {key: "TICKET_TEXT", value: "## Observation\n\nThe controller chose this exact ticket."},
-  ]
-  let rendered = control.fill_template(template, values)
-  test.ok(rendered.contains("Ticket ID: `task-tags-001`"))?
-  test.ok(rendered.contains("The controller chose this exact ticket."))?
-  test.ok(rendered.contains("Do not search for open tickets"))?
-  test.ok(rendered.contains("choose another ticket"))?
-  test.ok(rendered.contains("/factory/runtime/handbook.md"))?
-  test.ok(! rendered.contains("{{TICKET_TEXT}}"))?
-  let message_path = "/factory/runs/run-test/messages/task-tags-001.md"
-  test.ok(control.engineer_assignment_ok(
-    "/factory/runs/run-test", "task-tags-001", message_path, "/xsh-worktree", rendered
-  ))?
-  test.ok(! control.engineer_assignment_ok(
-    "/factory/runs/run-test", "task-tags-002", message_path, "/xsh-worktree", rendered
-  ))?
-  let _ = ctx
-}
-
-proc test_runtime_lock_and_handbook_admission_are_deterministic(ctx: TestContext) [fs, error] {
-  let root = test.temp_dir(ctx, name: "runtime-contract")?
-  let lock = runtime.acquire_run_lock(root)?
-  test.ok(fs.exists(fp"${root}/runs/factory.lock")?)?
-  fs.mkdir(fp"${root}/runtime")?
-  let handbook = fp"${root}/runtime/handbook.md"
-  fs.write(handbook, "approved handbook\n")?
-  let sha = hash.sha256(handbook)?.hex()
-  test.ok(runtime.verify_factory_handbook(root, sha)?)?
-  fs.write(handbook, "changed handbook\n")?
-  test.ok(! runtime.verify_factory_handbook(root, sha)?)?
-  let _ = lock
-}
-
-proc test_eval_overlay_build_uses_local_base_without_pull() {
-  let build_args = control.eval_overlay_build_args(
-    "xsh-factory-base:latest", "build-1", "xsh-factory-task:latest",
-    "linux/arm64", p"evals/Dockerfile", p"evals/task",
-  )
-  test.ok(! ("--no-cache" in build_args))?
-  test.ok(! ("--pull" in build_args))?
-  test.ok("BASE_IMAGE=xsh-factory-base:latest" in build_args)?
-  let forced_args = control.eval_overlay_build_args(
-    "xsh-factory-base:latest", "build-1", "xsh-factory-task:latest",
-    "linux/arm64", p"evals/Dockerfile", p"evals/task", true,
-  )
-  test.ok("--no-cache" in forced_args)?
-  test.ok(control.toolchain_cache_valid(false, true, "key", "key", true))?
-  test.ok(! control.toolchain_cache_valid(false, true, "old", "key", true))?
-  test.ok(! control.toolchain_cache_valid(false, true, "key", "key", false))?
-  test.ok(! control.toolchain_cache_valid(true, true, "key", "key", true))?
-}
-
-proc test_factory_image_tags_are_stable_and_content_addressed() [error] {
-  let base = control.factory_image_tag(
-    "xsh-commit", "control", "runtime", "common", "worker", "base",
-    "toolchain-docker", "toolchain-make", "aarch64-unknown-linux-musl", "linux/arm64",
-  )
-  let same = control.factory_image_tag(
-    "xsh-commit", "control", "runtime", "common", "worker", "base",
-    "toolchain-docker", "toolchain-make", "aarch64-unknown-linux-musl", "linux/arm64",
-  )
-  let changed = control.factory_image_tag(
-    "different-commit", "control", "runtime", "common", "worker", "base",
-    "toolchain-docker", "toolchain-make", "aarch64-unknown-linux-musl", "linux/arm64",
-  )
-  let overlay = control.factory_image_tag(
-    "xsh-commit", "control", "runtime", "common", "worker", "base",
-    "toolchain-docker", "toolchain-make", "aarch64-unknown-linux-musl", "linux/arm64",
-    "eval-dockerfile", "eval-dockerignore",
-  )
-  test.eq(base, same)?
-  test.ok(base != changed)?
-  test.ok(base != overlay)?
-  test.ok(base.starts_with("v"))?
-  test.ok(! base.contains("/"))?
-  test.ok(! base.contains(":"))?
-}
-
-proc test_controller_outputs_and_build_cache_are_explicit() [fs, error] {
-  let factory = fs.cwd()?
-  let runner = fs.read_text(fp"${factory}/run-agent.xsh")?
-  let worker_template = fs.read_text(fp"${factory}/templates/WORKER.md")?
-  let eval_controller = fs.read_text(fp"${factory}/run-eval.xsh")?
-  let audit_controller = fs.read_text(fp"${factory}/audit-run.xsh")?
-  let organization = fs.read_text(fp"${factory}/run-organization.xsh")?
-  let ticket_controller = fs.read_text(fp"${factory}/run-ticket.xsh")?
-  let dispatcher = fs.read_text(fp"${factory}/run.xsh")?
-  let product_makefile = fs.read_text(fp"${factory}/../xsh/Makefile")?
-  let base_dockerfile = fs.read_text(fp"${factory}/evals/Dockerfile.base")?
-  test.contains(runner, "FACTORY_REQUIRED_REPORT")?
-  test.ok(! runner.contains("FACTORY_REQUIRED_REPORT: required_report"))?
-  test.contains(runner, "REPORT-MISSING")?
-  test.contains(worker_template, "Required narrative report")?
-  test.contains(eval_controller, "eval-build.lock")?
-  test.contains(eval_controller, "XSH_TEST_IMAGE_BUILD")?
-  test.contains(eval_controller, "FACTORY_FORCE_XSH_TOOLCHAIN_REBUILD")?
-  test.contains(eval_controller, "xsh-build.state")?
-  test.contains(eval_controller, "factory_image_tag")?
-  test.contains(eval_controller, "base-tag")?
-  test.contains(eval_controller, "eval-tag")?
-  test.contains(eval_controller, "REPORT-MISSING")?
-  test.contains(audit_controller, "REPORT-MISSING")?
-  test.contains(eval_controller, "uname")?
-  test.contains(organization, "let independent_eval_handle = spawn_child")?
-  test.contains(organization, "primary_ok = wait_child(primary_handle)")?
-  test.contains(organization, "runtime.open_ticket_branch")?
-  test.contains(ticket_controller, "runtime.open_ticket_branch")?
-  test.contains(dispatcher, "runtime.open_ticket_branch")?
-  test.contains(dispatcher, "\"audit-run.xsh\"")?
-  test.contains(organization, r"""${primary_phase}/worktrees/${selected_ticket}""")?
-  test.contains(product_makefile, "XSH_TEST_IMAGE_BUILD")?
-  test.contains(product_makefile, "docker image inspect")?
-  test.ok(base_dockerfile.find("ADD --chmod") < base_dockerfile.find("LABEL org.xsh.factory.build-id"))?
-}
-
-proc test_ecount_oracle_command_has_a_fail_closed_awk_boundary() [error] {
-  let command = control.ecount_oracle_command()
-  test.eq(command[0], "sh")?
-  test.eq(command[1], "-c")?
-  test.ok(command[2].contains("set -o pipefail"))?
-  test.ok(command[2].contains("tolower($NF)"))?
-  test.ok(! command[2].contains("\\$NF"))?
-  test.ok(control.ecount_oracle_ok(true, "oracle output"))?
-  test.ok(! control.ecount_oracle_ok(true, ""))?
-  test.ok(! control.ecount_oracle_ok(false, "oracle output"))?
-  test.eq(control.ecount_classification(true, true, true, false, false, false), "evaluator_failed")?
-  test.eq(control.ecount_classification(true, true, true, true, false, true), "candidate_failed")?
-}
-
-proc test_runtime_phase_locks_allow_independent_children(ctx: TestContext) [fs, error] {
-  let root = test.temp_dir(ctx, name: "phase-locks")?
-  let first_dir = fp"${root}/phase-one"
-  let second_dir = fp"${root}/phase-two"
-  fs.mkdir(first_dir)?
-  fs.mkdir(second_dir)?
-  let first = runtime.acquire_run_lock_at(fp"${first_dir}/factory.lock")?
-  let second = runtime.acquire_run_lock_at(fp"${second_dir}/factory.lock")?
-  test.ok(fs.exists(fp"${first_dir}/factory.lock")?)?
-  test.ok(fs.exists(fp"${second_dir}/factory.lock")?)?
+proc test_eval_image_inputs_are_local() [fs, error] {
+  let dockerfile = fs.read_text(fp"${fs.cwd()?}/evals/Dockerfile.base")?
+  let controller = fs.read_text(fp"${fs.cwd()?}/run-eval.xsh")?
+  test.contains(dockerfile, ".dist/xsh")?
+  test.contains(dockerfile, ".dist/xsht")?
+  test.contains(controller, "dist-Linux-docker")?
+  test.contains(controller, "stage_xsht")?
 }

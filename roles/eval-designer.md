@@ -44,7 +44,7 @@ scaffolding. Perform a staged dry run in the current cycle and save the
 evidence under the run directory. Do not mark the eval approved and do not
 modify an approved eval.
 
-Finish `DESIGNER-REPORT.md` with exactly these headings: `## Result`,
+Finish `REPORT.md` with exactly these headings: `## Result`,
 `## Proposal`, `## Dry run`, `## North-star impact`, `## Known risks`, and
 `## Review path`. Use `ready-for-review` for a proposal that is staged and
 dry-run evidence is preserved; the user still must approve it.

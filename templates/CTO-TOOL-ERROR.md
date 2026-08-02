@@ -1,0 +1,2 @@
+- `{{WORKER}}`, turn `{{TURN}}`, tool `{{TOOL}}`: {{SUMMARY}}
+  - Structured report: `{{REPORT}}`

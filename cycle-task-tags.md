@@ -49,9 +49,9 @@ Use the defaults codified by `run.xsh` and `run-agent.xsh`.
 
 - task-tags executor pass;
 - director, eval-manager, eval-worker, and eval-designer Pi sessions under one run directory;
-- a full thinking transcript for each session;
+- raw `session.jsonl` and structured `report.json` for each session;
 - the evaluator `run.json` with correctness and timing evidence;
-- a Markdown cost report with worker rows, role totals, and run total;
+- a phase `report.json` with worker metrics, costs, and tool errors;
 - `## North-star impact` in the director and manager reports;
-- `CURRENT-EVIDENCE.md` and `OPEN-TICKETS.md` before manager review;
-- `RUN.md` reporting success or preserved partial evidence.
+- `report.json` available before manager review;
+- `CTO-REPORT.md` reporting success or preserved partial evidence.

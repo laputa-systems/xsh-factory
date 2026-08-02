@@ -6,8 +6,8 @@ for the XSH improvement mission, not a reward function by themselves.
 The session JSONL is the canonical record. Do not re-research Pi's source or
 HTML exporter before interpreting a run.
 
-Start with the current controller outputs: `RUN.md`, the role worker report,
-the executor or manager report, and `run.json` when the claim concerns an
+Start with the current controller outputs: the phase or run `report.json`,
+the role worker `report.json` and `REPORT.md`, and `run.json` when the claim concerns an
 eval. Search older runs or implementation source only when those current
 artifacts disagree or leave a concrete field unexplained. One targeted
 reproduction is usually enough to distinguish a real defect from noise.
@@ -42,9 +42,9 @@ Usage fields are provider-reported per assistant response:
 
 Thinking blocks are qualitative evidence about what the worker considered, not
 proof that its explanation is correct. Correlate them with tool errors,
-checks, artifacts, evaluator output, and the final result. The worker report
-extracts every thinking block into `thinking.md` so a manager can inspect it
-without manually decoding the JSONL.
+checks, artifacts, evaluator output, and the final result. The worker
+`report.json` records the thinking-block count; raw thinking remains in the
+canonical session JSONL when a manager needs to inspect it.
 
 The worker session span measures the Pi conversation. The evaluator's
 candidate/oracle timing measures the submitted program. Do not conflate those

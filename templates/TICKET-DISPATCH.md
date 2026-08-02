@@ -1,3 +1,0 @@
-# Approved ticket dispatch
-
-{{ROWS}}

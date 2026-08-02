@@ -1,11 +1,11 @@
 # Eval-manager assignment: `{{EVAL_ID}}`
 
 Read `{{FACTORY_DIR}}/NORTH-STAR.md`, `{{FACTORY_DIR}}/roles/pi-session-briefing.md`,
-`{{EVAL_DIR}}/EVAL.md`, `{{RUN_DIR}}/PROVENANCE.md`,
-`{{RUN_DIR}}/CURRENT-EVIDENCE.md`, and `{{RUN_DIR}}/OPEN-TICKETS.md` first.
+`{{EVAL_DIR}}/EVAL.md`, and `{{RUN_DIR}}/report.json` first.
 Use `{{RUN_DIR}}/lineage/handbook-approved.md` as the exact handbook snapshot
 under review; do not substitute a different handbook path.
-The controller dispatch is `{{RUN_DIR}}/DISPATCH.md`. The reconciler found these merged ticket files:
+The controller dispatch and open-ticket snapshot are structured fields in
+`{{RUN_DIR}}/report.json`. The reconciler found these merged ticket files:
 `{{MERGED_TICKET_PATHS}}`. Read each listed ticket directly when the value is
 not `none`. The executor is a black box. Every eval consumes the one
 factory-wide handbook; do not look for or create an eval-local handbook.
@@ -28,15 +28,11 @@ manager report.
 
 The controller has completed exactly `{{TRIAL_COUNT}}` fresh trial(s). Preserve
 separate evidence under `{{RUN_DIR}}/workers/eval-worker/` and inspect each
-executor report, worker report, session JSONL, extracted `thinking.md`,
-evaluator `run.json`, artifact, review, and quantitative results.
-When any worker report contains tool errors, read its adjacent `TOOL-ERRORS.md`
-before classifying friction. Before finishing, also read your own adjacent
-`TOOL-ERRORS.md` at `{{RUN_DIR}}/workers/eval-manager/{{EVAL_ID}}/TOOL-ERRORS.md`.
-Your `## Tool-error findings` section must account for every failed Pi tool
-result from the eval workers and from your own session, including invalid
-`xsht api` discovery queries. It must cite each detail file or say `None.`
-when all current sessions have zero errors.
+worker `report.json`, session JSONL, evaluator `run.json`, artifact, review,
+and quantitative results. Your `## Tool-error findings` section must account
+for every failed Pi tool result in the structured worker and manager
+`report.json` files, including invalid `xsht api` discovery queries, or say
+`None.` when all current sessions have zero errors.
 
 {{TRIAL_INSTRUCTIONS}}
 
@@ -47,7 +43,7 @@ plan must state whether its candidate was actually replayed by the controller;
 do not claim validation that did not occur.
 
 Begin the narrative output before final analysis: create
-`{{RUN_DIR}}/workers/eval-manager/{{EVAL_ID}}/MANAGER-REPORT.md` with all
+`{{RUN_DIR}}/workers/eval-manager/{{EVAL_ID}}/REPORT.md` with all
 required headings, then fill it as evidence is classified. Re-read the file
 before finishing. Do not paste the full report into the final response; state
 the path and result only. If an API question remains unresolved after two
@@ -65,7 +61,7 @@ If a handbook change is justified, write it only to
 snapshot there unchanged. Never edit the approved snapshot or the checked-in
 `{{FACTORY_DIR}}/runtime/handbook.md`.
 
-Write `{{RUN_DIR}}/workers/eval-manager/{{EVAL_ID}}/MANAGER-REPORT.md` with
+Write `{{RUN_DIR}}/workers/eval-manager/{{EVAL_ID}}/REPORT.md` with
 exactly these headings:
 
 ```markdown
@@ -89,8 +85,8 @@ provider did not report reasoning-token counts
 
 ## Tool-error findings
 
-every nonzero Pi tool result, or `None.` when the current evidence packet has
-no tool errors; cite each adjacent `TOOL-ERRORS.md`
+every nonzero Pi tool result from the structured `tool_errors` arrays, or
+`None.` when the current evidence packet has no tool errors
 
 ## Timing evidence
 

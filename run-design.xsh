@@ -2,6 +2,7 @@
 
 use factory_control as control
 use factory_runtime as runtime
+use report_schema as schema
 
 on SIGINT --pre-cancel=0ms [fs, process, env, error] {
   runtime.cleanup_active_run()?
@@ -35,8 +36,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   let active_run = env.path("FACTORY_ACTIVE_RUN", fp"${factory_dir}/runs/ACTIVE")?
   let lock_path = env.path("FACTORY_LOCK_PATH", fp"${factory_dir}/runs/factory.lock")?
   let _run_lock = runtime.acquire_run_lock_at(lock_path)?
-  let event_template = fp"${factory_dir}/templates/EVENT.md"
-  let provenance_template = fp"${factory_dir}/templates/PROVENANCE.md"
+  let event_template = run_dir
   let assignment_template = fp"${factory_dir}/templates/EVAL-DESIGNER-ASSIGNMENT.md"
   let worker_id = "proposal-1"
   let worker_root = fp"${run_dir}/workers"
@@ -44,8 +44,8 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   let proposal_dir = fp"${run_dir}/proposals/${worker_id}"
   let worker_dir = fp"${worker_root}/eval-designer/${worker_id}"
   let session = fp"${worker_dir}/session.jsonl"
-  let worker_report = fp"${worker_dir}/WORKER-REPORT.md"
-  let designer_report = fp"${worker_dir}/DESIGNER-REPORT.md"
+  let worker_report = fp"${worker_dir}/report.json"
+  let designer_report = fp"${worker_dir}/REPORT.md"
   let xsh_repo = env.path("FACTORY_XSH_REPO", fp"${factory_dir}/../xsh")?
   let xsh_path = process.which("xsh")?
   let run_agent = fp"${factory_dir}/run-agent.xsh"
@@ -78,23 +78,6 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     eprint "eval-design requires a clean XSH worktree at admission"
     abort(2)
   }
-  let approved_handbook_sha = hash.sha256(fp"${factory_dir}/runtime/handbook.md")?.hex()
-  let provenance_values: List[control.TemplateValue] = [
-    {key: "RUN_ID", value: run_dir.display()},
-    {key: "MODE", value: "eval-design"},
-    {key: "REQUEST", value: "CYCLE-REQUEST.md"},
-    {key: "BUILD_ID", value: "not-used-design-cycle"},
-    {key: "XSH_COMMIT", value: xsh_commit.trim()},
-    {key: "CANDIDATE_TICKET", value: "not-reevaluation"},
-    {key: "CANDIDATE_WORKTREE", value: "not-reevaluation"},
-    {key: "IMAGE", value: "not-used-design-cycle"},
-    {key: "IMAGE_ID", value: "not-used-design-cycle"},
-    {key: "PLATFORM", value: platform},
-    {key: "APPROVED_HANDBOOK_SHA", value: approved_handbook_sha},
-    {key: "CANDIDATE_HANDBOOK_SHA", value: "not-used-design-cycle"},
-    {key: "TICKET_SNAPSHOT_SHA", value: "not-used-design-cycle"},
-  ]
-  fs.write(fp"${run_dir}/PROVENANCE.md", control.fill_template(provenance_template.read_text()?, provenance_values))?
 
   let assignment_values: List[control.TemplateValue] = [
     {key: "FACTORY_DIR", value: factory_dir.display()},
@@ -104,15 +87,11 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   let assignment = control.fill_template(assignment_template.read_text()?, assignment_values)
   let assignment_path = fp"${messages_dir}/eval-designer-${worker_id}.md"
   fs.write(assignment_path, assignment)?
-  let dispatch_template = fp"${factory_dir}/templates/EVAL-DESIGN-DISPATCH.md"
-  let dispatch_values: List[control.TemplateValue] = [
-    {key: "WORKER_ID", value: worker_id},
-    {key: "SYSTEM_PROMPT", value: fp"${factory_dir}/roles/eval-designer.md".display()},
-    {key: "ASSIGNMENT", value: assignment_path.display()},
-    {key: "PROPOSAL_DIR", value: proposal_dir.display()},
-    {key: "REPORT", value: designer_report.display()},
-  ]
-  fs.write(fp"${run_dir}/DISPATCH.md", control.fill_template(dispatch_template.read_text()?, dispatch_values))?
+  let _initial_report = process.run(process.command_argv(
+    xsh_path,
+    [xsh_path.display(), fp"${factory_dir}/audit-run.xsh", "--", run_dir.display(), "eval-design"],
+    cwd: factory_dir,
+  ))?
 
   let worker_env = {
     PATH: env.get("PATH")?,
@@ -192,14 +171,9 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   runtime.emit_event(event_template, run_dir, "80-designer-completed", "eval-designer",
     if worker_status.ok { "completed" } else { "failed" }, 1, "eval-designer", "worker process returned")?
 
-  let cost_status = process.run(process.command_argv(
-    xsh_path,
-    [xsh_path.display(), fp"${factory_dir}/tools/session-report.xsh", "--", "run",
-      "--run-dir", run_dir.display(), "--output", fp"${run_dir}/COST.md".display()],
-  ))?
   let session_ok = fs.exists(session)?
   let worker_report_ok = fs.exists(worker_report)? and ! fs.exists(fp"${run_dir}/workers/eval-designer/${worker_id}/REPORT-MISSING")? and
-    control.worker_report_contract_ok(worker_report.read_text()?)
+    schema.valid(json.read(worker_report)?, "worker")
   let designer_report_ok = fs.exists(designer_report)? and ! fs.exists(fp"${run_dir}/workers/eval-designer/${worker_id}/REPORT-MISSING")? and
     control.designer_report_contract_ok(designer_report.read_text()?)
   let north_star_read_ok = runtime.session_read_path(session, fp"${factory_dir}/NORTH-STAR.md")?
@@ -210,12 +184,12 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     [xsh_path.display(), fp"${factory_dir}/audit-run.xsh", "--", run_dir.display(), "eval-design"],
     cwd: factory_dir,
   ))?
-  let audit_file = fp"${run_dir}/AUDIT.md"
+  let audit_file = fp"${run_dir}/report.json"
   let audit_report_ok = audit_status.ok and fs.exists(audit_file)? and
-    control.audit_report_contract_ok(audit_file.read_text()?)
-  let audit_result = if audit_report_ok { control.audit_result(audit_file.read_text()?) } else { "missing" }
+    schema.valid(json.read(audit_file)?, "phase")
+  let audit_result = if audit_report_ok { schema.value_text(json.get(json.read(audit_file)?, ["result"], "missing")) } else { "missing" }
   let audit_pass = audit_report_ok and audit_result == "pass"
-  let initial_result = if worker_status.ok and cost_status.ok and session_ok and worker_report_ok and
+  let initial_result = if worker_status.ok and session_ok and worker_report_ok and
     designer_report_ok and proposal_ok and north_star_read_ok and handbook_read_ok and audit_pass {
     "pass"
   } else {
@@ -231,24 +205,6 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     runtime.emit_event(event_template, run_dir, "85-designer-failed", "eval-designer", "failed", 1, "controller", "one or more design outputs failed validation")?
     runtime.emit_event(event_template, run_dir, "90-cycle-failed", "eval-design", "failed", 1, "controller", "one or more required outputs failed")?
   }
-  let run_template = fp"${factory_dir}/templates/RUN-DESIGN.md"
-  let run_values: List[control.TemplateValue] = [
-    {key: "RUN_ID", value: stamp.float().format(precision: 0)},
-    {key: "RESULT", value: result},
-    {key: "WORKER_ID", value: worker_id},
-    {key: "XSH_COMMIT", value: xsh_commit.trim()},
-    {key: "SESSION_STATE", value: if session_ok { "present" } else { "missing" }},
-    {key: "WORKER_REPORT_STATE", value: if worker_report_ok { "valid" } else { "missing-or-invalid" }},
-    {key: "DESIGNER_REPORT_STATE", value: if designer_report_ok { "valid" } else { "missing-or-invalid" }},
-    {key: "PROPOSAL_STATE", value: if proposal_ok { "staged" } else { "missing" }},
-    {key: "NORTH_STAR_READ", value: if north_star_read_ok { "true" } else { "false" }},
-    {key: "HANDBOOK_READ", value: if handbook_read_ok { "true" } else { "false" }},
-    {key: "COST_STATE", value: if cost_status.ok { "present" } else { "failed" }},
-    {key: "AUDIT_STATE", value: if audit_report_ok { "present" } else { "failed" }},
-    {key: "AUDIT_RESULT", value: audit_result},
-    {key: "CTO_STATE", value: if cto_status { "present" } else { "failed" }},
-  ]
-  fs.write(fp"${run_dir}/RUN-DESIGN.md", control.fill_template(run_template.read_text()?, run_values))?
   if ! skip_cycle_budget {
     runtime.stop_cycle_budget_watch(run_dir)?
   }

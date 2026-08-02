@@ -1,34 +1,14 @@
-##! Normalize one factory run into a deterministic audit artifact.
+##! Compile factory evidence into one structured phase or run report.
 
 use factory_control as control
+use report_schema as schema
 
-type ManifestEvidence = {
-  valid: Bool,
-  eval_id: Str,
-  trial_id: Str,
-  result: Str,
-  classification: Str,
-  protocol: Str,
-  correctness: Str,
-  restrictions: Str,
-  timing: Str,
-  timing_gate_failed: Bool,
-  handbook: Str,
-  candidate: Str,
-  oracle: Str,
+pure text(value: Any, fallback: Str = "unknown") -> Str {
+  let result = schema.value_text(value)
+  return if result == "" { fallback } else { result }
 }
 
-pure json_text(value: Any, fallback: Str = "unknown") -> Str {
-  match value {
-    s is Str => s,
-    i is Int => f"${i}",
-    f is Float => f.format(precision: 6),
-    b is Bool => if b { "true" } else { "false" },
-    _ => fallback,
-  }
-}
-
-pure json_number(value: Any) -> Float {
+pure number(value: Any) -> Float {
   match value {
     i is Int => i.float(),
     f is Float => f,
@@ -36,525 +16,397 @@ pure json_number(value: Any) -> Float {
   }
 }
 
-pure json_is_number(value: Any) -> Bool {
+pure integer(value: Any) -> Int {
   match value {
-    _ is Int => true,
-    _ is Float => true,
+    i is Int => i,
+    _ => 0,
+  }
+}
+
+pure boolean(value: Any) -> Bool {
+  match value {
+    b is Bool => b,
     _ => false,
   }
 }
 
-pure json_bool_text(value: Any) -> Str {
-  match value {
-    b is Bool => return if b { "true" } else { "false" }
-    _ => return "unknown"
-  }
-}
-
-pure report_value(text: Str, prefix: Str, fallback: Str = "unknown") -> Str {
-  for line in text.lines() {
-    let trimmed = line.trim()
-    if trimmed.starts_with(prefix) {
-      return trimmed.byte_slice(prefix.byte_len(), trimmed.byte_len() - prefix.byte_len()).trim().replace("`", "")
-    }
-  }
-  return fallback
-}
-
 pure relative_path(root: Str, value: Path) -> Str {
-  let displayed = value.display()
-  let prefix = root + "/"
-  if displayed.starts_with(prefix) {
-    return displayed.byte_slice(prefix.byte_len(), displayed.byte_len() - prefix.byte_len())
-  }
-  let worker_marker = displayed.find("workers/")
-  if worker_marker >= 0 {
-    return displayed.byte_slice(worker_marker, displayed.byte_len() - worker_marker)
-  }
-  return displayed
+  return control.factory_relative_path(root, value)
 }
 
-pure session_identity(run_name: Str, session: Path, role: Str, worker_id: Str) -> Str {
-  if role != "unknown" and worker_id != "unknown" {
-    return f"${role}/${worker_id}"
-  }
-  let relative = relative_path(run_name, session)
-  let parts = relative.split("/")
-  if parts.len() >= 3 {
-    return f"${parts[1]}/${parts[2]}"
-  }
-  return "unknown"
-}
-
-pure ratio(candidate: Any, oracle: Any) -> Float {
-  let candidate_value = json_number(candidate)
-  let oracle_value = json_number(oracle)
-  if oracle_value <= 0.0 { return -1.0 }
-  return candidate_value / oracle_value
-}
-
-pure timing_summary(timing: Any) -> Str {
-  let raw_gate = json.get(timing, ["passed"], null)
-  let raw_ratio = json.get(timing, ["ratio"], null)
-  if json_is_number(raw_ratio) {
-    return f"ratio=${json_number(raw_ratio).format(precision: 3)}; gate=${json_bool_text(raw_gate)}"
-  }
-  if json_bool_text(raw_gate) != "unknown" {
-    return f"gate=${json_bool_text(raw_gate)}"
-  }
-
-  let ratios: List[Float] = [
-    ratio(
-      json.get(timing, ["public_candidate_wall_ns"], null),
-      json.get(timing, ["public_oracle_wall_ns"], null),
-    ),
-    ratio(
-      json.get(timing, ["hidden_candidate_wall_ns"], null),
-      json.get(timing, ["hidden_oracle_wall_ns"], null),
-    ),
-    ratio(
-      json.get(timing, ["empty_candidate_wall_ns"], null),
-      json.get(timing, ["empty_oracle_wall_ns"], null),
-    ),
-  ]
-  var low = 0.0
-  var high = 0.0
-  var seen = false
-  for value in ratios {
-    if value >= 0.0 {
-      if ! seen or value < low { low = value }
-      if ! seen or value > high { high = value }
-      seen = true
+pure worker_identity(path_value: Path) -> Any {
+  let marker = path_value.display().find("workers/")
+  if marker >= 0 {
+    let suffix = path_value.display().byte_slice(marker, path_value.display().byte_len() - marker)
+    let parts = suffix.split("/")
+    if parts.len() >= 3 {
+      return {role: parts[1], worker_id: parts[2]}
     }
   }
-  if ! seen { return "not-reported; gate=not-requested" }
-  return f"diagnostic-ratio=${low.format(precision: 3)}..${high.format(precision: 3)}; gate=not-requested"
+  return {role: "unknown", worker_id: "unknown"}
 }
 
-proc read_manifest(manifest_path: Path) [fs, error] -> Result[ManifestEvidence] {
-  let invalid: ManifestEvidence = {
-    valid: false,
-    eval_id: "unknown",
-    trial_id: "unknown",
-    result: "invalid",
-    classification: "invalid-json",
-    protocol: "unknown",
-    correctness: "unknown",
-    restrictions: "unknown",
-    timing: "not-reported",
-    timing_gate_failed: false,
-    handbook: "unknown",
-    candidate: "unknown",
-    oracle: "unknown",
+proc worker_report_paths(run_dir: Path) [fs, error] -> Result[List[Path]] {
+  var reports: List[Path] = []
+  for entry in fs.files(run_dir, gitignore: false, hidden: true)? {
+    if entry.name == "report.json" and entry.path.display().contains("/workers/") {
+      reports = reports.push(entry.path)
+    }
   }
-  match json.decode(manifest_path.read_text()?) {
-    Err(_) => return Ok(invalid),
-    Ok(raw) => {
-      let protocol = json.get(raw, ["protocol"], null)
-      let correctness = json.get(raw, ["correctness"], null)
-      let restrictions = json.get(raw, ["restrictions"], null)
-      let timing = json.get(raw, ["timings"], null)
-      let protocol_value = if json_bool_text(json.get(protocol, ["artifact_present"], null)) == "true" and
-        json_bool_text(json.get(protocol, ["review_ok"], null)) == "true" {
-        "pass"
-      } else if json_bool_text(json.get(protocol, ["artifact_present"], null)) == "false" or
-        json_bool_text(json.get(protocol, ["review_ok"], null)) == "false" {
-        "fail"
-      } else {
-        "unknown"
+  return reports |> sort-by .display()
+}
+
+proc session_paths(run_dir: Path) [fs, error] -> Result[List[Path]] {
+  var sessions: List[Path] = []
+  for entry in fs.files(run_dir, gitignore: false, hidden: true)? {
+    if entry.name == "session.jsonl" { sessions = sessions.push(entry.path) }
+  }
+  return sessions |> sort-by .display()
+}
+
+proc manifest_paths(run_dir: Path) [fs, error] -> Result[List[Path]] {
+  var manifests: List[Path] = []
+  for entry in fs.files(run_dir, gitignore: false, hidden: true)? {
+    if entry.name == "run.json" and entry.path.display().contains("/workers/") {
+      manifests = manifests.push(entry.path)
+    }
+  }
+  return manifests |> sort-by .display()
+}
+
+proc narrative_paths(run_dir: Path) [fs, error] -> Result[List[Path]] {
+  var reports: List[Path] = []
+  for entry in fs.files(run_dir, gitignore: false, hidden: true)? {
+    if entry.name == "REPORT.md" and entry.path.display().contains("/workers/") {
+      reports = reports.push(entry.path)
+    }
+  }
+  return reports |> sort-by .display()
+}
+
+proc open_ticket_snapshot(factory_dir: Path) [fs, error] -> Result[List[Any]] {
+  var tickets: List[Any] = []
+  let ticket_dir = fp"${factory_dir}/tickets"
+  if ! fs.exists(ticket_dir)? { return tickets }
+  for entry in fs.files(ticket_dir, gitignore: false, hidden: true) |> sort-by .path.display() {
+    if ! entry.name.ends_with(".md") { continue }
+    let ticket = entry.path.read_text()?
+    let status = control.ticket_status(ticket)
+    if status == "Closed." or status == "Merged." { continue }
+    tickets = tickets.push({
+      id: entry.name.replace(".md", ""),
+      status: status,
+      eval_id: control.ticket_eval(ticket),
+      path: entry.path.display(),
+    })
+  }
+  return tickets
+}
+
+proc manifest_evidence(manifest_path: Path) [fs, error] -> Result[Any] {
+  if ! fs.exists(manifest_path)? { return {valid: false, result: "missing"} }
+  let raw = json.read(manifest_path)?
+  let protocol = json.get(raw, ["protocol"], null)
+  let correctness = json.get(raw, ["correctness"], null)
+  let restrictions = json.get(raw, ["restrictions"], null)
+  let timings = json.get(raw, ["timings"], null)
+  let protocol_ok = boolean(json.get(protocol, ["artifact_present"], false)) and
+    boolean(json.get(protocol, ["review_ok"], false))
+  let correctness_value = json.get(correctness, ["passed"], json.get(correctness, ["all_exact"], false))
+  let correctness_ok = boolean(correctness_value)
+  let restrictions_ok = boolean(json.get(restrictions, ["passed"], false))
+  let timing_present = json.get(timings, ["passed"], null)
+  let timing_ok = match timing_present {
+    b is Bool => b,
+    _ => true,
+  }
+  let result = text(json.get(raw, ["result"], "invalid"), "invalid")
+  return {
+    valid: true,
+    eval_id: text(json.get(raw, ["eval_id"], "unknown")),
+    trial_id: text(json.get(raw, ["trial_id"], "unknown")),
+    result: result,
+    classification: text(json.get(raw, ["classification"], "unknown")),
+    protocol: if protocol_ok { "pass" } else { "fail" },
+    correctness: if correctness_ok { "pass" } else { "fail" },
+    restrictions: if restrictions_ok { "pass" } else { "fail" },
+    timing: if timing_ok { "pass" } else { "fail" },
+    handbook_sha256: text(json.get(raw, ["inputs", "handbook_sha256"], "unknown")),
+    candidate_sha256: text(json.get(raw, ["outputs", "candidate_sha256"], "unknown")),
+    oracle_sha256: text(json.get(raw, ["outputs", "oracle_sha256"], "unknown")),
+    passed: result == "pass" and protocol_ok and correctness_ok and restrictions_ok and timing_ok,
+  }
+}
+
+proc worker_data(run_dir: Path, reports: List[Path]) [fs, error] -> Result[Any] {
+  var workers: List[Any] = []
+  var tool_errors: List[Any] = []
+  var findings: List[Any] = []
+  var total_cost = 0.0
+  var total_tokens = 0.0
+  var total_turns = 0
+  var total_tool_errors = 0
+  var budget_failures = 0
+  var unknown_costs = 0
+  for report_path in reports {
+    let raw = json.read(report_path)?
+    let identity = worker_identity(report_path)
+    let usage = json.get(raw, ["usage"], null)
+    let cost_value = json.get(usage, ["cost_usd"], null)
+    let cost_seen = match cost_value {
+      f is Float => true,
+      i is Int => true,
+      _ => false,
+    }
+    let cost = number(cost_value)
+    let budget = number(json.get(usage, ["budget_usd"], null))
+    let errors = json.get(raw, ["tool_errors"], [])
+    let error_count = match errors {
+      values is List[Any] => values.len(),
+      _ => 0,
+    }
+    let worker_result = text(json.get(raw, ["result"], "unknown"))
+    let report_ok = schema.valid(raw, "worker")
+    let budget_failed = ! cost_seen or budget <= 0.0 or cost > budget
+    if ! cost_seen { unknown_costs += 1 }
+    if budget_failed { budget_failures += 1 }
+    if ! report_ok { findings = findings.push({kind: "invalid-report", path: relative_path(run_dir.display(), report_path)}) }
+    if error_count > 0 {
+      total_tool_errors += error_count
+      match errors {
+        values is List[Any] => {
+          for error in values {
+            tool_errors = tool_errors.push({
+              worker: identity,
+              turn: json.get(error, ["turn"], null),
+              tool: text(json.get(error, ["tool"], "unknown")),
+              summary: text(json.get(error, ["summary"], ""), "(no summary)"),
+              report: relative_path(run_dir.display(), report_path),
+            })
+          }
+        }
+        _ => {}
       }
-      let correctness_value = json.get(
-        correctness,
-        ["passed"],
-        json.get(correctness, ["all_exact"], null),
-      )
-      let restrictions_value = json.get(restrictions, ["passed"], null)
-      let timing_gate = json_bool_text(json.get(timing, ["passed"], null))
-      return Ok({
-        valid: true,
-        eval_id: json_text(json.get(raw, ["eval_id"], null)),
-        trial_id: json_text(json.get(raw, ["trial_id"], null)),
-        result: json_text(json.get(raw, ["result"], null)),
-        classification: json_text(json.get(raw, ["classification"], null)),
-        protocol: protocol_value,
-        correctness: json_bool_text(correctness_value),
-        restrictions: json_bool_text(restrictions_value),
-        timing: timing_summary(timing),
-        timing_gate_failed: timing_gate == "false",
-        handbook: json_text(json.get(raw, ["inputs", "handbook_sha256"], null)),
-        candidate: json_text(json.get(raw, ["outputs", "candidate_sha256"], null)),
-        oracle: json_text(json.get(raw, ["outputs", "oracle_sha256"], null)),
-      })
     }
+    total_cost += cost
+    total_tokens += number(json.get(usage, ["total_bucket_tokens"], 0))
+    total_turns += integer(json.get(usage, ["assistant_turns"], 0))
+    workers = workers.push({
+      identity: identity,
+      path: relative_path(run_dir.display(), report_path),
+      result: worker_result,
+      valid: report_ok,
+      usage: usage,
+      tool_errors: error_count,
+    })
+  }
+  return {
+    workers: workers,
+    tool_errors: tool_errors,
+    findings: findings,
+    usage: {
+      workers: reports.len(),
+      assistant_turns: total_turns,
+      total_bucket_tokens: total_tokens,
+      cost_usd: total_cost,
+      tool_errors: total_tool_errors,
+      budget_failures: budget_failures,
+      unknown_costs: unknown_costs,
+    },
   }
 }
 
-pure report_document_ok(text: Str, headings: List[Str]) -> Bool {
-  if text.contains("{{") or text.contains("}}") { return false }
-  return control.report_contract_ok(text, headings, "")
+proc narrative_state(report_path: Path, role: Str) [fs, error] -> Result[Any] {
+  if ! fs.exists(report_path)? {
+    return {path: report_path.display(), role: role, present: false, valid: false, result: "missing"}
+  }
+  let report = report_path.read_text()?
+  let valid = if role == "eval-manager" {
+    control.manager_report_contract_ok(report)
+  } else if role == "director" {
+    control.director_report_contract_ok(report)
+  } else if role == "eval-designer" {
+    control.designer_report_contract_ok(report)
+  } else if role == "engineer" {
+    control.engineer_report_contract_ok(report)
+  } else {
+    control.narrative_report_contract_ok(report, [])
+  }
+  return {
+    path: report_path.display(),
+    role: role,
+    present: true,
+    valid: valid,
+    result: control.report_field(report, "Result"),
+  }
 }
 
-proc audit_organization(run_dir: Path, factory_dir: Path) [fs, error] -> Result[Int] {
-  let run_name = run_dir.display()
-  let provenance = fp"${run_dir}/PROVENANCE.md"
-  let provenance_text = if fs.exists(provenance)? { provenance.read_text()? } else { "" }
-  let provenance_ok = fs.exists(provenance)? and report_document_ok(
-    provenance_text,
-    ["Run", "XSH input", "Candidate input", "Execution environment", "Lineage and admission"],
-  )
-  let cost = fp"${run_dir}/COST.md"
-  let cost_text = if fs.exists(cost)? { cost.read_text()? } else { "" }
-  let cost_ok = fs.exists(cost)? and report_document_ok(cost_text, ["Workers", "Role totals", "Run total"]) and
-    cost_text.contains("- Budget failures or unknown costs: 0")
-  let row_template = fp"${factory_dir}/templates/AUDIT-ROW.md"
-  let row_template_text = row_template.read_text()?
-  let phases_dir = fp"${run_dir}/phases"
-  var rows = ""
-  var findings: List[Str] = []
-  var phase_count = 0
-  var phase_ok = true
-  if fs.exists(phases_dir)? {
-    for phase_entry in fs.dirs(phases_dir, gitignore: false, hidden: true)? {
-      if phase_entry.path.parent().display() != phases_dir.display() { continue }
-      let phase_dir = phase_entry.path
-      let regular_report = fp"${phase_dir}/RUN.md"
-      let design_report = fp"${phase_dir}/RUN-DESIGN.md"
-      let report = if fs.exists(regular_report)? { regular_report } else { design_report }
-      let report_present = fs.exists(report)?
-      let report_text = if report_present { report.read_text()? } else { "" }
-      let result = if report_present { control.report_field(report_text, "Result") } else { "missing" }
-      let contract_ok = report_present and result != ""
-      let phase_result = if contract_ok and result == "pass" { "pass" } else { "fail" }
-      phase_count += 1
-      if phase_result != "pass" {
-        phase_ok = false
-        findings = findings.push(f"phase ${phase_dir.name()} is missing or failed its run report")
-      }
-      rows = rows + control.fill_template(row_template_text, [
-        {key: "KIND", value: "phase"},
-        {key: "IDENTIFIER", value: phase_dir.name()},
-        {key: "OUTCOME", value: if report_present { result } else { "missing" }},
-        {key: "CLASSIFICATION", value: "organization-phase"},
-        {key: "CONTRACT", value: if contract_ok { "pass" } else { "fail" }},
-        {key: "SESSION", value: "phase-owned"},
-        {key: "REPORT", value: if report_present { relative_path(run_name, report) } else { "missing" }},
-        {key: "MANIFEST", value: "phase-owned"},
-        {key: "METRICS", value: f"phase-cost=${if fs.exists(fp"${phase_dir}/COST.md")? { relative_path(run_name, fp"${phase_dir}/COST.md") } else { "missing" }}"},
-      ])
+proc audit_phase(run_dir: Path, mode: Str, factory_dir: Path) [fs, env, error] -> Result[Int] {
+  let request_path = fp"${run_dir}/CYCLE-REQUEST.md"
+  let request_exists = fs.exists(request_path)?
+  let request = if request_exists { request_path.read_text()? } else { "" }
+  let requested_eval = if request_exists { control.request_eval(request) } else { "" }
+  let expected_trials = if mode == "eval" and request_exists { control.request_trial_count(request)? } else { 0 }
+  let reports = worker_report_paths(run_dir)?
+  let sessions = session_paths(run_dir)?
+  let manifests = manifest_paths(run_dir)?
+  let narratives = narrative_paths(run_dir)?
+  let workers = worker_data(run_dir, reports)?
+  var findings: List[Any] = workers.findings
+  var trial_rows: List[Any] = []
+  var trials_ok = true
+  for manifest in manifests {
+    let evidence = manifest_evidence(manifest)?
+    trial_rows = trial_rows.push({
+      path: relative_path(run_dir.display(), manifest),
+      evidence: evidence,
+    })
+    if mode == "eval" and ! boolean(json.get(evidence, ["passed"], false)) {
+      trials_ok = false
     }
   }
-  if phase_count == 0 {
-    phase_ok = false
-    findings = findings.push("organization has no child phase directories")
+  if mode == "eval" and manifests.len() != expected_trials {
+    trials_ok = false
+    findings = findings.push({kind: "trial-count", expected: expected_trials, observed: manifests.len()})
   }
-  if ! provenance_ok { findings = findings.push("provenance is missing or incomplete") }
-  if ! cost_ok { findings = findings.push("cost report is missing, incomplete, or has unknown/breached worker cost") }
-  let result = if provenance_ok and cost_ok and phase_ok { "pass" } else { "fail" }
-  let all_files = fs.files(run_dir, gitignore: false, hidden: true)?
-  var session_count = 0
-  var manifest_count = 0
-  var ticket_count = 0
-  for entry in all_files {
-    if entry.name == "session.jsonl" { session_count += 1 }
-    if entry.name == "run.json" { manifest_count += 1 }
-    if entry.name == "ENGINEER-REPORT.md" { ticket_count += 1 }
+  if mode == "eval" and manifests.len() == 0 {
+    trials_ok = false
+    findings = findings.push({kind: "missing-evaluator-manifest"})
   }
-  let findings_text = if findings.len() == 0 { "none" } else { findings.join("\n") }
-  let template = fp"${factory_dir}/templates/AUDIT.md"
-  let values: List[control.TemplateValue] = [
-    {key: "RESULT", value: result},
-    {key: "RUN_ID", value: run_name},
-    {key: "MODE", value: "organization"},
-    {key: "XSH_COMMIT", value: report_value(provenance_text, "- Commit:")},
-    {key: "IMAGE", value: "phase-owned"},
-    {key: "EVAL_ID", value: "organization"},
-    {key: "EXPECTED_TRIALS", value: "phase-owned"},
-    {key: "SESSION_COUNT", value: session_count.float().format(precision: 0)},
-    {key: "MANIFEST_COUNT", value: manifest_count.float().format(precision: 0)},
-    {key: "TICKET_COUNT", value: ticket_count.float().format(precision: 0)},
-    {key: "PROVENANCE_STATE", value: if provenance_ok { "pass" } else { "fail" }},
-    {key: "COST_STATE", value: if cost_ok { "pass" } else { "fail" }},
-    {key: "LINEAGE_STATE", value: "phase-owned"},
-    {key: "CONTROLLER_STATE", value: if phase_ok { "pass" } else { "fail" }},
-    {key: "WORKER_STATE", value: "phase-owned"},
-    {key: "EVALUATOR_STATE", value: "phase-owned"},
-    {key: "TICKET_STATE", value: "phase-owned"},
-    {key: "ROWS", value: rows},
-    {key: "FINDINGS", value: findings_text},
-  ]
-  fs.write(fp"${run_dir}/AUDIT.md", control.fill_template(template.read_text()?, values))?
-  print f"audit: ${run_dir}/AUDIT.md (${result})"
+
+  var narrative_rows: List[Any] = []
+  for narrative in narratives {
+    let identity = worker_identity(narrative)
+    let role = text(json.get(identity, ["role"], "unknown"))
+    narrative_rows = narrative_rows.push(narrative_state(narrative, role)?)
+  }
+  let manager_path = fp"${run_dir}/workers/eval-manager/${requested_eval}/REPORT.md"
+  let director_path = fp"${run_dir}/workers/director/director/REPORT.md"
+  let designer_path = fp"${run_dir}/workers/eval-designer/proposal-1/REPORT.md"
+  let manager_state = narrative_state(manager_path, "eval-manager")?
+  let director_state = narrative_state(director_path, "director")?
+  let designer_required = mode == "eval-design" or (request_exists and control.request_new_eval_count(request)? > 0)
+  let designer_state = if designer_required {
+    narrative_state(designer_path, "eval-designer")?
+  } else {
+    {path: designer_path.display(), role: "eval-designer", present: false, valid: true, result: "not-requested"}
+  }
+  let engineer_states = if mode == "ticket-implementation" {
+    narrative_rows
+  } else {
+    []
+  }
+  let manager_ok = if mode == "eval" { boolean(json.get(manager_state, ["present"], false)) and boolean(json.get(manager_state, ["valid"], false)) } else { true }
+  let director_ok = if mode == "eval" or mode == "ticket-implementation" { boolean(json.get(director_state, ["present"], false)) and boolean(json.get(director_state, ["valid"], false)) } else { true }
+  let designer_ok = ! designer_required or (boolean(json.get(designer_state, ["present"], false)) and boolean(json.get(designer_state, ["valid"], false)))
+  let engineer_ok = if mode == "ticket-implementation" { engineer_states.len() > 0 } else { true }
+  if ! manager_ok { findings = findings.push({kind: "manager-report", state: manager_state}) }
+  if ! director_ok { findings = findings.push({kind: "director-report", state: director_state}) }
+  if ! designer_ok { findings = findings.push({kind: "designer-report", state: designer_state}) }
+  if ! engineer_ok { findings = findings.push({kind: "engineer-report", state: "missing"}) }
+
+  let lineage_dir = fp"${run_dir}/lineage"
+  let lineage_approved = fp"${lineage_dir}/handbook-approved.md"
+  let lineage_candidate = fp"${lineage_dir}/handbook-candidate.md"
+  let lineage_ok = if mode == "eval" {
+    fs.exists(lineage_approved)? and fs.exists(lineage_candidate)?
+  } else {
+    true
+  }
+  if ! lineage_ok { findings = findings.push({kind: "handbook-lineage", state: "missing"}) }
+  let open_tickets = open_ticket_snapshot(factory_dir)?
+  let xsh_commit = env.get_or("FACTORY_XSH_COMMIT", "unknown")?
+  var session_rows: List[Str] = []
+  for session in sessions {
+    session_rows = session_rows.push(relative_path(run_dir.display(), session))
+  }
+  let approved_lineage_path = if fs.exists(lineage_approved)? { relative_path(run_dir.display(), lineage_approved) } else { "missing" }
+  let candidate_lineage_path = if fs.exists(lineage_candidate)? { relative_path(run_dir.display(), lineage_candidate) } else { "missing" }
+  let result = if reports.len() > 0 and manager_ok and director_ok and designer_ok and engineer_ok and
+    trials_ok and lineage_ok and workers.usage.budget_failures == 0 and workers.usage.unknown_costs == 0 {
+    "pass"
+  } else {
+    "fail"
+  }
+  if reports.len() == 0 { findings = findings.push({kind: "worker-reports", state: "missing"}) }
+  let report = {
+    schema_version: schema.SCHEMA_VERSION,
+    kind: "phase",
+    identity: {run_id: run_dir.name(), mode: mode, eval_id: requested_eval},
+    state: "completed",
+    result: result,
+    data: {
+      mode: mode,
+      xsh_commit: xsh_commit,
+      sessions: session_rows,
+      workers: workers.workers,
+      trials: trial_rows,
+      narratives: narrative_rows,
+      manager: manager_state,
+      director: director_state,
+      designer: designer_state,
+      engineer: engineer_states,
+      open_tickets: open_tickets,
+      handbook_lineage: {
+        approved: approved_lineage_path,
+        candidate: candidate_lineage_path,
+      },
+      cost: workers.usage,
+    },
+    findings: findings,
+    artifacts: [
+      {kind: "session-directory", path: "workers/"},
+      {kind: "raw-events", path: "events.jsonl"},
+    ],
+  }
+  json.write(fp"${run_dir}/report.json", report, pretty: true)?
+  print f"report: ${run_dir}/report.json (${result})"
   return Ok(0)
 }
 
-proc audit_run(run_dir: Path, requested_mode: Str, factory_dir: Path) [fs, error] -> Result[Int] {
-  if requested_mode == "organization" {
-    return audit_organization(run_dir, factory_dir)
-  }
-  if requested_mode != "eval" and requested_mode != "ticket-implementation" and
-    requested_mode != "eval-design" {
-    eprint f"unsupported audit mode: ${requested_mode}"
-    return Ok(2)
-  }
-
-  let run_name = run_dir.display()
-  let request_path = fp"${run_dir}/CYCLE-REQUEST.md"
-  let request_exists = fs.exists(request_path)?
-  let request_text = if request_exists { fs.read_text(request_path)? } else { "" }
-  let requested_eval = if request_exists { control.request_eval(request_text) } else { "" }
-  let requested_tickets = if request_exists { control.request_tickets(request_text) } else { [] }
-  var sessions: List[Path] = []
-  var manifests: List[Path] = []
-  var engineer_reports: List[Path] = []
-  var manager_reports: List[Path] = []
-  var designer_reports: List[Path] = []
-  for entry in fs.files(run_dir, gitignore: false, hidden: true)? {
-    if entry.name == "session.jsonl" { sessions = sessions.push(entry.path) }
-    if entry.name == "run.json" { manifests = manifests.push(entry.path) }
-    if entry.name == "ENGINEER-REPORT.md" { engineer_reports = engineer_reports.push(entry.path) }
-    if entry.name == "MANAGER-REPORT.md" { manager_reports = manager_reports.push(entry.path) }
-    if entry.name == "DESIGNER-REPORT.md" { designer_reports = designer_reports.push(entry.path) }
-  }
-  sessions = sessions |> sort-by .display()
-  manifests = manifests |> sort-by .display()
-  engineer_reports = engineer_reports |> sort-by .display()
-  manager_reports = manager_reports |> sort-by .display()
-  designer_reports = designer_reports |> sort-by .display()
-
-  let eval_id = if requested_eval != "" {
-    requested_eval
-  } else if manifests.len() > 0 {
-    read_manifest(manifests[0])?.eval_id
-  } else {
-    "not-requested"
-  }
-  let expected_trials = if requested_mode == "eval" and request_exists {
-    control.request_trial_count(request_text)?
-  } else if requested_mode == "eval" {
-    manifests.len()
-  } else {
-    0
-  }
-
-  let row_template = fp"${factory_dir}/templates/AUDIT-ROW.md"
-  let row_template_text = row_template.read_text()?
-  var rows = ""
-  var findings: List[Str] = []
-  var worker_ok = sessions.len() > 0
-  var worker_report_count = 0
-  for entry in fs.files(run_dir, gitignore: false, hidden: true)? {
-    if entry.name == "WORKER-REPORT.md" { worker_report_count += 1 }
-  }
-  for session in sessions {
-    let worker_dir = session.parent()
-    let report = fp"${worker_dir}/WORKER-REPORT.md"
-    let report_present = fs.exists(report)?
-    let report_text = if report_present { report.read_text()? } else { "" }
-    let report_marker = fp"${worker_dir}/REPORT-MISSING"
-    let report_contract = report_present and ! fs.exists(report_marker)? and
-      control.worker_report_contract_ok(report_text)
-    let role = if report_present { report_value(report_text, "- Role:", "unknown") } else { "unknown" }
-    let worker_id = if report_present { report_value(report_text, "- Worker:", "unknown") } else { "unknown" }
-    let identity = session_identity(run_name, session, role, worker_id)
-    let outcome = if report_present { report_value(report_text, "- Budget status:", "unknown") } else { "missing-report" }
-    let contract = if ! report_present { "missing-report" } else if report_contract { "pass" } else { "fail" }
-    let metrics = if report_present {
-      f"turns=${report_value(report_text, "- Assistant turns:")}; tools=${report_value(report_text, "- Tool calls:")}; thinking=${report_value(report_text, "- Thinking blocks:")}; reasoning=${report_value(report_text, "- Reasoning/thinking tokens (provider subset of output):")}; provider-total=${report_value(report_text, "- Provider-reported total tokens:")}; cost=${report_value(report_text, "- Provider cost:")}; tool-errors=${report_value(report_text, "- Tool errors:")}; span=${report_value(report_text, "- Session span:")}; session-sha=${hash.sha256(session)?.hex()}"
-    } else {
-      f"session-sha=${hash.sha256(session)?.hex()}"
-    }
-    let values: List[control.TemplateValue] = [
-      {key: "KIND", value: "worker"},
-      {key: "IDENTIFIER", value: identity},
-      {key: "OUTCOME", value: outcome},
-      {key: "CLASSIFICATION", value: "pi-session"},
-      {key: "CONTRACT", value: contract},
-      {key: "SESSION", value: relative_path(run_name, session)},
-      {key: "REPORT", value: if report_present { relative_path(run_name, report) } else { "missing" }},
-      {key: "MANIFEST", value: "not-applicable"},
-      {key: "METRICS", value: metrics},
-    ]
-    rows = rows + control.fill_template(row_template_text, values)
-    if ! report_contract {
-      worker_ok = false
-      findings = findings.push(f"worker ${identity} is missing a valid derived report")
+proc audit_organization(run_dir: Path, factory_dir: Path) [fs, env, error] -> Result[Int] {
+  let phases_dir = fp"${run_dir}/phases"
+  var phases: List[Any] = []
+  var findings: List[Any] = []
+  var all_pass = true
+  if fs.exists(phases_dir)? {
+    for entry in fs.children(phases_dir, stat: false, ordered: true) |> where .kind == "dir" |> sort-by .path.display() {
+      let report_path = fp"${entry.path}/report.json"
+      let present = fs.exists(report_path)?
+      let value = if present { json.read(report_path)? } else { null }
+      let valid = present and schema.valid(value, "phase")
+      let result = if valid { text(json.get(value, ["result"], "unknown")) } else { "missing" }
+      phases = phases.push({id: entry.name, path: relative_path(run_dir.display(), report_path), valid: valid, result: result})
+      if ! valid or result != "pass" {
+        all_pass = false
+        findings = findings.push({kind: "phase", id: entry.name, result: result})
+      }
     }
   }
-  if worker_report_count != sessions.len() {
-    worker_ok = false
-    findings = findings.push(f"worker report count ${worker_report_count} does not match session count ${sessions.len()}")
+  if phases.len() == 0 { all_pass = false; findings = findings.push({kind: "phases", state: "missing"}) }
+  let worker_reports = worker_report_paths(run_dir)?
+  let workers = worker_data(run_dir, worker_reports)?
+  let result = if all_pass and workers.usage.budget_failures == 0 and workers.usage.unknown_costs == 0 { "pass" } else { "fail" }
+  let xsh_commit = env.get_or("FACTORY_XSH_COMMIT", "unknown")?
+  let report = {
+    schema_version: schema.SCHEMA_VERSION,
+    kind: "run",
+    identity: {run_id: run_dir.name(), mode: "organization"},
+    state: "completed",
+    result: result,
+    data: {
+      mode: "organization",
+      xsh_commit: xsh_commit,
+      phases: phases,
+      workers: workers.workers,
+      cost: workers.usage,
+      tool_errors: workers.tool_errors,
+    },
+    findings: findings.extend(workers.findings),
+    artifacts: [{kind: "phase-reports", path: "phases/"}, {kind: "raw-events", path: "events.jsonl"}],
   }
-
-  var evaluator_ok = true
-  var observed_trials = 0
-  for manifest in manifests {
-    let evidence = read_manifest(manifest)?
-    let executor_report = fp"${manifest.parent()}/EXECUTOR-REPORT.md"
-    let executor_present = fs.exists(executor_report)?
-    let executor_ok = executor_present and control.executor_report_contract_ok(fs.read_text(executor_report)?)
-    let session = fp"${manifest.parent()}/session.jsonl"
-    let trial_id = evidence.trial_id
-    let identifier = f"${evidence.eval_id}/${trial_id}"
-    let trial_ok = evidence.valid and evidence.result == "pass" and evidence.protocol == "pass" and
-      evidence.correctness == "true" and evidence.restrictions == "true" and
-      ! evidence.timing_gate_failed and executor_ok and fs.exists(session)?
-    observed_trials += 1
-    if requested_mode == "eval" and ! trial_ok {
-      evaluator_ok = false
-      findings = findings.push(f"trial ${identifier} failed normalized evidence checks: result=${evidence.result}; classification=${evidence.classification}; protocol=${evidence.protocol}; correctness=${evidence.correctness}; restrictions=${evidence.restrictions}; timing=${evidence.timing}")
-    }
-    let values: List[control.TemplateValue] = [
-      {key: "KIND", value: "trial"},
-      {key: "IDENTIFIER", value: identifier},
-      {key: "OUTCOME", value: evidence.result},
-      {key: "CLASSIFICATION", value: evidence.classification},
-      {key: "CONTRACT", value: f"protocol=${evidence.protocol}; correctness=${evidence.correctness}; restrictions=${evidence.restrictions}; executor=${if executor_ok { "pass" } else { "fail" }}"},
-      {key: "SESSION", value: if fs.exists(session)? { relative_path(run_name, session) } else { "missing" }},
-      {key: "REPORT", value: if executor_present { relative_path(run_name, executor_report) } else { "missing" }},
-      {key: "MANIFEST", value: relative_path(run_name, manifest)},
-      {key: "METRICS", value: f"handbook=${evidence.handbook}; candidate=${evidence.candidate}; oracle=${evidence.oracle}; timing=${evidence.timing}"},
-    ]
-    rows = rows + control.fill_template(row_template_text, values)
-  }
-  if requested_mode == "eval" {
-    if observed_trials != expected_trials {
-      evaluator_ok = false
-      findings = findings.push(f"expected ${expected_trials} evaluator manifest(s), observed ${observed_trials}")
-    }
-    if observed_trials == 0 { evaluator_ok = false }
-  }
-
-  var ticket_ok = true
-  var observed_tickets = 0
-  for report in engineer_reports {
-    let report_text = report.read_text()?
-    let relative = relative_path(run_name, report)
-    let parts = relative.split("/")
-    let ticket_id = if parts.len() >= 4 { parts[2] } else { "unknown" }
-    let session = fp"${report.parent()}/session.jsonl"
-    let contract_ok = control.engineer_report_contract_ok(report_text) and fs.exists(session)?
-    let outcome = control.report_field(report_text, "Result")
-    let branch = control.report_field(report_text, "Branch")
-    let commit = control.report_field(report_text, "Commit")
-    observed_tickets += 1
-    if requested_mode == "ticket-implementation" and (! contract_ok or outcome != "ready-for-review") {
-      ticket_ok = false
-      findings = findings.push(f"ticket ${ticket_id} is not ready for review: result=${outcome}; contract=${if contract_ok { "pass" } else { "fail" }}")
-    }
-    let values: List[control.TemplateValue] = [
-      {key: "KIND", value: "ticket"},
-      {key: "IDENTIFIER", value: ticket_id},
-      {key: "OUTCOME", value: outcome},
-      {key: "CLASSIFICATION", value: "engineer"},
-      {key: "CONTRACT", value: if contract_ok { "pass" } else { "fail" }},
-      {key: "SESSION", value: if fs.exists(session)? { relative_path(run_name, session) } else { "missing" }},
-      {key: "REPORT", value: relative},
-      {key: "MANIFEST", value: "not-applicable"},
-      {key: "METRICS", value: f"branch=${branch}; commit=${commit}"},
-    ]
-    rows = rows + control.fill_template(row_template_text, values)
-  }
-  if requested_mode == "ticket-implementation" {
-    if observed_tickets != requested_tickets.len() {
-      ticket_ok = false
-      findings = findings.push(f"expected ${requested_tickets.len()} ticket report(s), observed ${observed_tickets}")
-    }
-    if observed_tickets == 0 { ticket_ok = false }
-  }
-
-  let provenance = fp"${run_dir}/PROVENANCE.md"
-  let provenance_ok = fs.exists(provenance)? and report_document_ok(
-    provenance.read_text()?, ["Run", "XSH input", "Candidate input", "Execution environment", "Lineage and admission"]
-  )
-  if ! provenance_ok { findings = findings.push("provenance is missing or incomplete") }
-
-  let cost = fp"${run_dir}/COST.md"
-  let cost_ok = fs.exists(cost)? and report_document_ok(cost.read_text()?, ["Workers", "Role totals", "Run total"]) and
-    cost.read_text()?.contains("- Budget failures or unknown costs: 0")
-  if ! cost_ok { findings = findings.push("cost report is missing, incomplete, or has unknown/breached worker cost") }
-
-  let lineage = fp"${run_dir}/LINEAGE.md"
-  let lineage_ok = if requested_mode == "eval" {
-    fs.exists(lineage)? and report_document_ok(lineage.read_text()?, ["Factory handbook", "Snapshots", "Controller checks"])
-  } else {
-    true
-  }
-  if ! lineage_ok { findings = findings.push("handbook lineage is missing or incomplete") }
-
-  let director_report = fp"${run_dir}/DIRECTOR-REPORT.md"
-  let director_ok = if requested_mode == "eval-design" {
-    true
-  } else {
-    fs.exists(director_report)? and control.director_report_contract_ok(director_report.read_text()?) and
-      control.report_result_is(director_report.read_text()?, "pass")
-  }
-  var manager_tool_errors = false
-  for session in sessions {
-    let worker_report = fp"${session.parent()}/WORKER-REPORT.md"
-    if ! fs.exists(worker_report)? { continue }
-    let worker_report_text = worker_report.read_text()?
-    let role = report_value(worker_report_text, "- Role:", "unknown")
-    let tool_error_count = report_value(worker_report_text, "- Tool errors:", "0")
-    if (role == "eval-worker" or role == "eval-manager") and tool_error_count != "0" {
-      manager_tool_errors = true
-    }
-  }
-  let manager_report_text = if manager_reports.len() > 0 { manager_reports[0].read_text()? } else { "" }
-  let manager_findings_ok = ! manager_tool_errors or manager_report_text.contains("TOOL-ERRORS.md")
-  let manager_ok = if requested_mode == "eval" {
-    manager_reports.len() > 0 and control.manager_report_contract_ok(manager_report_text) and
-      control.manager_tool_error_findings_contract_ok(manager_report_text) and
-      manager_findings_ok and control.report_result_is(manager_report_text, "pass")
-  } else {
-    true
-  }
-  let designer_required = requested_mode == "eval-design" or
-    (requested_mode == "eval" and request_exists and control.request_new_eval_count(request_text)? > 0)
-  let designer_ok = if designer_required {
-    designer_reports.len() > 0 and control.designer_report_contract_ok(designer_reports[0].read_text()?) and
-      control.report_result_is(designer_reports[0].read_text()?, "ready-for-review")
-  } else {
-    true
-  }
-  let controller_ok = (requested_mode == "eval-design" or director_ok) and manager_ok and designer_ok
-  if ! director_ok { findings = findings.push("director report is missing, invalid, or reports failure") }
-  if ! manager_ok { findings = findings.push("eval-manager report is missing, invalid, or reports failure") }
-  if ! designer_ok { findings = findings.push("required eval-designer report is missing or invalid") }
-
-  let worker_state = if worker_ok { "pass" } else { "fail" }
-  let evaluator_state = if requested_mode != "eval" { "not-requested" } else if evaluator_ok { "pass" } else { "fail" }
-  let ticket_state = if requested_mode != "ticket-implementation" { "not-requested" } else if ticket_ok { "pass" } else { "fail" }
-  let controller_state = if controller_ok { "pass" } else { "fail" }
-  let integrity_ok = provenance_ok and cost_ok and lineage_ok and controller_ok and worker_ok
-  let result = if integrity_ok and evaluator_ok and ticket_ok { "pass" } else { "fail" }
-  let findings_text = if findings.len() == 0 { "none" } else { findings.join("\n") }
-  let provenance_text = if provenance_ok { "pass" } else { "fail" }
-  let cost_text = if cost_ok { "pass" } else { "fail" }
-  let lineage_text = if requested_mode != "eval" { "not-requested" } else if lineage_ok { "pass" } else { "fail" }
-  let template = fp"${factory_dir}/templates/AUDIT.md"
-  let values: List[control.TemplateValue] = [
-    {key: "RESULT", value: result},
-    {key: "RUN_ID", value: run_name},
-    {key: "MODE", value: requested_mode},
-    {key: "XSH_COMMIT", value: report_value(if fs.exists(provenance)? { provenance.read_text()? } else { "" }, "- Commit:")},
-    {key: "IMAGE", value: report_value(if fs.exists(provenance)? { provenance.read_text()? } else { "" }, "- Image:")},
-    {key: "EVAL_ID", value: eval_id},
-    {key: "EXPECTED_TRIALS", value: expected_trials.float().format(precision: 0)},
-    {key: "SESSION_COUNT", value: sessions.len().float().format(precision: 0)},
-    {key: "MANIFEST_COUNT", value: manifests.len().float().format(precision: 0)},
-    {key: "TICKET_COUNT", value: engineer_reports.len().float().format(precision: 0)},
-    {key: "PROVENANCE_STATE", value: provenance_text},
-    {key: "COST_STATE", value: cost_text},
-    {key: "LINEAGE_STATE", value: lineage_text},
-    {key: "CONTROLLER_STATE", value: controller_state},
-    {key: "WORKER_STATE", value: worker_state},
-    {key: "EVALUATOR_STATE", value: evaluator_state},
-    {key: "TICKET_STATE", value: ticket_state},
-    {key: "ROWS", value: rows},
-    {key: "FINDINGS", value: findings_text},
-  ]
-  fs.write(fp"${run_dir}/AUDIT.md", control.fill_template(template.read_text()?, values))?
-  print f"audit: ${run_dir}/AUDIT.md (${result})"
+  json.write(fp"${run_dir}/report.json", report, pretty: true)?
+  print f"report: ${run_dir}/report.json (${result})"
   return Ok(0)
 }
 
@@ -564,12 +416,19 @@ proc main(...argv: List[Str]) [fs, env, error, io] {
     abort(2)
   }
   let factory_dir = env.path("FACTORY_DIR", fs.cwd()?)?
-  let mode = if argv.len() >= 2 { argv[1] } else { "eval" }
-  let requested_run = Path(argv[0])
-  let run_dir = if requested_run.display().starts_with("/") {
-    requested_run
+  let requested = Path(argv[0])
+  let run_dir = if requested.display().starts_with("/") {
+    requested
   } else {
-    fp"${fs.cwd()?}/${requested_run.display()}"
+    fp"${fs.cwd()?}/${requested.display()}"
   }
-  abort(audit_run(run_dir, mode, factory_dir)?)
+  let mode = if argv.len() >= 2 { argv[1] } else { "eval" }
+  if mode == "organization" {
+    abort(audit_organization(run_dir, factory_dir)?)
+  }
+  if mode != "eval" and mode != "ticket-implementation" and mode != "eval-design" {
+    eprint f"unsupported audit mode: ${mode}"
+    abort(2)
+  }
+  abort(audit_phase(run_dir, mode, factory_dir)?)
 }

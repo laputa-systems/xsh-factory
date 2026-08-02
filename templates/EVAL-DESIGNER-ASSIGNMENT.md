@@ -25,7 +25,7 @@ wall-clock bounds.
 
 Stage the proposal under `{{RUN_DIR}}/proposals/{{WORKER_ID}}/` and preserve
 the scaffolding and dry-run evidence there. Do not mark it Approved and do not
-modify an approved eval. Write `{{RUN_DIR}}/workers/eval-designer/{{WORKER_ID}}/DESIGNER-REPORT.md` with:
+modify an approved eval. Write `{{RUN_DIR}}/workers/eval-designer/{{WORKER_ID}}/REPORT.md` with:
 
 ```markdown
 ## Result

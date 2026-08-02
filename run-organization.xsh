@@ -2,6 +2,7 @@
 
 use factory_control as control
 use factory_runtime as runtime
+use report_schema as schema
 
 on SIGINT --pre-cancel=0ms [fs, process, env, error] {
   runtime.cleanup_active_run()?
@@ -112,11 +113,12 @@ proc run_child(
 }
 
 proc phase_run_pass(phase_dir: Path, report_name: Str) [fs, error] -> Result[Bool] {
-  let report = fp"${phase_dir}/${report_name}"
-  if ! fs.exists(report)? {
+  let _ = report_name
+  let report = fp"${phase_dir}/report.json"
+  if ! fs.exists(report)? or ! schema.valid(json.read(report)?, "phase") {
     return false
   }
-  return control.report_field(report.read_text()?, "Result") == "pass"
+  return schema.value_text(json.get(json.read(report)?, ["result"], "unknown")) == "pass"
 }
 
 proc phase_request(
@@ -280,7 +282,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   } else {
     fp"${phase_requests_dir}/04-eval-design.md"
   }
-  let event_template = fp"${factory_dir}/templates/EVENT.md"
+  let event_template = run_dir
   let phase_template = fp"${factory_dir}/templates/ORGANIZATION-PHASE-REQUEST.md"
   let run_agent = fp"${factory_dir}/run-agent.xsh"
   let default_primary_controller = if selected_ticket == "" {
@@ -334,44 +336,6 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   } else {
     fp"${primary_phase}/worktrees/${selected_ticket}".display()
   }
-  let ticket_snapshot_sha = if selected_ticket == "" {
-    "not-ticket-cycle"
-  } else {
-    hash.sha256(selected_ticket_path)?.hex()
-  }
-  let approved_handbook_sha = hash.sha256(fp"${factory_dir}/runtime/handbook.md")?.hex()
-  let provenance_template = fp"${factory_dir}/templates/PROVENANCE.md"
-  let provenance_values: List[control.TemplateValue] = [
-    {key: "RUN_ID", value: run_dir.display()},
-    {key: "MODE", value: "organization"},
-    {key: "REQUEST", value: "CYCLE-REQUEST.md"},
-    {key: "BUILD_ID", value: "child-phase-builds"},
-    {key: "XSH_COMMIT", value: xsh_commit.trim()},
-    {key: "CANDIDATE_TICKET", value: if selected_ticket == "" { "not-reevaluation" } else { selected_ticket }},
-    {key: "CANDIDATE_WORKTREE", value: candidate_worktree},
-    {key: "IMAGE", value: "child-phase"},
-    {key: "IMAGE_ID", value: "child-phase"},
-    {key: "PLATFORM", value: platform},
-    {key: "APPROVED_HANDBOOK_SHA", value: approved_handbook_sha},
-    {key: "CANDIDATE_HANDBOOK_SHA", value: "child-phase"},
-    {key: "TICKET_SNAPSHOT_SHA", value: ticket_snapshot_sha},
-  ]
-  fs.write(fp"${run_dir}/PROVENANCE.md", control.fill_template(provenance_template.read_text()?, provenance_values))?
-  let plan_template = fp"${factory_dir}/templates/ORGANIZATION-PLAN.md"
-  let plan_values: List[control.TemplateValue] = [
-    {key: "XSH_COMMIT", value: xsh_commit.trim()},
-    {key: "TICKET_ID", value: if selected_ticket == "" { "none" } else { selected_ticket }},
-    {key: "TICKET_EVAL_ID", value: if selected_ticket == "" { "not-applicable" } else { selected_eval }},
-    {key: "INDEPENDENT_EVAL_ID", value: requested_eval},
-    {key: "TICKET_POLICY", value: ticket_policy},
-    {key: "PRIMARY_MODE", value: primary_mode},
-    {key: "PRIMARY_PHASE", value: primary_phase.display()},
-    {key: "REEVAL_PHASE", value: if selected_ticket == "" { "not-applicable" } else { reeval_phase.display() }},
-    {key: "INDEPENDENT_EVAL_PHASE", value: if selected_ticket == "" { "not-applicable" } else { independent_eval_phase.display() }},
-    {key: "DESIGN_PHASE", value: if design_requested { design_phase.display() } else { "not-requested" }},
-  ]
-  fs.write(fp"${run_dir}/ORGANIZATION-PLAN.md", control.fill_template(plan_template.read_text()?, plan_values))?
-
   var design_handle: ProcessHandle? = null
   if design_requested {
     runtime.emit_event(event_template, run_dir, "10-design-started", "eval-design", "started", 1, "organization", "one independent eval-design phase was requested")?
@@ -409,13 +373,13 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     independent_eval_handles = independent_eval_handles.push(independent_eval_handle)
   }
   primary_ok = wait_child(primary_handle)?
-  let primary_report_ok = phase_run_pass(primary_phase, if selected_ticket == "" { "RUN.md" } else { "RUN.md" })?
+  let primary_report_ok = phase_run_pass(primary_phase, "report.json")?
   let primary_pass = primary_ok and primary_report_ok
   let primary_state = if primary_pass { "pass" } else { "fail" }
   runtime.emit_event(event_template, run_dir, "80-primary-completed", primary_subject,
     if primary_pass { "completed" } else { "failed" }, 1, "controller", "primary phase returned")?
   if primary_pass {
-    runtime.emit_event(event_template, run_dir, "85-primary-validated", primary_subject, "validated", 1, "controller", "primary phase RUN.md passed")?
+    runtime.emit_event(event_template, run_dir, "85-primary-validated", primary_subject, "validated", 1, "controller", "primary phase report.json passed")?
   }
 
   var reeval_state = if selected_ticket == "" { "not-applicable" } else { "skipped" }
@@ -439,14 +403,14 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
         "FACTORY_SKIP_TICKET_RECONCILE=true"],
       fp"${run_dir}/reeval.stdout", fp"${run_dir}/reeval.stderr"
     )?
-    let reeval_report_ok = phase_run_pass(reeval_phase, "RUN.md")?
+    let reeval_report_ok = phase_run_pass(reeval_phase, "report.json")?
     let reeval_pass = reeval_ok and reeval_report_ok
     reeval_state = if reeval_pass { "pass" } else { "fail" }
     reeval_report_state = if reeval_report_ok { "pass" } else { "missing-or-failed" }
     runtime.emit_event(event_template, run_dir, "80-reeval-completed", f"${selected_ticket}-reevaluation",
       if reeval_pass { "completed" } else { "failed" }, 1, "controller", "candidate re-evaluation returned")?
     if reeval_pass {
-      runtime.emit_event(event_template, run_dir, "85-reeval-validated", f"${selected_ticket}-reevaluation", "validated", 1, "controller", "candidate re-evaluation RUN.md passed")?
+      runtime.emit_event(event_template, run_dir, "85-reeval-validated", f"${selected_ticket}-reevaluation", "validated", 1, "controller", "candidate re-evaluation report.json passed")?
     }
   }
 
@@ -478,14 +442,14 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     } else {
       false
     }
-    let independent_eval_report_ok = phase_run_pass(independent_eval_phase, "RUN.md")?
+    let independent_eval_report_ok = phase_run_pass(independent_eval_phase, "report.json")?
     let independent_eval_pass = independent_eval_ok and independent_eval_report_ok
     independent_eval_state = if independent_eval_pass { "pass" } else { "fail" }
     independent_eval_report_state = if independent_eval_report_ok { "pass" } else { "missing-or-failed" }
     runtime.emit_event(event_template, run_dir, "80-independent-eval-completed", requested_eval,
       if independent_eval_pass { "completed" } else { "failed" }, 1, "controller", "independent eval phase returned")?
     if independent_eval_pass {
-      runtime.emit_event(event_template, run_dir, "85-independent-eval-validated", requested_eval, "validated", 1, "controller", "independent eval RUN.md passed")?
+      runtime.emit_event(event_template, run_dir, "85-independent-eval-validated", requested_eval, "validated", 1, "controller", "independent eval report.json passed")?
     }
   }
 
@@ -493,70 +457,35 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   var design_report_state = "not-requested"
   if design_handle != null {
     let design_ok = wait_child(design_handle)?
-    let design_report_ok = phase_run_pass(design_phase, "RUN-DESIGN.md")?
+    let design_report_ok = phase_run_pass(design_phase, "report.json")?
     let design_pass = design_ok and design_report_ok
     design_state = if design_pass { "pass" } else { "fail" }
     design_report_state = if design_report_ok { "pass" } else { "missing-or-failed" }
     runtime.emit_event(event_template, run_dir, "80-design-completed", "eval-design",
       if design_pass { "completed" } else { "failed" }, 1, "controller", "eval-design phase returned")?
     if design_pass {
-      runtime.emit_event(event_template, run_dir, "85-design-validated", "eval-design", "validated", 1, "controller", "eval-design RUN-DESIGN.md passed")?
+      runtime.emit_event(event_template, run_dir, "85-design-validated", "eval-design", "validated", 1, "controller", "eval-design report.json passed")?
     }
   }
 
   let xsh_path = process.which("xsh")?
-  let cost_status = process.run(process.command_argv(
-    xsh_path,
-    [xsh_path.display(), fp"${factory_dir}/tools/session-report.xsh", "--", "run",
-      "--run-dir", run_dir.display(), "--output", fp"${run_dir}/COST.md".display()],
-  ))?
-  let cost_state = if cost_status.ok { "present" } else { "failed" }
   let audit_status = process.run(process.command_argv(
     xsh_path,
     [xsh_path.display(), fp"${factory_dir}/audit-run.xsh", "--", run_dir.display(), "organization"],
     cwd: factory_dir,
   ))?
-  let audit_file = fp"${run_dir}/AUDIT.md"
-  let audit_report_ok = audit_status.ok and fs.exists(audit_file)? and
-    control.audit_report_contract_ok(audit_file.read_text()?)
-  let audit_result = if audit_report_ok { control.audit_result(audit_file.read_text()?) } else { "missing" }
+  let audit_file = fp"${run_dir}/report.json"
+  let audit_report_ok = audit_status.ok and fs.exists(audit_file)? and schema.valid(json.read(audit_file)?, "run")
+  let audit_result = if audit_report_ok { schema.value_text(json.get(json.read(audit_file)?, ["result"], "missing")) } else { "missing" }
   let audit_pass = audit_report_ok and audit_result == "pass"
   let reeval_pass_for_result = if selected_ticket == "" { true } else { reeval_state == "pass" }
   let independent_eval_pass_for_result = if selected_ticket == "" { true } else { independent_eval_state == "pass" }
   let design_pass_for_result = design_state == "pass" or design_state == "not-requested"
-  let initial_result = if primary_pass and reeval_pass_for_result and independent_eval_pass_for_result and design_pass_for_result and worktree_cleanup_ok and cost_status.ok and audit_pass { "pass" } else { "fail" }
+  let initial_result = if primary_pass and reeval_pass_for_result and independent_eval_pass_for_result and design_pass_for_result and worktree_cleanup_ok and audit_pass { "pass" } else { "fail" }
   let cto_status = runtime.write_cto_report(factory_dir, run_dir, initial_result)?
   let result = if initial_result == "pass" and cto_status { "pass" } else { "fail" }
-  let run_template = fp"${factory_dir}/templates/RUN-ORGANIZATION.md"
-  let run_values: List[control.TemplateValue] = [
-    {key: "RUN_ID", value: stamp.float().format(precision: 0)},
-    {key: "RESULT", value: result},
-    {key: "TICKET_ID", value: if selected_ticket == "" { "none" } else { selected_ticket }},
-    {key: "TICKET_EVAL_ID", value: if selected_ticket == "" { "not-applicable" } else { selected_eval }},
-    {key: "INDEPENDENT_EVAL_ID", value: requested_eval},
-    {key: "XSH_COMMIT", value: xsh_commit.trim()},
-    {key: "PRIMARY_MODE", value: primary_mode},
-    {key: "PRIMARY_STATE", value: primary_state},
-    {key: "PRIMARY_PHASE", value: primary_phase.display()},
-    {key: "REEVAL_STATE", value: reeval_state},
-    {key: "REEVAL_PHASE", value: if selected_ticket == "" { "not-applicable" } else { reeval_phase.display() }},
-    {key: "INDEPENDENT_EVAL_STATE", value: independent_eval_state},
-    {key: "INDEPENDENT_EVAL_PHASE", value: if selected_ticket == "" { "not-applicable" } else { independent_eval_phase.display() }},
-    {key: "DESIGN_STATE", value: design_state},
-    {key: "DESIGN_PHASE", value: if design_requested { design_phase.display() } else { "not-requested" }},
-    {key: "PRIMARY_REPORT_STATE", value: if primary_report_ok { "pass" } else { "missing-or-failed" }},
-    {key: "REEVAL_REPORT_STATE", value: reeval_report_state},
-    {key: "INDEPENDENT_EVAL_REPORT_STATE", value: independent_eval_report_state},
-    {key: "DESIGN_REPORT_STATE", value: design_report_state},
-    {key: "COST_STATE", value: cost_state},
-    {key: "AUDIT_STATE", value: if audit_report_ok { audit_result } else { "missing" }},
-    {key: "PATCH_ARTIFACT", value: patch_artifact},
-    {key: "WORKTREE_STATE", value: worktree_cleanup_state},
-    {key: "CTO_STATE", value: if cto_status { "present" } else { "failed" }},
-  ]
-  fs.write(fp"${run_dir}/RUN.md", control.fill_template(run_template.read_text()?, run_values))?
   runtime.emit_event(event_template, run_dir, if result == "pass" { "90-cycle-completed" } else { "90-cycle-failed" },
-    "organization", if result == "pass" { "completed" } else { "failed" }, 1, "controller", "organization RUN.md and aggregate COST.md written")?
+    "organization", if result == "pass" { "completed" } else { "failed" }, 1, "controller", "organization report.json and phase reports written")?
   if result == "pass" {
     runtime.emit_event(event_template, run_dir, "95-cycle-validated", "organization", "validated", 1, "controller", "all required phases passed")?
   }

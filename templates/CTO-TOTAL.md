@@ -1,0 +1,6 @@
+- Workers: `{{WORKERS}}`
+- Assistant turns: `{{TURNS}}`
+- Bucket tokens: `{{TOKENS}}`
+- Cost (USD): `{{COST}}`
+- Nonzero tool results: `{{TOOL_ERRORS}}`
+- Budget failures or unknown costs: `{{BUDGET_FAILURES}}`

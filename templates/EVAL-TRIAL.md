@@ -3,7 +3,7 @@
 The controller has already executed the configured trial against the approved
 handbook snapshot. Do not launch or rerun the executor. Inspect the executor
 report, worker report, thinking transcript, evaluator manifest, artifact,
-review, and quantitative session results at the paths in `CURRENT-EVIDENCE.md`.
+review, and quantitative session results at the paths in the phase `report.json`.
 The manager may stage a provisional candidate in the run lineage after
 classifying the evidence. Never edit the approved snapshot or the checked-in
 `runtime/handbook.md`.

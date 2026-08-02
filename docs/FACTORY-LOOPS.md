@@ -1,227 +1,131 @@
-# XSH factory loops
+# Factory loops
 
-The factory has one north-star objective: make XSH a practical, easy-to-learn,
-token-efficient systems-glue language that coding agents can use reliably. The
-factory therefore improves four coupled surfaces: XSH ergonomics and
-correctness, the agent-facing handbook, the isolated evaluation harness, and
-the evidence used to decide whether an observation generalizes.
+The north star is to make XSH a practical, easy-to-learn, token-efficient
+systems-glue language that coding agents can use reliably. The loops have
+different authorities and outputs.
 
 ## Inner loop: eval-executor
 
-The inner loop is deliberately pure. `evals/<eval>/executor.xsh` owns one
-isolated trial:
+The executor is pure and isolated. For one assigned eval and handbook
+snapshot, `eval-executor.xsh`:
 
-1. seed a fresh work directory from the shared handbook snapshot;
-2. start the isolated `eval-worker` container;
-3. start the separate evaluator container;
-4. copy the session, artifact, review, oracle output, and evaluator manifest;
-5. render the Pi session report and write `EXECUTOR-REPORT.md`.
+1. creates the worker workspace;
+2. launches the eval-worker in Docker;
+3. launches the evaluator against the resulting artifact;
+4. preserves the raw Pi session and evaluator `run.json`; and
+5. normalizes the worker session into `workers/.../report.json`.
 
-The executor does not diagnose, edit the handbook, open tickets, or choose a
-model. Its contract is the evidence boundary. The evaluator must distinguish
-protocol completion, candidate correctness, restriction compliance, and
-timing. A failed container or failed session report is a harness-level signal,
-not automatically a product defect.
+It does not diagnose failures, edit the shared handbook, create tickets, or
+choose work. The evaluator owns protocol, correctness, restrictions, and
+candidate-versus-oracle timing. The worker report owns agent effort: turns,
+token buckets, optional provider reasoning/cost fields, wall time, tools,
+stop reasons, and every nonzero Pi tool result.
 
-The worker's Pi session is canonical. `tools/session-report.xsh` extracts
-turns, tool calls and errors, thinking blocks, token buckets, provider totals,
-optional provider-reported reasoning tokens, cost components, total cost, and
-session wall span. `reasoning` is a subset of `output`; thinking text is not a
-reliable token counter. Missing provider fields remain unknown.
-
-Every Pi `toolResult` with `isError: true` is rendered to an adjacent
-`TOOL-ERRORS.md` with the assistant turn, tool name, and complete result text.
-The controller puts each trial's error count and detail path in
-`CURRENT-EVIDENCE.md`; managers must account for both worker and manager
-session errors, including invalid API discovery queries.
-
-Every eval image inherits `evals/Dockerfile.base`, which contains the pinned
-Alpine runtime, locally built `xsh` and `xsht`, and Pi. An eval Dockerfile is a
-thin layer for task-specific packages and runtime files. `task-ecount` adds
-only `fd`. The `Dockerfile.test` toolchain is keyed by its product build files,
-target, and host architecture; a short build lock protects shared staging,
-while content-addressed phase image tags let independent eval phases run their
-Pi work in parallel without accumulating a new timestamped image name on every
-cycle. Each phase records the resolved tags and cache decision in
-`xsh-build.state`.
+Thinking-block count is available when Pi records thinking blocks. A provider
+reasoning-token count is shown only when Pi reports one; transcript text is not
+converted into a guessed token number.
 
 ## Outer loop: eval-manager
 
-The eval-manager is a monitor and interpreter around the pure executor. It
-must preserve the same eval, oracle, XSH input, image, and handbook lineage
-while comparing trials. It classifies observations as:
+The eval-manager is a monitor and interpreter around executor evidence. It
+compares like-for-like trials and classifies observations as worker friction,
+handbook opportunity, language/tooling defect, harness mismatch, reporting
+failure, or noise. It may stage one handbook candidate under the run lineage
+and may write a standardized ticket, but it does not change approved state.
 
-- worker friction;
-- reusable handbook guidance;
-- XSH language or tooling defect;
-- image or harness mismatch;
-- evaluator/reporting failure; or
-- stochastic noise.
+Its required qualitative output is the employee `REPORT.md`. Its quantitative
+inputs are the phase `report.json`, worker `report.json`, evaluator `run.json`,
+and raw sessions. Its report must explicitly account for `tool_errors`, even
+when the count is zero, so invalid API discovery calls cannot disappear in a
+long narrative.
 
-The manager may propose a ticket only when one reproducible observation points
-to a general improvement. It may write a provisional shared-handbook candidate
-under the run's lineage directory, but never edits the approved or checked-in
-handbook during diagnosis. A candidate is trusted only after a replay uses its
-hash and the manager records the comparison. Promotion is global: an approved
-candidate becomes the next checked-in `runtime/handbook.md` for every eval.
+The shared handbook is `runtime/handbook.md`. Each trial receives a snapshot;
+candidate promotion is a user-approved global change. A causal handbook
+replay uses an approved snapshot for the baseline trial and a candidate
+snapshot for the comparison trial.
 
-The controller selects an explicit trial plan from the cycle request. One
-trial is the default for a cheap eval; two trials are required when the
-request is testing a handbook candidate or causal timing claim. A two-trial
-replay is:
+## Product loop: engineer
 
-```text
-trial 1 -> lineage/handbook-approved.md -> executor evidence
-manager diagnosis -> lineage/handbook-candidate.md
-trial 2 -> lineage/handbook-candidate.md -> executor evidence
-```
+The controller admits an approved ticket and creates one isolated XSH worktree
+at the clean admission commit. It renders one assignment containing the
+ticket text and exact path, passes that assignment to exactly one engineer,
+and validates the session's required reads and product commit. The engineer
+cannot discover another ticket.
 
-An unchanged copy is valid evidence when the first trial yields no handbook
-change. A one-trial run must copy the approved snapshot unchanged into the
-candidate path; it cannot promote a new handbook hypothesis. The controller
-records the approved, candidate, and staged trial hashes, verifies the
-checked-in handbook remains unchanged, and fails closed if the lineage is
-broken.
+The output is the portable `patches/<ticket>.diff`, the raw session,
+`report.json`, and the engineer's `REPORT.md`. After the patch is captured, a
+clean temporary worktree is removed. The user reviews and applies or merges
+the patch. Reconciliation then updates the linked `TICKET.md` to `Merged.`;
+the linked manager replay decides whether the change should remain.
+
+## Design loop: eval-designer
+
+The designer proposes at most one small practical systems-administration or
+programming eval per bounded cycle. `task-tags` is the minimal structural
+example; `task-ecount` is the current difficulty upper bound. A proposal must
+include the task, oracle, evaluator, restrictions, runtime scaffolding, cost
+expectation, and a dry run. It remains pending until the user approves it.
 
 ## Organization loop
 
-`run.xsh` is a thin signal-safe dispatcher. It selects `run-organization.xsh`,
-`run-eval.xsh`, `run-ticket.xsh`, or `run-design.xsh`; those mode controllers
-own admission, dispatch, validation, and reports. An organization run owns a
-separate organization lock while each child phase takes its own phase-scoped
-lock and active marker. It records `runs/ORGANIZATION-ACTIVE`, so a second
-top-level cycle cannot overlap it. The eval controller selects the first eval
-listed under `## Active evals` in its phase request, or accepts an explicit eval
-ID, then snapshots provenance before launching Pi:
+`run.xsh` is a signal-safe dispatcher. It performs preflight, holds the
+top-level admission boundary, and invokes one mode controller. Controllers
+wait on process handles and use lifecycle callbacks after child exit; agents
+do not poll each other and do not drive the state machine.
 
-- the clean XSH commit;
-- Docker image ID and platform;
-- approved and candidate shared-handbook hashes; and
-- every Pi session under `runs/run-<id>/workers/`.
-
-The director launches children through `run-agent.xsh`, which is the only
-authorized Pi launcher. Role-specific provider, model, thinking level, tools,
-and budget are environment settings with explicit defaults; budget ceilings are
-`$0.06` for director, `$0.15` for eval-manager, `$0.25` for engineer, `$0.30` for
-eval-designer, and `$0.50` for eval-worker. Ctrl-C is handled
-at the cycle boundary and terminates the owned child process groups, including
-nested Pi workers, before returning partial evidence.
-
-The director coordinates eval-managers and engineer workers in their respective
-child phases. The standalone `run-design.xsh` controller dispatches exactly
-one eval-designer through the shared runner; it does not require the director
-to invent work. No controller merges XSH changes. The user approves new evals
-and merges completed engineer branches. Reconciliation compares each approved
-ticket's recorded implementation commit with XSH `HEAD`; when it is an
-ancestor, reconciliation updates that same `TICKET.md` to `Merged.` and fills
-its merge record. The linked eval-manager then accepts or rejects the change
-with a controlled replay.
-
-For the standard request with an approved ticket, the parent starts
-`ticket implementation`, the independent eval, and optional `eval-design`
-concurrently when their inputs are disjoint. After the ticket implementation
-passes, it runs the linked candidate re-evaluation; that replay waits for the
-engineer patch but does not wait for the independent eval's Pi work. Without an
-approved ticket, the active eval occupies the primary phase while `eval-design`
-runs alongside it, and the candidate phase is not created.
-
-The controller writes `DISPATCH.md` for eval cycles, `TICKET-DISPATCH.md` for
-ticket cycles, and a one-row `DISPATCH.md` for standalone eval-design cycles.
-These are the authoritative ordered child lists. The director has no
-discretion to discover work or infer a role from prose. An organization cycle
-always has one eval-design phase; a direct eval cycle gets an eval-designer row
-only when the request explicitly sets `New eval proposals` to one. Newly
-created tickets are never sent to engineer in the same cycle.
-
-After child completion, `audit-run.xsh` compiles the run into one
-`AUDIT.md`. It reads the canonical session JSONL, derived worker reports,
-evaluator `run.json` manifests, controller reports, cost report, and
-provenance. Worker effort is shown separately from each evaluator's protocol,
-correctness, restriction, and timing states. The audit is deterministic and
-does not promote a handbook candidate, accept a ticket, or reinterpret a
-qualitative manager decision. It gives later agents one concise index while
-preserving the original evidence files.
-
-The controller also writes `CTO-REPORT.md`, a deterministic first-pass briefing
-that consolidates phase results, per-role cost accounting, employee decisions,
-and the remaining action queue. It is a navigation aid for the CTO; the raw
-Pi session JSONL, evaluator manifests, and employee reports remain canonical.
-
-## Layer outputs
-
-| Layer | Input | Durable output |
-| --- | --- | --- |
-| eval-executor | one eval, one handbook snapshot, one image | worker session/report, artifact, manifest, executor classification |
-| eval-manager | executor trials and Pi metrics | shared-handbook candidate, manager report, evidence-backed tickets |
-| engineer | one controller-assigned ticket snapshot and worktree | branch/worktree, tests, implementation, completion report |
-| eval-designer | factory mission and practical task idea | proposed eval contract, scaffolding, dry-run evidence |
-| organization controller | one bounded request plus admission state | ordered phase requests, parent plan, events, aggregate cost, `CTO-REPORT.md`, and `RUN.md` |
-| director | approved cycle request | child reports, dispatch status, north-star impact, run summary, cost report, and deterministic audit |
-| user | proposed evals and completed branches | approval or rejection, merge or revert decision |
-
-The system is Markdown-first at the organizational layer. JSON is retained as
-the evaluator's derived machine-readable manifest and Pi session reporting
-layer; it is not a second configuration language.
-
-The controller's pure contracts and non-Pi tools are covered by native XSH
-tests in `tests/`. Those tests use synthetic Pi JSONL, a harmless sleep process
-as the budget-watch worker double, and a fake Docker executable for cleanup;
-they do not spend model budget or contact an agent.
-
-## Control plane: explicit modes and events
-
-The agents are workers, not the workflow engine. `run.xsh` is the cycle
-controller and the only component that admits work, creates product worktrees,
-starts the director, validates child outputs, and decides whether the cycle
-passed. It waits on process handles; it does not poll Pi sessions for state.
-`run-agent.xsh` owns one Pi process and emits its structured session report
-after that process exits.
-
-Cycle requests select a mode. The current modes are:
-
-- `eval`: run the selected eval-manager and its pure executor trials;
-- `ticket-implementation`: admit only the explicitly listed tickets whose
-  checked-in status is `Approved.` (with legacy `Accepted.` support), create
-  one XSH worktree per ticket, and
-  dispatch one `engineer` worker per worktree.
-- `organization`: admit at most one approved ticket automatically or from the
-  request; start its implementation, independent eval, and one eval-design
-  phase concurrently when requested, run the linked pre-merge re-evaluation
-  after implementation, and run the independent eval listed in the request,
-  or run that eval as the primary phase when no ticket is admitted.
-- `eval-design`: dispatch exactly one eval-designer proposal and dry run.
-
-Each run also has an `events/` ledger of small Markdown event records. The
-controller writes events at admission, worker start, worker completion, and
-cycle completion. These are callbacks at the process boundary: a child exit
-causes the next deterministic validation/output step. They are deliberately
-not a second agent-facing state database, and an agent must not infer authority
-from a session transcript or poll another worker's files.
-
-Ticket implementation is therefore a reviewable state transition. The
-controller renders one assignment file per ticket, records its SHA-256 in
-`TICKET-DISPATCH.md`, and the shared runner verifies that exact assignment and
-claims the worker slot before starting Pi. The cycle validator also requires
-the session JSONL to show `read` tool calls for the exact factory north-star
-and handbook paths supplied in that assignment:
+The organization controller can start independent work concurrently:
 
 ```text
-Approved ticket
-  -> admitted event
-  -> isolated worktree at recorded XSH commit
-  -> engineer process completion
-  -> branch/commit/clean-worktree/report validation
-  -> ready-for-review branch
-  -> user merges product branch
-  -> reconciliation proves implementation commit is in XSH HEAD
-  -> same TICKET.md becomes Merged.
-  -> linked eval-manager replay accepts or rejects
+approved ticket ──> implementation ──> linked re-evaluation
+                     │
+                     └──────────────> independent eval
+
+optional eval-design ───────────────────────────────┘
 ```
 
-The current controller contract uses one admissible input, one durable event,
-one validator, and one callback/output at each cycle boundary. The remaining
-human-gated transitions are eval approval, engineer-branch review, and the
-eval-manager's post-merge decision. Branch merging is still user-owned;
-reconciliation only proves and records what already happened. Pi remains
-useful for judgment and diagnosis, but it does not invent the organization's
-state machine.
+Implementation must finish before the linked candidate replay because the
+replay consumes its worktree or patch. The independent eval and design phase
+have disjoint inputs and may overlap with implementation. If no ticket is
+admitted, the independent eval becomes the primary phase.
+
+The user remains the authority for product merges, handbook promotion, eval
+approval, and reversion. The CTO reviews the evidence and chooses the next
+narrow cycle within the coded spend and eval-count limits.
+
+## Durable output hierarchy
+
+```text
+runs/run-<id>/
+├── report.json
+├── CTO-REPORT.md
+├── events.jsonl
+├── phases/<phase>/report.json
+├── workers/<role>/<worker>/
+│   ├── session.jsonl
+│   ├── report.json
+│   └── REPORT.md
+└── patches/<ticket>.diff
+```
+
+`report.json` is the machine contract at every controller boundary. The
+schema is implemented in `report_schema.xsh` and described in
+[`REPORT-SCHEMA.md`](REPORT-SCHEMA.md). `session.jsonl` is canonical raw Pi
+evidence. `REPORT.md` is one qualitative employee judgment. `CTO-REPORT.md`
+is a human navigation view generated from those sources. There are no
+generated Markdown cost, audit, dispatch, provenance, current-evidence, or
+tool-error projections.
+
+## Signals, budgets, and tests
+
+`run.xsh` handles SIGINT and SIGTERM with zero pre-cancel time. The runtime
+registry tracks descendant PIDs and Docker container IDs so cancellation
+terminates the owned process tree and preserves partial evidence. The
+aggregate cycle watcher is a hard cap; a breach shuts down the cycle and
+writes a postmortem. Worker budget breaches have durable consequences:
+eval-workers disable their evals, and engineers close their tickets as too
+difficult with a link to the attempted run.
+
+`tests/` is the cheap hard judge. Native xsht tests cover JSON report parsing,
+session normalization and tool errors, lifecycle transitions, budget and
+signal cleanup, exact assignment routing, patch/worktree cleanup, and report
+compilation with fake processes. They never launch Pi or Docker.

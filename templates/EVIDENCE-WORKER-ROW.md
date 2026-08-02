@@ -1,1 +1,0 @@
-- Trial `{{TRIAL_ID}}`: executor report `{{EXECUTOR_REPORT}}`; worker report `{{WORKER_REPORT}}`; Pi tool errors `{{TOOL_ERROR_COUNT}}`; detail file `{{TOOL_ERRORS}}`; session `{{SESSION}}`

@@ -2,6 +2,7 @@
 
 use factory_control as control
 use factory_runtime as runtime
+use report_schema as schema
 
 proc run_ticket_cycle(
   request: Path,
@@ -29,8 +30,7 @@ proc run_ticket_cycle(
   let _run_lock = runtime.acquire_run_lock_at(lock_path)?
   let worktree_root = fp"${run_dir}/worktrees"
   let patch_root = fp"${run_dir}/patches"
-  let event_template = fp"${factory_dir}/templates/EVENT.md"
-  let provenance_template = fp"${factory_dir}/templates/PROVENANCE.md"
+  let event_template = run_dir
   let assignment_template = fp"${factory_dir}/templates/ENGINEER-ASSIGNMENT.md"
   let assignment_template_text = assignment_template.read_text()?
   let platform = env.get_or("FACTORY_PLATFORM", "linux/arm64")?
@@ -63,9 +63,6 @@ proc run_ticket_cycle(
   }
   let _merged_tickets = runtime.reconcile_tickets(factory_dir, xsh_repo, xsh_commit.trim())?
 
-  var dispatch_rows = ""
-  var ticket_names = ""
-  var ticket_snapshots = ""
   for ticket_id in tickets {
     if ! control.valid_ticket_id(ticket_id) {
       eprint f"unsafe ticket id: ${ticket_id}"
@@ -106,7 +103,6 @@ proc run_ticket_cycle(
     fs.copy(ticket_path, fp"${run_dir}/tickets/${ticket_id}.md", overwrite: true)?
     let ticket_sha = hash.sha256(ticket_path)?.hex()
     let ticket_text = ticket_path.read_text()?
-    ticket_snapshots = if ticket_snapshots == "" { f"${ticket_id}: ${ticket_sha}" } else { ticket_snapshots + f"\n${ticket_id}: ${ticket_sha}" }
     let assignment_values: List[control.TemplateValue] = [
       {key: "TICKET_ID", value: ticket_id},
       {key: "TICKET_PATH", value: fp"${run_dir}/tickets/${ticket_id}.md".display()},
@@ -114,7 +110,7 @@ proc run_ticket_cycle(
       {key: "WORKTREE", value: worktree.display()},
       {key: "BRANCH", value: branch},
       {key: "XSH_COMMIT", value: xsh_commit.trim()},
-      {key: "ENGINEER_REPORT", value: fp"${run_dir}/workers/engineer/${ticket_id}/ENGINEER-REPORT.md".display()},
+      {key: "ENGINEER_REPORT", value: fp"${run_dir}/workers/engineer/${ticket_id}/REPORT.md".display()},
       {key: "FACTORY_DIR", value: factory_dir.display()},
       {key: "FACTORY_RUN_DIR", value: run_dir.display()},
       {key: "NORTH_STAR_FILE", value: fp"${factory_dir}/NORTH-STAR.md".display()},
@@ -126,42 +122,13 @@ proc run_ticket_cycle(
     let assignment = control.fill_template(assignment_template_text, assignment_values)
     let assignment_path = fp"${run_dir}/messages/${ticket_id}.md"
     fs.write(assignment_path, assignment)?
-    let assignment_sha = hash.sha256(assignment_path)?.hex()
-    let dispatch_row_template = fp"${factory_dir}/templates/TICKET-DISPATCH-ROW.md"
-    let dispatch_row_values: List[control.TemplateValue] = [
-      {key: "TICKET_ID", value: ticket_id},
-      {key: "WORKTREE", value: worktree.display()},
-      {key: "BRANCH", value: branch},
-      {key: "XSH_COMMIT", value: xsh_commit.trim()},
-      {key: "ASSIGNMENT_SHA", value: assignment_sha},
-      {key: "RUN_AGENT", value: run_agent.display()},
-      {key: "FACTORY_DIR", value: factory_dir.display()},
-      {key: "ASSIGNMENT_FILE", value: assignment_path.display()},
-    ]
-    dispatch_rows = dispatch_rows + control.fill_template(dispatch_row_template.read_text()?, dispatch_row_values)
-    ticket_names = if ticket_names == "" { ticket_id } else { ticket_names + ", " + ticket_id }
     runtime.emit_event(event_template, run_dir, f"10-ticket-${ticket_id}-admitted", ticket_id, "admitted", 1, "admission", f"worktree ${worktree.display()} on ${branch}")?
   }
-  let dispatch_template = fp"${factory_dir}/templates/TICKET-DISPATCH.md"
-  fs.write(fp"${run_dir}/TICKET-DISPATCH.md", control.fill_template(
-    dispatch_template.read_text()?, [{key: "ROWS", value: dispatch_rows}]
+  let _initial_report = process.run(process.command_argv(
+    xsh_path,
+    [xsh_path.display(), fp"${factory_dir}/audit-run.xsh", "--", run_dir.display(), "ticket-implementation"],
+    cwd: factory_dir,
   ))?
-  let provenance_values: List[control.TemplateValue] = [
-    {key: "RUN_ID", value: run_dir.display()},
-    {key: "MODE", value: "ticket-implementation"},
-    {key: "REQUEST", value: "CYCLE-REQUEST.md"},
-    {key: "BUILD_ID", value: "not-used-ticket-cycle"},
-    {key: "XSH_COMMIT", value: xsh_commit.trim()},
-    {key: "CANDIDATE_TICKET", value: "not-reevaluation"},
-    {key: "CANDIDATE_WORKTREE", value: "not-reevaluation"},
-    {key: "IMAGE", value: "not-used-ticket-cycle"},
-    {key: "IMAGE_ID", value: "not-used-ticket-cycle"},
-    {key: "PLATFORM", value: platform},
-    {key: "APPROVED_HANDBOOK_SHA", value: "not-used-ticket-cycle"},
-    {key: "CANDIDATE_HANDBOOK_SHA", value: "not-used-ticket-cycle"},
-    {key: "TICKET_SNAPSHOT_SHA", value: ticket_snapshots},
-  ]
-  fs.write(fp"${run_dir}/PROVENANCE.md", control.fill_template(provenance_template.read_text()?, provenance_values))?
 
   let director_message = fp"${run_dir}/DIRECTOR-REQUEST.md"
   let director_template = fp"${factory_dir}/templates/DIRECTOR-REQUEST.md"
@@ -170,7 +137,6 @@ proc run_ticket_cycle(
     {key: "RUN_DIR", value: run_dir.display()},
     {key: "RUN_AGENT", value: run_agent.display()},
     {key: "MODE", value: "ticket-implementation"},
-    {key: "DISPATCH_FILE", value: "TICKET-DISPATCH.md"},
     {key: "EXECUTION_DIRECTIVE", value: "Launch exactly the assigned engineer rows through the shared runner, wait for each process, and inspect its report. Do not launch eval roles."},
   ]
   fs.write(director_message, control.fill_template(director_template.read_text()?, director_values))?
@@ -223,22 +189,18 @@ proc run_ticket_cycle(
   ))?
   runtime.emit_event(event_template, run_dir, "80-director-completed", "director", if director_status.ok { "completed" } else { "failed" }, 1, "director", "director process returned")?
 
-  let cost_status = process.run(process.command_argv(
-    xsh_path,
-    [xsh_path.display(), fp"${factory_dir}/tools/session-report.xsh", "--", "run", "--run-dir", run_dir.display(),
-      "--output", fp"${run_dir}/COST.md".display()],
-  ))?
   var all_tickets_ok = true
   var all_patches_ok = true
-  var result_rows = ""
   for ticket_id in tickets {
     let worktree = fp"${worktree_root}/${ticket_id}"
     let worker_dir = fp"${run_dir}/workers/engineer/${ticket_id}"
-    let engineer_report = fp"${worker_dir}/ENGINEER-REPORT.md"
+    let engineer_report = fp"${worker_dir}/REPORT.md"
+    let worker_report = fp"${worker_dir}/report.json"
     let session = fp"${worker_dir}/session.jsonl"
     let north_star_read_ok = runtime.session_read_path(session, fp"${factory_dir}/NORTH-STAR.md")?
     let handbook_read_ok = runtime.session_read_path(session, fp"${factory_dir}/runtime/handbook.md")?
-    let report_ok = fs.exists(engineer_report)? and ! fs.exists(fp"${worker_dir}/REPORT-MISSING")? and
+    let report_ok = fs.exists(worker_report)? and schema.valid(json.read(worker_report)?, "worker") and
+      fs.exists(engineer_report)? and ! fs.exists(fp"${worker_dir}/REPORT-MISSING")? and
       control.engineer_report_contract_ok(fs.read_text(engineer_report)?)
     let branch = run.text "git" "-C" $worktree.display() "branch" "--show-current" ?
     let head = run.text "git" "-C" $worktree.display() "rev-parse" "HEAD" ?
@@ -269,37 +231,6 @@ proc run_ticket_cycle(
       (retain_worktree or worktree_action == "removed-after-patch")
     if ! final_ticket_ok { all_tickets_ok = false }
     if ! patch_ok { all_patches_ok = false }
-    let state = if final_ticket_ok { "ready-for-review" } else { "failed" }
-    let report_state = if fs.exists(engineer_report)? { "present" } else { "missing" }
-    let patch_state = if patch_ok { "present" } else { "missing" }
-    let patch_sha = if patch_ok { hash.sha256(patch_path)?.hex() } else { "missing" }
-    let patch_template = fp"${factory_dir}/templates/ENGINEER-PATCH.md"
-    fs.write(fp"${patch_root}/${ticket_id}.md", control.fill_template(
-      patch_template.read_text()?, [
-        {key: "TICKET_ID", value: ticket_id},
-        {key: "BASE_COMMIT", value: xsh_commit.trim()},
-        {key: "BRANCH", value: branch.trim()},
-        {key: "IMPLEMENTATION_COMMIT", value: head.trim()},
-        {key: "PATCH_PATH", value: patch_path.display()},
-        {key: "PATCH_SHA", value: patch_sha},
-        {key: "PATCH_STATE", value: patch_state},
-        {key: "WORKTREE_ACTION", value: worktree_action},
-      ]
-    ))?
-    let result_row_template = fp"${factory_dir}/templates/ENGINEER-RESULTS-ROW.md"
-    let result_row_values: List[control.TemplateValue] = [
-      {key: "TICKET_ID", value: ticket_id},
-      {key: "REPORT_STATE", value: report_state},
-      {key: "NORTH_STAR_READ", value: if north_star_read_ok { "true" } else { "false" }},
-      {key: "HANDBOOK_READ", value: if handbook_read_ok { "true" } else { "false" }},
-      {key: "BRANCH", value: branch.trim()},
-      {key: "COMMIT", value: head.trim()},
-      {key: "PATCH", value: if patch_ok { patch_path.display() } else { "missing" }},
-      {key: "WORKTREE_ACTION", value: worktree_action},
-      {key: "CLEAN", value: if clean { "true" } else { "false" }},
-      {key: "STATE", value: state},
-    ]
-    result_rows = result_rows + control.fill_template(result_row_template.read_text()?, result_row_values)
     if final_ticket_ok {
       runtime.emit_event(event_template, run_dir, f"80-ticket-${ticket_id}-completed", ticket_id, "completed", 1, "engineer", f"branch ${branch.trim()} at ${head.trim()}; north star and handbook read from session log")?
       runtime.emit_event(event_template, run_dir, f"85-ticket-${ticket_id}-validated", ticket_id, "validated", 1, "controller", f"report, patch, branch, commit, and worktree checks passed; ${worktree_action}")?
@@ -308,11 +239,7 @@ proc run_ticket_cycle(
       runtime.emit_event(event_template, run_dir, f"80-ticket-${ticket_id}-failed", ticket_id, "failed", 1, "controller", f"worker output, patch, or worktree validation failed for ${ticket_id}")?
     }
   }
-  let results_template = fp"${factory_dir}/templates/ENGINEER-RESULTS.md"
-  fs.write(fp"${run_dir}/ENGINEER-RESULTS.md", control.fill_template(
-    results_template.read_text()?, [{key: "ROWS", value: result_rows}]
-  ))?
-  let director_report = fp"${run_dir}/DIRECTOR-REPORT.md"
+  let director_report = fp"${run_dir}/workers/director/director/REPORT.md"
   let director_report_ok = fs.exists(director_report)? and
     ! fs.exists(fp"${run_dir}/workers/director/director/REPORT-MISSING")? and
     control.director_report_contract_ok(fs.read_text(director_report)?)
@@ -321,10 +248,9 @@ proc run_ticket_cycle(
     [xsh_path.display(), fp"${factory_dir}/audit-run.xsh", "--", run_dir.display(), "ticket-implementation"],
     cwd: factory_dir,
   ))?
-  let audit_file = fp"${run_dir}/AUDIT.md"
-  let audit_report_ok = audit_status.ok and fs.exists(audit_file)? and
-    control.audit_report_contract_ok(fs.read_text(audit_file)?)
-  let audit_result = if audit_report_ok { control.audit_result(fs.read_text(audit_file)?) } else { "missing" }
+  let audit_file = fp"${run_dir}/report.json"
+  let audit_report_ok = audit_status.ok and fs.exists(audit_file)? and schema.valid(json.read(audit_file)?, "phase")
+  let audit_result = if audit_report_ok { schema.value_text(json.get(json.read(audit_file)?, ["result"], "missing")) } else { "missing" }
   let audit_pass = audit_report_ok and audit_result == "pass"
   if audit_pass {
     runtime.mark_phase_completed(event_template, run_dir, "85-cycle-audited", "ticket-implementation",
@@ -333,32 +259,11 @@ proc run_ticket_cycle(
     runtime.emit_event(event_template, run_dir, "85-cycle-audited", "ticket-implementation",
       "failed", 1, "controller", "deterministic audit artifact written")?
   }
-  let initial_result = if director_status.ok and cost_status.ok and all_tickets_ok and all_patches_ok and director_report_ok and audit_pass { "pass" } else { "fail" }
+  let initial_result = if director_status.ok and all_tickets_ok and all_patches_ok and director_report_ok and audit_pass { "pass" } else { "fail" }
   let cto_status = runtime.write_cto_report(factory_dir, run_dir, initial_result)?
   let result = if initial_result == "pass" and cto_status { "pass" } else { "fail" }
-  let director_state = if fs.exists(fp"${run_dir}/workers/director/director/session.jsonl")? { "present" } else { "missing" }
-  let cost_state = if cost_status.ok { "present" } else { "failed" }
-  let engineer_state = if all_tickets_ok { "ready-for-review" } else { "failed" }
-  let director_report_state = if director_report_ok { "present" } else { "missing north-star section" }
-  let run_template = fp"${factory_dir}/templates/RUN-TICKET.md"
-  let run_values: List[control.TemplateValue] = [
-    {key: "RUN_ID", value: stamp.float().format(precision: 0)},
-    {key: "RESULT", value: result},
-    {key: "TICKET_NAMES", value: ticket_names},
-    {key: "XSH_COMMIT", value: xsh_commit.trim()},
-    {key: "DIRECTOR_STATE", value: director_state},
-    {key: "ENGINEER_STATE", value: engineer_state},
-    {key: "PATCH_STATE", value: if all_patches_ok { "present" } else { "partial-or-missing" }},
-    {key: "COST_STATE", value: cost_state},
-    {key: "DIRECTOR_REPORT_STATE", value: director_report_state},
-    {key: "AUDIT_STATE", value: if audit_report_ok { "present" } else { "failed" }},
-    {key: "AUDIT_RESULT", value: audit_result},
-    {key: "CTO_STATE", value: if cto_status { "present" } else { "failed" }},
-  ]
-  let run_report = control.fill_template(run_template.read_text()?, run_values)
-  fs.write(fp"${run_dir}/RUN.md", run_report)?
   if result == "pass" {
-    runtime.emit_event(event_template, run_dir, "90-cycle-completed", "ticket-implementation", "completed", 1, "controller", "run report and review branches written")?
+    runtime.emit_event(event_template, run_dir, "90-cycle-completed", "ticket-implementation", "completed", 1, "controller", "structured phase report and review patch written")?
     runtime.emit_event(event_template, run_dir, "95-cycle-validated", "ticket-implementation", "validated", 1, "controller", "all required review outputs passed")?
   } else {
     runtime.emit_event(event_template, run_dir, "90-cycle-failed", "ticket-implementation", "failed", 1, "controller", "one or more required outputs failed")?

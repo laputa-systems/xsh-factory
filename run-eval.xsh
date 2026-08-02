@@ -2,6 +2,7 @@
 
 use factory_control as control
 use factory_runtime as runtime
+use report_schema as schema
 
 proc role_assignments() [env, error] -> Result[List[Str]] {
   var assignments: List[Str] = []
@@ -47,20 +48,15 @@ proc spawn_agent(
   return handle
 }
 
-proc report_tool_error_count(report: Path) [fs, error] -> Result[Str] {
-  if ! fs.exists(report)? {
-    return "unknown"
-  }
-  let count = control.report_line_value(fs.read_text(report)?, "- Tool errors:")
-  return if count == "" { "unknown" } else { count }
-}
-
 proc report_has_tool_errors(report: Path) [fs, error] -> Result[Bool] {
   if ! fs.exists(report)? {
     return false
   }
-  let count = control.report_line_value(fs.read_text(report)?, "- Tool errors:")
-  return count != "" and count != "0"
+  let usage = json.get(json.read(report)?, ["usage"], null)
+  return match json.get(usage, ["tool_errors"], 0) {
+    i is Int => i > 0,
+    _ => false,
+  }
 }
 
 proc run_executor_trial(
@@ -165,8 +161,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   let active_run = env.path("FACTORY_ACTIVE_RUN", fp"${factory_dir}/runs/ACTIVE")?
   let lock_path = env.path("FACTORY_LOCK_PATH", fp"${factory_dir}/runs/factory.lock")?
   let _run_lock = runtime.acquire_run_lock_at(lock_path)?
-  let event_template = fp"${factory_dir}/templates/EVENT.md"
-  let provenance_template = fp"${factory_dir}/templates/PROVENANCE.md"
+  let event_template = run_dir
   let lineage_dir = fp"${run_dir}/lineage"
   let baseline_handbook = fp"${lineage_dir}/handbook-approved.md"
   let candidate_handbook = fp"${lineage_dir}/handbook-candidate.md"
@@ -359,22 +354,6 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     f"toolchain=${toolchain_state}\nimage=${image_state}\nbase-image=${base_image}\neval-image=${image}\nbase-tag=${base_tag}\neval-tag=${eval_tag}\nbuild-id=${build_id}\nwall-ms=${build_elapsed}\n")?
   fs.unlock(eval_build_lock)?
   let approved_handbook_sha = hash.sha256(baseline_handbook)?.hex()
-  let provenance_values: List[control.TemplateValue] = [
-    {key: "RUN_ID", value: run_dir.display()},
-    {key: "MODE", value: "eval"},
-    {key: "REQUEST", value: "CYCLE-REQUEST.md"},
-    {key: "BUILD_ID", value: build_id},
-    {key: "XSH_COMMIT", value: xsh_commit.trim()},
-    {key: "CANDIDATE_TICKET", value: candidate_ticket},
-    {key: "CANDIDATE_WORKTREE", value: candidate_worktree},
-    {key: "IMAGE", value: image},
-    {key: "IMAGE_ID", value: image_id.trim()},
-    {key: "PLATFORM", value: platform},
-    {key: "APPROVED_HANDBOOK_SHA", value: approved_handbook_sha},
-    {key: "CANDIDATE_HANDBOOK_SHA", value: "pending-manager"},
-    {key: "TICKET_SNAPSHOT_SHA", value: "not-ticket-cycle"},
-  ]
-  fs.write(fp"${run_dir}/PROVENANCE.md", control.fill_template(provenance_template.read_text()?, provenance_values))?
 
   let xsh_path = process.which("xsh")?
   let run_agent = fp"${factory_dir}/run-agent.xsh"
@@ -432,7 +411,6 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
 
   var designer_message = p""
   let designer_worker = "proposal-1"
-  let designer_status = if new_eval_count == 1 { "dispatched" } else { "not-requested" }
   if new_eval_count == 1 {
     designer_message = fp"${messages_dir}/eval-designer-${designer_worker}.md"
     let designer_template = fp"${factory_dir}/templates/EVAL-DESIGNER-ASSIGNMENT.md"
@@ -443,21 +421,6 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     ]
     fs.write(designer_message, control.fill_template(designer_template.read_text()?, designer_values))?
   }
-  let dispatch_values: List[control.TemplateValue] = [
-    {key: "EVAL_ID", value: eval_id},
-    {key: "TRIAL_COUNT", value: trial_count.float().format(precision: 0)},
-    {key: "NEW_EVAL_COUNT", value: new_eval_count.float().format(precision: 0)},
-    {key: "XSH_COMMIT", value: xsh_commit.trim()},
-    {key: "HANDBOOK_SNAPSHOT", value: baseline_handbook.display()},
-    {key: "FACTORY_DIR", value: factory_dir.display()},
-    {key: "MANAGER_MESSAGE", value: fp"${messages_dir}/${eval_id}-manager.md".display()},
-    {key: "RUN_AGENT", value: run_agent.display()},
-    {key: "DESIGNER_STATUS", value: designer_status},
-    {key: "DESIGNER_WORKER", value: designer_worker},
-    {key: "DESIGNER_MESSAGE", value: if new_eval_count == 1 { designer_message.display() } else { "not-requested" }},
-  ]
-  let dispatch_template = fp"${factory_dir}/templates/EVAL-DISPATCH.md"
-  fs.write(fp"${run_dir}/DISPATCH.md", control.fill_template(dispatch_template.read_text()?, dispatch_values))?
   let director_message = fp"${run_dir}/DIRECTOR-REQUEST.md"
   let director_template = fp"${factory_dir}/templates/DIRECTOR-REQUEST.md"
   let director_values: List[control.TemplateValue] = [
@@ -465,7 +428,6 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     {key: "RUN_DIR", value: run_dir.display()},
     {key: "RUN_AGENT", value: run_agent.display()},
     {key: "MODE", value: "eval"},
-    {key: "DISPATCH_FILE", value: "DISPATCH.md"},
     {key: "EXECUTION_DIRECTIVE", value: "The controller has already executed the listed eval-worker, eval-manager, and eval-designer processes. Review their reports and evidence; do not launch or wait for any child."},
   ]
   fs.write(director_message, control.fill_template(director_template.read_text()?, director_values))?
@@ -495,26 +457,11 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     runtime.emit_event(event_template, run_dir, f"80-trial-${trial_id}-completed", f"${eval_id}-trial-${trial_id}", if trial_ok { "completed" } else { "failed" }, 1, "controller", "executor process returned")?
   }
 
-  var evidence_rows = ""
-  let evidence_row_template = fp"${factory_dir}/templates/EVIDENCE-WORKER-ROW.md"
-  for trial_id in range(1, trial_count + 1) {
-    let trial_worker = fp"${eval_worker_root}/${eval_id}-${trial_id}"
-    let worker_report = fp"${trial_worker}/WORKER-REPORT.md"
-    let tool_error_count = report_tool_error_count(worker_report)?
-    let evidence_row = control.fill_template(evidence_row_template.read_text()?, [
-      {key: "TRIAL_ID", value: trial_id.float().format(precision: 0)},
-      {key: "EXECUTOR_REPORT", value: fp"${trial_worker}/EXECUTOR-REPORT.md".display()},
-      {key: "WORKER_REPORT", value: worker_report.display()},
-      {key: "TOOL_ERROR_COUNT", value: tool_error_count},
-      {key: "TOOL_ERRORS", value: fp"${trial_worker}/TOOL-ERRORS.md".display()},
-      {key: "SESSION", value: fp"${trial_worker}/session.jsonl".display()},
-    ])
-    evidence_rows = if evidence_rows == "" { evidence_row } else { evidence_rows + "\n" + evidence_row }
-  }
-  runtime.write_current_evidence(
-    factory_dir, run_dir, eval_id, trial_count, baseline_handbook,
-    fp"${run_dir}/DISPATCH.md", evidence_rows,
-  )?
+  let _pre_manager_report = process.run(process.command_argv(
+    xsh_path,
+    [xsh_path.display(), fp"${factory_dir}/audit-run.xsh", "--", run_dir.display(), "eval"],
+    cwd: factory_dir,
+  ))?
 
   let manager_message = fp"${messages_dir}/${eval_id}-manager.md"
   let manager_template = fp"${factory_dir}/templates/EVAL-MANAGER-ASSIGNMENT.md"
@@ -559,24 +506,19 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   let director_status = wait director_handle?
   runtime.emit_event(event_template, run_dir, "80-director-completed", "director", if director_status.ok { "completed" } else { "failed" }, 1, "director", "director process returned")?
 
-  let cost_status = process.run(process.command_argv(
-    xsh_path,
-    [xsh_path.display(), fp"${factory_dir}/tools/session-report.xsh", "--", "run", "--run-dir", run_dir.display(),
-      "--output", fp"${run_dir}/COST.md".display()],
-  ))?
   let manager_session = fp"${run_dir}/workers/eval-manager/${eval_id}/session.jsonl"
-  let trial1_report = fp"${run_dir}/workers/eval-worker/${eval_id}-1/EXECUTOR-REPORT.md"
-  let trial2_report = fp"${run_dir}/workers/eval-worker/${eval_id}-2/EXECUTOR-REPORT.md"
+  let trial1_report = fp"${run_dir}/workers/eval-worker/${eval_id}-1/report.json"
+  let trial2_report = fp"${run_dir}/workers/eval-worker/${eval_id}-2/report.json"
   let trial1_handbook = fp"${run_dir}/workers/eval-worker/${eval_id}-1/work/handbook.md"
   let trial2_handbook = fp"${run_dir}/workers/eval-worker/${eval_id}-2/work/handbook.md"
   let trial1_process_ok = trial_statuses.get(0, false)
   let trial2_process_ok = if trial_count == 1 { true } else { trial_statuses.get(1, false) }
   let candidate_exists = fs.exists(candidate_handbook)?
-  let trial1_report_ok = fs.exists(trial1_report)? and control.executor_report_contract_ok(fs.read_text(trial1_report)?)
+  let trial1_report_ok = fs.exists(trial1_report)? and schema.valid(json.read(trial1_report)?, "worker")
   let trial2_report_ok = if trial_count == 1 {
     true
   } else {
-    fs.exists(trial2_report)? and control.executor_report_contract_ok(fs.read_text(trial2_report)?)
+    fs.exists(trial2_report)? and schema.valid(json.read(trial2_report)?, "worker")
   }
   let baseline_sha = approved_handbook_sha
   let candidate_sha = if candidate_exists { hash.sha256(candidate_handbook)?.hex() } else { "" }
@@ -591,16 +533,16 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   }
   let lineage_ok = candidate_exists and approved_snapshot_unchanged and checked_in_handbook_unchanged and
     trial1_sha == baseline_sha and trial_lineage_ok
-  let director_report = fp"${run_dir}/DIRECTOR-REPORT.md"
+  let director_report = fp"${run_dir}/workers/director/director/REPORT.md"
   let director_report_marker = fp"${run_dir}/workers/director/director/REPORT-MISSING"
   let director_report_ok = fs.exists(director_report)? and ! fs.exists(director_report_marker)? and
     control.director_report_contract_ok(fs.read_text(director_report)?)
-  let manager_report = fp"${run_dir}/workers/eval-manager/${eval_id}/MANAGER-REPORT.md"
+  let manager_report = fp"${run_dir}/workers/eval-manager/${eval_id}/REPORT.md"
   let manager_report_marker = fp"${run_dir}/workers/eval-manager/${eval_id}/REPORT-MISSING"
-  let manager_worker_report = fp"${run_dir}/workers/eval-manager/${eval_id}/WORKER-REPORT.md"
+  let manager_worker_report = fp"${run_dir}/workers/eval-manager/${eval_id}/report.json"
   var worker_tool_errors = false
   for trial_id in range(1, trial_count + 1) {
-    let worker_report = fp"${eval_worker_root}/${eval_id}-${trial_id}/WORKER-REPORT.md"
+    let worker_report = fp"${eval_worker_root}/${eval_id}-${trial_id}/report.json"
     if report_has_tool_errors(worker_report)? { worker_tool_errors = true }
   }
   let manager_tool_errors = report_has_tool_errors(manager_worker_report)?
@@ -608,13 +550,13 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     control.manager_report_contract_ok(fs.read_text(manager_report)?) and
     control.manager_tool_error_findings_contract_ok(fs.read_text(manager_report)?) and
     (! worker_tool_errors and ! manager_tool_errors or
-      fs.read_text(manager_report)?.contains("TOOL-ERRORS.md"))
+      fs.read_text(manager_report)?.contains("report.json"))
   let designer_session = fp"${run_dir}/workers/eval-designer/${designer_worker}/session.jsonl"
-  let designer_worker_report = fp"${run_dir}/workers/eval-designer/${designer_worker}/WORKER-REPORT.md"
-  let designer_report = fp"${run_dir}/workers/eval-designer/proposal-1/DESIGNER-REPORT.md"
+  let designer_worker_report = fp"${run_dir}/workers/eval-designer/${designer_worker}/report.json"
+  let designer_report = fp"${run_dir}/workers/eval-designer/proposal-1/REPORT.md"
   let worker_handbook_read = fs.exists(fp"${run_dir}/workers/eval-worker/${eval_id}-1/session.jsonl")? and
     runtime.session_read_path(fp"${run_dir}/workers/eval-worker/${eval_id}-1/session.jsonl", Path("/work/handbook.md"))?
-  let manager_evidence_read = runtime.session_read_path(manager_session, fp"${run_dir}/CURRENT-EVIDENCE.md")?
+  let manager_evidence_read = runtime.session_read_path(manager_session, fp"${run_dir}/report.json")?
   let manager_handbook_read = runtime.session_read_path(manager_session, baseline_handbook)?
   let designer_handbook_read = if new_eval_count == 0 {
     true
@@ -622,54 +564,37 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     runtime.session_read_path(designer_session, fp"${factory_dir}/runtime/handbook.md")?
   }
   let director_evidence_read = runtime.session_read_path(
-    fp"${run_dir}/workers/director/director/session.jsonl", fp"${run_dir}/CURRENT-EVIDENCE.md"
+    fp"${run_dir}/workers/director/director/session.jsonl", fp"${run_dir}/report.json"
   )?
   let designer_output_ok = if new_eval_count == 0 {
     true
   } else {
     fs.exists(designer_session)? and fs.exists(designer_worker_report)? and
       ! fs.exists(fp"${run_dir}/workers/eval-designer/${designer_worker}/REPORT-MISSING")? and
-      control.worker_report_contract_ok(fs.read_text(designer_worker_report)?) and
+      schema.valid(json.read(designer_worker_report)?, "worker") and
       fs.exists(designer_report)? and control.designer_report_contract_ok(fs.read_text(designer_report)?)
   }
-  let director_state = if fs.exists(fp"${run_dir}/workers/director/director/session.jsonl")? { "present" } else { "missing" }
-  let manager_state = if fs.exists(manager_session)? { "present" } else { "missing" }
-  let trial1_state = if trial1_report_ok { "pass" } else { "fail" }
-  let trial2_state = if trial_count == 1 { "not-requested" } else if trial2_report_ok { "pass" } else { "fail" }
   let lineage_state = if lineage_ok { "pass" } else { "fail" }
-  let cost_state = if cost_status.ok { "present" } else { "failed" }
-  let designer_state = if new_eval_count == 0 { "not-requested" } else if designer_output_ok { "present" } else { "failed" }
   if manager_report_ok and lineage_ok {
     runtime.emit_event(event_template, run_dir, "85-manager-validated", "eval-manager", "validated", 1, "controller", "manager report and handbook lineage passed")?
   }
   if new_eval_count == 1 and designer_output_ok {
     runtime.emit_event(event_template, run_dir, "85-designer-validated", "eval-designer", "validated", 1, "controller", "designer report contract passed")?
   }
-  let lineage_values: List[control.TemplateValue] = [
-    {key: "BASELINE_SHA", value: baseline_sha},
-    {key: "CANDIDATE_SHA", value: candidate_sha},
-    {key: "TRIAL1_SHA", value: trial1_sha},
-    {key: "TRIAL2_SHA", value: trial2_sha},
-    {key: "APPROVED_SNAPSHOT_UNCHANGED", value: if approved_snapshot_unchanged { "true" } else { "false" }},
-    {key: "CHECKED_IN_HANDBOOK_UNCHANGED", value: if checked_in_handbook_unchanged { "true" } else { "false" }},
-    {key: "LINEAGE_STATE", value: lineage_state},
-  ]
-  let lineage_template = fp"${factory_dir}/templates/LINEAGE.md"
-  fs.write(fp"${run_dir}/LINEAGE.md", control.fill_template(lineage_template.read_text()?, lineage_values))?
   let audit_status = process.run(process.command_argv(
     xsh_path,
     [xsh_path.display(), fp"${factory_dir}/audit-run.xsh", "--", run_dir.display(), "eval"],
     cwd: factory_dir,
   ))?
-  let audit_file = fp"${run_dir}/AUDIT.md"
+  let audit_file = fp"${run_dir}/report.json"
   let audit_report_ok = audit_status.ok and fs.exists(audit_file)? and
-    control.audit_report_contract_ok(fs.read_text(audit_file)?)
-  let audit_result = if audit_report_ok { control.audit_result(fs.read_text(audit_file)?) } else { "missing" }
+    schema.valid(json.read(audit_file)?, "phase")
+  let audit_result = if audit_report_ok { schema.value_text(json.get(json.read(audit_file)?, ["result"], "missing")) } else { "missing" }
   let audit_pass = audit_report_ok and audit_result == "pass"
-  let required = fs.exists(manager_session)? and fs.exists(fp"${run_dir}/CURRENT-EVIDENCE.md")? and
+  let required = fs.exists(manager_session)? and
     trial1_process_ok and trial2_process_ok and fs.exists(trial1_report)? and
     (trial_count == 1 or fs.exists(trial2_report)?) and
-    cost_status.ok and candidate_exists and lineage_ok and trial1_report_ok and trial2_report_ok and
+    candidate_exists and lineage_ok and trial1_report_ok and trial2_report_ok and
     director_report_ok and manager_report_ok and designer_output_ok and audit_pass and
     worker_handbook_read and manager_evidence_read and manager_handbook_read and
     designer_handbook_read and director_evidence_read
@@ -683,40 +608,6 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     runtime.emit_event(event_template, run_dir, "85-cycle-audited", eval_id,
       "failed", 1, "controller", "deterministic audit artifact written")?
   }
-  let run_template = fp"${factory_dir}/templates/RUN-EVAL.md"
-  let run_values: List[control.TemplateValue] = [
-    {key: "RUN_ID", value: stamp.float().format(precision: 0)},
-    {key: "RESULT", value: result},
-    {key: "EVAL_ID", value: eval_id},
-    {key: "TRIAL_COUNT", value: trial_count.float().format(precision: 0)},
-    {key: "NEW_EVAL_COUNT", value: new_eval_count.float().format(precision: 0)},
-    {key: "XSH_COMMIT", value: xsh_commit.trim()},
-    {key: "IMAGE", value: image},
-    {key: "IMAGE_ID", value: image_id.trim()},
-    {key: "BUILD_STATE", value: fp"${run_dir}/xsh-build.state".display()},
-    {key: "DIRECTOR_STATE", value: director_state},
-    {key: "MANAGER_STATE", value: manager_state},
-    {key: "DESIGNER_STATE", value: designer_state},
-    {key: "TRIAL1_STATE", value: trial1_state},
-    {key: "TRIAL2_STATE", value: trial2_state},
-    {key: "LINEAGE_STATE", value: lineage_state},
-    {key: "COST_STATE", value: cost_state},
-    {key: "AUDIT_STATE", value: if audit_report_ok { "present" } else { "failed" }},
-    {key: "AUDIT_RESULT", value: audit_result},
-    {key: "CTO_STATE", value: if cto_status { "present" } else { "failed" }},
-    {key: "WORKER_HANDBOOK_READ", value: if worker_handbook_read { "true" } else { "false" }},
-    {key: "MANAGER_EVIDENCE_READ", value: if manager_evidence_read { "true" } else { "false" }},
-    {key: "MANAGER_HANDBOOK_READ", value: if manager_handbook_read { "true" } else { "false" }},
-    {key: "DESIGNER_HANDBOOK_READ", value: if designer_handbook_read { "true" } else { "false" }},
-    {key: "DIRECTOR_EVIDENCE_READ", value: if director_evidence_read { "true" } else { "false" }},
-    {key: "APPROVED_SNAPSHOT_UNCHANGED", value: if approved_snapshot_unchanged { "true" } else { "false" }},
-    {key: "CHECKED_IN_HANDBOOK_UNCHANGED", value: if checked_in_handbook_unchanged { "true" } else { "false" }},
-    {key: "CANDIDATE_SHA", value: candidate_sha},
-    {key: "TRIAL1_SHA", value: trial1_sha},
-    {key: "TRIAL2_SHA", value: trial2_sha},
-  ]
-  let run_report = control.fill_template(run_template.read_text()?, run_values)
-  fs.write(fp"${run_dir}/RUN.md", run_report)?
   if result == "pass" {
     runtime.emit_event(event_template, run_dir, "90-cycle-completed", eval_id, "completed", 1, "controller", "run report and cost report written")?
     runtime.emit_event(event_template, run_dir, "95-cycle-validated", eval_id, "validated", 1, "controller", "all required outputs passed")?

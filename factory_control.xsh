@@ -733,7 +733,8 @@ export pure manager_report_contract_ok(report: Str) -> Bool {
 ## Requires managers to account for failed Pi tool results explicitly.
 export pure manager_tool_error_findings_contract_ok(report: Str) -> Bool {
   let findings = report_section(report, "Tool-error findings")
-  return findings != "" and (findings.contains("None.") or findings.contains("TOOL-ERRORS.md"))
+  return findings != "" and (findings.contains("None.") or findings.contains("report.json") or
+    findings.contains("tool_errors") or findings.contains("No current"))
 }
 
 ## Validates the coordination headings required from a director.
@@ -742,38 +743,11 @@ export pure director_report_contract_ok(report: Str) -> Bool {
     ["Cycle", "Children", "Required-output status", "North-star impact"])
 }
 
-## Validates the deterministic executor summary written for one trial.
-export pure executor_report_contract_ok(report: Str) -> Bool {
-  return report_contract_ok(report,
-    ["Failure classification", "Trial", "Artifact", "Evidence"], "pass")
-}
-
 ## Validates the concise report written by an eval-designer.
 export pure designer_report_contract_ok(report: Str) -> Bool {
   return report_contract_ok(report,
     ["Proposal", "Dry run", "North-star impact", "Known risks", "Review path"],
     "ready-for-review")
-}
-
-## Validates the deterministic run audit produced from raw evidence.
-export pure audit_report_contract_ok(report: Str) -> Bool {
-  let result = report_field(report, "Result")
-  return (result == "pass" or result == "fail") and
-    report_contract_ok(report,
-      ["Scope", "Integrity", "Evidence", "Findings"], "") and
-    ! report.contains("{{") and ! report.contains("}}")
-}
-
-## Reads the normalized result from a run audit.
-export pure audit_result(report: Str) -> Str {
-  return report_field(report, "Result")
-}
-
-## Validates the worker report generated from one canonical Pi session.
-export pure worker_report_contract_ok(report: Str) -> Bool {
-  return report_contract_ok(report,
-    ["Identity", "Session metrics", "Usage and cost", "Tool profile"], "") and
-    report.contains("The complete thinking transcript is in `thinking.md`")
 }
 
 ## Fills a checked-in Markdown template without embedding its contract in code.

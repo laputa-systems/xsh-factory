@@ -1,6 +1,7 @@
-##! Render Pi session JSONL as Markdown reports using only XSH.
+##! Normalize Pi session JSONL into the factory's structured report schema.
 
 use factory_control as control
+use report_schema as schema
 
 type Usage = {
   input_tokens: Float,
@@ -38,11 +39,7 @@ type UsageDelta = {
   cost_components_seen: Bool,
 }
 
-type ThinkingBlock = {turn: Int, text: Str}
-
 type ToolError = {turn: Int, tool: Str, text: Str}
-
-type WorkerIdentity = {role: Str, worker_id: Str}
 
 type SessionReport = {
   path: Str,
@@ -59,7 +56,6 @@ type SessionReport = {
   usage: Usage,
   cost_seen: Bool,
   session_span_ms: Int,
-  thinking: List[ThinkingBlock],
   tool_error_details: List[ToolError],
 }
 
@@ -244,7 +240,6 @@ proc read_session(session_path: Path) [fs, error] -> Result[SessionReport] {
   var cost_seen = false
   var start_ms = -1
   var end_ms = -1
-  var thinking: List[ThinkingBlock] = []
   var tool_error_details: List[ToolError] = []
 
   for line in session_path.read_text()?.lines() {
@@ -323,10 +318,6 @@ proc read_session(session_path: Path) [fs, error] -> Result[SessionReport] {
                             let block_type = json_text(json.get(block_record, ["type"], null))
                             if block_type == "thinking" {
                               thinking_blocks += 1
-                              let text = json_text(
-                                json.get(block_record, ["thinking"], json.get(block_record, ["text"], "")),
-                              )
-                              thinking = thinking.push({turn: turn, text: text})
                             } else if block_type == "toolCall" {
                               tool_calls += 1
                               let name = json_text(json.get(block_record, ["name"], null))
@@ -419,310 +410,86 @@ proc read_session(session_path: Path) [fs, error] -> Result[SessionReport] {
     },
     cost_seen: cost_seen,
     session_span_ms: span,
-    thinking: thinking,
     tool_error_details: tool_error_details,
   })
 }
 
-pure render_counts(counts: Map[Int]) -> Str {
-  var items: List[Str] = []
+pure count_rows(counts: Map[Int]) -> List[Any] {
+  var rows: List[Any] = []
   for key in counts.keys() {
-    items = items.push(f"'${key}': ${counts.get(key, 0)}")
+    rows = rows.push({name: key, count: counts.get(key, 0)})
   }
-  if items.len() == 0 { return "none" }
-  return "{" + items.join(", ") + "}"
+  return rows
 }
 
-proc render_thinking(report: SessionReport, output: Path) [fs, error] -> Result[Unit] {
-  var lines: List[Str] = [
-    "# Thinking transcript",
-    "",
-    "This is the complete thinking-block extraction from the canonical Pi session JSONL.",
-    "",
-  ]
-  if report.thinking.len() == 0 {
-    lines = lines.push("No thinking blocks were reported.")
-  } else {
-    var index = 1
-    for block in report.thinking {
-      lines = lines.push(f"## Block ${index} (assistant turn ${block.turn})")
-      lines = lines.push("")
-      lines = lines.push(if block.text == "" { "(empty)" } else { block.text })
-      lines = lines.push("")
-      index += 1
-    }
-  }
-  fs.write(output, lines.join("\n") + "\n")?
-  return Ok()
+pure optional_number(value: Float, seen: Bool) -> Any {
+  var result: Any = null
+  if seen { result = value }
+  return result
 }
 
-proc render_tool_errors(
-  report: SessionReport,
-  output: Path,
-  document_template: Path,
-  item_template: Path,
-) [fs, error] -> Result[Unit] {
-  var items: List[Str] = []
-  var index = 1
-  for error in report.tool_error_details {
-    let values: List[control.TemplateValue] = [
-      {key: "ERROR_INDEX", value: index.float().format(precision: 0)},
-      {key: "TURN", value: error.turn.float().format(precision: 0)},
-      {key: "TOOL", value: error.tool},
-      {key: "TEXT", value: error.text},
-    ]
-    items = items.push(control.fill_template(item_template.read_text()?, values))
-    index += 1
-  }
-  let values: List[control.TemplateValue] = [
-    {key: "ERROR_ITEMS", value: if items.len() == 0 { "No nonzero Pi tool results were reported.\n" } else { items.join("\n") }},
-  ]
-  fs.write(output, control.fill_template(document_template.read_text()?, values))?
-  return Ok()
+pure optional_int(value: Int, seen: Bool) -> Any {
+  var result: Any = null
+  if seen { result = value }
+  return result
 }
 
-proc render_worker(
-  report: SessionReport,
-  output: Path,
-  role: Str,
-  worker_id: Str,
-  budget: Float,
-) [fs, error] -> Result[Int] {
+pure session_report_json(report: SessionReport, role: Str, worker_id: Str, budget: Float) -> Any {
   let usage = report.usage
-  let model_text = if report.models.len() == 0 { "unknown" } else { report.models.join(", ") }
-  let span_text = if report.session_span_ms < 0 { "unknown" } else { f"${report.session_span_ms} ms" }
-  let stop_text = render_counts(report.stop_reasons)
-  let tools_text = render_counts(report.tool_names)
-  let cost_text = if report.cost_seen { "$" + usage.cost_usd.format(precision: 6) } else { "unknown" }
-  let provider_total_text = if usage.provider_total_seen {
-    usage.provider_total_tokens.format(precision: 0)
-  } else {
-    "unknown"
+  var errors: List[Any] = []
+  for error in report.tool_error_details {
+    errors = errors.push({
+      turn: error.turn,
+      tool: error.tool,
+      summary: error.text,
+      raw_session: report.path,
+    })
   }
-  let reasoning_text = if usage.reasoning_seen {
-    usage.reasoning_tokens.format(precision: 0)
-  } else {
-    "unknown (provider did not report)"
+  var findings: List[Any] = []
+  if report.tool_errors > 0 {
+    findings = findings.push({kind: "tool-error", severity: "warning", count: report.tool_errors})
   }
-  let visible_output_text = if usage.reasoning_seen {
-    f"${(usage.output_tokens - usage.reasoning_tokens).format(precision: 0)} (derived)"
-  } else {
-    "unknown (reasoning unavailable)"
+  if report.malformed_lines > 0 {
+    findings = findings.push({kind: "malformed-session-line", severity: "error", count: report.malformed_lines})
   }
-  let input_cost_text = if usage.cost_components_seen { "$" + usage.input_cost_usd.format(precision: 6) } else { "unknown" }
-  let output_cost_text = if usage.cost_components_seen { "$" + usage.output_cost_usd.format(precision: 6) } else { "unknown" }
-  let cache_read_cost_text = if usage.cost_components_seen { "$" + usage.cache_read_cost_usd.format(precision: 6) } else { "unknown" }
-  let cache_write_cost_text = if usage.cost_components_seen { "$" + usage.cache_write_cost_usd.format(precision: 6) } else { "unknown" }
-  let budget_text = "$" + budget.format(precision: 2)
-  let budget_status = if report.cost_seen and usage.cost_usd <= budget { "pass" } else { "fail-closed" }
-  let lines: List[Str] = [
-    f"# Worker report: ${worker_id}",
-    "",
-    "## Identity",
-    "",
-    f"- Role: `${role}`",
-    f"- Worker: `${worker_id}`",
-    f"- Session: `${report.path}`",
-    f"- Model: ${model_text}",
-    "",
-    "## Session metrics",
-    "",
-    f"- Assistant turns: ${report.assistant_turns}",
-    f"- Tool calls: ${report.tool_calls}",
-    f"- Tool results: ${report.tool_results}",
-    f"- Tool errors: ${report.tool_errors}",
-    "- Tool-error details: `TOOL-ERRORS.md`",
-    f"- Thinking blocks: ${report.thinking_blocks}",
-    f"- Session span: ${span_text}",
-    f"- Stop reasons: ${stop_text}",
-    "",
-    "## Usage and cost",
-    "",
-    f"- Input tokens: ${usage.input_tokens.format(precision: 0)}",
-    f"- Output tokens: ${usage.output_tokens.format(precision: 0)}",
-    f"- Cache-read tokens: ${usage.cache_read_tokens.format(precision: 0)}",
-    f"- Cache-write tokens: ${usage.cache_write_tokens.format(precision: 0)}",
-    f"- Provider-reported total tokens: ${provider_total_text}",
-    f"- Reasoning/thinking tokens (provider subset of output): ${reasoning_text}",
-    f"- Visible output estimate: ${visible_output_text}",
-    f"- Total bucket tokens: ${usage.total_tokens.format(precision: 0)}",
-    f"- Input cost: ${input_cost_text}",
-    f"- Output cost: ${output_cost_text}",
-    f"- Cache-read cost: ${cache_read_cost_text}",
-    f"- Cache-write cost: ${cache_write_cost_text}",
-    f"- Provider cost: ${cost_text}",
-    f"- Budget: ${budget_text}",
-    f"- Budget status: ${budget_status}",
-    "",
-    "## Tool profile",
-    "",
-    f"- Tools: ${tools_text}",
-    "",
-    "The complete thinking transcript is in `thinking.md` beside this report.",
-  ]
-  fs.write(output, lines.join("\n") + "\n")?
-  if ! report.cost_seen { return Ok(2) }
-  if usage.cost_usd > budget { return Ok(3) }
-  return Ok(0)
-}
-
-pure worker_identity(session_path: Str) -> WorkerIdentity {
-  let marker = session_path.find("workers/")
-  if marker >= 0 {
-    let suffix = session_path.byte_slice(marker, session_path.byte_len() - marker)
-    let parts = suffix.split("/")
-    if parts.len() >= 3 {
-      return {role: parts[1], worker_id: parts[2]}
-    }
+  let result = if ! report.cost_seen { "unknown" } else if usage.cost_usd > budget { "fail" } else { "pass" }
+  return {
+    schema_version: schema.SCHEMA_VERSION,
+    kind: "worker",
+    identity: {role: role, worker_id: worker_id},
+    state: "completed",
+    result: result,
+    session: report.path,
+    models: report.models,
+    timing: {session_span_ms: optional_int(report.session_span_ms, report.session_span_ms >= 0)},
+    usage: {
+      assistant_turns: report.assistant_turns,
+      user_messages: report.user_messages,
+      tool_calls: report.tool_calls,
+      tool_results: report.tool_results,
+      tool_errors: report.tool_errors,
+      thinking_blocks: report.thinking_blocks,
+      malformed_lines: report.malformed_lines,
+      input_tokens: usage.input_tokens,
+      output_tokens: usage.output_tokens,
+      cache_read_tokens: usage.cache_read_tokens,
+      cache_write_tokens: usage.cache_write_tokens,
+      total_bucket_tokens: usage.total_tokens,
+      provider_total_tokens: optional_number(usage.provider_total_tokens, usage.provider_total_seen),
+      reasoning_tokens: optional_number(usage.reasoning_tokens, usage.reasoning_seen),
+      input_cost_usd: optional_number(usage.input_cost_usd, usage.cost_components_seen),
+      output_cost_usd: optional_number(usage.output_cost_usd, usage.cost_components_seen),
+      cache_read_cost_usd: optional_number(usage.cache_read_cost_usd, usage.cost_components_seen),
+      cache_write_cost_usd: optional_number(usage.cache_write_cost_usd, usage.cost_components_seen),
+      cost_usd: optional_number(usage.cost_usd, report.cost_seen),
+      budget_usd: budget,
+    },
+    stop_reasons: count_rows(report.stop_reasons),
+    tools: count_rows(report.tool_names),
+    tool_errors: errors,
+    findings: findings,
+    artifacts: [{kind: "pi-session", path: report.path}],
   }
-  return {role: "unknown", worker_id: "unknown"}
-}
-
-proc report_budget(report: SessionReport, role: Str) [fs, error] -> Result[Str] {
-  let session = Path.parse_bytes(bytes.from_text(report.path))?
-  let worker_report = fp"${session.parent()}/WORKER-REPORT.md"
-  if fs.exists(worker_report)? {
-    for line in worker_report.read_text()?.lines() {
-      let trimmed = line.trim()
-      if trimmed.starts_with("- Budget:") {
-        return trimmed.replace("- Budget:", "").trim().replace("$", "")
-      }
-    }
-  }
-  return control.default_budget(role)
-}
-
-proc render_cost(run_dir: Path, output: Path, reports: List[SessionReport]) [fs, error] -> Result[Int] {
-  var lines: List[Str] = [
-    "# Run cost report",
-    "",
-    f"Run directory: `${run_dir.display()}`",
-    "",
-    "## Workers",
-    "",
-    "| Role | Worker | Model | Turns | Thinking blocks | Reasoning tokens | Provider total | Bucket total | Tool errors | Cost | Budget |",
-    "| --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
-  ]
-  var roles: List[Str] = []
-  var total_cost = 0.0
-  var total_tokens = 0.0
-  var total_provider_tokens = 0.0
-  var total_reasoning_tokens = 0.0
-  var provider_total_unknown = 0
-  var reasoning_unknown = 0
-  var total_input_cost = 0.0
-  var total_output_cost = 0.0
-  var total_cache_read_cost = 0.0
-  var total_cache_write_cost = 0.0
-  var cost_components_unknown = 0
-  var failed = 0
-  for report in reports {
-    let identity = worker_identity(report.path)
-    if ! roles.contains(identity.role) { roles = roles.push(identity.role) }
-    let usage = report.usage
-    let budget_text = report_budget(report, identity.role)?
-    let budget = if budget_text == "" { -1.0 } else { budget_text.parse_float()? }
-    let cost_text = if report.cost_seen { "$" + usage.cost_usd.format(precision: 6) } else { "unknown" }
-    if ! report.cost_seen or budget < 0.0 or usage.cost_usd > budget { failed += 1 }
-    total_cost += usage.cost_usd
-    total_tokens += usage.total_tokens
-    if usage.provider_total_seen {
-      total_provider_tokens += usage.provider_total_tokens
-    } else {
-      provider_total_unknown += 1
-    }
-    if usage.reasoning_seen {
-      total_reasoning_tokens += usage.reasoning_tokens
-    } else {
-      reasoning_unknown += 1
-    }
-    if usage.cost_components_seen {
-      total_input_cost += usage.input_cost_usd
-      total_output_cost += usage.output_cost_usd
-      total_cache_read_cost += usage.cache_read_cost_usd
-      total_cache_write_cost += usage.cache_write_cost_usd
-    } else {
-      cost_components_unknown += 1
-    }
-    let model_text = if report.models.len() == 0 { "unknown" } else { report.models.join(", ") }
-    let provider_total_text = if usage.provider_total_seen { usage.provider_total_tokens.format(precision: 0) } else { "unknown" }
-    let reasoning_text = if usage.reasoning_seen { usage.reasoning_tokens.format(precision: 0) } else { "unknown" }
-    let budget_display = if budget_text == "" { "unknown" } else { "$" + budget_text }
-    lines = lines.push(
-      f"| `${identity.role}` | `${identity.worker_id}` | ${model_text} | ${report.assistant_turns} | ${report.thinking_blocks} | ${reasoning_text} | ${provider_total_text} | ${usage.total_tokens.format(precision: 0)} | ${report.tool_errors} | ${cost_text} | ${budget_display} |",
-    )
-  }
-  lines = lines.push("")
-  lines = lines.push("## Tool-error details")
-  lines = lines.push("")
-  var tool_error_files = 0
-  for report in reports {
-    if report.tool_errors == 0 { continue }
-    let session = Path.parse_bytes(bytes.from_text(report.path))?
-    let identity = worker_identity(report.path)
-    lines = lines.push(f"- `${identity.role}/${identity.worker_id}`: `${session.parent()}/TOOL-ERRORS.md`")
-    tool_error_files += 1
-  }
-  if tool_error_files == 0 {
-    lines = lines.push("No worker reported a nonzero Pi tool result.")
-  }
-  lines = lines.push("")
-  lines = lines.push("## Role totals")
-  lines = lines.push("")
-  lines = lines.push("| Role | Workers | Provider total | Reasoning tokens | Bucket total | Cost |")
-  lines = lines.push("| --- | ---: | ---: | ---: | ---: | ---: |")
-  for role in roles {
-    var workers = 0
-    var role_tokens = 0.0
-    var role_provider_tokens = 0.0
-    var role_reasoning_tokens = 0.0
-    var role_provider_unknown = false
-    var role_reasoning_unknown = false
-    var role_cost = 0.0
-    for report in reports {
-      if worker_identity(report.path).role == role {
-        workers += 1
-        role_tokens += report.usage.total_tokens
-        if report.usage.provider_total_seen {
-          role_provider_tokens += report.usage.provider_total_tokens
-        } else {
-          role_provider_unknown = true
-        }
-        if report.usage.reasoning_seen {
-          role_reasoning_tokens += report.usage.reasoning_tokens
-        } else {
-          role_reasoning_unknown = true
-        }
-        role_cost += report.usage.cost_usd
-      }
-    }
-    let role_cost_text = "$" + role_cost.format(precision: 6)
-    let role_provider_text = if role_provider_unknown { "unknown" } else { role_provider_tokens.format(precision: 0) }
-    let role_reasoning_text = if role_reasoning_unknown { "unknown" } else { role_reasoning_tokens.format(precision: 0) }
-    lines = lines.push(f"| `${role}` | ${workers} | ${role_provider_text} | ${role_reasoning_text} | ${role_tokens.format(precision: 0)} | ${role_cost_text} |")
-  }
-  lines = lines.push("")
-  lines = lines.push("## Run total")
-  lines = lines.push("")
-  lines = lines.push(f"- Workers: ${reports.len()}")
-  let provider_total_text = if provider_total_unknown == 0 { total_provider_tokens.format(precision: 0) } else { f"unknown (${provider_total_unknown} worker(s) did not report it)" }
-  let reasoning_total_text = if reasoning_unknown == 0 { total_reasoning_tokens.format(precision: 0) } else { f"unknown (${reasoning_unknown} worker(s) did not report it)" }
-  lines = lines.push(f"- Provider-reported total tokens: ${provider_total_text}")
-  lines = lines.push(f"- Provider-reported reasoning/thinking tokens: ${reasoning_total_text}")
-  lines = lines.push(f"- Total bucket tokens: ${total_tokens.format(precision: 0)}")
-  let total_cost_text = "$" + total_cost.format(precision: 6)
-  lines = lines.push(f"- Total provider cost: ${total_cost_text}")
-  if cost_components_unknown == 0 {
-    lines = lines.push(f"- Input cost: ${total_input_cost.format(precision: 6)}")
-    lines = lines.push(f"- Output cost: ${total_output_cost.format(precision: 6)}")
-    lines = lines.push(f"- Cache-read cost: ${total_cache_read_cost.format(precision: 6)}")
-    lines = lines.push(f"- Cache-write cost: ${total_cache_write_cost.format(precision: 6)}")
-  } else {
-    lines = lines.push(f"- Cost component breakdown: unknown (${cost_components_unknown} worker(s) did not report components)")
-  }
-  lines = lines.push(f"- Budget failures or unknown costs: ${failed}")
-  fs.write(output, lines.join("\n") + "\n")?
-  return Ok(if failed == 0 { 0 } else { 2 })
 }
 
 proc parse_budget(value: Str) [error] -> Result[Float] {
@@ -757,44 +524,20 @@ proc run_worker(argv: List[Str]) [fs, env, error] -> Result[Int] {
     return Ok(1)
   }
   let report = read_session(session)?
-  render_thinking(report, fp"${output.parent()}/thinking.md")?
-  let factory_dir = env.path("FACTORY_DIR", fs.cwd()?)?
-  render_tool_errors(
-    report,
-    fp"${output.parent()}/TOOL-ERRORS.md",
-    fp"${factory_dir}/templates/TOOL-ERRORS.md",
-    fp"${factory_dir}/templates/TOOL-ERROR.md",
-  )?
-  return render_worker(report, output, role, worker_id, budget)
-}
-
-proc run_aggregate(argv: List[Str]) [fs, error] -> Result[Int] {
-  if argv.len() < 5 {
-    eprint "usage: session-report.xsh run --run-dir PATH --output PATH"
-    return Ok(2)
-  }
-  let run_dir = Path(argv[2])
-  let output = Path(argv[4])
-  var sessions: List[Path] = []
-  for entry in fs.files(run_dir, gitignore: false, hidden: true)? {
-    if entry.name == "session.jsonl" { sessions = sessions.push(entry.path) }
-  }
-  sessions = sessions |> sort-by .display()
-  var reports: List[SessionReport] = []
-  for session in sessions { reports = reports.push(read_session(session)?) }
-  return render_cost(run_dir, output, reports)
+  json.write(output, session_report_json(report, role, worker_id, budget), pretty: true)?
+  if ! report.cost_seen { return Ok(2) }
+  if report.usage.cost_usd > budget { return Ok(3) }
+  return Ok(0)
 }
 
 proc main(...argv: List[Str]) [fs, error, io] {
   if argv.len() == 0 {
-    eprint "usage: session-report.xsh worker|run ..."
+    eprint "usage: session-report.xsh worker ..."
     abort(2)
   }
   var status = 2
   if argv[0] == "worker" {
     status = run_worker(argv)?
-  } else if argv[0] == "run" {
-    status = run_aggregate(argv)?
   } else {
     eprint f"unknown session report command: ${argv[0]}"
   }

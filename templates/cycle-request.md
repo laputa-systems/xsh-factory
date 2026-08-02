@@ -49,7 +49,7 @@ environment override in the invocation, using names such as
 - one independent active eval when a ticket is available, otherwise one active
   eval as the primary phase;
 - one eval-design proposal pending review;
-- worker session reports and extracted thinking transcripts;
-- a run-level cost report covering every Pi session;
+- structured worker reports and raw Pi sessions;
+- a run-level `report.json` covering every worker;
 - a `## North-star impact` section in each narrative role report;
-- a concise `RUN.md` result.
+- a `CTO-REPORT.md` briefing generated from the structured reports.

@@ -25,18 +25,8 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   let process_registry = fp"${run_dir}/processes"
   let process_registry_file = fp"${process_registry}/${role}-${worker_id}.pids"
   let session = fp"${worker_dir}/session.jsonl"
-  let report = fp"${worker_dir}/WORKER-REPORT.md"
-  let default_required_report = if role == "director" {
-    fp"${run_dir}/DIRECTOR-REPORT.md".display()
-  } else if role == "eval-manager" {
-    fp"${worker_dir}/MANAGER-REPORT.md".display()
-  } else if role == "eval-designer" {
-    fp"${worker_dir}/DESIGNER-REPORT.md".display()
-  } else if role == "engineer" {
-    fp"${worker_dir}/ENGINEER-REPORT.md".display()
-  } else {
-    ""
-  }
+  let report = fp"${worker_dir}/report.json"
+  let default_required_report = fp"${worker_dir}/REPORT.md".display()
   let required_report = env.get_or("FACTORY_REQUIRED_REPORT", default_required_report)?
   let configured_workdir = env.get_or("FACTORY_WORKDIR", "")?
   let workdir = if configured_workdir == "" { fs.cwd()? } else { Path(configured_workdir) }

@@ -1,1 +1,0 @@
-- `{{TICKET_ID}}` — status `{{STATUS}}` — eval `{{EVAL_ID}}` — file `{{PATH}}`
