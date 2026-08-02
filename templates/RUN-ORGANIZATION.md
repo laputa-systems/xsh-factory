@@ -21,9 +21,9 @@ to select its own work.
 ## Phase schedule
 
 1. Primary phase: `{{PRIMARY_MODE}}` is `{{PRIMARY_STATE}}` at `{{PRIMARY_PHASE}}`
-2. Eval design: `{{DESIGN_STATE}}` at `{{DESIGN_PHASE}}`
-3. Ticket re-evaluation: `{{REEVAL_STATE}}` at `{{REEVAL_PHASE}}`
-4. Independent eval: `{{INDEPENDENT_EVAL_STATE}}` at `{{INDEPENDENT_EVAL_PHASE}}`
+2. Eval design: `{{DESIGN_STATE}}` at `{{DESIGN_PHASE}}` (overlaps the primary phase when requested)
+3. Ticket re-evaluation: `{{REEVAL_STATE}}` at `{{REEVAL_PHASE}}` (waits for the primary patch)
+4. Independent eval: `{{INDEPENDENT_EVAL_STATE}}` at `{{INDEPENDENT_EVAL_PHASE}}` (overlaps ticket implementation)
 
 ## Required outputs
 

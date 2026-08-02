@@ -45,6 +45,20 @@ one targeted reproduction, then classify it and finish the report checklist.
 This keeps the manager focused on durable handbook or product decisions rather
 than repeating controller work.
 
+Use the current run as the primary evidence boundary. Do not broadly scan XSH
+source or probe the Pi implementation. For one unresolved API question, make
+one exact `xsht api` query; after two unsuccessful probes, classify the friction
+as a handbook gap, product/tooling defect, or ordinary noise and move on. Any
+repeated discovery failure must become either one concise general handbook
+candidate or one reproducible product ticket, never another research loop.
+
+Write `MANAGER-REPORT.md` incrementally before composing the final response.
+Create the file with the required headings as soon as the executor evidence is
+available, fill in each section from the current run, and re-read it before
+finishing. The final response should name the report path and result; it must
+not contain a second copy of the report. A missing narrative report is a
+controller failure even when the executor itself passed.
+
 Finish `MANAGER-REPORT.md` with exactly these headings: `## Result`,
 `## Effort metrics`, `## Usage and cost`, `## Thinking evidence`,
 `## Timing evidence`, `## Observation classification`, `## Handbook decision`,

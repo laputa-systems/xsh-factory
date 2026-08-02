@@ -34,7 +34,7 @@ proc spawn_child(
   let xsh_path = process.which("xsh")?
   let child_runner = env.path("FACTORY_CHILD_RUNNER", xsh_path)?
   let env_path = process.which("env")?
-  let base_image = env.get_or("FACTORY_BASE_IMAGE", "xsh-factory-base:latest")?
+  let configured_base_image = env.get_or("FACTORY_BASE_IMAGE", "")?
   var assignments: List[Str] = [
     "FACTORY_DIR=" + factory_dir.display(),
     "FACTORY_RUN_DIR=" + phase_dir.display(),
@@ -47,13 +47,15 @@ proc spawn_child(
     "FACTORY_NORTH_STAR_FILE=" + fp"${factory_dir}/NORTH-STAR.md".display(),
     "FACTORY_PLATFORM=" + platform,
     "XSH_TARGET=" + target,
-    "FACTORY_BASE_IMAGE=" + base_image,
     "FACTORY_SKIP_CYCLE_BUDGET=true",
     "PI_AUTH_FILE=" + auth_file.display(),
     "PI_COMMAND=" + pi_command,
     "DOCKER=" + docker,
     "XSH_MODULE_PATH=" + factory_dir.display(),
   ]
+  if configured_base_image != "" {
+    assignments = assignments.push("FACTORY_BASE_IMAGE=" + configured_base_image)
+  }
   assignments = assignments.push("FACTORY_ACTIVE_RUN=" + fp"${phase_dir}/ACTIVE".display())
   assignments = assignments.push("FACTORY_LOCK_PATH=" + fp"${phase_dir}/factory.lock".display())
   for role in ["director", "eval-designer", "eval-manager", "eval-worker", "xsh-swe"] {
@@ -275,6 +277,8 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     fp"${factory_dir}/run-ticket.xsh"
   }
   let primary_controller = env.path("FACTORY_PRIMARY_CONTROLLER", default_primary_controller)?
+  let eval_controller = env.path("FACTORY_EVAL_CONTROLLER", fp"${factory_dir}/run-eval.xsh")?
+  let reeval_controller = env.path("FACTORY_REEVAL_CONTROLLER", fp"${factory_dir}/run-eval.xsh")?
   let design_controller = env.path("FACTORY_DESIGN_CONTROLLER", fp"${factory_dir}/run-design.xsh")?
   let home = env.get("HOME")?
   let auth_file = env.path("PI_AUTH_FILE", fp"${home}/.pi/agent/auth.json")?
@@ -368,16 +372,41 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   }
 
   let primary_subject = if selected_ticket == "" { selected_eval } else { selected_ticket }
+  var independent_eval_handles: List[ProcessHandle] = []
+  var primary_ok = true
   runtime.emit_event(event_template, run_dir, "10-primary-started", primary_subject, "started", 1, "organization", primary_mode)?
-  let primary_ok = run_child(
-    primary_controller,
-    primary_request, primary_phase, factory_dir, xsh_repo, run_dir, xsh_commit.trim(), run_agent,
-    auth_file, pi_command, docker, target, platform,
-    [f"FACTORY_MODE=${primary_mode}", f"FACTORY_EVAL_ID=${selected_eval}",
-      "FACTORY_REEVAL_TICKET=not-reevaluation", "FACTORY_REEVAL_WORKTREE=not-reevaluation",
-      "FACTORY_SKIP_TICKET_RECONCILE=false", "FACTORY_RETAIN_WORKTREE=true"],
-    fp"${run_dir}/primary.stdout", fp"${run_dir}/primary.stderr"
-  )?
+  if selected_ticket == "" {
+    primary_ok = run_child(
+      primary_controller,
+      primary_request, primary_phase, factory_dir, xsh_repo, run_dir, xsh_commit.trim(), run_agent,
+      auth_file, pi_command, docker, target, platform,
+      [f"FACTORY_MODE=${primary_mode}", f"FACTORY_EVAL_ID=${selected_eval}",
+        "FACTORY_REEVAL_TICKET=not-reevaluation", "FACTORY_REEVAL_WORKTREE=not-reevaluation",
+        "FACTORY_SKIP_TICKET_RECONCILE=false", "FACTORY_RETAIN_WORKTREE=true"],
+      fp"${run_dir}/primary.stdout", fp"${run_dir}/primary.stderr"
+    )?
+  } else {
+    let primary_handle = spawn_child(
+      primary_controller,
+      primary_request, primary_phase, factory_dir, xsh_repo, run_dir, xsh_commit.trim(), run_agent,
+      auth_file, pi_command, docker, target, platform,
+      [f"FACTORY_MODE=${primary_mode}", f"FACTORY_EVAL_ID=${selected_eval}",
+        "FACTORY_REEVAL_TICKET=not-reevaluation", "FACTORY_REEVAL_WORKTREE=not-reevaluation",
+        "FACTORY_SKIP_TICKET_RECONCILE=false", "FACTORY_RETAIN_WORKTREE=true"],
+      fp"${run_dir}/primary.stdout", fp"${run_dir}/primary.stderr"
+    )?
+    runtime.emit_event(event_template, run_dir, "10-independent-eval-started", requested_eval, "started", 1, "organization", "running the requested independent eval in parallel with ticket implementation")?
+    let independent_eval_handle = spawn_child(
+      eval_controller, independent_eval_request, independent_eval_phase, factory_dir,
+      xsh_repo, run_dir, xsh_commit.trim(), run_agent, auth_file, pi_command, docker, target, platform,
+      ["FACTORY_MODE=eval", f"FACTORY_EVAL_ID=${requested_eval}",
+        "FACTORY_REEVAL_TICKET=not-reevaluation", "FACTORY_REEVAL_WORKTREE=not-reevaluation",
+        "FACTORY_SKIP_TICKET_RECONCILE=false"],
+      fp"${run_dir}/independent-eval.stdout", fp"${run_dir}/independent-eval.stderr"
+    )?
+    independent_eval_handles = independent_eval_handles.push(independent_eval_handle)
+    primary_ok = wait_child(primary_handle)?
+  }
   let primary_report_ok = phase_run_pass(primary_phase, if selected_ticket == "" { "RUN.md" } else { "RUN.md" })?
   let primary_pass = primary_ok and primary_report_ok
   let primary_state = if primary_pass { "pass" } else { "fail" }
@@ -399,7 +428,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   if selected_ticket != "" and primary_pass {
     runtime.emit_event(event_template, run_dir, "10-reeval-started", f"${selected_ticket}-reevaluation", "started", 1, "organization", "validated SWE worktree is available")?
     let reeval_ok = run_child(
-      fp"${factory_dir}/run-eval.xsh", reeval_request, reeval_phase, factory_dir,
+      reeval_controller, reeval_request, reeval_phase, factory_dir,
       fp"${primary_phase}/worktrees/${selected_ticket}", run_dir, xsh_commit.trim(), run_agent,
       auth_file, pi_command, docker, target, platform,
       ["FACTORY_MODE=eval", f"FACTORY_EVAL_ID=${selected_eval}",
@@ -442,15 +471,11 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   var independent_eval_state = if selected_ticket == "" { "not-applicable" } else { "not-run" }
   var independent_eval_report_state = if selected_ticket == "" { "not-applicable" } else { "not-run" }
   if selected_ticket != "" {
-    runtime.emit_event(event_template, run_dir, "10-independent-eval-started", requested_eval, "started", 1, "organization", "running the requested independent eval against XSH main")?
-    let independent_eval_ok = run_child(
-      fp"${factory_dir}/run-eval.xsh", independent_eval_request, independent_eval_phase, factory_dir,
-      xsh_repo, run_dir, xsh_commit.trim(), run_agent, auth_file, pi_command, docker, target, platform,
-      ["FACTORY_MODE=eval", f"FACTORY_EVAL_ID=${requested_eval}",
-        "FACTORY_REEVAL_TICKET=not-reevaluation", "FACTORY_REEVAL_WORKTREE=not-reevaluation",
-        "FACTORY_SKIP_TICKET_RECONCILE=false"],
-      fp"${run_dir}/independent-eval.stdout", fp"${run_dir}/independent-eval.stderr"
-    )?
+    let independent_eval_ok = if independent_eval_handles.len() == 1 {
+      wait_child(independent_eval_handles[0])?
+    } else {
+      false
+    }
     let independent_eval_report_ok = phase_run_pass(independent_eval_phase, "RUN.md")?
     let independent_eval_pass = independent_eval_ok and independent_eval_report_ok
     independent_eval_state = if independent_eval_pass { "pass" } else { "fail" }

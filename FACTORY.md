@@ -110,8 +110,10 @@ XSH_MODULE_PATH=. xsh run.xsh cycle-organization.md
 organization controller reconciles product branches, admits at most one
 approved ticket, and starts `eval-design` alongside the primary phase only when
 the request contains one proposal. Ticket implementation must finish before
-its linked candidate replay; the independent active eval remains a separate
-phase. When no ticket is admitted, that independent eval is the primary phase.
+its linked candidate replay. With a ticket, the independent active eval starts
+alongside implementation and uses a unique image/build identity; the replay
+still waits for the patch. When no ticket is admitted, that independent eval is
+the primary phase.
 Each child phase has its own run directory,
 provenance, audit, sessions, lock, and cost report; the parent also writes an
 aggregate cost report and `RUN.md`.

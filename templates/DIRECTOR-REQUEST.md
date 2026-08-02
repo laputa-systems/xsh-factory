@@ -21,7 +21,10 @@ branch. Ticket branches remain pending user review; eval proposals and newly
 created tickets wait for the next human-approved transition.
 
 When all rows finish, inspect their session reports and narrative reports.
-Write `{{RUN_DIR}}/DIRECTOR-REPORT.md` with exactly these headings:
+Write `{{RUN_DIR}}/DIRECTOR-REPORT.md` incrementally before the final response;
+re-read it for the required headings and child paths. State the report path and
+result in the final response instead of pasting the report. The report must
+have exactly these headings:
 
 ```markdown
 ## Result

@@ -26,6 +26,18 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   let process_registry_file = fp"${process_registry}/${role}-${worker_id}.pids"
   let session = fp"${worker_dir}/session.jsonl"
   let report = fp"${worker_dir}/WORKER-REPORT.md"
+  let default_required_report = if role == "director" {
+    fp"${run_dir}/DIRECTOR-REPORT.md".display()
+  } else if role == "eval-manager" {
+    fp"${worker_dir}/MANAGER-REPORT.md".display()
+  } else if role == "eval-designer" {
+    fp"${worker_dir}/DESIGNER-REPORT.md".display()
+  } else if role == "xsh-swe" {
+    fp"${worker_dir}/SWE-REPORT.md".display()
+  } else {
+    ""
+  }
+  let required_report = env.get_or("FACTORY_REQUIRED_REPORT", default_required_report)?
   let configured_workdir = env.get_or("FACTORY_WORKDIR", "")?
   let workdir = if configured_workdir == "" { fs.cwd()? } else { Path(configured_workdir) }
   let budget = control.configured_role_setting(role, "BUDGET_USD")?
@@ -84,6 +96,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     {key: "MODEL", value: model},
     {key: "THINKING", value: thinking},
     {key: "BUDGET", value: budget},
+    {key: "REQUIRED_REPORT", value: required_report},
   ]
   fs.write(fp"${worker_dir}/WORKER.md", control.fill_template(worker_template.read_text()?, worker_values))?
 
@@ -122,6 +135,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     FACTORY_WORKDIR: workdir.display(),
     FACTORY_HANDBOOK_FILE: handbook_file.display(),
     FACTORY_NORTH_STAR_FILE: north_star_file.display(),
+    FACTORY_REQUIRED_REPORT: required_report,
     FACTORY_XSH_REPO: env.get("FACTORY_XSH_REPO")?,
     FACTORY_XSH_COMMIT: env.get_or("FACTORY_XSH_COMMIT", "unknown")?,
     FACTORY_IMAGE_ID: env.get_or("FACTORY_IMAGE_ID", "unknown")?,
@@ -188,6 +202,9 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
       "--session", session.display(), "--output", report.display(), "--role", role,
       "--worker-id", worker_id, "--budget-usd", budget],
   ))?
+  if required_report != "" and ! fs.exists(Path(required_report))? {
+    fs.write(fp"${worker_dir}/REPORT-MISSING", f"required report missing: ${required_report}\n")?
+  }
   let budget_breach = fs.exists(fp"${worker_dir}/BUDGET-BREACH")?
   if budget_breach and role == "xsh-swe" {
     let closed = runtime.close_ticket_too_difficult(factory_dir, ticket_id, worker_dir)?

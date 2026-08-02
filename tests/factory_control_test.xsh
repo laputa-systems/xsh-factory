@@ -324,9 +324,41 @@ proc test_eval_overlay_build_uses_local_base_without_pull() {
     "xsh-factory-base:latest", "build-1", "xsh-factory-task:latest",
     "linux/arm64", p"evals/Dockerfile", p"evals/task",
   )
-  test.ok("--no-cache" in build_args)?
+  test.ok(! ("--no-cache" in build_args))?
   test.ok(! ("--pull" in build_args))?
   test.ok("BASE_IMAGE=xsh-factory-base:latest" in build_args)?
+  let forced_args = control.eval_overlay_build_args(
+    "xsh-factory-base:latest", "build-1", "xsh-factory-task:latest",
+    "linux/arm64", p"evals/Dockerfile", p"evals/task", true,
+  )
+  test.ok("--no-cache" in forced_args)?
+  test.ok(control.toolchain_cache_valid(false, true, "key", "key", true))?
+  test.ok(! control.toolchain_cache_valid(false, true, "old", "key", true))?
+  test.ok(! control.toolchain_cache_valid(false, true, "key", "key", false))?
+  test.ok(! control.toolchain_cache_valid(true, true, "key", "key", true))?
+}
+
+proc test_controller_outputs_and_build_cache_are_explicit() [fs, error] {
+  let factory = fs.cwd()?
+  let runner = fs.read_text(fp"${factory}/run-agent.xsh")?
+  let worker_template = fs.read_text(fp"${factory}/templates/WORKER.md")?
+  let eval_controller = fs.read_text(fp"${factory}/run-eval.xsh")?
+  let organization = fs.read_text(fp"${factory}/run-organization.xsh")?
+  let product_makefile = fs.read_text(fp"${factory}/../xsh/Makefile")?
+  let base_dockerfile = fs.read_text(fp"${factory}/evals/Dockerfile.base")?
+  test.contains(runner, "FACTORY_REQUIRED_REPORT")?
+  test.contains(runner, "REPORT-MISSING")?
+  test.contains(worker_template, "Required narrative report")?
+  test.contains(eval_controller, "eval-build.lock")?
+  test.contains(eval_controller, "XSH_TEST_IMAGE_BUILD")?
+  test.contains(eval_controller, "FACTORY_FORCE_XSH_TOOLCHAIN_REBUILD")?
+  test.contains(eval_controller, "xsh-build.state")?
+  test.contains(eval_controller, "uname")?
+  test.contains(organization, "let independent_eval_handle = spawn_child")?
+  test.contains(organization, "primary_ok = wait_child(primary_handle)")?
+  test.contains(product_makefile, "XSH_TEST_IMAGE_BUILD")?
+  test.contains(product_makefile, "docker image inspect")?
+  test.ok(base_dockerfile.find("ADD --chmod") < base_dockerfile.find("LABEL org.xsh.factory.build-id"))?
 }
 
 proc test_ecount_oracle_command_has_a_fail_closed_awk_boundary() [error] {

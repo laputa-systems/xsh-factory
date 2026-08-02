@@ -32,8 +32,10 @@ reliable token counter. Missing provider fields remain unknown.
 Every eval image inherits `evals/Dockerfile.base`, which contains the pinned
 Alpine runtime, locally built `xsh` and `xsht`, and Pi. An eval Dockerfile is a
 thin layer for task-specific packages and runtime files. `task-ecount` adds
-only `fd`; the base image is built once per cycle so evals do not duplicate
-their large common layers.
+only `fd`. The `Dockerfile.test` toolchain is keyed by its product build files,
+target, and host architecture; a short build lock protects shared staging,
+while unique phase image tags let independent eval phases run their Pi work in
+parallel without sharing mutable image names.
 
 ## Outer loop: eval-manager
 
@@ -108,11 +110,12 @@ its merge record. The linked eval-manager then accepts or rejects the change
 with a controlled replay.
 
 For the standard request with an approved ticket, the parent starts
-`ticket implementation` and `eval-design` concurrently. After the ticket
-implementation passes, it runs the linked candidate re-evaluation; the
-independent active eval then runs against XSH main. Without an approved ticket,
-the active eval occupies the primary phase while `eval-design` runs alongside
-it, and the candidate phase is not created.
+`ticket implementation`, the independent eval, and optional `eval-design`
+concurrently when their inputs are disjoint. After the ticket implementation
+passes, it runs the linked candidate re-evaluation; that replay waits for the
+SWE patch but does not wait for the independent eval's Pi work. Without an
+approved ticket, the active eval occupies the primary phase while `eval-design`
+runs alongside it, and the candidate phase is not created.
 
 The controller writes `DISPATCH.md` for eval cycles, `TICKET-DISPATCH.md` for
 ticket cycles, and a one-row `DISPATCH.md` for standalone eval-design cycles.
@@ -169,10 +172,10 @@ Cycle requests select a mode. The current modes are:
   one XSH worktree per ticket, and
   dispatch one `xsh-swe` worker per worktree.
 - `organization`: admit at most one approved ticket automatically or from the
-  request; start its implementation and one eval-design phase concurrently,
-  run the linked pre-merge re-evaluation after implementation, and run the
-  independent eval listed in the request, or run that eval as the primary phase
-  when no ticket is admitted.
+  request; start its implementation, independent eval, and one eval-design
+  phase concurrently when requested, run the linked pre-merge re-evaluation
+  after implementation, and run the independent eval listed in the request,
+  or run that eval as the primary phase when no ticket is admitted.
 - `eval-design`: dispatch exactly one eval-designer proposal and dry run.
 
 Each run also has an `events/` ledger of small Markdown event records. The

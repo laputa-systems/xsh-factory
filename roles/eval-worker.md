@@ -21,3 +21,10 @@ required checks. If API discovery is needed, use `xsht api` with exact
 `method:List.join`. Do not brute-force malformed query shapes or broad
 historical searches. Once the artifact, checks, and review are complete, stop
 exploring and leave the evidence on disk.
+
+Treat the shared handbook as the first working hypothesis, not as optional
+background reading. If the handbook does not explain a reusable language
+boundary, record that exact friction in `review.md` for the manager. After two
+failed attempts at the same concept, stop guessing and use one exact API query
+or the local contract; do not spend turns on random discovery. The goal is a
+correct artifact plus evidence that improves the next agent's first attempt.

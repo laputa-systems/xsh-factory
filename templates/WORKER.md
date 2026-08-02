@@ -14,3 +14,4 @@
 - Model: `{{MODEL}}`
 - Thinking: `{{THINKING}}`
 - Budget: `{{BUDGET}}`
+- Required narrative report: `{{REQUIRED_REPORT}}`

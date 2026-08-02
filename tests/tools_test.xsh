@@ -186,7 +186,27 @@ cp "$FACTORY_TEST_REPORT" "$FACTORY_PHASE_DIR/RUN-DESIGN.md"
   let log = fp"${root}/schedule.log"
   let report = fp"${factory}/tests/fixtures/organization-pass.md"
   let xsh = process.which("xsh")?
-  let product = fp"${factory}/../xsh"
+  let product = fp"${root}/xsh"
+  fs.mkdir(product)?
+  fs.write(fp"${product}/README", "base\n")?
+  let product_init = process.run(process.command_argv(
+    "git", ["git", "-C", product.display(), "init", "-b", "main"],
+  ))?
+  test.ok(product_init.ok, "fake product repository should initialize")?
+  for setting in [["user.email", "factory-test@example.invalid"], ["user.name", "Factory Test"]] {
+    let configured = process.run(process.command_argv(
+      "git", ["git", "-C", product.display(), "config", setting[0], setting[1]],
+    ))?
+    test.ok(configured.ok, "fake product git identity should configure")?
+  }
+  let product_commit = process.run(process.command_argv(
+    "git", ["git", "-C", product.display(), "add", "README"],
+  ))?
+  test.ok(product_commit.ok)?
+  let product_commit_write = process.run(process.command_argv(
+    "git", ["git", "-C", product.display(), "commit", "-m", "base"],
+  ))?
+  test.ok(product_commit_write.ok)?
   let status = process.run(process.command_argv(
     xsh,
     [xsh.display(), fp"${factory}/run-organization.xsh".display(), "--", request.display()],
@@ -239,7 +259,27 @@ cp "$FACTORY_TEST_REPORT" "$FACTORY_PHASE_DIR/RUN.md"
   let log = fp"${root}/schedule.log"
   let report = fp"${factory}/tests/fixtures/organization-pass.md"
   let xsh = process.which("xsh")?
-  let product = fp"${factory}/../xsh"
+  let product = fp"${root}/xsh"
+  fs.mkdir(product)?
+  fs.write(fp"${product}/README", "base\n")?
+  let product_init = process.run(process.command_argv(
+    "git", ["git", "-C", product.display(), "init", "-b", "main"],
+  ))?
+  test.ok(product_init.ok, "fake product repository should initialize")?
+  for setting in [["user.email", "factory-test@example.invalid"], ["user.name", "Factory Test"]] {
+    let configured = process.run(process.command_argv(
+      "git", ["git", "-C", product.display(), "config", setting[0], setting[1]],
+    ))?
+    test.ok(configured.ok, "fake product git identity should configure")?
+  }
+  let product_commit = process.run(process.command_argv(
+    "git", ["git", "-C", product.display(), "add", "README"],
+  ))?
+  test.ok(product_commit.ok)?
+  let product_commit_write = process.run(process.command_argv(
+    "git", ["git", "-C", product.display(), "commit", "-m", "base"],
+  ))?
+  test.ok(product_commit_write.ok)?
   let status = process.run(process.command_argv(
     xsh,
     [xsh.display(), fp"${factory}/run-organization.xsh".display(), "--", request.display()],
@@ -275,6 +315,74 @@ cp "$FACTORY_TEST_REPORT" "$FACTORY_PHASE_DIR/RUN.md"
   test.contains(run_report, "Eval design: `not-requested`")?
   test.contains(fs.read_text(fp"${run_path}/ORGANIZATION-PLAN.md")?, "Run eval-design phase when requested: `not-requested`")?
   test.ok(! fs.exists(fp"${run_path}/phase-requests/02-eval-design.md")?, "design request should not be materialized")?
+}
+
+proc test_organization_overlaps_independent_eval_with_ticket(ctx: TestContext) [fs, process, env, error] {
+  let root = test.temp_dir(ctx, name: "organization-ticket-overlap")?
+  let factory = fs.cwd()?
+  fs.mkdir(fp"${root}/evals")?
+  fs.mkdir(fp"${root}/runtime")?
+  fs.mkdir(fp"${root}/tools")?
+  fs.mkdir(fp"${root}/tickets")?
+  let _copied_templates = fs.copy_tree(fp"${factory}/templates", fp"${root}/templates")?
+  let _copied_eval = fs.copy_tree(fp"${factory}/evals/task-tags", fp"${root}/evals/task-tags")?
+  fs.copy(fp"${factory}/NORTH-STAR.md", fp"${root}/NORTH-STAR.md", overwrite: true)?
+  fs.copy(fp"${factory}/runtime/handbook.md", fp"${root}/runtime/handbook.md", overwrite: true)?
+  fs.copy(fp"${factory}/tools/session-report.xsh", fp"${root}/tools/session-report.xsh", overwrite: true)?
+  fs.copy(fp"${factory}/tests/fixtures/organization-ticket-overlap-ticket.md",
+    fp"${root}/tickets/task-overlap.md", overwrite: true)?
+  let fake_child = fp"${root}/fake-child.sh"
+  fs.copy(fp"${factory}/tests/fixtures/fake-organization-ticket-overlap.sh", fake_child, overwrite: true)?
+  let chmod = process.run(process.command_argv("chmod", ["chmod", "+x", fake_child.display()]))?
+  test.ok(chmod.ok, "fake overlap child should be executable")?
+  let request = fp"${root}/cycle.md"
+  fs.copy(fp"${factory}/tests/fixtures/organization-ticket-overlap.md", request, overwrite: true)?
+  let log = fp"${root}/schedule.log"
+  let report = fp"${factory}/tests/fixtures/organization-pass.md"
+  let product = fp"${root}/xsh"
+  fs.mkdir(product)?
+  fs.write(fp"${product}/README", "base\n")?
+  test.ok((process.run(process.command_argv(
+    "git", ["git", "-C", product.display(), "init", "-b", "main"],
+  ))?).ok, "fake product repository should initialize")?
+  for setting in [["user.email", "factory-test@example.invalid"], ["user.name", "Factory Test"]] {
+    test.ok((process.run(process.command_argv(
+      "git", ["git", "-C", product.display(), "config", setting[0], setting[1]],
+    ))?).ok, "fake product git identity should configure")?
+  }
+  test.ok((process.run(process.command_argv(
+    "git", ["git", "-C", product.display(), "add", "README"],
+  ))?).ok)?
+  test.ok((process.run(process.command_argv(
+    "git", ["git", "-C", product.display(), "commit", "-m", "base"],
+  ))?).ok)?
+  let xsh = process.which("xsh")?
+  let status = process.run(process.command_argv(
+    xsh,
+    [xsh.display(), fp"${factory}/run-organization.xsh".display(), "--", request.display()],
+    cwd: root,
+    env: {
+      PATH: env.get("PATH")?,
+      HOME: env.get("HOME")?,
+      FACTORY_DIR: root.display(),
+      XSH_MODULE_PATH: factory.display(),
+      FACTORY_XSH_REPO: product.display(),
+      FACTORY_CHILD_RUNNER: "/bin/sh",
+      FACTORY_PRIMARY_CONTROLLER: fake_child.display(),
+      FACTORY_EVAL_CONTROLLER: fake_child.display(),
+      FACTORY_REEVAL_CONTROLLER: fake_child.display(),
+      FACTORY_TEST_LOG: log.display(),
+      FACTORY_TEST_REPORT: report.display(),
+      FACTORY_SKIP_CYCLE_BUDGET: "true",
+    },
+  ))?
+  test.ok(status.ok, "ticket overlap cycle should complete")?
+  let schedule = fs.read_text(log)?
+  let primary_start = schedule.find("start:", 0)
+  let independent_start = schedule.find("start:", primary_start + 1)
+  let primary_end = schedule.find("end:", 0)
+  test.ok(primary_start >= 0 and independent_start > primary_start, "ticket and independent eval should both start")?
+  test.ok(primary_end > independent_start, "independent eval should start before ticket implementation ends")?
 }
 
 proc test_audit_run_preserves_separate_evaluator_outcomes(ctx: TestContext) [fs, process, error] {
@@ -859,6 +967,8 @@ proc test_clean_factory_removes_runs_and_dist_but_keeps_branches(ctx: TestContex
   fs.mkdir(fp"${root}/evals/task-tags")?
   fs.mkdir(fp"${root}/evals/.dist")?
   fs.mkdir(fp"${root}/evals/task-tags/.dist")?
+  fs.mkdir(fp"${root}/runs/.cache")?
+  fs.write(fp"${root}/runs/.cache/xsh-test-aarch64-unknown-linux-musl.stamp", "fixture\n")?
   fs.write(fp"${root}/evals/.dist/xsh", "staged")?
   fs.write(fp"${root}/evals/task-tags/.dist/xsht", "staged")?
   let tool = fp"${factory}/tools/clean-factory.xsh"
@@ -878,6 +988,7 @@ proc test_clean_factory_removes_runs_and_dist_but_keeps_branches(ctx: TestContex
   test.ok(! fs.exists(run_dir)?, "clean should remove generated run state")?
   test.ok(! fs.exists(fp"${root}/evals/.dist")?, "clean should remove shared build staging")?
   test.ok(! fs.exists(fp"${root}/evals/task-tags/.dist")?, "clean should remove eval build staging")?
+  test.ok(! fs.exists(fp"${root}/runs/.cache")?, "clean should remove the toolchain cache")?
   test.ok(! fs.exists(worktree)?, "clean should remove product worktree contents")?
   let branches = run.text "git" "-C" $product.display() "branch" "--list" $branch ?
   test.contains(branches, branch, "clean should retain the review branch")?

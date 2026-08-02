@@ -41,8 +41,12 @@ XSH_MODULE_PATH=. xsh run.xsh cycle-task-tags.md
 
 This automatically reconciles merged tickets, rebuilds the local XSH and
 xsht distribution with `make dist-Linux-docker`, stages both binaries, and
-rebuilds the Docker image with pull and no-cache enabled. Every child Pi
-session and the run-level cost report are saved under `runs/run-<id>/`.
+reuses the locally cached `Dockerfile.test` toolchain and Docker layers. The
+cache key includes the product build files, target, and host architecture;
+set `FACTORY_FORCE_XSH_TOOLCHAIN_REBUILD=true` and
+`FACTORY_FORCE_IMAGE_REBUILD=true` when a deliberate full rebuild is needed.
+Every child Pi session and the run-level cost report are saved under
+`runs/run-<id>/`.
 
 Run the standard organization cycle (automatic first approved ticket, linked
 pre-merge re-evaluation, independent task-ecount eval, and one new eval
@@ -53,8 +57,9 @@ XSH_MODULE_PATH=. xsh run.xsh cycle-organization.md
 ```
 
 If no approved ticket exists, the selected eval runs as the primary phase
-instead. With an approved ticket, the selected active eval runs after the
-linked candidate replay against XSH main. The parent run is under
+instead. With an approved ticket, the independent active eval starts alongside
+ticket implementation, while the linked candidate replay waits for the SWE
+patch. The parent run is under
 `runs/run-<id>/`; inspect its `RUN.md` and `COST.md`, then inspect each ordered
 phase under `phases/`.
 
@@ -115,9 +120,9 @@ Clear generated factory state after inspecting the evidence:
 make clean
 ```
 
-This refuses to run during an active cycle, removes `runs/` evidence, local
-eval build staging, and factory worktree contents, and retains product
-branches, tickets, evals, and the shared handbook.
+This refuses to run during an active cycle, removes `runs/` evidence and build
+cache, local eval build staging, and factory worktree contents, and retains
+product branches, tickets, evals, and the shared handbook.
 
 Inspect the latest run:
 

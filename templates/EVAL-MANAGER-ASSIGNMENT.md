@@ -35,6 +35,13 @@ unchanged candidate snapshot; record any handbook hypothesis in this report
 without writing a changed candidate. Only a two-trial plan may stage a changed
 candidate for replay.
 
+Begin the narrative output before final analysis: create
+`{{RUN_DIR}}/workers/eval-manager/{{EVAL_ID}}/MANAGER-REPORT.md` with all
+required headings, then fill it as evidence is classified. Re-read the file
+before finishing. Do not paste the full report into the final response; state
+the path and result only. If an API question remains unresolved after two
+exact probes, classify the friction and proceed.
+
 Compare the requested trials. Classify each meaningful observation as
 correctness, restriction, timing, worker friction, reusable handbook
 guidance, product/tooling defect, harness mismatch, evaluator failure, or

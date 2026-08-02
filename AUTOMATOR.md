@@ -274,6 +274,29 @@ Prefer the smallest correction:
 Do not tune prompts for a single stochastic miss. Every prompt change needs a
 next-cycle observation that can show lower churn without harming correctness.
 
+#### Efficiency review is mandatory
+
+At the end of every paid cycle, inspect the director and eval-manager session
+reports before choosing the next cycle. Compare their turns, tool calls, tool
+errors, repeated reads, failed API queries, session span, reasoning-token
+bucket, and cost with the previous run of the same role. The purpose is to
+make the managers and director faster at turning controller evidence into a
+reliable decision, not merely to make their prose shorter.
+
+If a manager or director repeats a path search, re-researches a controller
+contract, or spends more than two attempts discovering the same API or output,
+record the exact evidence path and make the smallest prompt or briefing repair
+that addresses the pattern. If the issue is a missing or ambiguous output,
+repair the XSH controller and add a native test instead of asking another
+agent to compensate. Every efficiency repair must name the next-cycle metric
+or session behavior that will falsify it.
+
+Treat the handbook as an employee product. Eval workers must read it before
+API discovery, managers must distinguish a reusable handbook gap from a
+product defect, and the automator must review handbook candidates for concise
+general guidance rather than task recipes. A handbook hypothesis belongs on
+the shared lineage and is promoted only after replay evidence.
+
 #### Factory architecture
 
 Fix orchestration when evidence shows ambiguous ownership, a missing callback,
@@ -283,6 +306,13 @@ admission, process boundaries, state transitions, cancellation, and report
 validation in XSH; keep qualitative judgment in Pi roles. Add a native XSH
 regression test before the next paid cycle. Delete duplicate templates and
 layers when one explicit on-disk output is sufficient.
+
+Use controller-owned process overlap whenever phases have disjoint inputs and
+outputs. In the standard organization cycle, eval design may overlap the
+primary phase, and an independent eval may overlap ticket implementation; the
+linked candidate replay still waits for the SWE patch. Any new overlap must
+have isolated run directories, unique image identities, a short build lock for
+shared staging, and a native scheduling or lifecycle test before it is paid.
 
 ### 8. Retire stagnant evals
 

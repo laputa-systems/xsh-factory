@@ -88,19 +88,66 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   } else {
     runtime.reconcile_tickets(factory_dir, xsh_repo, xsh_commit.trim())?
   }
-  let build_id = f"${xsh_commit.trim()}-${stamp.float().format(precision: 0)}"
+  let xsh_commit_short = xsh_commit.trim().byte_slice(0, 12)
+  let factory_control_sha = hash.sha256(fp"${factory_dir}/factory_control.xsh")?.hex()
+  let build_id = f"${xsh_commit.trim()}-${factory_control_sha.byte_slice(0, 12)}"
   let xsh_git_status = run.text "git" "-C" $xsh_repo.display() "status" "--porcelain" ?
   if xsh_git_status.trim() != "" {
     eprint "eval cycle requires a clean XSH worktree at admission"
     abort(2)
   }
+  let cache_dir = fp"${factory_dir}/runs/.cache"
+  fs.mkdir(cache_dir)?
+  let toolchain_cache = fp"${cache_dir}/xsh-test-${target}.stamp"
+  let toolchain_dockerfile_sha = hash.sha256(fp"${xsh_repo}/Dockerfile.test")?.hex()
+  let toolchain_makefile_sha = hash.sha256(fp"${xsh_repo}/Makefile")?.hex()
+  let host_arch = run.text "uname" "-m" ?
+  let toolchain_key = f"${toolchain_dockerfile_sha}:${toolchain_makefile_sha}:${target}:${host_arch.trim()}"
+  let toolchain_image = env.get_or("XSH_TEST_IMAGE", "xsh-test")?
+  let force_toolchain_rebuild = env.get_or("FACTORY_FORCE_XSH_TOOLCHAIN_REBUILD", "false")? == "true"
+  let force_image_rebuild = env.get_or("FACTORY_FORCE_IMAGE_REBUILD", "false")? == "true"
+  let image_tag = f"${xsh_commit_short}-${stamp.float().format(precision: 0)}"
+  let configured_base_image = env.get_or("FACTORY_BASE_IMAGE", "")?
+  let base_image = if configured_base_image == "" {
+    f"xsh-factory-base:${image_tag}"
+  } else {
+    configured_base_image
+  }
+  let eval_dockerfile = fp"${eval_dir}/Dockerfile"
+  let has_eval_dockerfile = fs.exists(eval_dockerfile)?
+  let default_image = f"xsh-factory-${eval_id}:${image_tag}"
+  let image = env.get_or("FACTORY_EVAL_IMAGE", if has_eval_dockerfile { default_image } else { base_image })?
+  let eval_build_lock = fs.lock(fp"${factory_dir}/runs/eval-build.lock")?
+  let toolchain_present = if force_toolchain_rebuild {
+    false
+  } else {
+    process.run(process.command_argv(
+      docker, [docker, "image", "inspect", toolchain_image],
+    ))?.ok
+  }
+  let toolchain_cache_exists = fs.exists(toolchain_cache)?
+  let cached_toolchain_key = if toolchain_cache_exists {
+    toolchain_cache.read_text()?.trim()
+  } else {
+    ""
+  }
+  let toolchain_cache_hit = control.toolchain_cache_valid(
+    force_toolchain_rebuild,
+    toolchain_cache_exists,
+    cached_toolchain_key,
+    toolchain_key,
+    toolchain_present,
+  )
+  let toolchain_build_flag = if toolchain_cache_hit { "0" } else { "1" }
+  let build_started = time.now()
   let dist_dir = fp"${xsh_repo}/target/docker-${target}-release/${target}/dist"
   let dist_xsh = fp"${dist_dir}/xsh"
   let dist_xsht = fp"${dist_dir}/xsht"
   let build = process.run(
     process.command_argv(
       "make",
-      ["make", "-C", xsh_repo.display(), "dist-Linux-docker", f"TARGET=${target}"],
+      ["make", "-C", xsh_repo.display(), "dist-Linux-docker", f"TARGET=${target}",
+        f"XSH_TEST_IMAGE=${toolchain_image}", f"XSH_TEST_IMAGE_BUILD=${toolchain_build_flag}"],
       stdout: fp"${run_dir}/xsh-build.stdout",
       stderr: fp"${run_dir}/xsh-build.stderr",
     ),
@@ -108,6 +155,9 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   if ! build.ok {
     eprint "unable to build the local XSH distribution"
     abort(build.exit_code() ?? 1)
+  }
+  if ! toolchain_cache_hit {
+    fs.write_atomic(toolchain_cache, toolchain_key + "\n")?
   }
   let staged_dir = fp"${factory_dir}/evals/.dist"
   fs.mkdir(staged_dir)?
@@ -130,12 +180,18 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     eprint f"unable to stage local XSH binaries for the ${eval_id} image"
     abort(1)
   }
-  let base_image = env.get_or("FACTORY_BASE_IMAGE", "xsh-factory-base:latest")?
+  var base_args: List[Str] = [docker, "build"]
+  if force_image_rebuild {
+    base_args = base_args.extend(["--pull", "--no-cache"])
+  }
+  base_args = base_args.extend([
+    "--platform", platform,
+    "--build-arg", f"FACTORY_BUILD_ID=${build_id}", "-t", base_image,
+    "-f", fp"${factory_dir}/evals/Dockerfile.base".display(), fp"${factory_dir}/evals".display(),
+  ])
   let base_status = process.run(process.command_argv(
     docker,
-    [docker, "build", "--pull", "--no-cache", "--platform", platform,
-      "--build-arg", f"FACTORY_BUILD_ID=${build_id}", "-t", base_image,
-      "-f", fp"${factory_dir}/evals/Dockerfile.base".display(), fp"${factory_dir}/evals".display()],
+    base_args,
     stdout: fp"${run_dir}/base-image-build.stdout",
     stderr: fp"${run_dir}/base-image-build.stderr",
   ))?
@@ -143,17 +199,13 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     eprint "unable to build the shared factory eval base image"
     abort(base_status.exit_code() ?? 1)
   }
-  let eval_dockerfile = fp"${eval_dir}/Dockerfile"
-  let has_eval_dockerfile = fs.exists(eval_dockerfile)?
-  let default_image = f"xsh-factory-${eval_id}:latest"
-  let image = env.get_or("FACTORY_EVAL_IMAGE", if has_eval_dockerfile { default_image } else { base_image })?
   let image_status = if image == base_image or ! has_eval_dockerfile {
     process.run(process.command_argv("true", ["true"]))?
   } else {
     process.run(process.command_argv(
       docker,
       [docker].extend(control.eval_overlay_build_args(
-        base_image, build_id, image, platform, eval_dockerfile, eval_dir
+        base_image, build_id, image, platform, eval_dockerfile, eval_dir, force_image_rebuild
       )),
       stdout: fp"${run_dir}/image-build.stdout",
       stderr: fp"${run_dir}/image-build.stderr",
@@ -164,6 +216,12 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     abort(image_status.exit_code() ?? 1)
   }
   let image_id = run.text docker image inspect "--format" "{{.Id}}" $image ?
+  let build_elapsed = time.now() - build_started
+  let toolchain_state = if toolchain_cache_hit { "cache-hit" } else { "rebuilt" }
+  let image_state = if force_image_rebuild { "forced-rebuild" } else { "cached-build" }
+  fs.write(fp"${run_dir}/xsh-build.state",
+    f"toolchain=${toolchain_state}\nimage=${image_state}\nwall-ms=${build_elapsed}\n")?
+  fs.unlock(eval_build_lock)?
   let approved_handbook_sha = hash.sha256(baseline_handbook)?.hex()
   let provenance_values: List[control.TemplateValue] = [
     {key: "RUN_ID", value: run_dir.display()},
@@ -222,6 +280,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     {key: "MERGED_TICKET_PATHS", value: merged_ticket_paths},
     {key: "CANDIDATE_TICKET", value: candidate_ticket},
     {key: "CANDIDATE_WORKTREE", value: candidate_worktree},
+    {key: "XSH_COMMIT", value: xsh_commit.trim()},
   ]
   fs.write(manager_message, control.fill_template(manager_template.read_text()?, manager_values))?
 
@@ -439,6 +498,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     {key: "XSH_COMMIT", value: xsh_commit.trim()},
     {key: "IMAGE", value: image},
     {key: "IMAGE_ID", value: image_id.trim()},
+    {key: "BUILD_STATE", value: fp"${run_dir}/xsh-build.state".display()},
     {key: "DIRECTOR_STATE", value: director_state},
     {key: "MANAGER_STATE", value: manager_state},
     {key: "DESIGNER_STATE", value: designer_state},

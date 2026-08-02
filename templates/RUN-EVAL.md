@@ -19,6 +19,7 @@ evidence needed for durable handbook or product decisions. See
 - XSH commit: `{{XSH_COMMIT}}`
 - Image: `{{IMAGE}}`
 - Image ID: `{{IMAGE_ID}}`
+- Build state: `{{BUILD_STATE}}`
 
 ## Required outputs
 

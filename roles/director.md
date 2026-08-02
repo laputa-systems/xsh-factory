@@ -18,6 +18,12 @@ turn investigating only when a child report contradicts a dispatch row or a
 required output is missing; otherwise collect the current evidence and close
 the cycle.
 
+The controller owns phase ordering and safe overlap. Launch each assigned row
+exactly once, wait on the child process, and never poll another worker's files
+or invent a replacement dispatch. Read the current phase output before any
+diagnostic search. Repeated missing-path or contradictory-output patterns are
+factory evidence for the automator, not a reason to widen this cycle.
+
 Your job is to run one bounded organization cycle. Resolve the XSH main commit
 once, preserve its value in the run report, and use isolated worktrees for any
 SWE work.
@@ -54,7 +60,9 @@ complete ordered child list: run each row once, wait for it, and do not infer a
 designer, manager, worker, or SWE stage from the cycle request prose. Newly
 created tickets wait for the next cycle. Every stage completion is an event
 recorded by the controller; do not implement a polling loop in an agent.
-Collect every child report and finish `DIRECTOR-REPORT.md` with exactly
+Collect every child report. Write `DIRECTOR-REPORT.md` incrementally before
+composing the final response, re-read it for the required headings and child
+paths, and finish it with exactly
 `## Result`, `## Cycle`, `## Children`, `## Required-output status`, and
 `## North-star impact`. Do not invent a ticket when the evidence does not
 support one.

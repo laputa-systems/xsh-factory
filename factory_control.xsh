@@ -154,17 +154,31 @@ export pure eval_overlay_build_args(
   platform: Str,
   dockerfile: Path,
   context: Path,
+  force_rebuild: Bool = false,
 ) -> List[Str] {
-  return [
-    "build",
-    "--no-cache",
+  var build_args: List[Str] = ["build"]
+  if force_rebuild {
+    build_args = build_args.push("--no-cache")
+  }
+  return build_args.extend([
     "--platform", platform,
     "--build-arg", f"BASE_IMAGE=${base_image}",
     "--build-arg", f"FACTORY_BUILD_ID=${build_id}",
     "-t", image,
     "-f", dockerfile.display(),
     context.display(),
-  ]
+  ])
+}
+
+## Accepts a local Docker toolchain only when its keyed image and stamp agree.
+export pure toolchain_cache_valid(
+  force_rebuild: Bool,
+  stamp_exists: Bool,
+  cached_key: Str,
+  expected_key: Str,
+  image_present: Bool,
+) -> Bool {
+  return ! force_rebuild and stamp_exists and cached_key == expected_key and image_present
 }
 
 ## Builds the pinned task-ecount oracle command and its failure boundary.

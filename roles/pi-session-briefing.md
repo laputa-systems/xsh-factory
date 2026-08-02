@@ -57,3 +57,10 @@ or ordinary stochastic noise. Ask whether the observation advances the
 north-star objective and whether it generalizes beyond the task. Only open a
 product ticket when one strong reproducible observation supports a general
 change.
+
+Tool errors, repeated reads, failed API queries, and long idle spans are
+efficiency evidence. They are not automatically product failures. Compare them
+with the role's required paths and current controller outputs; when the same
+friction recurs, the manager should name the smallest prompt, handbook, or
+controller change that would remove it and the replay that will test that
+hypothesis.
