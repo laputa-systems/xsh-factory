@@ -30,6 +30,50 @@ proc test_session_report_uses_synthetic_pi_session(ctx: TestContext) [fs, proces
   test.contains(thinking, "inspect the fixture")?
 }
 
+proc test_aggregate_cost_report_uses_role_budgets(ctx: TestContext) [fs, process, error] {
+  let root = test.temp_dir(ctx, name: "aggregate-budgets")?
+  let director = fp"${root}/workers/director/director"
+  let manager = fp"${root}/workers/eval-manager/task-ecount"
+  let worker = fp"${root}/workers/eval-worker/task-ecount-1"
+  for directory in [director, manager, worker] {
+    fs.mkdir(directory)?
+  }
+  let session = r"""
+{"timestamp":"2026-08-01T12:00:00.000Z","type":"message","message":{"role":"user","content":"task"}}
+{"timestamp":"2026-08-01T12:00:01.000Z","type":"message","message":{"role":"assistant","provider":"openrouter","model":"deepseek/deepseek-v4-flash-0731","stopReason":"stop","content":[{"type":"thinking","thinking":"fixture"}],"usage":{"input":10,"output":20,"reasoning":7,"totalTokens":30,"cost":{"total":0.003}}}}
+"""
+  for directory in [director, manager, worker] {
+    fs.write(fp"${directory}/session.jsonl", session)?
+  }
+  let output = fp"${root}/COST.md"
+  let xsh = process.which("xsh")?
+  let status = process.run(process.command_argv(
+    xsh,
+    [xsh.display(), fp"${fs.cwd()?}/tools/session-report.xsh", "--", "run",
+      "--run-dir", root.display(), "--output", output.display()],
+  ))?
+  test.ok(status.ok, "aggregate cost report should render")?
+  let rendered = fs.read_text(output)?
+  test.contains(rendered, "| `director` | `director` |")?
+  test.contains(rendered, "| `eval-manager` | `task-ecount` |")?
+  test.contains(rendered, "| `eval-worker` | `task-ecount-1` |")?
+  test.contains(rendered, "| $0.06 |")?
+  test.contains(rendered, "| $0.15 |")?
+  test.contains(rendered, "| $0.50 |")?
+  test.ok(! rendered.contains("$2.00"))?
+}
+
+proc test_eval_image_stages_shared_factory_modules(ctx: TestContext) [fs, error] {
+  let factory = fs.cwd()?
+  let dockerfile = fs.read_text(fp"${factory}/evals/Dockerfile.base")?
+  let controller = fs.read_text(fp"${factory}/run-eval.xsh")?
+  test.contains(dockerfile, ".dist/factory_control.xsh")?
+  test.contains(dockerfile, ".dist/factory_runtime.xsh")?
+  test.contains(controller, "stage_control")?
+  test.contains(controller, "stage_runtime")?
+  let _ = ctx
+}
+
 proc test_run_dispatcher_fails_preflight_before_agent_launch(ctx: TestContext) [fs, process, env, error] {
   let root = test.temp_dir(ctx, name: "dispatcher-preflight")?
   let request = fp"${root}/cycle.md"

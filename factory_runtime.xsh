@@ -87,6 +87,19 @@ export proc emit_event(
   return Ok()
 }
 
+## Advances an audited started phase to completed before later validation.
+export proc mark_phase_completed(
+  template: Path,
+  run_dir: Path,
+  name: Str,
+  subject: Str,
+  attempt: Int,
+  caused_by: Str,
+  detail: Str,
+) [fs, error] -> Result[Unit] {
+  return emit_event(template, run_dir, name, subject, "completed", attempt, caused_by, detail)
+}
+
 ## Checks the checked-in ticket approval marker.
 export proc accepted_ticket(ticket_path: Path) [fs, error] -> Result[Bool] {
   if ! fs.exists(ticket_path)? {

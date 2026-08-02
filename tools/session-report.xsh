@@ -520,6 +520,20 @@ pure worker_identity(session_path: Str) -> WorkerIdentity {
   return {role: "unknown", worker_id: "unknown"}
 }
 
+proc report_budget(report: SessionReport, role: Str) [fs, error] -> Result[Str] {
+  let session = Path.parse_bytes(bytes.from_text(report.path))?
+  let worker_report = fp"${session.parent()}/WORKER-REPORT.md"
+  if fs.exists(worker_report)? {
+    for line in worker_report.read_text()?.lines() {
+      let trimmed = line.trim()
+      if trimmed.starts_with("- Budget:") {
+        return trimmed.replace("- Budget:", "").trim().replace("$", "")
+      }
+    }
+  }
+  return control.default_budget(role)
+}
+
 proc render_cost(run_dir: Path, output: Path, reports: List[SessionReport]) [fs, error] -> Result[Int] {
   var lines: List[Str] = [
     "# Run cost report",
@@ -548,8 +562,10 @@ proc render_cost(run_dir: Path, output: Path, reports: List[SessionReport]) [fs,
     let identity = worker_identity(report.path)
     if ! roles.contains(identity.role) { roles = roles.push(identity.role) }
     let usage = report.usage
+    let budget_text = report_budget(report, identity.role)?
+    let budget = if budget_text == "" { -1.0 } else { budget_text.parse_float()? }
     let cost_text = if report.cost_seen { "$" + usage.cost_usd.format(precision: 6) } else { "unknown" }
-    if ! report.cost_seen or usage.cost_usd > 2.0 { failed += 1 }
+    if ! report.cost_seen or budget < 0.0 or usage.cost_usd > budget { failed += 1 }
     total_cost += usage.cost_usd
     total_tokens += usage.total_tokens
     if usage.provider_total_seen {
@@ -573,8 +589,9 @@ proc render_cost(run_dir: Path, output: Path, reports: List[SessionReport]) [fs,
     let model_text = if report.models.len() == 0 { "unknown" } else { report.models.join(", ") }
     let provider_total_text = if usage.provider_total_seen { usage.provider_total_tokens.format(precision: 0) } else { "unknown" }
     let reasoning_text = if usage.reasoning_seen { usage.reasoning_tokens.format(precision: 0) } else { "unknown" }
+    let budget_display = if budget_text == "" { "unknown" } else { "$" + budget_text }
     lines = lines.push(
-      f"| `${identity.role}` | `${identity.worker_id}` | ${model_text} | ${report.assistant_turns} | ${report.thinking_blocks} | ${reasoning_text} | ${provider_total_text} | ${usage.total_tokens.format(precision: 0)} | ${report.tool_errors} | ${cost_text} | $2.00 |",
+      f"| `${identity.role}` | `${identity.worker_id}` | ${model_text} | ${report.assistant_turns} | ${report.thinking_blocks} | ${reasoning_text} | ${provider_total_text} | ${usage.total_tokens.format(precision: 0)} | ${report.tool_errors} | ${cost_text} | ${budget_display} |",
     )
   }
   lines = lines.push("")

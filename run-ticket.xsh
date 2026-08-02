@@ -265,8 +265,13 @@ proc run_ticket_cycle(
     control.audit_report_contract_ok(fs.read_text(audit_file)?)
   let audit_result = if audit_report_ok { control.audit_result(fs.read_text(audit_file)?) } else { "missing" }
   let audit_pass = audit_report_ok and audit_result == "pass"
-  runtime.emit_event(event_template, run_dir, "85-cycle-audited", "ticket-implementation",
-    if audit_pass { "validated" } else { "failed" }, 1, "controller", "deterministic audit artifact written")?
+  if audit_pass {
+    runtime.mark_phase_completed(event_template, run_dir, "85-cycle-audited", "ticket-implementation",
+      1, "controller", "deterministic audit artifact written")?
+  } else {
+    runtime.emit_event(event_template, run_dir, "85-cycle-audited", "ticket-implementation",
+      "failed", 1, "controller", "deterministic audit artifact written")?
+  }
   let result = if director_status.ok and cost_status.ok and all_tickets_ok and director_report_ok and audit_pass { "pass" } else { "fail" }
   let director_state = if fs.exists(fp"${run_dir}/workers/director/director/session.jsonl")? { "present" } else { "missing" }
   let cost_state = if cost_status.ok { "present" } else { "failed" }

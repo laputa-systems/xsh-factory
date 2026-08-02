@@ -167,11 +167,24 @@ proc test_lifecycle_rejects_improvised_transitions() [error] {
   test.ok(control.transition_allowed("admitted", "started"))?
   test.ok(control.transition_allowed("started", "completed"))?
   test.ok(control.transition_allowed("completed", "validated"))?
+  test.ok(! control.transition_allowed("started", "validated"))?
   test.ok(control.transition_allowed("validated", "ready-for-review"))?
   test.ok(control.transition_allowed("ready-for-review", "accepted"))?
   test.ok(control.transition_allowed("accepted", "reverted"))?
   test.ok(! control.transition_allowed("ready-for-review", "failed"))?
   test.ok(control.transition_allowed("started", "failed"))?
+}
+
+proc test_audit_boundary_completes_before_validation(ctx: TestContext) [fs, error] {
+  let root = test.temp_dir(ctx, name: "audit-boundary")?
+  let template = fp"${root}/EVENT.md"
+  fs.copy(fp"${fs.cwd()?}/templates/EVENT.md", template, overwrite: true)?
+  runtime.emit_event(template, root, "00-cycle-started", "phase", "started", 1, "controller", "fixture")?
+  runtime.mark_phase_completed(template, root, "85-cycle-audited", "phase", 1, "controller", "fixture")?
+  test.eq(fs.read_text(fp"${root}/states/phase.state")?, "completed\n")?
+  runtime.emit_event(template, root, "95-cycle-validated", "phase", "validated", 1, "controller", "fixture")?
+  test.eq(fs.read_text(fp"${root}/states/phase.state")?, "validated\n")?
+  test.ok(fs.exists(fp"${root}/events/85-cycle-audited.md")?)?
 }
 
 proc test_retry_policy_is_bounded_and_classified() [error] {

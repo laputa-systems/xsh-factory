@@ -112,10 +112,16 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   let stage_xsht = process.run(process.command_argv(
     "cp", ["cp", "-fL", dist_xsht.display(), fp"${staged_dir}/xsht".display()],
   ))?
+  let stage_control = process.run(process.command_argv(
+    "cp", ["cp", "-fL", fp"${factory_dir}/factory_control.xsh".display(), fp"${staged_dir}/factory_control.xsh".display()],
+  ))?
+  let stage_runtime = process.run(process.command_argv(
+    "cp", ["cp", "-fL", fp"${factory_dir}/factory_runtime.xsh".display(), fp"${staged_dir}/factory_runtime.xsh".display()],
+  ))?
   let stage_common = process.run(process.command_argv(
     "cp", ["cp", "-fL", fp"${factory_dir}/evaluate_common.xsh".display(), fp"${staged_dir}/evaluate_common.xsh".display()],
   ))?
-  if ! stage_xsh.ok or ! stage_xsht.ok or ! stage_common.ok {
+  if ! stage_xsh.ok or ! stage_xsht.ok or ! stage_control.ok or ! stage_runtime.ok or ! stage_common.ok {
     eprint f"unable to stage local XSH binaries for the ${eval_id} image"
     abort(1)
   }
@@ -411,8 +417,13 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     cost_status.ok and candidate_exists and lineage_ok and trial1_report_ok and trial2_report_ok and
     director_report_ok and manager_report_ok and designer_output_ok and audit_pass
   let result = if director_status.ok and required { "pass" } else { "fail" }
-  runtime.emit_event(event_template, run_dir, "85-cycle-audited", eval_id,
-    if audit_pass { "validated" } else { "failed" }, 1, "controller", "deterministic audit artifact written")?
+  if audit_pass {
+    runtime.mark_phase_completed(event_template, run_dir, "85-cycle-audited", eval_id,
+      1, "controller", "deterministic audit artifact written")?
+  } else {
+    runtime.emit_event(event_template, run_dir, "85-cycle-audited", eval_id,
+      "failed", 1, "controller", "deterministic audit artifact written")?
+  }
   let run_template = fp"${factory_dir}/templates/RUN-EVAL.md"
   let run_values: List[control.TemplateValue] = [
     {key: "RUN_ID", value: stamp.float().format(precision: 0)},
