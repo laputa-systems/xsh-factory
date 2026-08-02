@@ -40,6 +40,8 @@ type UsageDelta = {
 
 type ThinkingBlock = {turn: Int, text: Str}
 
+type ToolError = {turn: Int, tool: Str, text: Str}
+
 type WorkerIdentity = {role: Str, worker_id: Str}
 
 type SessionReport = {
@@ -58,6 +60,7 @@ type SessionReport = {
   cost_seen: Bool,
   session_span_ms: Int,
   thinking: List[ThinkingBlock],
+  tool_error_details: List[ToolError],
 }
 
 pure json_text(value: Any, fallback: Str = "") -> Str {
@@ -83,6 +86,26 @@ pure json_is_number(value: Any) -> Bool {
     _ is Int => return true
     _ is Float => return true
     _ => return false
+  }
+}
+
+pure content_text(value: Any) -> Str {
+  match value {
+    text is Str => return text
+    blocks is List[Any] => {
+      var parts: List[Str] = []
+      for block in blocks {
+        match block {
+          block_record is Record => {
+            let text = json_text(json.get(block_record, ["text"], ""))
+            if text != "" { parts = parts.push(text) }
+          }
+          _ => {}
+        }
+      }
+      return parts.join("\n")
+    }
+    _ => return ""
   }
 }
 
@@ -222,6 +245,7 @@ proc read_session(session_path: Path) [fs, error] -> Result[SessionReport] {
   var start_ms = -1
   var end_ms = -1
   var thinking: List[ThinkingBlock] = []
+  var tool_error_details: List[ToolError] = []
 
   for line in session_path.read_text()?.lines() {
     if line.trim() != "" {
@@ -253,6 +277,13 @@ proc read_session(session_path: Path) [fs, error] -> Result[SessionReport] {
                   tool_results += 1
                   if json_text(json.get(message, ["isError"], false)) == "true" {
                     tool_errors += 1
+                    let tool = json_text(json.get(message, ["toolName"], "unknown"))
+                    let detail = content_text(json.get(message, ["content"], ""))
+                    tool_error_details = tool_error_details.push({
+                      turn: assistant_turns,
+                      tool: if tool == "" { "unknown" } else { tool },
+                      text: if detail == "" { "(no tool error text reported)" } else { detail },
+                    })
                   }
                   let delta = usage_delta(json.get(message, ["usage"], null))
                   input_tokens += delta.input_tokens
@@ -389,6 +420,7 @@ proc read_session(session_path: Path) [fs, error] -> Result[SessionReport] {
     cost_seen: cost_seen,
     session_span_ms: span,
     thinking: thinking,
+    tool_error_details: tool_error_details,
   })
 }
 
@@ -421,6 +453,31 @@ proc render_thinking(report: SessionReport, output: Path) [fs, error] -> Result[
     }
   }
   fs.write(output, lines.join("\n") + "\n")?
+  return Ok()
+}
+
+proc render_tool_errors(
+  report: SessionReport,
+  output: Path,
+  document_template: Path,
+  item_template: Path,
+) [fs, error] -> Result[Unit] {
+  var items: List[Str] = []
+  var index = 1
+  for error in report.tool_error_details {
+    let values: List[control.TemplateValue] = [
+      {key: "ERROR_INDEX", value: index.float().format(precision: 0)},
+      {key: "TURN", value: error.turn.float().format(precision: 0)},
+      {key: "TOOL", value: error.tool},
+      {key: "TEXT", value: error.text},
+    ]
+    items = items.push(control.fill_template(item_template.read_text()?, values))
+    index += 1
+  }
+  let values: List[control.TemplateValue] = [
+    {key: "ERROR_ITEMS", value: if items.len() == 0 { "No nonzero Pi tool results were reported.\n" } else { items.join("\n") }},
+  ]
+  fs.write(output, control.fill_template(document_template.read_text()?, values))?
   return Ok()
 }
 
@@ -474,6 +531,7 @@ proc render_worker(
     f"- Tool calls: ${report.tool_calls}",
     f"- Tool results: ${report.tool_results}",
     f"- Tool errors: ${report.tool_errors}",
+    "- Tool-error details: `TOOL-ERRORS.md`",
     f"- Thinking blocks: ${report.thinking_blocks}",
     f"- Session span: ${span_text}",
     f"- Stop reasons: ${stop_text}",
@@ -595,6 +653,20 @@ proc render_cost(run_dir: Path, output: Path, reports: List[SessionReport]) [fs,
     )
   }
   lines = lines.push("")
+  lines = lines.push("## Tool-error details")
+  lines = lines.push("")
+  var tool_error_files = 0
+  for report in reports {
+    if report.tool_errors == 0 { continue }
+    let session = Path.parse_bytes(bytes.from_text(report.path))?
+    let identity = worker_identity(report.path)
+    lines = lines.push(f"- `${identity.role}/${identity.worker_id}`: `${session.parent()}/TOOL-ERRORS.md`")
+    tool_error_files += 1
+  }
+  if tool_error_files == 0 {
+    lines = lines.push("No worker reported a nonzero Pi tool result.")
+  }
+  lines = lines.push("")
   lines = lines.push("## Role totals")
   lines = lines.push("")
   lines = lines.push("| Role | Workers | Provider total | Reasoning tokens | Bucket total | Cost |")
@@ -669,7 +741,7 @@ proc parse_budget(value: Str) [error] -> Result[Float] {
   return Ok(if whole < 0 { whole.float() - fraction.float() / divisor.float() } else { magnitude })
 }
 
-proc run_worker(argv: List[Str]) [fs, error] -> Result[Int] {
+proc run_worker(argv: List[Str]) [fs, env, error] -> Result[Int] {
   if argv.len() < 9 {
     eprint "usage: session-report.xsh worker --session PATH --output PATH --role ROLE --worker-id ID --budget-usd USD"
     return Ok(2)
@@ -686,6 +758,13 @@ proc run_worker(argv: List[Str]) [fs, error] -> Result[Int] {
   }
   let report = read_session(session)?
   render_thinking(report, fp"${output.parent()}/thinking.md")?
+  let factory_dir = env.path("FACTORY_DIR", fs.cwd()?)?
+  render_tool_errors(
+    report,
+    fp"${output.parent()}/TOOL-ERRORS.md",
+    fp"${factory_dir}/templates/TOOL-ERRORS.md",
+    fp"${factory_dir}/templates/TOOL-ERROR.md",
+  )?
   return render_worker(report, output, role, worker_id, budget)
 }
 

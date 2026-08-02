@@ -62,6 +62,14 @@ export proc register_cycle_controller(run_dir: Path) [fs, process, error] -> Res
   return Ok()
 }
 
+## Registers a controller-owned child before waiting on it.
+export proc register_process(run_dir: Path, name: Str, pid: Int) [fs, error] -> Result[Unit] {
+  let processes = fp"${run_dir}/processes"
+  fs.mkdir(processes)?
+  fs.write_atomic(fp"${processes}/${name}.pids", f"${pid}\n")?
+  return Ok()
+}
+
 ## Starts the one aggregate watcher owned by a top-level cycle controller.
 export proc start_cycle_budget_watch(
   factory_dir: Path,
@@ -514,4 +522,54 @@ export proc acquire_run_lock(factory_dir: Path) [fs, error] -> Result[Record] {
 export proc verify_factory_handbook(factory_dir: Path, expected_sha: Str) [fs, error] -> Result[Bool] {
   let handbook = fp"${factory_dir}/runtime/handbook.md"
   return fs.exists(handbook)? and hash.sha256(handbook)?.hex() == expected_sha
+}
+
+## Writes the bounded ticket view that supervisors consume for one run.
+export proc write_open_ticket_index(factory_dir: Path, output: Path) [fs, error] -> Result[Unit] {
+  let row_template = fp"${factory_dir}/templates/OPEN-TICKET-ROW.md"
+  var rows: List[Str] = []
+  let ticket_dir = fp"${factory_dir}/tickets"
+  if fs.exists(ticket_dir)? {
+    for entry in fs.files(ticket_dir, gitignore: false, hidden: true) |> sort-by .path.display() {
+      if ! entry.name.ends_with(".md") { continue }
+      let text = entry.path.read_text()?
+      let status = control.ticket_status(text)
+      if status == "Closed." or status == "Merged." { continue }
+      rows = rows.push(control.fill_template(row_template.read_text()?, [
+        {key: "TICKET_ID", value: entry.name.replace(".md", "")},
+        {key: "STATUS", value: if status == "" { "unknown" } else { status }},
+        {key: "EVAL_ID", value: if control.ticket_eval(text) == "" { "unknown" } else { control.ticket_eval(text) }},
+        {key: "PATH", value: entry.path.display()},
+      ]))
+    }
+  }
+  let document = fp"${factory_dir}/templates/OPEN-TICKETS.md"
+  let body = if rows.len() == 0 { "No open tickets are currently admitted.\n" } else { rows.join("\n") }
+  fs.write_atomic(output, control.fill_template(document.read_text()?, [{key: "ROWS", value: body}]))?
+  return Ok()
+}
+
+## Writes a current-run evidence packet before any paid supervisor reviews it.
+export proc write_current_evidence(
+  factory_dir: Path,
+  run_dir: Path,
+  eval_id: Str,
+  trial_count: Int,
+  handbook: Path,
+  dispatch: Path,
+  worker_rows: Str,
+) [fs, error] -> Result[Unit] {
+  let open_tickets = fp"${run_dir}/OPEN-TICKETS.md"
+  write_open_ticket_index(factory_dir, open_tickets)?
+  let template = fp"${factory_dir}/templates/CURRENT-EVIDENCE.md"
+  let values: List[control.TemplateValue] = [
+    {key: "EVAL_ID", value: eval_id},
+    {key: "TRIAL_COUNT", value: trial_count.float().format(precision: 0)},
+    {key: "HANDBOOK", value: handbook.display()},
+    {key: "DISPATCH", value: dispatch.display()},
+    {key: "OPEN_TICKETS", value: open_tickets.display()},
+    {key: "WORKER_ROWS", value: worker_rows},
+  ]
+  fs.write_atomic(fp"${run_dir}/CURRENT-EVIDENCE.md", control.fill_template(template.read_text()?, values))?
+  return Ok()
 }

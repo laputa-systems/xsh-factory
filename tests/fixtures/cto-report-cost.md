@@ -6,6 +6,10 @@
 | --- | --- | ---: |
 | `eval-manager` | `task-tags` | $0.12 |
 
+## Tool-error details
+
+- `eval-manager/task-tags`: `workers/eval-manager/task-tags/TOOL-ERRORS.md`
+
 ## Role totals
 
 | Role | Cost |

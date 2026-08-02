@@ -41,6 +41,8 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   let configured_workdir = env.get_or("FACTORY_WORKDIR", "")?
   let workdir = if configured_workdir == "" { fs.cwd()? } else { Path(configured_workdir) }
   let budget = control.configured_role_setting(role, "BUDGET_USD")?
+  let max_turns = control.configured_role_setting(role, "MAX_TURNS")?
+  let max_wall_seconds = control.configured_role_setting(role, "MAX_WALL_SECONDS")?
   let provider = control.configured_role_setting(role, "PROVIDER")?
   let model = control.configured_role_setting(role, "MODEL")?
   let thinking = control.configured_role_setting(role, "THINKING")?
@@ -96,6 +98,8 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     {key: "MODEL", value: model},
     {key: "THINKING", value: thinking},
     {key: "BUDGET", value: budget},
+    {key: "MAX_TURNS", value: max_turns},
+    {key: "MAX_WALL_SECONDS", value: max_wall_seconds},
     {key: "REQUIRED_REPORT", value: required_report},
   ]
   fs.write(fp"${worker_dir}/WORKER.md", control.fill_template(worker_template.read_text()?, worker_values))?
@@ -169,6 +173,16 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     FACTORY_ENGINEER_THINKING: control.configured_role_setting("engineer", "THINKING")?,
     FACTORY_ENGINEER_BUDGET_USD: control.configured_role_setting("engineer", "BUDGET_USD")?,
     FACTORY_ENGINEER_TOOLS: control.configured_role_setting("engineer", "TOOLS")?,
+    FACTORY_DIRECTOR_MAX_TURNS: control.configured_role_setting("director", "MAX_TURNS")?,
+    FACTORY_DIRECTOR_MAX_WALL_SECONDS: control.configured_role_setting("director", "MAX_WALL_SECONDS")?,
+    FACTORY_EVAL_DESIGNER_MAX_TURNS: control.configured_role_setting("eval-designer", "MAX_TURNS")?,
+    FACTORY_EVAL_DESIGNER_MAX_WALL_SECONDS: control.configured_role_setting("eval-designer", "MAX_WALL_SECONDS")?,
+    FACTORY_EVAL_MANAGER_MAX_TURNS: control.configured_role_setting("eval-manager", "MAX_TURNS")?,
+    FACTORY_EVAL_MANAGER_MAX_WALL_SECONDS: control.configured_role_setting("eval-manager", "MAX_WALL_SECONDS")?,
+    FACTORY_EVAL_WORKER_MAX_TURNS: control.configured_role_setting("eval-worker", "MAX_TURNS")?,
+    FACTORY_EVAL_WORKER_MAX_WALL_SECONDS: control.configured_role_setting("eval-worker", "MAX_WALL_SECONDS")?,
+    FACTORY_ENGINEER_MAX_TURNS: control.configured_role_setting("engineer", "MAX_TURNS")?,
+    FACTORY_ENGINEER_MAX_WALL_SECONDS: control.configured_role_setting("engineer", "MAX_WALL_SECONDS")?,
     PI_AUTH_FILE: env.get("PI_AUTH_FILE")?,
     PI_COMMAND: pi_command,
   }
@@ -186,9 +200,17 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
       "--session", session.display(), "--pid", f"${handle.pid}",
       "--budget-usd", budget, "--marker", fp"${worker_dir}/BUDGET-BREACH".display()],
   )?
-  fs.write(process_registry_file, f"${self_pid}\n${handle.pid}\n${watcher.pid}\n")?
+  let limit_watcher = spawn process.command_argv(
+    xsh_path,
+    [xsh_path.display(), fp"${factory_dir}/tools/session-watch.xsh", "--",
+      "--session", session.display(), "--pid", f"${handle.pid}",
+      "--max-turns", max_turns, "--max-seconds", max_wall_seconds,
+      "--marker", fp"${worker_dir}/SESSION-LIMIT".display(), "--role", role],
+  )?
+  fs.write(process_registry_file, f"${self_pid}\n${handle.pid}\n${watcher.pid}\n${limit_watcher.pid}\n")?
   let status = wait handle?
   let watcher_status = wait watcher?
+  let limit_status = wait limit_watcher?
   if fs.exists(session)? {
     let _ = process.run(process.command_argv(
       pi_command,
@@ -211,6 +233,6 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
       eprint f"unable to close over-budget ticket: ${ticket_id}"
     }
   }
-  let code = if ! status.ok or ! watcher_status.ok or ! report_status.ok { 1 } else { 0 }
+  let code = if ! status.ok or ! watcher_status.ok or ! limit_status.ok or ! report_status.ok { 1 } else { 0 }
   abort(code)
 }

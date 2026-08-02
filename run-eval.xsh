@@ -3,6 +3,115 @@
 use factory_control as control
 use factory_runtime as runtime
 
+proc role_assignments() [env, error] -> Result[List[Str]] {
+  var assignments: List[Str] = []
+  for role in ["director", "eval-designer", "eval-manager", "eval-worker", "engineer"] {
+    let prefix = control.role_prefix(role)
+    assignments = assignments.push(f"FACTORY_${prefix}_PROVIDER=${control.configured_role_setting(role, "PROVIDER")?}")
+    assignments = assignments.push(f"FACTORY_${prefix}_MODEL=${control.configured_role_setting(role, "MODEL")?}")
+    assignments = assignments.push(f"FACTORY_${prefix}_THINKING=${control.configured_role_setting(role, "THINKING")?}")
+    assignments = assignments.push(f"FACTORY_${prefix}_BUDGET_USD=${control.configured_role_setting(role, "BUDGET_USD")?}")
+    assignments = assignments.push(f"FACTORY_${prefix}_MAX_TURNS=${control.configured_role_setting(role, "MAX_TURNS")?}")
+    assignments = assignments.push(f"FACTORY_${prefix}_MAX_WALL_SECONDS=${control.configured_role_setting(role, "MAX_WALL_SECONDS")?}")
+    assignments = assignments.push(f"FACTORY_${prefix}_TOOLS=${control.configured_role_setting(role, "TOOLS")?}")
+  }
+  return Ok(assignments)
+}
+
+proc spawn_agent(
+  factory_dir: Path,
+  run_dir: Path,
+  xsh_path: Path,
+  run_agent: Path,
+  assignments: List[Str],
+  role: Str,
+  worker_id: Str,
+  system_prompt: Path,
+  message: Path,
+  stdout: Path,
+  stderr: Path,
+) [fs, process, error] -> Result[ProcessHandle] {
+  let env_path = process.which("env")?
+  let child_args = assignments.extend([
+    xsh_path.display(), run_agent.display(), "--", role, worker_id,
+    system_prompt.display(), message.display(),
+  ])
+  let handle = spawn process.command_argv(
+    env_path,
+    [env_path.display()].extend(child_args),
+    cwd: factory_dir,
+    stdout: stdout,
+    stderr: stderr,
+  )?
+  runtime.register_process(run_dir, f"controller-${role}-${worker_id}", handle.pid)?
+  return handle
+}
+
+proc report_tool_error_count(report: Path) [fs, error] -> Result[Str] {
+  if ! fs.exists(report)? {
+    return "unknown"
+  }
+  let count = control.report_line_value(fs.read_text(report)?, "- Tool errors:")
+  return if count == "" { "unknown" } else { count }
+}
+
+proc report_has_tool_errors(report: Path) [fs, error] -> Result[Bool] {
+  if ! fs.exists(report)? {
+    return false
+  }
+  let count = control.report_line_value(fs.read_text(report)?, "- Tool errors:")
+  return count != "" and count != "0"
+}
+
+proc run_executor_trial(
+  factory_dir: Path,
+  run_dir: Path,
+  xsh_path: Path,
+  assignments: List[Str],
+  eval_id: Str,
+  trial_id: Int,
+  worker_dir: Path,
+  handbook: Path,
+  eval_dir: Path,
+  image: Str,
+  base_image: Str,
+  image_id: Str,
+  artifact_file: Str,
+  lineage_dir: Path,
+  stdout: Path,
+  stderr: Path,
+) [fs, process, error] -> Result[Bool] {
+  let env_path = process.which("env")?
+  let trial_text = trial_id.float().format(precision: 0)
+  let trial_assignments = assignments.extend([
+    f"FACTORY_RUN_DIR=${run_dir.display()}",
+    f"FACTORY_MODE=eval",
+    f"FACTORY_EVAL_ID=${eval_id}",
+    f"FACTORY_TRIAL_ID=${trial_text}",
+    f"FACTORY_EVAL_WORKER_DIR=${worker_dir.display()}",
+    f"FACTORY_HANDBOOK_FILE=${handbook.display()}",
+    f"FACTORY_EVAL_DIR=${eval_dir.display()}",
+    f"FACTORY_EVAL_IMAGE=${image}",
+    f"FACTORY_BASE_IMAGE=${base_image}",
+    f"FACTORY_IMAGE_ID=${image_id}",
+    f"FACTORY_EVAL_ARTIFACT=${artifact_file}",
+    f"FACTORY_LINEAGE_DIR=${lineage_dir.display()}",
+  ])
+  let trial_args = trial_assignments.extend([
+    xsh_path.display(), f"${factory_dir}/eval-executor.xsh", "--", eval_id,
+  ])
+  let handle = spawn process.command_argv(
+    env_path,
+    [env_path.display()].extend(trial_args),
+    cwd: factory_dir,
+    stdout: stdout,
+    stderr: stderr,
+  )?
+  runtime.register_process(run_dir, f"executor-${eval_id}-${trial_id}", handle.pid)?
+  let status = wait handle?
+  return Ok(status.ok)
+}
+
 proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   if argv.len() < 1 {
     eprint "usage: run-eval.xsh CYCLE_REQUEST.md [EVAL_ID]"
@@ -295,21 +404,31 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   ]
   let trial_instructions = control.fill_template(trial_template.read_text()?, trial_values)
 
-  let manager_message = fp"${messages_dir}/${eval_id}-manager.md"
-  let manager_template = fp"${factory_dir}/templates/EVAL-MANAGER-ASSIGNMENT.md"
-  let manager_values: List[control.TemplateValue] = [
-    {key: "EVAL_ID", value: eval_id},
-    {key: "FACTORY_DIR", value: factory_dir.display()},
-    {key: "EVAL_DIR", value: eval_dir.display()},
-    {key: "RUN_DIR", value: run_dir.display()},
-    {key: "TRIAL_COUNT", value: trial_count.float().format(precision: 0)},
-    {key: "TRIAL_INSTRUCTIONS", value: trial_instructions},
-    {key: "MERGED_TICKET_PATHS", value: merged_ticket_paths},
-    {key: "CANDIDATE_TICKET", value: candidate_ticket},
-    {key: "CANDIDATE_WORKTREE", value: candidate_worktree},
-    {key: "XSH_COMMIT", value: xsh_commit.trim()},
-  ]
-  fs.write(manager_message, control.fill_template(manager_template.read_text()?, manager_values))?
+  let common_assignments = [
+    f"FACTORY_DIR=${factory_dir.display()}",
+    f"FACTORY_RUN_DIR=${run_dir.display()}",
+    f"FACTORY_RUN_AGENT=${run_agent.display()}",
+    f"FACTORY_XSH_REPO=${xsh_repo.display()}",
+    f"FACTORY_XSH_COMMIT=${xsh_commit.trim()}",
+    f"FACTORY_HANDBOOK_FILE=${baseline_handbook.display()}",
+    f"FACTORY_NORTH_STAR_FILE=${factory_dir}/NORTH-STAR.md",
+    f"XSH_MODULE_PATH=${factory_dir.display()}",
+    f"FACTORY_MODE=eval",
+    f"FACTORY_EVAL_ID=${eval_id}",
+    "FACTORY_TICKET_ID=",
+    f"FACTORY_EVAL_DIR=${eval_dir.display()}",
+    f"FACTORY_EVAL_IMAGE=${image}",
+    f"FACTORY_BASE_IMAGE=${base_image}",
+    f"FACTORY_IMAGE_ID=${image_id.trim()}",
+    f"FACTORY_EVAL_TASK_FILE=${task_file}",
+    f"FACTORY_EVAL_ARTIFACT=${artifact_file}",
+    f"FACTORY_LINEAGE_DIR=${lineage_dir.display()}",
+    f"FACTORY_PLATFORM=${platform}",
+    f"XSH_TARGET=${target}",
+    f"PI_AUTH_FILE=${auth_file.display()}",
+    f"PI_COMMAND=${env.get_or("PI_COMMAND", "pi")?}",
+    f"DOCKER=${docker}",
+  ].extend(role_assignments()?)
 
   var designer_message = p""
   let designer_worker = "proposal-1"
@@ -347,71 +466,97 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     {key: "RUN_AGENT", value: run_agent.display()},
     {key: "MODE", value: "eval"},
     {key: "DISPATCH_FILE", value: "DISPATCH.md"},
+    {key: "EXECUTION_DIRECTIVE", value: "The controller has already executed the listed eval-worker, eval-manager, and eval-designer processes. Review their reports and evidence; do not launch or wait for any child."},
   ]
   fs.write(director_message, control.fill_template(director_template.read_text()?, director_values))?
-
-  let director_env = {
-    PATH: env.get("PATH")?,
-    HOME: env.get("HOME")?,
-    XSH_MODULE_PATH: env.get_or("XSH_MODULE_PATH", factory_dir.display())?,
-    FACTORY_DIR: factory_dir.display(),
-    FACTORY_RUN_DIR: run_dir.display(),
-    FACTORY_RUN_AGENT: run_agent.display(),
-    FACTORY_XSH_REPO: xsh_repo.display(),
-    FACTORY_XSH_COMMIT: xsh_commit.trim(),
-    FACTORY_IMAGE_ID: image_id.trim(),
-    FACTORY_MODE: "eval",
-    FACTORY_EVAL_ID: eval_id,
-    FACTORY_EVAL_DIR: eval_dir.display(),
-    FACTORY_EVAL_IMAGE: image,
-    FACTORY_BASE_IMAGE: base_image,
-    FACTORY_EVAL_TASK_FILE: task_file,
-    FACTORY_EVAL_ARTIFACT: artifact_file,
-    FACTORY_LINEAGE_DIR: lineage_dir.display(),
-    FACTORY_DISPATCH_FILE: fp"${run_dir}/DISPATCH.md".display(),
-    FACTORY_TRIAL_COUNT: trial_count.float().format(precision: 0),
-    FACTORY_NEW_EVAL_COUNT: new_eval_count.float().format(precision: 0),
-    FACTORY_PLATFORM: platform,
-    PI_AUTH_FILE: auth_file.display(),
-    PI_COMMAND: env.get_or("PI_COMMAND", "pi")?,
-    FACTORY_DIRECTOR_PROVIDER: control.configured_role_setting("director", "PROVIDER")?,
-    FACTORY_DIRECTOR_MODEL: control.configured_role_setting("director", "MODEL")?,
-    FACTORY_DIRECTOR_THINKING: control.configured_role_setting("director", "THINKING")?,
-    FACTORY_DIRECTOR_BUDGET_USD: control.configured_role_setting("director", "BUDGET_USD")?,
-    FACTORY_DIRECTOR_TOOLS: control.configured_role_setting("director", "TOOLS")?,
-    FACTORY_EVAL_DESIGNER_PROVIDER: control.configured_role_setting("eval-designer", "PROVIDER")?,
-    FACTORY_EVAL_DESIGNER_MODEL: control.configured_role_setting("eval-designer", "MODEL")?,
-    FACTORY_EVAL_DESIGNER_THINKING: control.configured_role_setting("eval-designer", "THINKING")?,
-    FACTORY_EVAL_DESIGNER_BUDGET_USD: control.configured_role_setting("eval-designer", "BUDGET_USD")?,
-    FACTORY_EVAL_DESIGNER_TOOLS: control.configured_role_setting("eval-designer", "TOOLS")?,
-    FACTORY_EVAL_MANAGER_PROVIDER: control.configured_role_setting("eval-manager", "PROVIDER")?,
-    FACTORY_EVAL_MANAGER_MODEL: control.configured_role_setting("eval-manager", "MODEL")?,
-    FACTORY_EVAL_MANAGER_THINKING: control.configured_role_setting("eval-manager", "THINKING")?,
-    FACTORY_EVAL_MANAGER_BUDGET_USD: control.configured_role_setting("eval-manager", "BUDGET_USD")?,
-    FACTORY_EVAL_MANAGER_TOOLS: control.configured_role_setting("eval-manager", "TOOLS")?,
-    FACTORY_EVAL_WORKER_PROVIDER: control.configured_role_setting("eval-worker", "PROVIDER")?,
-    FACTORY_EVAL_WORKER_MODEL: control.configured_role_setting("eval-worker", "MODEL")?,
-    FACTORY_EVAL_WORKER_THINKING: control.configured_role_setting("eval-worker", "THINKING")?,
-    FACTORY_EVAL_WORKER_BUDGET_USD: control.configured_role_setting("eval-worker", "BUDGET_USD")?,
-    FACTORY_EVAL_WORKER_TOOLS: control.configured_role_setting("eval-worker", "TOOLS")?,
-    FACTORY_ENGINEER_PROVIDER: control.configured_role_setting("engineer", "PROVIDER")?,
-    FACTORY_ENGINEER_MODEL: control.configured_role_setting("engineer", "MODEL")?,
-    FACTORY_ENGINEER_THINKING: control.configured_role_setting("engineer", "THINKING")?,
-    FACTORY_ENGINEER_BUDGET_USD: control.configured_role_setting("engineer", "BUDGET_USD")?,
-    FACTORY_ENGINEER_TOOLS: control.configured_role_setting("engineer", "TOOLS")?,
-  }
-  runtime.emit_event(event_template, run_dir, "20-manager-started", "eval-manager", "started", 1, "controller", "dispatch row admitted")?
+  let eval_worker_root = fp"${run_dir}/workers/eval-worker"
+  fs.mkdir(eval_worker_root)?
+  var designer_handle: ProcessHandle? = null
+  runtime.emit_event(event_template, run_dir, "10-manager-admitted", "eval-manager", "admitted", 1, "controller", "manager review waits for controller-owned executor evidence")?
   if new_eval_count == 1 {
     runtime.emit_event(event_template, run_dir, "21-designer-started", "eval-designer", "started", 1, "controller", "dispatch row admitted")?
+    designer_handle = spawn_agent(
+      factory_dir, run_dir, xsh_path, run_agent, common_assignments,
+      "eval-designer", designer_worker, fp"${factory_dir}/roles/eval-designer.md",
+      designer_message, fp"${run_dir}/designer.stdout", fp"${run_dir}/designer.stderr",
+    )?
   }
-  runtime.emit_event(event_template, run_dir, "20-director-started", "director", "started", 1, "controller", "dispatching controller-owned eval dispatch")?
-  let director_status = process.run(process.command_argv(
-    xsh_path,
-    [xsh_path.display(), run_agent, "--", "director", "director",
-      fp"${factory_dir}/roles/director.md".display(), director_message.display()],
-    cwd: factory_dir,
-    env: director_env,
-  ))?
+
+  var trial_statuses: List[Bool] = []
+  for trial_id in range(1, trial_count + 1) {
+    let trial_worker = fp"${eval_worker_root}/${eval_id}-${trial_id}"
+    runtime.emit_event(event_template, run_dir, f"20-trial-${trial_id}-started", f"${eval_id}-trial-${trial_id}", "started", 1, "controller", "controller-owned executor dispatch")?
+    let trial_ok = run_executor_trial(
+      factory_dir, run_dir, xsh_path, common_assignments, eval_id, trial_id, trial_worker,
+      baseline_handbook, eval_dir, image, base_image, image_id.trim(), artifact_file,
+      lineage_dir, fp"${run_dir}/trial-${trial_id}.stdout", fp"${run_dir}/trial-${trial_id}.stderr",
+    )?
+    trial_statuses = trial_statuses.push(trial_ok)
+    runtime.emit_event(event_template, run_dir, f"80-trial-${trial_id}-completed", f"${eval_id}-trial-${trial_id}", if trial_ok { "completed" } else { "failed" }, 1, "controller", "executor process returned")?
+  }
+
+  var evidence_rows = ""
+  let evidence_row_template = fp"${factory_dir}/templates/EVIDENCE-WORKER-ROW.md"
+  for trial_id in range(1, trial_count + 1) {
+    let trial_worker = fp"${eval_worker_root}/${eval_id}-${trial_id}"
+    let worker_report = fp"${trial_worker}/WORKER-REPORT.md"
+    let tool_error_count = report_tool_error_count(worker_report)?
+    let evidence_row = control.fill_template(evidence_row_template.read_text()?, [
+      {key: "TRIAL_ID", value: trial_id.float().format(precision: 0)},
+      {key: "EXECUTOR_REPORT", value: fp"${trial_worker}/EXECUTOR-REPORT.md".display()},
+      {key: "WORKER_REPORT", value: worker_report.display()},
+      {key: "TOOL_ERROR_COUNT", value: tool_error_count},
+      {key: "TOOL_ERRORS", value: fp"${trial_worker}/TOOL-ERRORS.md".display()},
+      {key: "SESSION", value: fp"${trial_worker}/session.jsonl".display()},
+    ])
+    evidence_rows = if evidence_rows == "" { evidence_row } else { evidence_rows + "\n" + evidence_row }
+  }
+  runtime.write_current_evidence(
+    factory_dir, run_dir, eval_id, trial_count, baseline_handbook,
+    fp"${run_dir}/DISPATCH.md", evidence_rows,
+  )?
+
+  let manager_message = fp"${messages_dir}/${eval_id}-manager.md"
+  let manager_template = fp"${factory_dir}/templates/EVAL-MANAGER-ASSIGNMENT.md"
+  let manager_values: List[control.TemplateValue] = [
+    {key: "EVAL_ID", value: eval_id},
+    {key: "FACTORY_DIR", value: factory_dir.display()},
+    {key: "EVAL_DIR", value: eval_dir.display()},
+    {key: "RUN_DIR", value: run_dir.display()},
+    {key: "TRIAL_COUNT", value: trial_count.float().format(precision: 0)},
+    {key: "TRIAL_INSTRUCTIONS", value: trial_instructions},
+    {key: "MERGED_TICKET_PATHS", value: merged_ticket_paths},
+    {key: "CANDIDATE_TICKET", value: candidate_ticket},
+    {key: "CANDIDATE_WORKTREE", value: candidate_worktree},
+    {key: "XSH_COMMIT", value: xsh_commit.trim()},
+  ]
+  fs.write(manager_message, control.fill_template(manager_template.read_text()?, manager_values))?
+  runtime.emit_event(event_template, run_dir, "20-manager-started", "eval-manager", "started", 1, "controller", "executor evidence packet is ready for manager review")?
+  let manager_handle = spawn_agent(
+    factory_dir, run_dir, xsh_path, run_agent, common_assignments,
+    "eval-manager", eval_id, fp"${factory_dir}/roles/eval-manager.md",
+    manager_message, fp"${run_dir}/manager.stdout", fp"${run_dir}/manager.stderr",
+  )?
+  let manager_status = wait manager_handle?
+  let manager_ok = manager_status.ok
+
+  var designer_ok = true
+  if designer_handle != null {
+    let designer_status = wait designer_handle?
+    designer_ok = designer_status.ok
+  }
+  runtime.emit_event(event_template, run_dir, "80-manager-completed", "eval-manager", if manager_ok { "completed" } else { "failed" }, 1, "controller", "manager process returned")?
+  if new_eval_count == 1 {
+    runtime.emit_event(event_template, run_dir, "80-designer-completed", "eval-designer", if designer_ok { "completed" } else { "failed" }, 1, "controller", "designer process returned")?
+  }
+
+  runtime.emit_event(event_template, run_dir, "20-director-started", "director", "started", 1, "controller", "dispatching post-run review")?
+  let director_handle = spawn_agent(
+    factory_dir, run_dir, xsh_path, run_agent, common_assignments,
+    "director", "director", fp"${factory_dir}/roles/director.md",
+    director_message, fp"${run_dir}/director.stdout", fp"${run_dir}/director.stderr",
+  )?
+  let director_status = wait director_handle?
   runtime.emit_event(event_template, run_dir, "80-director-completed", "director", if director_status.ok { "completed" } else { "failed" }, 1, "director", "director process returned")?
 
   let cost_status = process.run(process.command_argv(
@@ -424,6 +569,8 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   let trial2_report = fp"${run_dir}/workers/eval-worker/${eval_id}-2/EXECUTOR-REPORT.md"
   let trial1_handbook = fp"${run_dir}/workers/eval-worker/${eval_id}-1/work/handbook.md"
   let trial2_handbook = fp"${run_dir}/workers/eval-worker/${eval_id}-2/work/handbook.md"
+  let trial1_process_ok = trial_statuses.get(0, false)
+  let trial2_process_ok = if trial_count == 1 { true } else { trial_statuses.get(1, false) }
   let candidate_exists = fs.exists(candidate_handbook)?
   let trial1_report_ok = fs.exists(trial1_report)? and control.executor_report_contract_ok(fs.read_text(trial1_report)?)
   let trial2_report_ok = if trial_count == 1 {
@@ -438,9 +585,9 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   let approved_snapshot_unchanged = fs.exists(baseline_handbook)? and hash.sha256(baseline_handbook)?.hex() == baseline_sha
   let checked_in_handbook_unchanged = runtime.verify_factory_handbook(factory_dir, baseline_sha)?
   let trial_lineage_ok = if trial_count == 1 {
-    candidate_sha == baseline_sha
+    candidate_sha != ""
   } else {
-    trial2_sha == candidate_sha
+    trial2_sha == baseline_sha
   }
   let lineage_ok = candidate_exists and approved_snapshot_unchanged and checked_in_handbook_unchanged and
     trial1_sha == baseline_sha and trial_lineage_ok
@@ -450,29 +597,40 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     control.director_report_contract_ok(fs.read_text(director_report)?)
   let manager_report = fp"${run_dir}/workers/eval-manager/${eval_id}/MANAGER-REPORT.md"
   let manager_report_marker = fp"${run_dir}/workers/eval-manager/${eval_id}/REPORT-MISSING"
+  let manager_worker_report = fp"${run_dir}/workers/eval-manager/${eval_id}/WORKER-REPORT.md"
+  var worker_tool_errors = false
+  for trial_id in range(1, trial_count + 1) {
+    let worker_report = fp"${eval_worker_root}/${eval_id}-${trial_id}/WORKER-REPORT.md"
+    if report_has_tool_errors(worker_report)? { worker_tool_errors = true }
+  }
+  let manager_tool_errors = report_has_tool_errors(manager_worker_report)?
   let manager_report_ok = fs.exists(manager_report)? and ! fs.exists(manager_report_marker)? and
-    control.manager_report_contract_ok(fs.read_text(manager_report)?)
+    control.manager_report_contract_ok(fs.read_text(manager_report)?) and
+    control.manager_tool_error_findings_contract_ok(fs.read_text(manager_report)?) and
+    (! worker_tool_errors and ! manager_tool_errors or
+      fs.read_text(manager_report)?.contains("TOOL-ERRORS.md"))
   let designer_session = fp"${run_dir}/workers/eval-designer/${designer_worker}/session.jsonl"
   let designer_worker_report = fp"${run_dir}/workers/eval-designer/${designer_worker}/WORKER-REPORT.md"
   let designer_report = fp"${run_dir}/workers/eval-designer/proposal-1/DESIGNER-REPORT.md"
+  let worker_handbook_read = fs.exists(fp"${run_dir}/workers/eval-worker/${eval_id}-1/session.jsonl")? and
+    runtime.session_read_path(fp"${run_dir}/workers/eval-worker/${eval_id}-1/session.jsonl", Path("/work/handbook.md"))?
+  let manager_evidence_read = runtime.session_read_path(manager_session, fp"${run_dir}/CURRENT-EVIDENCE.md")?
+  let manager_handbook_read = runtime.session_read_path(manager_session, baseline_handbook)?
+  let designer_handbook_read = if new_eval_count == 0 {
+    true
+  } else {
+    runtime.session_read_path(designer_session, fp"${factory_dir}/runtime/handbook.md")?
+  }
+  let director_evidence_read = runtime.session_read_path(
+    fp"${run_dir}/workers/director/director/session.jsonl", fp"${run_dir}/CURRENT-EVIDENCE.md"
+  )?
   let designer_output_ok = if new_eval_count == 0 {
     true
   } else {
     fs.exists(designer_session)? and fs.exists(designer_worker_report)? and
       ! fs.exists(fp"${run_dir}/workers/eval-designer/${designer_worker}/REPORT-MISSING")? and
+      control.worker_report_contract_ok(fs.read_text(designer_worker_report)?) and
       fs.exists(designer_report)? and control.designer_report_contract_ok(fs.read_text(designer_report)?)
-  }
-  if fs.exists(manager_session)? {
-    runtime.emit_event(event_template, run_dir, "80-manager-completed", "eval-manager", "completed", 1, "eval-manager", "manager session returned")?
-  } else {
-    runtime.emit_event(event_template, run_dir, "80-manager-failed", "eval-manager", "failed", 1, "controller", "manager session is missing")?
-  }
-  if new_eval_count == 1 {
-    if designer_output_ok {
-      runtime.emit_event(event_template, run_dir, "80-designer-completed", "eval-designer", "completed", 1, "eval-designer", "designer report returned")?
-    } else {
-      runtime.emit_event(event_template, run_dir, "80-designer-failed", "eval-designer", "failed", 1, "controller", "designer report is missing")?
-    }
   }
   let director_state = if fs.exists(fp"${run_dir}/workers/director/director/session.jsonl")? { "present" } else { "missing" }
   let manager_state = if fs.exists(manager_session)? { "present" } else { "missing" }
@@ -508,10 +666,13 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     control.audit_report_contract_ok(fs.read_text(audit_file)?)
   let audit_result = if audit_report_ok { control.audit_result(fs.read_text(audit_file)?) } else { "missing" }
   let audit_pass = audit_report_ok and audit_result == "pass"
-  let required = fs.exists(manager_session)? and fs.exists(trial1_report)? and
+  let required = fs.exists(manager_session)? and fs.exists(fp"${run_dir}/CURRENT-EVIDENCE.md")? and
+    trial1_process_ok and trial2_process_ok and fs.exists(trial1_report)? and
     (trial_count == 1 or fs.exists(trial2_report)?) and
     cost_status.ok and candidate_exists and lineage_ok and trial1_report_ok and trial2_report_ok and
-    director_report_ok and manager_report_ok and designer_output_ok and audit_pass
+    director_report_ok and manager_report_ok and designer_output_ok and audit_pass and
+    worker_handbook_read and manager_evidence_read and manager_handbook_read and
+    designer_handbook_read and director_evidence_read
   let initial_result = if director_status.ok and required { "pass" } else { "fail" }
   let cto_status = runtime.write_cto_report(factory_dir, run_dir, initial_result)?
   let result = if initial_result == "pass" and cto_status { "pass" } else { "fail" }
@@ -543,6 +704,11 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     {key: "AUDIT_STATE", value: if audit_report_ok { "present" } else { "failed" }},
     {key: "AUDIT_RESULT", value: audit_result},
     {key: "CTO_STATE", value: if cto_status { "present" } else { "failed" }},
+    {key: "WORKER_HANDBOOK_READ", value: if worker_handbook_read { "true" } else { "false" }},
+    {key: "MANAGER_EVIDENCE_READ", value: if manager_evidence_read { "true" } else { "false" }},
+    {key: "MANAGER_HANDBOOK_READ", value: if manager_handbook_read { "true" } else { "false" }},
+    {key: "DESIGNER_HANDBOOK_READ", value: if designer_handbook_read { "true" } else { "false" }},
+    {key: "DIRECTOR_EVIDENCE_READ", value: if director_evidence_read { "true" } else { "false" }},
     {key: "APPROVED_SNAPSHOT_UNCHANGED", value: if approved_snapshot_unchanged { "true" } else { "false" }},
     {key: "CHECKED_IN_HANDBOOK_UNCHANGED", value: if checked_in_handbook_unchanged { "true" } else { "false" }},
     {key: "CANDIDATE_SHA", value: candidate_sha},

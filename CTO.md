@@ -232,6 +232,10 @@ of truth: raw Pi session JSONL and evaluator manifests remain canonical.
   provider-reported reasoning tokens, total token buckets, cost, and wall span
   across the same eval and prior runs. Reasoning tokens are a provider-reported
   subset of output; thinking-block count is not a token count.
+- Treat every nonzero Pi tool result as review evidence. Start with the
+  `TOOL-ERRORS.md` paths in `CURRENT-EVIDENCE.md` and `COST.md`; invalid
+  `xsht api` queries are session inefficiency signals even when the worker
+  eventually succeeds.
 - Verify the worker read the exact handbook, north-star, ticket, and product
   guidance paths required by its role. A missing-file struggle is first a
   controller or assignment defect, not a prompt-writing opportunity.

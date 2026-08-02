@@ -14,4 +14,6 @@
 - Model: `{{MODEL}}`
 - Thinking: `{{THINKING}}`
 - Budget: `{{BUDGET}}`
+- Maximum assistant turns: `{{MAX_TURNS}}`
+- Maximum wall-clock seconds: `{{MAX_WALL_SECONDS}}`
 - Required narrative report: `{{REQUIRED_REPORT}}`

@@ -171,6 +171,7 @@ proc run_ticket_cycle(
     {key: "RUN_AGENT", value: run_agent.display()},
     {key: "MODE", value: "ticket-implementation"},
     {key: "DISPATCH_FILE", value: "TICKET-DISPATCH.md"},
+    {key: "EXECUTION_DIRECTIVE", value: "Launch exactly the assigned engineer rows through the shared runner, wait for each process, and inspect its report. Do not launch eval roles."},
   ]
   fs.write(director_message, control.fill_template(director_template.read_text()?, director_values))?
 
@@ -196,11 +197,15 @@ proc run_ticket_cycle(
     FACTORY_DIRECTOR_MODEL: control.configured_role_setting("director", "MODEL")?,
     FACTORY_DIRECTOR_THINKING: control.configured_role_setting("director", "THINKING")?,
     FACTORY_DIRECTOR_BUDGET_USD: control.configured_role_setting("director", "BUDGET_USD")?,
+    FACTORY_DIRECTOR_MAX_TURNS: control.configured_role_setting("director", "MAX_TURNS")?,
+    FACTORY_DIRECTOR_MAX_WALL_SECONDS: control.configured_role_setting("director", "MAX_WALL_SECONDS")?,
     FACTORY_DIRECTOR_TOOLS: control.configured_role_setting("director", "TOOLS")?,
     FACTORY_ENGINEER_PROVIDER: control.configured_role_setting("engineer", "PROVIDER")?,
     FACTORY_ENGINEER_MODEL: control.configured_role_setting("engineer", "MODEL")?,
     FACTORY_ENGINEER_THINKING: control.configured_role_setting("engineer", "THINKING")?,
     FACTORY_ENGINEER_BUDGET_USD: control.configured_role_setting("engineer", "BUDGET_USD")?,
+    FACTORY_ENGINEER_MAX_TURNS: control.configured_role_setting("engineer", "MAX_TURNS")?,
+    FACTORY_ENGINEER_MAX_WALL_SECONDS: control.configured_role_setting("engineer", "MAX_WALL_SECONDS")?,
     FACTORY_ENGINEER_TOOLS: control.configured_role_setting("engineer", "TOOLS")?,
   }
   runtime.emit_event(event_template, run_dir, "20-director-started", "director", "started", 1, "controller", "dispatching admitted engineer workers")?

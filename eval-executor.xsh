@@ -29,6 +29,8 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   let thinking = env.get_or("FACTORY_EVAL_WORKER_THINKING", control.default_thinking("eval-worker"))?
   let configured_budget = env.get_or("FACTORY_EVAL_WORKER_BUDGET_USD", control.default_budget("eval-worker"))?
   let budget = control.clamp_budget("eval-worker", configured_budget)?
+  let max_turns = env.get_or("FACTORY_EVAL_WORKER_MAX_TURNS", control.default_max_turns("eval-worker"))?
+  let max_wall_seconds = env.get_or("FACTORY_EVAL_WORKER_MAX_WALL_SECONDS", control.default_max_wall_seconds("eval-worker"))?
   let tools = env.get_or("FACTORY_EVAL_WORKER_TOOLS", control.default_tools("eval-worker"))?
   let trial_id = env.get_or("FACTORY_TRIAL_ID", "1")?
   let task_file = "task.md"
@@ -95,9 +97,17 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
       "--session", session.display(), "--pid", f"${agent_handle.pid}",
       "--budget-usd", budget, "--marker", fp"${worker_dir}/BUDGET-BREACH".display()],
   )?
-  fs.write(agent_process_registry, f"${agent_handle.pid}\n${watcher.pid}\n")?
+  let limit_watcher = spawn process.command_argv(
+    xsh_path,
+    [xsh_path.display(), fp"${factory_dir}/tools/session-watch.xsh", "--",
+      "--session", session.display(), "--pid", f"${agent_handle.pid}",
+      "--max-turns", max_turns, "--max-seconds", max_wall_seconds,
+      "--marker", fp"${worker_dir}/SESSION-LIMIT".display(), "--role", "eval-worker"],
+  )?
+  fs.write(agent_process_registry, f"${agent_handle.pid}\n${watcher.pid}\n${limit_watcher.pid}\n")?
   let agent_status = wait agent_handle?
   let watcher_status = wait watcher?
+  let limit_status = wait limit_watcher?
   let agent_wall = time.now() - agent_started
   fs.remove(agent_process_registry, missing_ok: true)?
   let budget_breach = fs.exists(fp"${worker_dir}/BUDGET-BREACH")?
@@ -146,14 +156,16 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
       "--output", fp"${worker_dir}/WORKER-REPORT.md".display(), "--role", "eval-worker",
       "--worker-id", f"${eval_id}-${trial_id}", "--budget-usd", budget],
   ))?
-  let result = if agent_status.ok and watcher_status.ok and eval_status.ok and report_status.ok { "pass" } else { "fail" }
-  let agent_state = if agent_status.ok and watcher_status.ok { "pass" } else { "fail" }
+  let result = if agent_status.ok and watcher_status.ok and limit_status.ok and eval_status.ok and report_status.ok { "pass" } else { "fail" }
+  let agent_state = if agent_status.ok and watcher_status.ok and limit_status.ok { "pass" } else { "fail" }
   let eval_state = if eval_status.ok { "pass" } else { "fail" }
   let budget_state = if budget_breach { "breached" } else { "pass" }
   let manifest = fp"${worker_dir}/run.json"
   let manifest_state = if fs.exists(manifest)? { "present" } else { "missing" }
   let classification = if budget_breach {
     "budget_breach"
+  } else if fs.exists(fp"${worker_dir}/SESSION-LIMIT")? {
+    "session_limit"
   } else if ! agent_status.ok {
     "worker_failed"
   } else if ! eval_status.ok {

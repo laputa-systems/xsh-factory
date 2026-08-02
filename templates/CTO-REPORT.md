@@ -26,6 +26,10 @@ source of truth.
 
 {{WORKERS}}
 
+### Tool-error details
+
+{{TOOL_ERRORS}}
+
 ### Role totals
 
 {{ROLE_TOTALS}}

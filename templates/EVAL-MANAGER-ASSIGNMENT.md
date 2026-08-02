@@ -1,8 +1,11 @@
 # Eval-manager assignment: `{{EVAL_ID}}`
 
 Read `{{FACTORY_DIR}}/NORTH-STAR.md`, `{{FACTORY_DIR}}/roles/pi-session-briefing.md`,
-`{{EVAL_DIR}}/EVAL.md`, `{{RUN_DIR}}/PROVENANCE.md`, and
-`{{RUN_DIR}}/DISPATCH.md`. The reconciler found these merged ticket files:
+`{{EVAL_DIR}}/EVAL.md`, `{{RUN_DIR}}/PROVENANCE.md`,
+`{{RUN_DIR}}/CURRENT-EVIDENCE.md`, and `{{RUN_DIR}}/OPEN-TICKETS.md` first.
+Use `{{RUN_DIR}}/lineage/handbook-approved.md` as the exact handbook snapshot
+under review; do not substitute a different handbook path.
+The controller dispatch is `{{RUN_DIR}}/DISPATCH.md`. The reconciler found these merged ticket files:
 `{{MERGED_TICKET_PATHS}}`. Read each listed ticket directly when the value is
 not `none`. The executor is a black box. Every eval consumes the one
 factory-wide handbook; do not look for or create an eval-local handbook.
@@ -23,17 +26,25 @@ not dispatch engineer, and do not treat the branch as main. Decide whether the
 executor evidence supports the proposed fix and record that decision in the
 manager report.
 
-The controller requires exactly `{{TRIAL_COUNT}}` fresh trial(s). Preserve
+The controller has completed exactly `{{TRIAL_COUNT}}` fresh trial(s). Preserve
 separate evidence under `{{RUN_DIR}}/workers/eval-worker/` and inspect each
 executor report, worker report, session JSONL, extracted `thinking.md`,
 evaluator `run.json`, artifact, review, and quantitative results.
+When any worker report contains tool errors, read its adjacent `TOOL-ERRORS.md`
+before classifying friction. Before finishing, also read your own adjacent
+`TOOL-ERRORS.md` at `{{RUN_DIR}}/workers/eval-manager/{{EVAL_ID}}/TOOL-ERRORS.md`.
+Your `## Tool-error findings` section must account for every failed Pi tool
+result from the eval workers and from your own session, including invalid
+`xsht api` discovery queries. It must cite each detail file or say `None.`
+when all current sessions have zero errors.
 
 {{TRIAL_INSTRUCTIONS}}
 
-Follow the trial instructions above exactly. A one-trial plan requires an
-unchanged candidate snapshot; record any handbook hypothesis in this report
-without writing a changed candidate. Only a two-trial plan may stage a changed
-candidate for replay.
+Follow the trial instructions above exactly. A one-trial plan may stage one
+concise provisional handbook candidate when the evidence supports a reusable
+lesson. Promotion still requires later replay and human approval. A two-trial
+plan must state whether its candidate was actually replayed by the controller;
+do not claim validation that did not occur.
 
 Begin the narrative output before final analysis: create
 `{{RUN_DIR}}/workers/eval-manager/{{EVAL_ID}}/MANAGER-REPORT.md` with all
@@ -75,6 +86,11 @@ and dollars per trial and in aggregate
 
 thinking-block counts and findings grounded in `thinking.md`; say when the
 provider did not report reasoning-token counts
+
+## Tool-error findings
+
+every nonzero Pi tool result, or `None.` when the current evidence packet has
+no tool errors; cite each adjacent `TOOL-ERRORS.md`
 
 ## Timing evidence
 

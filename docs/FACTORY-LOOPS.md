@@ -29,6 +29,12 @@ optional provider-reported reasoning tokens, cost components, total cost, and
 session wall span. `reasoning` is a subset of `output`; thinking text is not a
 reliable token counter. Missing provider fields remain unknown.
 
+Every Pi `toolResult` with `isError: true` is rendered to an adjacent
+`TOOL-ERRORS.md` with the assistant turn, tool name, and complete result text.
+The controller puts each trial's error count and detail path in
+`CURRENT-EVIDENCE.md`; managers must account for both worker and manager
+session errors, including invalid API discovery queries.
+
 Every eval image inherits `evals/Dockerfile.base`, which contains the pinned
 Alpine runtime, locally built `xsh` and `xsht`, and Pi. An eval Dockerfile is a
 thin layer for task-specific packages and runtime files. `task-ecount` adds

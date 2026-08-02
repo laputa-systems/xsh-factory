@@ -83,6 +83,46 @@ export pure default_budget(role: Str) -> Str {
   return ""
 }
 
+## Hard assistant-turn ceilings keep a stalled worker from consuming a full cycle.
+export pure default_max_turns(role: Str) -> Str {
+  if role == "director" { return "24" }
+  if role == "eval-designer" { return "32" }
+  if role == "eval-manager" { return "40" }
+  if role == "eval-worker" { return "160" }
+  if role == "engineer" { return "160" }
+  return ""
+}
+
+## Hard wall-clock ceilings are enforced by the controller-side session watcher.
+export pure default_max_wall_seconds(role: Str) -> Str {
+  if role == "director" { return "300" }
+  if role == "eval-designer" { return "360" }
+  if role == "eval-manager" { return "480" }
+  if role == "eval-worker" { return "1200" }
+  if role == "engineer" { return "1200" }
+  return ""
+}
+
+## Clamps a turn or wall-clock limit to the role's hard ceiling.
+export pure clamp_session_limit(role: Str, key: Str, configured: Str) -> Result[Str] {
+  let ceiling_text = if key == "MAX_TURNS" {
+    default_max_turns(role)
+  } else if key == "MAX_WALL_SECONDS" {
+    default_max_wall_seconds(role)
+  } else {
+    ""
+  }
+  if ceiling_text == "" {
+    return Ok(configured)
+  }
+  let requested = configured.parse_int()?
+  let ceiling = ceiling_text.parse_int()?
+  if requested <= 0 or requested > ceiling {
+    return Ok(ceiling_text)
+  }
+  return Ok(configured)
+}
+
 ## The hard maximum spend for one factory cycle.
 export pure default_cycle_budget() -> Str {
   return "0.50"
@@ -134,6 +174,10 @@ export proc configured_role_setting(role: Str, key: Str) [env, error] -> Result[
     default_thinking(role)
   } else if key == "BUDGET_USD" {
     default_budget(role)
+  } else if key == "MAX_TURNS" {
+    default_max_turns(role)
+  } else if key == "MAX_WALL_SECONDS" {
+    default_max_wall_seconds(role)
   } else if key == "TOOLS" {
     default_tools(role)
   } else {
@@ -142,6 +186,9 @@ export proc configured_role_setting(role: Str, key: Str) [env, error] -> Result[
   let configured = env.get_or(f"FACTORY_${prefix}_${key}", fallback)?
   if key == "BUDGET_USD" {
     return clamp_budget(role, configured)
+  }
+  if key == "MAX_TURNS" or key == "MAX_WALL_SECONDS" {
+    return clamp_session_limit(role, key, configured)
   }
   return Ok(configured)
 }
@@ -463,6 +510,17 @@ export pure report_field(text: Str, heading: Str) -> Str {
   return ""
 }
 
+## Reads one first-level report line with a fixed prefix.
+export pure report_line_value(text: Str, prefix: Str) -> Str {
+  for line in text.lines() {
+    let trimmed = line.trim()
+    if trimmed.starts_with(prefix) {
+      return trimmed.replace(prefix, "").trim().replace("`", "")
+    }
+  }
+  return ""
+}
+
 ## Matches a report result while allowing a narrative sentence after the status.
 export pure report_result_is(text: Str, expected: Str) -> Bool {
   let value = report_field(text, "Result")
@@ -668,8 +726,14 @@ export pure engineer_report_contract_ok(report: Str) -> Bool {
 export pure manager_report_contract_ok(report: Str) -> Bool {
   return narrative_report_contract_ok(report,
     ["Effort metrics", "Usage and cost", "Thinking evidence", "Timing evidence",
-      "Observation classification", "Handbook decision", "Tickets created",
+      "Tool-error findings", "Observation classification", "Handbook decision", "Tickets created",
       "Post-merge decisions", "Next replay", "North-star impact"])
+}
+
+## Requires managers to account for failed Pi tool results explicitly.
+export pure manager_tool_error_findings_contract_ok(report: Str) -> Bool {
+  let findings = report_section(report, "Tool-error findings")
+  return findings != "" and (findings.contains("None.") or findings.contains("TOOL-ERRORS.md"))
 }
 
 ## Validates the coordination headings required from a director.

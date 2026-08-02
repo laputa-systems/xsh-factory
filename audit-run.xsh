@@ -194,7 +194,103 @@ pure report_document_ok(text: Str, headings: List[Str]) -> Bool {
   return control.report_contract_ok(text, headings, "")
 }
 
+proc audit_organization(run_dir: Path, factory_dir: Path) [fs, error] -> Result[Int] {
+  let run_name = run_dir.display()
+  let provenance = fp"${run_dir}/PROVENANCE.md"
+  let provenance_text = if fs.exists(provenance)? { provenance.read_text()? } else { "" }
+  let provenance_ok = fs.exists(provenance)? and report_document_ok(
+    provenance_text,
+    ["Run", "XSH input", "Candidate input", "Execution environment", "Lineage and admission"],
+  )
+  let cost = fp"${run_dir}/COST.md"
+  let cost_text = if fs.exists(cost)? { cost.read_text()? } else { "" }
+  let cost_ok = fs.exists(cost)? and report_document_ok(cost_text, ["Workers", "Role totals", "Run total"]) and
+    cost_text.contains("- Budget failures or unknown costs: 0")
+  let row_template = fp"${factory_dir}/templates/AUDIT-ROW.md"
+  let row_template_text = row_template.read_text()?
+  let phases_dir = fp"${run_dir}/phases"
+  var rows = ""
+  var findings: List[Str] = []
+  var phase_count = 0
+  var phase_ok = true
+  if fs.exists(phases_dir)? {
+    for phase_entry in fs.dirs(phases_dir, gitignore: false, hidden: true)? {
+      if phase_entry.path.parent().display() != phases_dir.display() { continue }
+      let phase_dir = phase_entry.path
+      let regular_report = fp"${phase_dir}/RUN.md"
+      let design_report = fp"${phase_dir}/RUN-DESIGN.md"
+      let report = if fs.exists(regular_report)? { regular_report } else { design_report }
+      let report_present = fs.exists(report)?
+      let report_text = if report_present { report.read_text()? } else { "" }
+      let result = if report_present { control.report_field(report_text, "Result") } else { "missing" }
+      let contract_ok = report_present and result != ""
+      let phase_result = if contract_ok and result == "pass" { "pass" } else { "fail" }
+      phase_count += 1
+      if phase_result != "pass" {
+        phase_ok = false
+        findings = findings.push(f"phase ${phase_dir.name()} is missing or failed its run report")
+      }
+      rows = rows + control.fill_template(row_template_text, [
+        {key: "KIND", value: "phase"},
+        {key: "IDENTIFIER", value: phase_dir.name()},
+        {key: "OUTCOME", value: if report_present { result } else { "missing" }},
+        {key: "CLASSIFICATION", value: "organization-phase"},
+        {key: "CONTRACT", value: if contract_ok { "pass" } else { "fail" }},
+        {key: "SESSION", value: "phase-owned"},
+        {key: "REPORT", value: if report_present { relative_path(run_name, report) } else { "missing" }},
+        {key: "MANIFEST", value: "phase-owned"},
+        {key: "METRICS", value: f"phase-cost=${if fs.exists(fp"${phase_dir}/COST.md")? { relative_path(run_name, fp"${phase_dir}/COST.md") } else { "missing" }}"},
+      ])
+    }
+  }
+  if phase_count == 0 {
+    phase_ok = false
+    findings = findings.push("organization has no child phase directories")
+  }
+  if ! provenance_ok { findings = findings.push("provenance is missing or incomplete") }
+  if ! cost_ok { findings = findings.push("cost report is missing, incomplete, or has unknown/breached worker cost") }
+  let result = if provenance_ok and cost_ok and phase_ok { "pass" } else { "fail" }
+  let all_files = fs.files(run_dir, gitignore: false, hidden: true)?
+  var session_count = 0
+  var manifest_count = 0
+  var ticket_count = 0
+  for entry in all_files {
+    if entry.name == "session.jsonl" { session_count += 1 }
+    if entry.name == "run.json" { manifest_count += 1 }
+    if entry.name == "ENGINEER-REPORT.md" { ticket_count += 1 }
+  }
+  let findings_text = if findings.len() == 0 { "none" } else { findings.join("\n") }
+  let template = fp"${factory_dir}/templates/AUDIT.md"
+  let values: List[control.TemplateValue] = [
+    {key: "RESULT", value: result},
+    {key: "RUN_ID", value: run_name},
+    {key: "MODE", value: "organization"},
+    {key: "XSH_COMMIT", value: report_value(provenance_text, "- Commit:")},
+    {key: "IMAGE", value: "phase-owned"},
+    {key: "EVAL_ID", value: "organization"},
+    {key: "EXPECTED_TRIALS", value: "phase-owned"},
+    {key: "SESSION_COUNT", value: session_count.float().format(precision: 0)},
+    {key: "MANIFEST_COUNT", value: manifest_count.float().format(precision: 0)},
+    {key: "TICKET_COUNT", value: ticket_count.float().format(precision: 0)},
+    {key: "PROVENANCE_STATE", value: if provenance_ok { "pass" } else { "fail" }},
+    {key: "COST_STATE", value: if cost_ok { "pass" } else { "fail" }},
+    {key: "LINEAGE_STATE", value: "phase-owned"},
+    {key: "CONTROLLER_STATE", value: if phase_ok { "pass" } else { "fail" }},
+    {key: "WORKER_STATE", value: "phase-owned"},
+    {key: "EVALUATOR_STATE", value: "phase-owned"},
+    {key: "TICKET_STATE", value: "phase-owned"},
+    {key: "ROWS", value: rows},
+    {key: "FINDINGS", value: findings_text},
+  ]
+  fs.write(fp"${run_dir}/AUDIT.md", control.fill_template(template.read_text()?, values))?
+  print f"audit: ${run_dir}/AUDIT.md (${result})"
+  return Ok(0)
+}
+
 proc audit_run(run_dir: Path, requested_mode: Str, factory_dir: Path) [fs, error] -> Result[Int] {
+  if requested_mode == "organization" {
+    return audit_organization(run_dir, factory_dir)
+  }
   if requested_mode != "eval" and requested_mode != "ticket-implementation" and
     requested_mode != "eval-design" {
     eprint f"unsupported audit mode: ${requested_mode}"
@@ -392,9 +488,23 @@ proc audit_run(run_dir: Path, requested_mode: Str, factory_dir: Path) [fs, error
     fs.exists(director_report)? and control.director_report_contract_ok(director_report.read_text()?) and
       control.report_result_is(director_report.read_text()?, "pass")
   }
+  var manager_tool_errors = false
+  for session in sessions {
+    let worker_report = fp"${session.parent()}/WORKER-REPORT.md"
+    if ! fs.exists(worker_report)? { continue }
+    let worker_report_text = worker_report.read_text()?
+    let role = report_value(worker_report_text, "- Role:", "unknown")
+    let tool_error_count = report_value(worker_report_text, "- Tool errors:", "0")
+    if (role == "eval-worker" or role == "eval-manager") and tool_error_count != "0" {
+      manager_tool_errors = true
+    }
+  }
+  let manager_report_text = if manager_reports.len() > 0 { manager_reports[0].read_text()? } else { "" }
+  let manager_findings_ok = ! manager_tool_errors or manager_report_text.contains("TOOL-ERRORS.md")
   let manager_ok = if requested_mode == "eval" {
-    manager_reports.len() > 0 and control.manager_report_contract_ok(manager_reports[0].read_text()?) and
-      control.report_result_is(manager_reports[0].read_text()?, "pass")
+    manager_reports.len() > 0 and control.manager_report_contract_ok(manager_report_text) and
+      control.manager_tool_error_findings_contract_ok(manager_report_text) and
+      manager_findings_ok and control.report_result_is(manager_report_text, "pass")
   } else {
     true
   }
@@ -455,5 +565,11 @@ proc main(...argv: List[Str]) [fs, env, error, io] {
   }
   let factory_dir = env.path("FACTORY_DIR", fs.cwd()?)?
   let mode = if argv.len() >= 2 { argv[1] } else { "eval" }
-  abort(audit_run(Path(argv[0]), mode, factory_dir)?)
+  let requested_run = Path(argv[0])
+  let run_dir = if requested_run.display().starts_with("/") {
+    requested_run
+  } else {
+    fp"${fs.cwd()?}/${requested_run.display()}"
+  }
+  abort(audit_run(run_dir, mode, factory_dir)?)
 }

@@ -12,6 +12,17 @@ prefer a small practical systems-administration or programming capability.
 The factory-wide handbook is `{{FACTORY_DIR}}/runtime/handbook.md`; proposed
 evals must not create an eval-local handbook.
 
+Keep this proposal small and bounded. Read only the current cycle request,
+the factory mission/contracts, the shared handbook, and task-tags before
+choosing the task. Do not scan historical `runs/`, Git history, `.dist`, or
+the XSH source tree. Do not write a custom runner, helper language, shell
+wrapper, or Docker orchestration; reuse the existing task-tags executor shape
+and make only task-specific edits. Use at most two exact `xsht api` queries.
+After two focused scaffold corrections, stop and report `not-ready`; do not
+spend the remaining session debugging an infrastructure design. Create the
+required report early and finish within the controller's hard turn and
+wall-clock bounds.
+
 Stage the proposal under `{{RUN_DIR}}/proposals/{{WORKER_ID}}/` and preserve
 the scaffolding and dry-run evidence there. Do not mark it Approved and do not
 modify an approved eval. Write `{{RUN_DIR}}/workers/eval-designer/{{WORKER_ID}}/DESIGNER-REPORT.md` with:

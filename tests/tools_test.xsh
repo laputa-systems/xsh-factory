@@ -9,6 +9,7 @@ proc test_session_report_uses_synthetic_pi_session(ctx: TestContext) [fs, proces
   let session = fp"${root}/session.jsonl"
   let report = fp"${root}/WORKER-REPORT.md"
   let tool = fp"${fs.cwd()?}/tools/session-report.xsh"
+  let factory = fs.cwd()?
   fs.write(session, r"""
 {"timestamp":"2026-08-01T12:00:00.000Z","type":"message","message":{"role":"user","content":"task"}}
 {"timestamp":"2026-08-01T12:00:01.000Z","type":"message","message":{"role":"assistant","provider":"openrouter","model":"deepseek/deepseek-v4-flash-0731","stopReason":"toolUse","content":[{"type":"thinking","thinking":"inspect the fixture"},{"type":"toolCall","name":"read"}],"usage":{"input":10,"output":20,"reasoning":7,"totalTokens":30,"cost":{"input":0.001,"output":0.002,"total":0.003}}}}
@@ -29,6 +30,110 @@ proc test_session_report_uses_synthetic_pi_session(ctx: TestContext) [fs, proces
   test.contains(rendered, "Budget: $0.50")?
   test.contains(rendered, "Budget status: pass")?
   test.contains(thinking, "inspect the fixture")?
+}
+
+proc test_session_report_surfaces_nonzero_tool_results(ctx: TestContext) [fs, process, error] {
+  let root = test.temp_dir(ctx, name: "session-tool-errors")?
+  let session = fp"${root}/session.jsonl"
+  let report = fp"${root}/WORKER-REPORT.md"
+  let tool = fp"${fs.cwd()?}/tools/session-report.xsh"
+  let factory = fs.cwd()?
+  fs.write(session, r"""
+{"timestamp":"2026-08-01T12:00:00.000Z","type":"message","message":{"role":"assistant","provider":"openrouter","model":"fixture","stopReason":"toolUse","content":[{"type":"toolCall","name":"bash"}],"usage":{"input":1,"output":1,"cost":{"total":0.001}}}}
+{"timestamp":"2026-08-01T12:00:01.000Z","type":"message","message":{"role":"toolResult","toolName":"bash","isError":true,"content":[{"type":"text","text":"unknown command 'api:bad-query'\nCommand exited with code 2"}]}}
+""")?
+  let xsh = process.which("xsh")?
+  let status = process.run(process.command_argv(
+    xsh,
+    [xsh.display(), tool.display(), "--", "worker", "--session", session.display(),
+      "--output", report.display(), "--role", "eval-worker", "--worker-id", "fixture",
+      "--budget-usd", "2"],
+    env: {FACTORY_DIR: factory.display(), XSH_MODULE_PATH: factory.display()},
+  ))?
+  test.ok(status.ok, "session-report should render failed tool evidence")?
+  let rendered = fs.read_text(report)?
+  let errors = fs.read_text(fp"${root}/TOOL-ERRORS.md")?
+  test.contains(rendered, "Tool errors: 1")?
+  test.contains(rendered, "Tool-error details: `TOOL-ERRORS.md`")?
+  test.contains(errors, "Tool: `bash`")?
+  test.contains(errors, "unknown command 'api:bad-query'")?
+}
+
+proc test_session_report_preserves_multiple_failed_tool_results(ctx: TestContext) [fs, process, error] {
+  let root = test.temp_dir(ctx, name: "session-many-tool-errors")?
+  let session = fp"${root}/session.jsonl"
+  let report = fp"${root}/WORKER-REPORT.md"
+  fs.write(session, r"""
+{"timestamp":"2026-08-01T12:00:01.000Z","type":"message","message":{"role":"assistant","content":[{"type":"toolCall","name":"bash"}],"usage":{"input":1,"output":1,"totalTokens":2,"cost":{"total":0.001}}}}
+{"timestamp":"2026-08-01T12:00:02.000Z","type":"message","message":{"role":"toolResult","toolName":"bash","isError":true,"content":[{"type":"text","text":"invalid xsht api query 1"}]}}
+{"timestamp":"2026-08-01T12:00:03.000Z","type":"message","message":{"role":"assistant","content":[{"type":"toolCall","name":"bash"}]}}
+{"timestamp":"2026-08-01T12:00:04.000Z","type":"message","message":{"role":"toolResult","toolName":"bash","isError":true,"content":[{"type":"text","text":"invalid xsht api query 2"}]}}
+{"timestamp":"2026-08-01T12:00:05.000Z","type":"message","message":{"role":"assistant","content":[{"type":"toolCall","name":"bash"}]}}
+{"timestamp":"2026-08-01T12:00:06.000Z","type":"message","message":{"role":"toolResult","toolName":"bash","isError":true,"content":[{"type":"text","text":"invalid xsht api query 3"}]}}
+{"timestamp":"2026-08-01T12:00:07.000Z","type":"message","message":{"role":"assistant","content":[{"type":"toolCall","name":"bash"}]}}
+{"timestamp":"2026-08-01T12:00:08.000Z","type":"message","message":{"role":"toolResult","toolName":"bash","isError":true,"content":[{"type":"text","text":"invalid xsht api query 4"}]}}
+{"timestamp":"2026-08-01T12:00:09.000Z","type":"message","message":{"role":"assistant","content":[{"type":"toolCall","name":"bash"}]}}
+{"timestamp":"2026-08-01T12:00:10.000Z","type":"message","message":{"role":"toolResult","toolName":"bash","isError":true,"content":[{"type":"text","text":"invalid xsht api query 5"}]}}
+{"timestamp":"2026-08-01T12:00:11.000Z","type":"message","message":{"role":"assistant","content":[{"type":"toolCall","name":"bash"}]}}
+{"timestamp":"2026-08-01T12:00:12.000Z","type":"message","message":{"role":"toolResult","toolName":"bash","isError":true,"content":[{"type":"text","text":"invalid xsht api query 6"}]}}
+{"timestamp":"2026-08-01T12:00:13.000Z","type":"message","message":{"role":"assistant","content":[{"type":"toolCall","name":"bash"}]}}
+{"timestamp":"2026-08-01T12:00:14.000Z","type":"message","message":{"role":"toolResult","toolName":"bash","isError":true,"content":[{"type":"text","text":"invalid xsht api query 7"}]}}
+{"timestamp":"2026-08-01T12:00:15.000Z","type":"message","message":{"role":"assistant","content":[{"type":"toolCall","name":"bash"}]}}
+{"timestamp":"2026-08-01T12:00:16.000Z","type":"message","message":{"role":"toolResult","toolName":"bash","isError":true,"content":[{"type":"text","text":"invalid xsht api query 8"}]}}
+""")?
+  let xsh = process.which("xsh")?
+  let factory = fs.cwd()?
+  let status = process.run(process.command_argv(
+    xsh,
+    [xsh.display(), fp"${factory}/tools/session-report.xsh", "--", "worker",
+      "--session", session.display(), "--output", report.display(), "--role", "eval-worker",
+      "--worker-id", "many-errors", "--budget-usd", "2"],
+    env: {FACTORY_DIR: factory.display(), XSH_MODULE_PATH: factory.display()},
+  ))?
+  test.ok(status.ok, "session-report should retain every failed tool result")?
+  let rendered = fs.read_text(report)?
+  let errors = fs.read_text(fp"${root}/TOOL-ERRORS.md")?
+  test.contains(rendered, "Tool errors: 8")?
+  for index in range(1, 9) {
+    test.contains(errors, f"invalid xsht api query ${index}")?
+  }
+}
+
+proc test_session_watch_stops_a_worker_at_turn_or_time_bound(ctx: TestContext) [fs, process, time, error] {
+  let root = test.temp_dir(ctx, name: "session-watch")?
+  let session = fp"${root}/session.jsonl"
+  let marker = fp"${root}/SESSION-LIMIT"
+  let xsh = process.which("xsh")?
+  fs.write(session, r"""
+{"type":"message","message":{"role":"assistant"}}
+""")?
+  let child = spawn process.command_argv("sh", ["sh", "-c", "sleep 5"])?
+  let watch = process.run(process.command_argv(
+    xsh,
+    [xsh.display(), fp"${fs.cwd()?}/tools/session-watch.xsh", "--",
+      "--session", session.display(), "--pid", f"${child.pid}",
+      "--max-turns", "1", "--max-seconds", "30", "--marker", marker.display(),
+      "--role", "fixture"],
+  ))?
+  let child_status = wait child?
+  test.ok(! watch.ok, "turn bound should stop the live child")?
+  test.ok(! child_status.ok, "the watcher should terminate the child")?
+  test.contains(fs.read_text(marker)?, "turn limit exceeded")?
+
+  let time_marker = fp"${root}/TIME-LIMIT"
+  fs.write(session, "")?
+  let time_child = spawn process.command_argv("sh", ["sh", "-c", "sleep 5"])?
+  let time_watch = process.run(process.command_argv(
+    xsh,
+    [xsh.display(), fp"${fs.cwd()?}/tools/session-watch.xsh", "--",
+      "--session", session.display(), "--pid", f"${time_child.pid}",
+      "--max-turns", "30", "--max-seconds", "1", "--marker", time_marker.display(),
+      "--role", "fixture"],
+  ))?
+  let time_child_status = wait time_child?
+  test.ok(! time_watch.ok, "wall bound should stop the live child")?
+  test.ok(! time_child_status.ok, "the wall watcher should terminate the child")?
+  test.contains(fs.read_text(time_marker)?, "wall limit exceeded")?
 }
 
 proc test_aggregate_cost_report_uses_role_budgets(ctx: TestContext) [fs, process, error] {
@@ -170,6 +275,7 @@ proc test_organization_overlaps_design_with_primary_using_fake_children(ctx: Tes
   fs.copy(fp"${factory}/runtime/handbook.md", fp"${root}/runtime/handbook.md", overwrite: true)?
   fs.copy(fp"${factory}/tools/session-report.xsh", fp"${root}/tools/session-report.xsh", overwrite: true)?
   fs.copy(fp"${factory}/tools/cto-report.xsh", fp"${root}/tools/cto-report.xsh", overwrite: true)?
+  fs.copy(fp"${factory}/audit-run.xsh", fp"${root}/audit-run.xsh", overwrite: true)?
 
   let fake_child = fp"${root}/fake-child.sh"
   fs.write(fake_child, r"""#!/bin/sh
@@ -246,6 +352,7 @@ proc test_organization_skips_design_when_request_count_is_zero(ctx: TestContext)
   fs.copy(fp"${factory}/runtime/handbook.md", fp"${root}/runtime/handbook.md", overwrite: true)?
   fs.copy(fp"${factory}/tools/session-report.xsh", fp"${root}/tools/session-report.xsh", overwrite: true)?
   fs.copy(fp"${factory}/tools/cto-report.xsh", fp"${root}/tools/cto-report.xsh", overwrite: true)?
+  fs.copy(fp"${factory}/audit-run.xsh", fp"${root}/audit-run.xsh", overwrite: true)?
 
   let fake_child = fp"${root}/fake-child.sh"
   fs.write(fake_child, r"""#!/bin/sh
@@ -314,6 +421,8 @@ cp "$FACTORY_TEST_REPORT" "$FACTORY_PHASE_DIR/RUN.md"
   test.ok(run_dir != null, "organization run directory should exist")?
   let run_path = run_dir ?? Path("")
   let run_report = fs.read_text(fp"${run_path}/RUN.md")?
+  test.ok(fs.exists(fp"${run_path}/AUDIT.md")?, "organization parent should write a deterministic audit")?
+  test.contains(fs.read_text(fp"${run_path}/AUDIT.md")?, "Mode: `organization`")?
   test.contains(run_report, "Eval design: `not-requested`")?
   test.contains(fs.read_text(fp"${run_path}/ORGANIZATION-PLAN.md")?, "Run eval-design phase when requested: `not-requested`")?
   test.ok(! fs.exists(fp"${run_path}/phase-requests/02-eval-design.md")?, "design request should not be materialized")?
@@ -332,6 +441,7 @@ proc test_organization_overlaps_independent_eval_with_ticket(ctx: TestContext) [
   fs.copy(fp"${factory}/runtime/handbook.md", fp"${root}/runtime/handbook.md", overwrite: true)?
   fs.copy(fp"${factory}/tools/session-report.xsh", fp"${root}/tools/session-report.xsh", overwrite: true)?
   fs.copy(fp"${factory}/tools/cto-report.xsh", fp"${root}/tools/cto-report.xsh", overwrite: true)?
+  fs.copy(fp"${factory}/audit-run.xsh", fp"${root}/audit-run.xsh", overwrite: true)?
   fs.copy(fp"${factory}/tests/fixtures/organization-ticket-overlap-ticket.md",
     fp"${root}/tickets/task-overlap.md", overwrite: true)?
   let fake_child = fp"${root}/fake-child.sh"
@@ -427,7 +537,7 @@ proc test_audit_run_preserves_separate_evaluator_outcomes(ctx: TestContext) [fs,
   ]))?
   fs.write(fp"${run_dir}/COST.md", "# Run cost report\n\n## Workers\n\nfixture\n\n## Role totals\n\nfixture\n\n## Run total\n\nfixture\n\n- Budget failures or unknown costs: 0\n")?
   fs.write(fp"${run_dir}/DIRECTOR-REPORT.md", "# Director report\n\n## Result\n\npass\n\n## Cycle\n\nfixture\n\n## Children\n\nfixture\n\n## Required-output status\n\npass\n\n## North-star impact\n\nfixture\n")?
-  fs.write(fp"${run_dir}/workers/eval-manager/task-tags/MANAGER-REPORT.md", "# Manager report\n\n## Result\n\npass\n\n## Effort metrics\n\nfixture\n\n## Usage and cost\n\nfixture\n\n## Thinking evidence\n\nfixture\n\n## Timing evidence\n\nfixture\n\n## Observation classification\n\nfixture\n\n## Handbook decision\n\nfixture\n\n## Tickets created\n\nfixture\n\n## Post-merge decisions\n\nfixture\n\n## Next replay\n\nfixture\n\n## North-star impact\n\nfixture\n")?
+  fs.write(fp"${run_dir}/workers/eval-manager/task-tags/MANAGER-REPORT.md", "# Manager report\n\n## Result\n\npass\n\n## Effort metrics\n\nfixture\n\n## Usage and cost\n\nfixture\n\n## Thinking evidence\n\nfixture\n\n## Tool-error findings\n\nNone.\n\n## Timing evidence\n\nfixture\n\n## Observation classification\n\nfixture\n\n## Handbook decision\n\nfixture\n\n## Tickets created\n\nfixture\n\n## Post-merge decisions\n\nfixture\n\n## Next replay\n\nfixture\n\n## North-star impact\n\nfixture\n")?
 
   let session_text = r"""
 {"timestamp":"2026-08-01T12:00:00.000Z","type":"message","message":{"role":"user","content":"fixture"}}
@@ -733,6 +843,7 @@ proc test_cto_report_consolidates_phases_costs_and_employee_decisions(ctx: TestC
   test.contains(rendered, "- Role: `eval-manager`")?
   test.contains(rendered, "- Role: `eval-designer`")?
   test.contains(rendered, "eval-manager/task-tags")?
+  test.contains(rendered, "workers/eval-manager/task-tags/TOOL-ERRORS.md")?
   test.contains(rendered, "Total provider cost: `$0.12`")?
   test.contains(rendered, "Open task-tags-003 for a reproducible follow-up.")?
   test.contains(rendered, "Proposal is ready for review.")?
@@ -754,10 +865,10 @@ proc test_eval_executor_disables_eval_when_mock_worker_breaches_budget(ctx: Test
   fs.write(fp"${root}/runtime/agents.md", "agents\n")?
   fs.write(fp"${root}/runtime/review.md", "review\n")?
   fs.write(fp"${root}/runtime/handbook.md", "handbook\n")?
-  for name in ["BUDGET-BREACH.md", "EXECUTOR-REPORT.md"] {
+  for name in ["BUDGET-BREACH.md", "EXECUTOR-REPORT.md", "TOOL-ERRORS.md", "TOOL-ERROR.md"] {
     fs.copy(fp"${factory}/templates/${name}", fp"${root}/templates/${name}", overwrite: true)?
   }
-  for name in ["budget-watch.xsh", "session-report.xsh"] {
+  for name in ["budget-watch.xsh", "session-report.xsh", "session-watch.xsh"] {
     fs.copy(fp"${factory}/tools/${name}", fp"${root}/tools/${name}", overwrite: true)?
   }
   fs.copy(fp"${factory}/tests/fixtures/fake-docker-budget-breach.sh", fake_docker, overwrite: true)?
@@ -807,10 +918,10 @@ proc test_run_agent_closes_assigned_ticket_when_mock_engineer_breaches_budget(ct
   fs.write(fp"${root}/tickets/task-tags-002.md", "# Ticket task-tags-002\n\n## Status\n\nApproved.\n")?
   fs.write(fp"${root}/NORTH-STAR.md", "north star\n")?
   fs.write(fp"${root}/runtime/handbook.md", "handbook\n")?
-  for name in ["WORKER.md", "BUDGET-BREACH.md", "ENGINEER-ASSIGNMENT.md"] {
+  for name in ["WORKER.md", "BUDGET-BREACH.md", "ENGINEER-ASSIGNMENT.md", "TOOL-ERRORS.md", "TOOL-ERROR.md"] {
     fs.copy(fp"${factory}/templates/${name}", fp"${root}/templates/${name}", overwrite: true)?
   }
-  for name in ["budget-watch.xsh", "session-report.xsh"] {
+  for name in ["budget-watch.xsh", "session-report.xsh", "session-watch.xsh"] {
     fs.copy(fp"${factory}/tools/${name}", fp"${root}/tools/${name}", overwrite: true)?
   }
   fs.mkdir(fp"${root}/bin")?

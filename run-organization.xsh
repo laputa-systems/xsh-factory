@@ -64,6 +64,8 @@ proc spawn_child(
     assignments = assignments.push(f"FACTORY_${prefix}_MODEL=${control.configured_role_setting(role, "MODEL")?}")
     assignments = assignments.push(f"FACTORY_${prefix}_THINKING=${control.configured_role_setting(role, "THINKING")?}")
     assignments = assignments.push(f"FACTORY_${prefix}_BUDGET_USD=${control.configured_role_setting(role, "BUDGET_USD")?}")
+    assignments = assignments.push(f"FACTORY_${prefix}_MAX_TURNS=${control.configured_role_setting(role, "MAX_TURNS")?}")
+    assignments = assignments.push(f"FACTORY_${prefix}_MAX_WALL_SECONDS=${control.configured_role_setting(role, "MAX_WALL_SECONDS")?}")
     assignments = assignments.push(f"FACTORY_${prefix}_TOOLS=${control.configured_role_setting(role, "TOOLS")?}")
   }
   let child_args = assignments.extend(extra_env).extend([
@@ -383,28 +385,18 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
 
   let primary_subject = if selected_ticket == "" { selected_eval } else { selected_ticket }
   var independent_eval_handles: List[ProcessHandle] = []
-  var primary_ok = true
+  var primary_ok = false
   runtime.emit_event(event_template, run_dir, "10-primary-started", primary_subject, "started", 1, "organization", primary_mode)?
-  if selected_ticket == "" {
-    primary_ok = run_child(
-      primary_controller,
-      primary_request, primary_phase, factory_dir, xsh_repo, run_dir, xsh_commit.trim(), run_agent,
-      auth_file, pi_command, docker, target, platform,
-      [f"FACTORY_MODE=${primary_mode}", f"FACTORY_EVAL_ID=${selected_eval}",
-        "FACTORY_REEVAL_TICKET=not-reevaluation", "FACTORY_REEVAL_WORKTREE=not-reevaluation",
-        "FACTORY_SKIP_TICKET_RECONCILE=false", "FACTORY_RETAIN_WORKTREE=true"],
-      fp"${run_dir}/primary.stdout", fp"${run_dir}/primary.stderr"
-    )?
-  } else {
-    let primary_handle = spawn_child(
-      primary_controller,
-      primary_request, primary_phase, factory_dir, xsh_repo, run_dir, xsh_commit.trim(), run_agent,
-      auth_file, pi_command, docker, target, platform,
-      [f"FACTORY_MODE=${primary_mode}", f"FACTORY_EVAL_ID=${selected_eval}",
-        "FACTORY_REEVAL_TICKET=not-reevaluation", "FACTORY_REEVAL_WORKTREE=not-reevaluation",
-        "FACTORY_SKIP_TICKET_RECONCILE=false", "FACTORY_RETAIN_WORKTREE=true"],
-      fp"${run_dir}/primary.stdout", fp"${run_dir}/primary.stderr"
-    )?
+  let primary_handle = spawn_child(
+    primary_controller,
+    primary_request, primary_phase, factory_dir, xsh_repo, run_dir, xsh_commit.trim(), run_agent,
+    auth_file, pi_command, docker, target, platform,
+    [f"FACTORY_MODE=${primary_mode}", f"FACTORY_EVAL_ID=${selected_eval}",
+      "FACTORY_REEVAL_TICKET=not-reevaluation", "FACTORY_REEVAL_WORKTREE=not-reevaluation",
+      "FACTORY_SKIP_TICKET_RECONCILE=false", "FACTORY_RETAIN_WORKTREE=true"],
+    fp"${run_dir}/primary.stdout", fp"${run_dir}/primary.stderr"
+  )?
+  if selected_ticket != "" {
     runtime.emit_event(event_template, run_dir, "10-independent-eval-started", requested_eval, "started", 1, "organization", "running the requested independent eval in parallel with ticket implementation")?
     let independent_eval_handle = spawn_child(
       eval_controller, independent_eval_request, independent_eval_phase, factory_dir,
@@ -415,8 +407,8 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
       fp"${run_dir}/independent-eval.stdout", fp"${run_dir}/independent-eval.stderr"
     )?
     independent_eval_handles = independent_eval_handles.push(independent_eval_handle)
-    primary_ok = wait_child(primary_handle)?
   }
+  primary_ok = wait_child(primary_handle)?
   let primary_report_ok = phase_run_pass(primary_phase, if selected_ticket == "" { "RUN.md" } else { "RUN.md" })?
   let primary_pass = primary_ok and primary_report_ok
   let primary_state = if primary_pass { "pass" } else { "fail" }
@@ -519,10 +511,20 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
       "--run-dir", run_dir.display(), "--output", fp"${run_dir}/COST.md".display()],
   ))?
   let cost_state = if cost_status.ok { "present" } else { "failed" }
+  let audit_status = process.run(process.command_argv(
+    xsh_path,
+    [xsh_path.display(), fp"${factory_dir}/audit-run.xsh", "--", run_dir.display(), "organization"],
+    cwd: factory_dir,
+  ))?
+  let audit_file = fp"${run_dir}/AUDIT.md"
+  let audit_report_ok = audit_status.ok and fs.exists(audit_file)? and
+    control.audit_report_contract_ok(audit_file.read_text()?)
+  let audit_result = if audit_report_ok { control.audit_result(audit_file.read_text()?) } else { "missing" }
+  let audit_pass = audit_report_ok and audit_result == "pass"
   let reeval_pass_for_result = if selected_ticket == "" { true } else { reeval_state == "pass" }
   let independent_eval_pass_for_result = if selected_ticket == "" { true } else { independent_eval_state == "pass" }
   let design_pass_for_result = design_state == "pass" or design_state == "not-requested"
-  let initial_result = if primary_pass and reeval_pass_for_result and independent_eval_pass_for_result and design_pass_for_result and worktree_cleanup_ok and cost_status.ok { "pass" } else { "fail" }
+  let initial_result = if primary_pass and reeval_pass_for_result and independent_eval_pass_for_result and design_pass_for_result and worktree_cleanup_ok and cost_status.ok and audit_pass { "pass" } else { "fail" }
   let cto_status = runtime.write_cto_report(factory_dir, run_dir, initial_result)?
   let result = if initial_result == "pass" and cto_status { "pass" } else { "fail" }
   let run_template = fp"${factory_dir}/templates/RUN-ORGANIZATION.md"
@@ -547,6 +549,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     {key: "INDEPENDENT_EVAL_REPORT_STATE", value: independent_eval_report_state},
     {key: "DESIGN_REPORT_STATE", value: design_report_state},
     {key: "COST_STATE", value: cost_state},
+    {key: "AUDIT_STATE", value: if audit_report_ok { audit_result } else { "missing" }},
     {key: "PATCH_ARTIFACT", value: patch_artifact},
     {key: "WORKTREE_STATE", value: worktree_cleanup_state},
     {key: "CTO_STATE", value: if cto_status { "present" } else { "failed" }},

@@ -157,6 +157,12 @@ XSH_MODULE_PATH=. xsh audit-run.xsh runs/run-<id> eval
 The important evidence includes `PROVENANCE.md`, `DISPATCH.md`, child
 `session.jsonl` files, `thinking.md`, worker reports, evaluator `run.json`,
 `MANAGER-REPORT.md`, `DIRECTOR-REPORT.md`, and the deterministic audit.
+Every failed Pi tool result is also indexed in the relevant `TOOL-ERRORS.md`;
+the current evidence packet and cost report link those files directly.
+
+Turn and wall-clock ceilings are enforced as a second stop boundary. The
+current defaults are 24/300 seconds for director, 32/360 for eval-designer,
+40/480 for eval-manager, and 160/1200 for eval-worker and engineer.
 
 The audit is derived after child completion. It keeps worker effort metrics
 separate from evaluator protocol, correctness, restriction, and timing facts;

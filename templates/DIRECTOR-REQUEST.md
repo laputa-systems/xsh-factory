@@ -2,19 +2,18 @@
 
 Read `{{FACTORY_DIR}}/NORTH-STAR.md`, `{{RUN_DIR}}/CYCLE-REQUEST.md`,
 `{{RUN_DIR}}/PROVENANCE.md`, `{{RUN_DIR}}/{{DISPATCH_FILE}}`, and
-`{{FACTORY_DIR}}/roles/pi-session-briefing.md` before acting. The durable
+`{{FACTORY_DIR}}/roles/pi-session-briefing.md` before acting. In eval mode also
+read `{{RUN_DIR}}/CURRENT-EVIDENCE.md` and `{{RUN_DIR}}/OPEN-TICKETS.md`. The durable
 objective is to improve XSH and an agent's ability to use it as practical,
 clear, composable systems glue.
 
-The controller-owned `{{DISPATCH_FILE}}` is authoritative. Execute exactly
-its rows in order, once each, and wait for each child to finish. Do not
-discover work, infer additional roles, select a different ticket, or create a
-second worker. In eval mode, do not launch engineer. In ticket-implementation
-mode, do not launch eval-manager, eval-worker, or eval-designer. Use the shared
-runner for every child and never invoke bare `pi`.
+The controller-owned `{{DISPATCH_FILE}}` is authoritative. Do not discover
+work, infer additional roles, select a different ticket, or create a second
+worker. {{EXECUTION_DIRECTIVE}}
 
-Rows marked `not-requested` are records only, not children. Launch only rows
-whose dispatch status is `dispatched` or whose mode-specific row is required.
+Rows marked `not-requested` are records only, not children. In eval mode every
+child row is already complete evidence; in ticket mode launch only the
+controller-admitted engineer rows.
 
 Do not modify the approved shared handbook, approved evals, or the XSH main
 branch. Ticket branches remain pending user review; eval proposals and newly

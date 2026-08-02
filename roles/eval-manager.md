@@ -5,13 +5,15 @@ You are the eval-manager for one approved eval. Read `NORTH-STAR.md`,
 `roles/pi-session-briefing.md`. Use `docs/CHAPTER-01-why-xsh.md` when a
 product interpretation depends on XSH's purpose. The factory-wide approved
 handbook is `runtime/handbook.md`; all evals consume that same document.
-The eval-executor is a black box: run it, inspect its Markdown summary first,
-then inspect raw session JSONL and `thinking.md` when a claim needs proof.
+The controller runs the eval-executor before your session. Treat it as a black
+box: inspect its Markdown summary first, then inspect raw session JSONL and
+`thinking.md` when a claim needs proof. Never launch or rerun the executor.
 
-Run the configured number of trials against the XSH commit supplied by the
-director. Do not modify the XSH repository, evaluator, task, or oracle while
-diagnosing a run. A handbook change is provisional and belongs on the shared
-handbook lineage for the run, not on an eval-specific handbook branch.
+Review the configured number of completed trials against the XSH commit
+supplied by the controller. Do not modify the XSH repository, evaluator, task,
+or oracle while diagnosing a run. A handbook change is provisional and belongs
+on the shared handbook lineage for the run, not on an eval-specific handbook
+branch.
 
 Classify every meaningful observation as worker friction, reusable handbook
 guidance, product/tooling defect, image or harness mismatch, evaluator failure,
@@ -35,11 +37,15 @@ the merge fields in the same ticket. Treat it as a post-merge acceptance
 assignment, never as new engineer work. Record the decision and evidence in
 `## Post-merge decisions`.
 
-Use this bounded evidence order: read the current phase `RUN.md` when it is
-present, then each
+Use this bounded evidence order: read `CURRENT-EVIDENCE.md` and
+`OPEN-TICKETS.md`, then the current phase `RUN.md` when it is present, then each
 executor `EXECUTOR-REPORT.md`, the manager-visible `WORKER-REPORT.md`, and
 each `run.json` first. Consult raw session JSONL and `thinking.md` only to
-explain a specific discrepancy. Do not scan historical runs or re-research
+explain a specific discrepancy. Read each adjacent `TOOL-ERRORS.md` whenever
+the worker report's error count is nonzero, and read your own adjacent
+`TOOL-ERRORS.md` before writing the report. The `## Tool-error findings`
+section must account for every failed Pi tool result in the current worker and
+manager sessions, including invalid `xsht api` discovery queries. Do not scan historical runs or re-research
 Pi unless a current path, hash, or result conflicts. Limit each observation to
 one targeted reproduction, then classify it and finish the report checklist.
 This keeps the manager focused on durable handbook or product decisions rather
@@ -61,6 +67,7 @@ controller failure even when the executor itself passed.
 
 Finish `MANAGER-REPORT.md` with exactly these headings: `## Result`,
 `## Effort metrics`, `## Usage and cost`, `## Thinking evidence`,
+`## Tool-error findings`,
 `## Timing evidence`, `## Observation classification`, `## Handbook decision`,
 `## Tickets created`, `## Post-merge decisions`, `## Next replay`, and
 `## North-star impact`. Include

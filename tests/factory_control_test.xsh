@@ -45,6 +45,8 @@ proc test_role_configuration_has_one_coded_default() [env, error] {
     test.eq(control.default_budget(entry.role), entry.budget)?
     let expected_tools = if entry.role == "eval-worker" { "read,write,edit,bash" } else { "read,write,edit,bash,grep,find,ls" }
     test.eq(control.default_tools(entry.role), expected_tools)?
+    test.ok(control.default_max_turns(entry.role) != "")?
+    test.ok(control.default_max_wall_seconds(entry.role) != "")?
   }
   env FACTORY_DIRECTOR_BUDGET_USD="2" {
     test.eq(control.configured_role_setting("director", "BUDGET_USD")?, "0.06")?
@@ -54,6 +56,8 @@ proc test_role_configuration_has_one_coded_default() [env, error] {
   }
   test.eq(control.role_prefix("unknown"), "")?
   test.eq(control.default_model("unknown"), "")?
+  test.eq(control.clamp_session_limit("director", "MAX_TURNS", "100")?, "24")?
+  test.eq(control.clamp_session_limit("eval-worker", "MAX_WALL_SECONDS", "30")?, "30")?
 }
 
 proc test_admission_contracts() [error] {
@@ -302,13 +306,15 @@ proc test_report_contract_requires_result_and_section_content() [error] {
 
 proc test_role_report_contracts_are_fail_closed() [error] {
   let engineer = "# engineer\n\n## Result\n\nready-for-review\n\n## Branch\n\nbranch\n\n## Commit\n\ncommit\n\n## Files changed\n\nfiles\n\n## Tests\n\npass\n\n## North-star impact\n\nimpact\n\n## Remaining risks\n\nNone.\n"
-  let manager = "## Result\n\npass\n\n## Effort metrics\n\nturns and tools\n\n## Usage and cost\n\nprovider cost\n\n## Thinking evidence\n\nthinking blocks\n\n## Timing evidence\n\nratio\n\n## Observation classification\n\nreusable signal\n\n## Handbook decision\n\nunchanged\n\n## Tickets created\n\nzero\n\n## Post-merge decisions\n\nnone\n\n## Next replay\n\nnext eval\n\n## North-star impact\n\npractical XSH\n"
+  let manager = "## Result\n\npass\n\n## Effort metrics\n\nturns and tools\n\n## Usage and cost\n\nprovider cost\n\n## Thinking evidence\n\nthinking blocks\n\n## Tool-error findings\n\nNone.\n\n## Timing evidence\n\nratio\n\n## Observation classification\n\nreusable signal\n\n## Handbook decision\n\nunchanged\n\n## Tickets created\n\nzero\n\n## Post-merge decisions\n\nnone\n\n## Next replay\n\nnext eval\n\n## North-star impact\n\npractical XSH\n"
   let director = "## Result\n\npass\n\n## Cycle\n\ncycle\n\n## Children\n\nchildren\n\n## Required-output status\n\nstatus\n\n## North-star impact\n\nimpact\n"
   let executor = "## Result\n\npass\n\n## Failure classification\n\npass\n\n## Trial\n\n1\n\n## Artifact\n\npresent\n\n## Evidence\n\npaths\n"
   let designer = "## Result\n\nready-for-review\n\n## Proposal\n\nproposal\n\n## Dry run\n\npass\n\n## North-star impact\n\nimpact\n\n## Known risks\n\nNone.\n\n## Review path\n\npath\n"
   test.ok(control.engineer_report_contract_ok(engineer))?
   test.ok(! control.engineer_report_contract_ok(engineer.replace("## Tests", "## Missing")))?
   test.ok(control.manager_report_contract_ok(manager))?
+  test.ok(control.manager_tool_error_findings_contract_ok(manager))?
+  test.ok(! control.manager_tool_error_findings_contract_ok(manager.replace("None.", "No errors observed.")))?
   test.ok(control.report_result_is("## Result\n\npass. The evidence is good.\n", "pass"))?
   test.ok(! control.report_result_is("## Result\n\npassenger\n", "pass"))?
   test.ok(control.director_report_contract_ok(director))?
@@ -342,6 +348,27 @@ proc test_checked_in_templates_are_the_provenance_source(ctx: TestContext) [fs, 
   test.contains(review, "None.")?
   test.ok(! review.contains("<title>"))?
   let _ = ctx
+}
+
+proc test_current_evidence_packet_puts_tool_error_counts_next_to_paths(ctx: TestContext) [fs, error] {
+  let root = test.temp_dir(ctx, name: "current-evidence")?
+  let run_dir = fp"${root}/run-1"
+  fs.mkdir(run_dir)?
+  let factory = fs.cwd()?
+  runtime.write_current_evidence(
+    factory,
+    run_dir,
+    "task-tags",
+    1,
+    fp"${factory}/runtime/handbook.md",
+    fp"${run_dir}/DISPATCH.md",
+    "- Trial `1`: Pi tool errors `8`; detail file `/run/TOOL-ERRORS.md`; session `/run/session.jsonl`",
+  )?
+  let packet = fs.read_text(fp"${run_dir}/CURRENT-EVIDENCE.md")?
+  test.contains(packet, "Pi tool errors `8`")?
+  test.contains(packet, "TOOL-ERRORS.md")?
+  test.contains(packet, "invalid `xsht api` discovery queries")?
+  test.ok(fs.exists(fp"${run_dir}/OPEN-TICKETS.md")?)?
 }
 
 proc test_controller_assignment_inlines_one_ticket_and_forbids_selection(ctx: TestContext) [fs, error] {
@@ -469,6 +496,7 @@ proc test_controller_outputs_and_build_cache_are_explicit() [fs, error] {
   test.contains(organization, "runtime.open_ticket_branch")?
   test.contains(ticket_controller, "runtime.open_ticket_branch")?
   test.contains(dispatcher, "runtime.open_ticket_branch")?
+  test.contains(dispatcher, "\"audit-run.xsh\"")?
   test.contains(organization, r"""${primary_phase}/worktrees/${selected_ticket}""")?
   test.contains(product_makefile, "XSH_TEST_IMAGE_BUILD")?
   test.contains(product_makefile, "docker image inspect")?

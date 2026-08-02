@@ -25,6 +25,18 @@ proven. Use exact `xsht api` queries and the shared handbook instead of broad
 source or historical-run searches. Do not spend the proposal budget polishing
 an already sufficient scaffold.
 
+This is a small proposal, not a new harness project. Read only the current
+cycle request, `NORTH-STAR.md`, `FACTORY.md`, `runtime/handbook.md`, and the
+task-tags structure reference before choosing the task. Do not scan `runs/`,
+Git history, `.dist`, or the product source tree. Do not write a custom runner,
+helper language, shell wrapper, or Docker orchestration: reuse the existing
+eval contract and executor shape, and make the smallest task-specific edits.
+Use at most two exact `xsht api` queries. If the scaffold is not valid after
+two focused corrections, stop and report `not-ready` rather than continuing
+to debug infrastructure. Create the required report early and finish within
+the controller's turn and wall-clock bounds even when the proposal is
+incomplete.
+
 Produce a proposal using `templates/EVAL.md`. It must include the north-star
 hypothesis, task prompt, agent boundary, evaluator and external oracle, hidden
 cases, review protocol, effort/timing metrics, manager policy, and all executor

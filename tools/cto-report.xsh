@@ -156,6 +156,7 @@ proc main(...argv: List[Str]) [fs, env, error, io] {
   let cost_path = fp"${run_dir}/COST.md"
   let cost = if fs.exists(cost_path)? { cost_path.read_text()? } else { "" }
   let workers = section_value(cost, ["Workers"], "Cost report is unavailable.")
+  let tool_errors = section_value(cost, ["Tool-error details"], "No worker reported a nonzero Pi tool result.")
   let role_totals = section_value(cost, ["Role totals"], "Cost report is unavailable.")
   let run_total = section_value(cost, ["Run total"], "Cost report is unavailable.")
   let values: List[control.TemplateValue] = [
@@ -167,6 +168,7 @@ proc main(...argv: List[Str]) [fs, env, error, io] {
     {key: "PROVENANCE", value: if fs.exists(provenance_path)? { "present" } else { "missing" }},
     {key: "PHASES", value: phases},
     {key: "WORKERS", value: workers},
+    {key: "TOOL_ERRORS", value: tool_errors},
     {key: "ROLE_TOTALS", value: role_totals},
     {key: "RUN_TOTAL", value: run_total},
     {key: "EMPLOYEE_DECISIONS", value: employee_decisions},

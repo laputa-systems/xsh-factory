@@ -32,6 +32,10 @@ evidence needed for durable handbook or product decisions. See
 - Cost report: `{{COST_STATE}}`
 - Deterministic audit: `{{AUDIT_STATE}}` (`{{AUDIT_RESULT}}`)
 - CTO briefing: `{{CTO_STATE}}`
+- Worker handbook read: `{{WORKER_HANDBOOK_READ}}`
+- Manager evidence and handbook read: `{{MANAGER_EVIDENCE_READ}}`, `{{MANAGER_HANDBOOK_READ}}`
+- Designer handbook read: `{{DESIGNER_HANDBOOK_READ}}`
+- Director evidence read: `{{DIRECTOR_EVIDENCE_READ}}`
 
 ## Handbook validation
 

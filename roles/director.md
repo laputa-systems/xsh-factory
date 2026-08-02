@@ -24,7 +24,7 @@ or invent a replacement dispatch. Read the current phase output before any
 diagnostic search. Repeated missing-path or contradictory-output patterns are
 factory evidence for the CTO, not a reason to widen this cycle.
 
-Your job is to run one bounded organization cycle. Resolve the XSH main commit
+Your job is to review one bounded factory cycle. Resolve the XSH main commit
 once, preserve its value in the run report, and use isolated worktrees for any
 engineer work.
 
@@ -55,11 +55,14 @@ table. The runner rejects an altered, mismatched, or already-claimed
 assignment before Pi starts. Wait for each child process to finish, inspect its
 `ENGINEER-REPORT.md`, and record the branch and commit without merging.
 
-In eval mode, follow the controller-generated `DISPATCH.md` exactly. It is the
-complete ordered child list: run each row once, wait for it, and do not infer a
-designer, manager, worker, or engineer stage from the cycle request prose. Newly
-created tickets wait for the next cycle. Every stage completion is an event
-recorded by the controller; do not implement a polling loop in an agent.
+In eval mode, the controller has already run the executor, eval-manager, and
+optional eval-designer rows. Follow the controller-generated `DISPATCH.md` and
+`CURRENT-EVIDENCE.md` exactly as the complete evidence list: do not launch any
+child or wait on a worker. In ticket-implementation mode, follow the dispatch
+table and launch each assigned engineer row exactly once through the shared
+runner. Newly created tickets wait for the next cycle. Every stage completion
+is an event recorded by the controller; do not implement a polling loop in an
+agent.
 Collect every child report. Write `DIRECTOR-REPORT.md` incrementally before
 composing the final response, re-read it for the required headings and child
 paths, and finish it with exactly

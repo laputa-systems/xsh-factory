@@ -236,11 +236,20 @@ engineer `$0.25`, eval-designer `$0.30`, and eval-worker `$0.50`. A configured
 budget may lower its role ceiling, but cannot raise it. The shared runner
 records the worker identity, parent, role, eval or ticket, model, thinking
 level, session JSONL, extracted thinking transcript, and worker report.
+It also enforces hard assistant-turn and wall-clock ceilings: director
+`24/300`, eval-designer `32/360`, eval-manager `40/480`, and eval-worker and
+engineer `160/1200` (turns/seconds). A session-limit breach preserves the
+partial session and fails that worker; it is distinct from dollar-budget
+accounting.
 
 The run cost report includes one row per worker, role totals, eval/ticket
 totals, and the grand total. It includes input, output, cache, provider-total,
 bucket-total, and provider-reported reasoning tokens; cost components and
 total dollars; turns, tools, errors, wall time, model, and thinking level.
+Every Pi `toolResult` with `isError: true` is retained in an adjacent
+`TOOL-ERRORS.md` with its assistant turn, tool name, and complete result text.
+The current evidence packet puts the count and detail path beside each trial,
+and the manager must account for worker and manager errors in its report.
 Reasoning is a subset of output and is shown as unknown when the provider did
 not report it. Thinking-block count and transcript text are qualitative, not a
 token count. Missing provider cost fails closed. A budget breach stops and
@@ -256,6 +265,9 @@ evaluator rows keep protocol, correctness, restriction, and timing outcomes
 independent, so a protocol miss is not mislabeled as a product correctness
 failure. The audit result is an evidence gate for `RUN.md`; it never replaces
 the raw session JSONL, evaluator manifest, or manager judgment.
+Organization parents also write a deterministic top-level `AUDIT.md` that
+normalizes child phase outcomes; a phase-local audit remains the detailed
+evaluator boundary.
 
 ## Launcher contract
 
