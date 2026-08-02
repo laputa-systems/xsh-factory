@@ -425,6 +425,25 @@ export pure ticket_is_merged(text: Str) -> Bool {
   return ticket_status(text) == "Merged."
 }
 
+## Keeps a completed merge record stable after run evidence is cleaned.
+export pure ticket_merge_record_complete(text: Str) -> Bool {
+  let merge_record = section_text(text, "Merge record")
+  if merge_record == "" {
+    return false
+  }
+  for placeholder in [
+    "{{IMPLEMENTATION_BRANCH}}",
+    "{{IMPLEMENTATION_COMMIT}}",
+    "{{DETECTED_XSH_COMMIT}}",
+    "{{IMPLEMENTATION_RUN}}",
+  ] {
+    if merge_record.contains(placeholder) {
+      return false
+    }
+  }
+  return true
+}
+
 ## Reads the first value below one exact report heading.
 export pure report_field(text: Str, heading: Str) -> Str {
   var in_section = false

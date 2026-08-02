@@ -333,6 +333,26 @@ proc commit_is_merged(xsh_repo: Path, branch: Str, commit: Str) [process, error]
   return commit_is_ancestor(xsh_repo, commit)? or commit_is_patch_applied(xsh_repo, branch, commit)?
 }
 
+## Finds an implementation branch that is still unmerged for one ticket.
+export proc open_ticket_branch(xsh_repo: Path, ticket_id: Str) [process, error] -> Result[Str] {
+  if ! control.valid_ticket_id(ticket_id) {
+    return ""
+  }
+  let branch_prefix = f"refs/heads/factory/${ticket_id}/"
+  let refs = run.text "git" "-C" $xsh_repo.display() "for-each-ref" "--format=%(refname:short)" $branch_prefix ?
+  for branch_line in refs.lines() {
+    let branch = branch_line.trim()
+    if branch == "" {
+      continue
+    }
+    let commit = run.text "git" "-C" $xsh_repo.display() "rev-parse" $branch ?
+    if ! commit_is_merged(xsh_repo, branch, commit.trim())? {
+      return branch
+    }
+  }
+  return ""
+}
+
 proc find_merged_implementation(
   factory_dir: Path,
   xsh_repo: Path,
@@ -377,7 +397,8 @@ proc find_merged_implementation(
       continue
     }
     let commit = run.text "git" "-C" $xsh_repo.display() "rev-parse" $branch ?
-    if commit_is_merged(xsh_repo, branch, commit.trim())? {
+    if commit.trim() != detected_xsh_commit and
+      commit_is_merged(xsh_repo, branch, commit.trim())? {
       return {
         merged: true,
         ticket_id: ticket_id,
@@ -428,6 +449,9 @@ export proc reconcile_tickets(
     let ticket_text = fs.read_text(ticket_path)?
     let status = control.ticket_status(ticket_text)
     if status != "Accepted." and status != "Approved." and status != "Merged." {
+      continue
+    }
+    if status == "Merged." and control.ticket_merge_record_complete(ticket_text) {
       continue
     }
     let evidence = find_merged_implementation(

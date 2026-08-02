@@ -98,6 +98,19 @@ proc test_ticket_merge_fields_are_idempotent(ctx: TestContext) [fs, error] {
   let _ = ctx
 }
 
+proc test_reconcile_does_not_rewrite_a_complete_merged_record(ctx: TestContext) [fs, process, error] {
+  let factory = test.temp_dir(ctx, name: "reconcile-complete-merged")?
+  fs.mkdir(fp"${factory}/tickets")?
+  fs.mkdir(fp"${factory}/templates")?
+  fs.copy(fp"${fs.cwd()?}/templates/TICKET.md", fp"${factory}/templates/TICKET.md", overwrite: true)?
+  let ticket_path = fp"${factory}/tickets/task-tags-001.md"
+  let text = "# Ticket\n\n## Status\n\nMerged.\n\n## Merge record\n\n- Implementation branch: `factory/task-tags-001/run`\n- Implementation commit: `impl-sha`\n- Detected at XSH commit: `merge-sha`\n- Implementation run: `historical-run`\n"
+  fs.write(ticket_path, text)?
+  let merged = runtime.reconcile_tickets(factory, fp"${factory}/missing-xsh", "new-head")?
+  test.eq(merged.len(), 0, "already merged tickets should not be reported as new reconciliations")?
+  test.eq(fs.read_text(ticket_path)?, text, "reconcile should preserve complete historical provenance")?
+}
+
 proc test_budget_breach_transitions_are_durable_and_idempotent(ctx: TestContext) [fs, error] {
   let factory = test.temp_dir(ctx, name: "budget-transitions")?
   fs.mkdir(fp"${factory}/tickets")?
@@ -196,6 +209,49 @@ proc test_reconcile_detects_a_patch_applied_branch(ctx: TestContext) [fs, proces
   let ticket = fs.read_text(fp"${factory}/tickets/reconcile-patch.md")?
   test.ok(control.ticket_is_merged(ticket))?
   test.contains(ticket, f"Implementation branch: `${branch}`")?
+}
+
+proc test_reconcile_ignores_a_branch_created_at_current_head(ctx: TestContext) [fs, process, error] {
+  let repo = test.temp_dir(ctx, name: "reconcile-empty-branch-repo")?
+  let factory = test.temp_dir(ctx, name: "reconcile-empty-branch-factory")?
+  let git = process.which("git")?
+  test.ok(run_git(git, ["git", "init", "-q", "-b", "main", repo.display()])?)?
+  test.ok(run_git(git, ["git", "-C", repo.display(), "config", "user.email", "factory@test"])?)?
+  test.ok(run_git(git, ["git", "-C", repo.display(), "config", "user.name", "Factory Test"])?)?
+  fs.write(fp"${repo}/README", "base\n")?
+  test.ok(run_git(git, ["git", "-C", repo.display(), "add", "README"])?)?
+  test.ok(run_git(git, ["git", "-C", repo.display(), "commit", "-qm", "base"])?)?
+  let branch = "factory/reconcile-empty/1"
+  test.ok(run_git(git, ["git", "-C", repo.display(), "checkout", "-q", "-b", branch])?)?
+  let head = run.text "git" "-C" $repo.display() "rev-parse" "HEAD" ?
+  test.ok(run_git(git, ["git", "-C", repo.display(), "checkout", "-q", "main"])?)?
+
+  fs.mkdir(fp"${factory}/tickets")?
+  fs.mkdir(fp"${factory}/templates")?
+  fs.copy(fp"${fs.cwd()?}/templates/TICKET.md", fp"${factory}/templates/TICKET.md", overwrite: true)?
+  fs.write(fp"${factory}/tickets/reconcile-empty.md", "# Ticket\n\n## Status\n\nApproved.\n")?
+  let merged = runtime.reconcile_tickets(factory, repo, head.trim())?
+  test.eq(merged.len(), 0, "a branch created at the current head is not an implementation")?
+  test.contains(fs.read_text(fp"${factory}/tickets/reconcile-empty.md")?, "## Status\n\nApproved.")?
+}
+
+proc test_open_ticket_branch_blocks_duplicate_dispatch(ctx: TestContext) [fs, process, error] {
+  let repo = test.temp_dir(ctx, name: "open-ticket-branch-repo")?
+  let git = process.which("git")?
+  test.ok(run_git(git, ["git", "init", "-q", "-b", "main", repo.display()])?)?
+  test.ok(run_git(git, ["git", "-C", repo.display(), "config", "user.email", "factory@test"])?)?
+  test.ok(run_git(git, ["git", "-C", repo.display(), "config", "user.name", "Factory Test"])?)?
+  fs.write(fp"${repo}/README", "base\n")?
+  test.ok(run_git(git, ["git", "-C", repo.display(), "add", "README"])?)?
+  test.ok(run_git(git, ["git", "-C", repo.display(), "commit", "-qm", "base"])?)?
+  let branch = "factory/open-ticket/1"
+  test.ok(run_git(git, ["git", "-C", repo.display(), "checkout", "-q", "-b", branch])?)?
+  fs.write(fp"${repo}/README", "implementation\n")?
+  test.ok(run_git(git, ["git", "-C", repo.display(), "add", "README"])?)?
+  test.ok(run_git(git, ["git", "-C", repo.display(), "commit", "-qm", "implementation"])?)?
+  test.ok(run_git(git, ["git", "-C", repo.display(), "checkout", "-q", "main"])?)?
+  test.eq(runtime.open_ticket_branch(repo, "open-ticket")?, branch,
+    "an unmerged implementation branch must be surfaced before dispatch")?
 }
 
 proc test_lifecycle_rejects_improvised_transitions() [error] {
@@ -390,6 +446,8 @@ proc test_controller_outputs_and_build_cache_are_explicit() [fs, error] {
   let eval_controller = fs.read_text(fp"${factory}/run-eval.xsh")?
   let audit_controller = fs.read_text(fp"${factory}/audit-run.xsh")?
   let organization = fs.read_text(fp"${factory}/run-organization.xsh")?
+  let ticket_controller = fs.read_text(fp"${factory}/run-ticket.xsh")?
+  let dispatcher = fs.read_text(fp"${factory}/run.xsh")?
   let product_makefile = fs.read_text(fp"${factory}/../xsh/Makefile")?
   let base_dockerfile = fs.read_text(fp"${factory}/evals/Dockerfile.base")?
   test.contains(runner, "FACTORY_REQUIRED_REPORT")?
@@ -408,6 +466,10 @@ proc test_controller_outputs_and_build_cache_are_explicit() [fs, error] {
   test.contains(eval_controller, "uname")?
   test.contains(organization, "let independent_eval_handle = spawn_child")?
   test.contains(organization, "primary_ok = wait_child(primary_handle)")?
+  test.contains(organization, "runtime.open_ticket_branch")?
+  test.contains(ticket_controller, "runtime.open_ticket_branch")?
+  test.contains(dispatcher, "runtime.open_ticket_branch")?
+  test.contains(organization, r"""${primary_phase}/worktrees/${selected_ticket}""")?
   test.contains(product_makefile, "XSH_TEST_IMAGE_BUILD")?
   test.contains(product_makefile, "docker image inspect")?
   test.ok(base_dockerfile.find("ADD --chmod") < base_dockerfile.find("LABEL org.xsh.factory.build-id"))?

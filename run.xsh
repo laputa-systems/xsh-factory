@@ -62,6 +62,26 @@ proc preflight(
     return false
   }
 
+  let requested_tickets = control.request_tickets(request_text)
+  let candidate_ticket = if requested_tickets.len() == 1 {
+    requested_tickets[0]
+  } else if mode == "organization" and control.request_ticket_policy(request_text) != "none" {
+    runtime.first_approved_ticket(factory_dir)?
+  } else {
+    ""
+  }
+  if candidate_ticket != "" {
+    let ticket_path = fp"${factory_dir}/tickets/${candidate_ticket}.md"
+    if fs.exists(ticket_path)? and runtime.accepted_ticket(ticket_path)? {
+      let open_branch = runtime.open_ticket_branch(xsh_repo, candidate_ticket)?
+      if open_branch != "" {
+        eprint f"ticket ${candidate_ticket} already has an unmerged implementation branch: ${open_branch}"
+        eprint "replay or review that branch before dispatching another engineer"
+        return false
+      }
+    }
+  }
+
   let home = env.get("HOME")?
   if env.get_or("FACTORY_SKIP_CYCLE_BUDGET", "false")? == "true" {
     eprint "top-level dispatcher cannot disable the aggregate cycle budget"

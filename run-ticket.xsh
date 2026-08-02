@@ -82,6 +82,12 @@ proc run_ticket_cycle(
       runtime.emit_event(event_template, run_dir, f"ticket-${ticket_id}-rejected", ticket_id, "failed", 1, "admission", "ticket is not checked-in with Approved status")?
       return 1
     }
+    let open_branch = runtime.open_ticket_branch(xsh_repo, ticket_id)?
+    if open_branch != "" {
+      eprint f"ticket ${ticket_id} already has an unmerged implementation branch: ${open_branch}"
+      eprint "replay or review that branch before dispatching another engineer"
+      return 1
+    }
     let worktree = fp"${worktree_root}/${ticket_id}"
     let branch = f"factory/${ticket_id}/${stamp}"
     let worktree_stdout = fp"${run_dir}/worktrees/${ticket_id}.stdout"

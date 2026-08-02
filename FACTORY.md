@@ -148,8 +148,14 @@ clean temporary worktree immediately, while organization cycles retain it
 through candidate replay and remove it afterward. On a later reconciliation,
 an implementation commit proven to be an ancestor of XSH `HEAD`, or an
 equivalent patch applied on XSH `HEAD`, changes that same ticket's status to
-`Merged.` and fills its merge-record fields. Each run records stage callbacks
-as Markdown files under `events/`.
+`Merged.` and fills its merge-record fields. A complete `Merged.` record is
+left untouched on later passes, so cleaning old run evidence cannot create
+provenance churn. Each run records stage callbacks as Markdown files under
+`events/`.
+Admission refuses a second engineer dispatch for a ticket with an unmerged
+`factory/<ticket>/...` branch; the existing branch must be reviewed or replayed
+first. Reconciliation also ignores a branch created at the current XSH `HEAD`,
+because an empty branch is not implementation provenance.
 
 The controller-owned eval pipeline is:
 

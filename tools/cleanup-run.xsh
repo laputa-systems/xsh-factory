@@ -31,6 +31,9 @@ proc signal_registry(run_dir: Path, signal: Str, excluded_pid: Int) [fs, process
 }
 
 proc stop_containers(run_dir: Path) [fs, process, env, error] -> Result[Unit] {
+  if ! fs.exists(run_dir)? {
+    return Ok()
+  }
   let docker = env.get_or("DOCKER", "docker")?
   for entry in fs.walk(run_dir, gitignore: false, hidden: true)? |> where .kind == "file" {
     if entry.name.ends_with(".cid") {
@@ -62,6 +65,11 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   time.sleep(250ms)?
   signal_registry(run_dir, "KILL", excluded_pid)?
   stop_containers(run_dir)?
+  if fs.exists(run_dir)? {
+    for entry in fs.walk(run_dir, gitignore: false, hidden: true)? |> where .kind == "file" and .name == "ACTIVE" {
+      fs.remove(entry.path, missing_ok: true)?
+    }
+  }
   fs.remove(fp"${run_dir}/ACTIVE", missing_ok: true)?
   fs.remove(fp"${run_dir.parent()}/ACTIVE", missing_ok: true)?
   fs.remove(fp"${run_dir.parent()}/ORGANIZATION-ACTIVE", missing_ok: true)?

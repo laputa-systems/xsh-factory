@@ -121,6 +121,11 @@ Reconciliation recognizes either the original implementation commit or an
 equivalent patch applied on XSH main. Inspect and approve the patch before
 applying it; the factory never mutates XSH main automatically.
 
+Admission refuses to dispatch an engineer when the ticket already has an
+unmerged `factory/<ticket>/...` branch. Review or replay that branch first;
+this prevents duplicate paid implementation work. A branch created at the
+current XSH `HEAD` is not treated as implementation provenance.
+
 Clear generated factory state after inspecting the evidence:
 
 ```sh
@@ -129,7 +134,9 @@ make clean
 
 This refuses to run during an active cycle, removes `runs/` evidence and build
 cache, local eval build staging, and factory worktree contents, and retains
-product branches, tickets, evals, and the shared handbook.
+product branches, tickets, evals, and the shared handbook. Complete `Merged.`
+ticket records remain unchanged even when their historical run directory is
+gone.
 
 Inspect the latest run:
 

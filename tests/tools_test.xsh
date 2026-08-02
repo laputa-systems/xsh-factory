@@ -645,6 +645,35 @@ proc test_cycle_budget_watch_fails_closed_on_unknown_cost(ctx: TestContext) [fs,
   test.ok(! child_status.ok, "unknown cost shutdown should terminate the controller")?
 }
 
+proc test_cycle_budget_watch_fails_closed_on_missing_run_tree(ctx: TestContext) [fs, process, env, error] {
+  let root = test.temp_dir(ctx, name: "cycle-budget-missing-tree")?
+  let run_dir = fp"${root}/run-that-disappeared"
+  let marker = fp"${root}/AGGREGATE-BUDGET-BREACH"
+  let stop = fp"${root}/AGGREGATE-BUDGET-STOP"
+  let postmortem = fp"${root}/POSTMORTEM.md"
+  let factory = fs.cwd()?
+  let tool = fp"${factory}/tools/cycle-budget-watch.xsh"
+  let child = spawn process.command_argv("sh", ["sh", "-c", "sleep 5"])?
+  let xsh = process.which("xsh")?
+  let status = process.run(process.command_argv(
+    xsh,
+    [xsh.display(), tool.display(), "--", "--run-dir", run_dir.display(),
+      "--pid", f"${child.pid}", "--budget-usd", "0.50", "--marker", marker.display(),
+      "--stop", stop.display(), "--postmortem", postmortem.display()],
+    cwd: factory,
+    env: {
+      PATH: env.get("PATH")?,
+      FACTORY_DIR: factory.display(),
+      XSH_MODULE_PATH: factory.display(),
+    },
+  ))?
+  test.ok(status.exited_with(3), "missing run evidence should stop the cycle")?
+  test.contains(fs.read_text(marker)?, "budget exceeded: unknown > 0.50")?
+  test.contains(fs.read_text(postmortem)?, "aggregate cost evidence could not be enumerated")?
+  let child_status = wait child?
+  test.ok(! child_status.ok, "missing run evidence shutdown should terminate the controller")?
+}
+
 proc test_cycle_budget_is_wired_once_per_top_level_controller(ctx: TestContext) [fs, error] {
   let factory = fs.cwd()?
   for controller in ["run-ticket.xsh", "run-eval.xsh", "run-design.xsh", "run-organization.xsh"] {
@@ -960,6 +989,7 @@ proc test_cleanup_run_uses_a_mock_container_command(ctx: TestContext) [fs, proce
   fs.write(fp"${run_dir}/phases/01/processes/worker.pids", "2147483646\n")?
   fs.write(fp"${run_dir}/worker.cid", "fake-container\n")?
   fs.write(fp"${run_dir}/phases/01/worker.cid", "fake-phase-container\n")?
+  fs.write(fp"${run_dir}/phases/01/ACTIVE", run_dir.display() + "\n")?
   fs.write(fp"${run_dir.parent()}/ACTIVE", run_dir.display() + "\n")?
   fs.write(fake_docker, f"#!/bin/sh\nprintf called >> '${docker_log.display()}'\n")?
   let chmod = process.run(process.command_argv("chmod", ["chmod", "+x", fake_docker.display()]))?
@@ -973,6 +1003,7 @@ proc test_cleanup_run_uses_a_mock_container_command(ctx: TestContext) [fs, proce
   ))?
   test.ok(status.ok, "cleanup should tolerate stale and malformed registry entries")?
   test.ok(! (fs.exists(fp"${run_dir.parent()}/ACTIVE")?))?
+  test.ok(! (fs.exists(fp"${run_dir}/phases/01/ACTIVE")?))?
   test.eq(fs.read_text(docker_log)?, "calledcalledcalledcalled")?
 }
 

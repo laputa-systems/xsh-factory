@@ -2,7 +2,7 @@
 
 use factory_control as control
 
-type CostReport = {total: Float, seen: Bool, unknown: Bool}
+type CostReport = {total: Float, seen: Bool, unknown: Bool, unavailable: Bool}
 
 pure json_number(value: Any) -> Float {
   match value {
@@ -12,11 +12,28 @@ pure json_number(value: Any) -> Float {
   }
 }
 
+stream walk_failure(run_dir: Path) [fs, error] -> Stream[Record] {
+  yield {kind: "__walk_error__", name: "", path: run_dir}
+}
+
 proc reported_cost(run_dir: Path) [fs, error] -> Result[CostReport] {
   var total = 0.0
   var seen = false
   var unknown = false
-  for entry in fs.walk(run_dir, gitignore: false, hidden: true)? |> where .kind == "file" {
+  var unavailable = false
+  if ! fs.exists(run_dir)? {
+    return Ok({total: total, seen: seen, unknown: true, unavailable: true})
+  }
+  let fallback = walk_failure(run_dir)
+  let entries = fs.walk(run_dir, gitignore: false, hidden: true) ?? fallback
+  for entry in entries {
+    if entry.kind == "__walk_error__" {
+      unavailable = true
+      continue
+    }
+    if entry.kind != "file" {
+      continue
+    }
     if entry.name != "session.jsonl" {
       continue
     }
@@ -49,7 +66,10 @@ proc reported_cost(run_dir: Path) [fs, error] -> Result[CostReport] {
       }
     }
   }
-  return Ok({total: total, seen: seen, unknown: unknown})
+  if unavailable {
+    return Ok({total: total, seen: seen, unknown: true, unavailable: true})
+  }
+  return Ok({total: total, seen: seen, unknown: unknown, unavailable: false})
 }
 
 proc process_live(pid: Int) [process, error] -> Result[Bool] {
@@ -105,8 +125,14 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
 
   while true {
     let cost = reported_cost(run_dir)?
-    if cost.unknown or cost.total > cap {
-      let reason = if cost.unknown { "worker cost was unknown" } else { "aggregate cycle budget exceeded" }
+    if cost.unavailable or cost.unknown or cost.total > cap {
+      let reason = if cost.unavailable {
+        "aggregate cost evidence could not be enumerated"
+      } else if cost.unknown {
+        "worker cost was unknown"
+      } else {
+        "aggregate cycle budget exceeded"
+      }
       let observed = if cost.unknown { "unknown" } else { cost.total.format(precision: 6) }
       fs.write_atomic(
         marker,

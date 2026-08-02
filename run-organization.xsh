@@ -213,6 +213,16 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     eprint f"selected ticket is missing or not Approved: ${selected_ticket}"
     abort(2)
   }
+  let open_branch = if selected_ticket == "" {
+    ""
+  } else {
+    runtime.open_ticket_branch(xsh_repo, selected_ticket)?
+  }
+  if open_branch != "" {
+    eprint f"ticket ${selected_ticket} already has an unmerged implementation branch: ${open_branch}"
+    eprint "replay or review that branch before dispatching another engineer"
+    abort(2)
+  }
   let requested_eval = control.request_eval(request_text)
   let ticket_eval = if selected_ticket != "" {
     control.ticket_eval(selected_ticket_path.read_text()?)
