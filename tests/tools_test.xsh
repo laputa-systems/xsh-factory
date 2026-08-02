@@ -47,6 +47,8 @@ proc test_audit_run_preserves_separate_evaluator_outcomes(ctx: TestContext) [fs,
     {key: "REQUEST", value: "CYCLE-REQUEST.md"},
     {key: "BUILD_ID", value: "fixture-build"},
     {key: "XSH_COMMIT", value: "fixture-xsh"},
+    {key: "CANDIDATE_TICKET", value: "not-reevaluation"},
+    {key: "CANDIDATE_WORKTREE", value: "not-reevaluation"},
     {key: "IMAGE", value: "fixture-image"},
     {key: "IMAGE_ID", value: "fixture-image-id"},
     {key: "PLATFORM", value: "fixture-platform"},
@@ -159,6 +161,57 @@ proc test_budget_watch_terminates_a_harmless_fake_worker(ctx: TestContext) [fs, 
   test.ok(status.exited_with(3), "budget breach should use the documented exit code")?
   test.ok(fs.exists(marker)?, "budget breach should leave a durable marker")?
   test.contains(fs.read_text(marker)?, "budget exceeded: 1.250000 > 1.00")?
+}
+
+proc test_audit_run_accepts_standalone_eval_design_evidence(ctx: TestContext) [fs, process, error] {
+  let root = test.temp_dir(ctx, name: "audit-design")?
+  let run_dir = fp"${root}/run-1"
+  let worker_dir = fp"${run_dir}/workers/eval-designer/proposal-1"
+  let proposal_dir = fp"${run_dir}/proposals/proposal-1"
+  fs.mkdir(worker_dir)?
+  fs.mkdir(proposal_dir)?
+  fs.write(fp"${run_dir}/CYCLE-REQUEST.md", "# Design\n\n## Mode\n\n- `eval-design`\n")?
+  let provenance_template = fs.read_text(fp"${fs.cwd()?}/templates/PROVENANCE.md")?
+  fs.write(fp"${run_dir}/PROVENANCE.md", control.fill_template(provenance_template, [
+    {key: "RUN_ID", value: run_dir.display()},
+    {key: "MODE", value: "eval-design"},
+    {key: "REQUEST", value: "CYCLE-REQUEST.md"},
+    {key: "BUILD_ID", value: "fixture-design"},
+    {key: "XSH_COMMIT", value: "fixture-xsh"},
+    {key: "CANDIDATE_TICKET", value: "not-reevaluation"},
+    {key: "CANDIDATE_WORKTREE", value: "not-reevaluation"},
+    {key: "IMAGE", value: "not-used"},
+    {key: "IMAGE_ID", value: "not-used"},
+    {key: "PLATFORM", value: "fixture-platform"},
+    {key: "APPROVED_HANDBOOK_SHA", value: "approved"},
+    {key: "CANDIDATE_HANDBOOK_SHA", value: "not-used"},
+    {key: "TICKET_SNAPSHOT_SHA", value: "not-used"},
+  ]))?
+  fs.write(fp"${run_dir}/COST.md", "# Cost\n\n## Workers\n\n## Role totals\n\n## Run total\n\n- Budget failures or unknown costs: 0\n")?
+  fs.write(fp"${run_dir}/proposals/proposal-1/EVAL.md", "proposal\n")?
+  fs.write(fp"${worker_dir}/DESIGNER-REPORT.md", "# Designer\n\n## Result\n\nready-for-review\n\n## Proposal\n\nproposal\n\n## Dry run\n\nevidence\n\n## North-star impact\n\nimpact\n\n## Known risks\n\nnone\n\n## Review path\n\npath\n")?
+  fs.write(fp"${worker_dir}/session.jsonl", r"""
+{"timestamp":"2026-08-01T12:00:00.000Z","type":"message","message":{"role":"user","content":"fixture"}}
+{"timestamp":"2026-08-01T12:00:01.000Z","type":"message","message":{"role":"assistant","provider":"openrouter","model":"deepseek/deepseek-v4-flash-0731","stopReason":"stop","content":[{"type":"thinking","thinking":"fixture"}],"usage":{"input":1,"output":2,"reasoning":1,"totalTokens":3,"cost":{"total":0.001}}}}
+""")?
+  let xsh = process.which("xsh")?
+  let report_status = process.run(process.command_argv(
+    xsh,
+    [xsh.display(), fp"${fs.cwd()?}/tools/session-report.xsh", "--", "worker",
+      "--session", fp"${worker_dir}/session.jsonl".display(),
+      "--output", fp"${worker_dir}/WORKER-REPORT.md".display(),
+      "--role", "eval-designer", "--worker-id", "proposal-1", "--budget-usd", "2"],
+  ))?
+  test.ok(report_status.ok, "synthetic design worker report should render")?
+  let audit_status = process.run(process.command_argv(
+    xsh,
+    [xsh.display(), fp"${fs.cwd()?}/audit-run.xsh", "--", run_dir.display(), "eval-design"],
+  ))?
+  test.ok(audit_status.ok, "standalone design audit should run")?
+  let audit = fs.read_text(fp"${run_dir}/AUDIT.md")?
+  test.ok(control.audit_report_contract_ok(audit))?
+  test.eq(control.audit_result(audit), "pass")?
+  test.contains(audit, "Mode: `eval-design`")?
 }
 
 proc test_cleanup_run_uses_a_mock_container_command(ctx: TestContext) [fs, process, error] {

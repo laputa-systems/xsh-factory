@@ -21,14 +21,24 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   let factory_dir = env.path("FACTORY_DIR", fs.cwd()?)?
   let request = Path(argv[0])
   let mode = control.request_mode(request.read_text()?)
-  if mode != "ticket-implementation" and mode != "eval" {
+  let organization_marker = fp"${factory_dir}/runs/ORGANIZATION-ACTIVE"
+  if fs.exists(organization_marker)? {
+    eprint "an organization cycle is active; wait for it to finish or interrupt it"
+    abort(1)
+  }
+  if mode != "ticket-implementation" and mode != "eval" and
+    mode != "organization" and mode != "eval-design" {
     eprint f"unsupported cycle mode: ${mode}"
     abort(2)
   }
   let child = if mode == "ticket-implementation" {
     fp"${factory_dir}/run-ticket.xsh"
-  } else {
+  } else if mode == "eval" {
     fp"${factory_dir}/run-eval.xsh"
+  } else if mode == "organization" {
+    fp"${factory_dir}/run-organization.xsh"
+  } else {
+    fp"${factory_dir}/run-design.xsh"
   }
   let xsh_path = process.which("xsh")?
   let status = process.run(process.command_argv(

@@ -181,6 +181,28 @@ export pure request_tickets(text: Str) -> List[Str] {
   return tickets
 }
 
+## Reads whether an organization cycle should auto-select an approved ticket.
+export pure request_ticket_policy(text: Str) -> Str {
+  var in_tickets = false
+  for line in text.lines() {
+    let trimmed = line.trim()
+    if trimmed == "## Approved tickets" {
+      in_tickets = true
+      continue
+    }
+    if in_tickets and trimmed.starts_with("## ") {
+      return "auto"
+    }
+    if in_tickets and (trimmed == "- None." or trimmed == "- None") {
+      return "none"
+    }
+    if in_tickets and trimmed.starts_with("- `") {
+      return "explicit"
+    }
+  }
+  return "auto"
+}
+
 ## Reads the controller-owned trial count from a cycle request.
 export pure request_trial_count(text: Str) -> Result[Int] {
   var in_plan = false
@@ -247,7 +269,7 @@ export pure valid_ticket_id(ticket_id: Str) -> Bool {
 
 ## Requires the checked-in approval state used for cycle admission.
 export pure ticket_is_accepted(text: Str) -> Bool {
-  return ticket_status(text) == "Accepted."
+  return ticket_status(text) == "Accepted." or ticket_status(text) == "Approved."
 }
 
 ## Identifies a ticket waiting for post-merge evaluation.

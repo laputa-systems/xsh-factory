@@ -7,10 +7,16 @@ proc test_cycle_request_parsing() [error] {
   let eval_request = "# Cycle\n\n## Active evals\n\n- `task-ecount`\n"
   let planned_request = "# Cycle\n\n## Trial plan\n\n- Count: `2`\n\n## New eval proposals\n\n- Count: `1`\n"
   let ticket_request = "# Cycle\n\n## Mode\n\n- `ticket-implementation`\n\n## Approved tickets\n\n- `task-tags-001`\n- `task-ecount-002`\n"
+  let organization_request = "# Cycle\n\n## Mode\n\n- `organization`\n\n## Approved tickets\n\n- None.\n"
+  let design_request = "# Cycle\n\n## Mode\n\n- `eval-design`\n"
   test.eq(control.request_mode(eval_request), "eval")?
   test.eq(control.request_eval(eval_request), "task-ecount")?
   test.eq(control.request_mode(ticket_request), "ticket-implementation")?
+  test.eq(control.request_mode(organization_request), "organization")?
+  test.eq(control.request_mode(design_request), "eval-design")?
   test.eq(control.request_tickets(ticket_request), ["task-tags-001", "task-ecount-002"])?
+  test.eq(control.request_ticket_policy(ticket_request), "explicit")?
+  test.eq(control.request_ticket_policy(organization_request), "none")?
   test.eq(control.request_trial_count(planned_request)?, 2)?
   test.eq(control.request_new_eval_count(planned_request)?, 1)?
   test.eq(control.request_trial_count(eval_request)?, 1)?
@@ -37,7 +43,17 @@ proc test_admission_contracts() [error] {
   test.ok(! control.valid_ticket_id("task/tags"))?
   test.ok(! control.valid_ticket_id("task tags"))?
   test.ok(control.ticket_is_accepted("# Ticket\n\n## Status\n\nAccepted.\n"))?
+  test.ok(control.ticket_is_accepted("# Ticket\n\n## Status\n\nApproved.\n"))?
   test.ok(! control.ticket_is_accepted("# Ticket\n\n## Status\n\nOpen.\n"))?
+}
+
+proc test_first_approved_ticket_is_deterministic(ctx: TestContext) [fs, error] {
+  let factory = test.temp_dir(ctx, name: "approved-ticket")?
+  fs.mkdir(fp"${factory}/tickets")?
+  fs.write(fp"${factory}/tickets/z-open.md", "# Ticket\n\n## Status\n\nOpen.\n")?
+  fs.write(fp"${factory}/tickets/b-approved.md", "# Ticket\n\n## Status\n\nApproved.\n")?
+  fs.write(fp"${factory}/tickets/a-accepted.md", "# Ticket\n\n## Status\n\nAccepted.\n")?
+  test.eq(runtime.first_approved_ticket(factory)?, "a-accepted")?
 }
 
 proc test_ticket_merge_fields_are_idempotent(ctx: TestContext) [fs, error] {

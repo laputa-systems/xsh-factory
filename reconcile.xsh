@@ -1,4 +1,4 @@
-##! Reconcile accepted tickets against the current XSH repository.
+##! Reconcile approved tickets against the current XSH repository.
 
 use factory_runtime as runtime
 

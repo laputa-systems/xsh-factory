@@ -12,6 +12,11 @@ director
   ├─ eval-manager        runs an approved eval and proposes improvements
   │    └─ eval-executor  deterministically runs the isolated eval-worker
   └─ xsh-swe             implements already-open XSH tickets in worktrees
+
+run-organization.xsh
+  ├─ primary: run-ticket.xsh or run-eval.xsh
+  ├─ candidate re-evaluation: run-eval.xsh, only after a ticket passes
+  └─ eval-design: run-design.xsh, exactly one proposal
 ```
 
 The `eval-executor` is a harness, not a Pi employee. Its Pi employee is the
@@ -95,17 +100,29 @@ native test that makes the exception observable.
 
 ## One cycle
 
-Run an eval cycle with:
+Run a standard bounded organization cycle with:
 
 ```sh
-xsh run.xsh cycle-request.md
+XSH_MODULE_PATH=. xsh run.xsh cycle-organization.md
 ```
 
-`run.xsh` creates `runs/run-<id>/`, reconciles product branches against the
-current XSH HEAD, starts the director, and produces a run-level report and
-cost report. The director resolves one clean XSH commit once at cycle start.
+`run.xsh` creates one parent `runs/run-<id>/` and dispatches the phases
+sequentially. `run-organization.xsh` reconciles product branches, admits at
+most one approved ticket, and then either runs that ticket followed by a
+pre-merge replay of its linked eval or runs the selected eval when no ticket is
+admitted. It always dispatches one standalone `eval-design` phase. Each child
+phase has its own run directory, provenance, audit, sessions, and cost report;
+the parent also writes an aggregate cost report and `RUN.md`.
+
+The organization controller resolves one clean XSH commit once at admission.
 Every executor and SWE worktree records that snapshot or its explicitly named
-candidate commit.
+candidate commit. A candidate replay points at the exact clean SWE worktree;
+it does not mark the ticket merged or alter the user's branch.
+
+For a direct approved eval cycle, use a request with `## Mode` set to `eval`.
+For a direct ticket implementation cycle, use `ticket-implementation`. For a
+standalone proposal phase, use `eval-design`; it dispatches exactly one
+eval-designer and leaves the proposal pending review.
 
 For an approved ticket implementation cycle, use a request with
 `## Mode` set to `ticket-implementation` and an explicit `## Approved tickets`
@@ -115,7 +132,8 @@ list:
 xsh run.xsh cycle-ticket-task-tags-001.md
 ```
 
-The controller admits only tickets whose checked-in status is `Accepted.`,
+The controller admits only tickets whose checked-in status is `Approved.`;
+`Accepted.` remains a legacy-compatible status,
 creates one isolated XSH worktree per ticket, and asks the director to launch
 one `xsh-swe` worker per worktree. The branch is validated and left pending
 user review; the controller never merges it. On a later reconciliation, an
@@ -139,6 +157,9 @@ The controller-owned eval pipeline is:
 
 New manager tickets become open for the next cycle. They are not dispatched to
 SWE in the same eval cycle, which keeps diagnosis and implementation separate.
+An organization cycle may implement one already-approved ticket, immediately
+re-evaluate its linked eval against the unmerged worktree, and then dispatch
+one independent eval-design proposal.
 
 Ticket-only cycles intentionally omit the eval pipeline. They are for an
 explicitly approved implementation handoff and produce reviewable branches;

@@ -75,13 +75,14 @@ broken.
 
 ## Organization loop
 
-`run.xsh` is a thin signal-safe dispatcher. It selects
-`run-eval.xsh` or `run-ticket.xsh`; those mode controllers own admission,
-dispatch, validation, and reports. A run acquires `runs/factory.lock` and
-records its active run, so a second cycle cannot overlap it. The eval
-controller selects the first eval listed under `## Active evals` in the cycle
-request, or accepts an explicit eval ID, then snapshots provenance before
-launching Pi:
+`run.xsh` is a thin signal-safe dispatcher. It selects `run-organization.xsh`,
+`run-eval.xsh`, `run-ticket.xsh`, or `run-design.xsh`; those mode controllers
+own admission, dispatch, validation, and reports. An organization run owns a
+separate organization lock while its child phases take the ordinary factory
+run lock one at a time. It records `runs/ORGANIZATION-ACTIVE`, so a second
+top-level cycle cannot overlap it. The eval controller selects the first eval
+listed under `## Active evals` in its phase request, or accepts an explicit eval
+ID, then snapshots provenance before launching Pi:
 
 - the clean XSH commit;
 - Docker image ID and platform;
@@ -94,20 +95,23 @@ and budget are environment settings with explicit defaults. Ctrl-C is handled
 at the cycle boundary and terminates the owned child process groups, including
 nested Pi workers, before returning partial evidence.
 
-The director coordinates eval-managers, eval-designers, and already-open
-ticket work. It does not merge XSH changes. The user approves new evals and
-merges completed XSH SWE branches. Reconciliation compares each accepted
+The director coordinates eval-managers and xsh-swe workers in their respective
+child phases. The standalone `run-design.xsh` controller dispatches exactly
+one eval-designer through the shared runner; it does not require the director
+to invent work. No controller merges XSH changes. The user approves new evals
+and merges completed XSH SWE branches. Reconciliation compares each approved
 ticket's recorded implementation commit with XSH `HEAD`; when it is an
 ancestor, reconciliation updates that same `TICKET.md` to `Merged.` and fills
 its merge record. The linked eval-manager then accepts or rejects the change
 with a controlled replay.
 
-The controller writes `DISPATCH.md` for eval cycles and `TICKET-DISPATCH.md`
-for ticket cycles. These are the authoritative ordered child lists. The
-director has no discretion to discover work or infer a role from prose. An
-eval designer row appears only when the request explicitly sets
-`New eval proposals` to one; newly created tickets are never sent to SWE in
-the same cycle.
+The controller writes `DISPATCH.md` for eval cycles, `TICKET-DISPATCH.md` for
+ticket cycles, and a one-row `DISPATCH.md` for standalone eval-design cycles.
+These are the authoritative ordered child lists. The director has no
+discretion to discover work or infer a role from prose. An organization cycle
+always has one eval-design phase; a direct eval cycle gets an eval-designer row
+only when the request explicitly sets `New eval proposals` to one. Newly
+created tickets are never sent to SWE in the same cycle.
 
 After child completion, `audit-run.xsh` compiles the run into one
 `AUDIT.md`. It reads the canonical session JSONL, derived worker reports,
@@ -126,6 +130,7 @@ preserving the original evidence files.
 | eval-manager | executor trials and Pi metrics | shared-handbook candidate, manager report, evidence-backed tickets |
 | xsh-swe | one controller-assigned ticket snapshot and worktree | branch/worktree, tests, implementation, completion report |
 | eval-designer | factory mission and practical task idea | proposed eval contract, scaffolding, dry-run evidence |
+| organization controller | one bounded request plus admission state | ordered phase requests, parent plan, events, aggregate cost, and `RUN.md` |
 | director | approved cycle request | child reports, dispatch status, north-star impact, run summary, cost report, and deterministic audit |
 | user | proposed evals and completed branches | approval or rejection, merge or revert decision |
 
@@ -151,8 +156,13 @@ Cycle requests select a mode. The current modes are:
 
 - `eval`: run the selected eval-manager and its pure executor trials;
 - `ticket-implementation`: admit only the explicitly listed tickets whose
-  checked-in status is `Accepted.`, create one XSH worktree per ticket, and
+  checked-in status is `Approved.` (with legacy `Accepted.` support), create
+  one XSH worktree per ticket, and
   dispatch one `xsh-swe` worker per worktree.
+- `organization`: admit at most one approved ticket automatically or from the
+  request; run its implementation and linked pre-merge re-evaluation in order,
+  or run an eval when no ticket is admitted; then run one eval-design phase.
+- `eval-design`: dispatch exactly one eval-designer proposal and dry run.
 
 Each run also has an `events/` ledger of small Markdown event records. The
 controller writes events at admission, worker start, worker completion, and
@@ -169,7 +179,7 @@ the session JSONL to show `read` tool calls for the exact factory north-star
 and handbook paths supplied in that assignment:
 
 ```text
-Accepted ticket
+Approved ticket
   -> admitted event
   -> isolated worktree at recorded XSH commit
   -> xsh-swe process completion

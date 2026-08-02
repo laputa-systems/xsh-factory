@@ -9,11 +9,11 @@ without a corresponding product hypothesis.
 
 ## Mode
 
-- `eval`
+- `organization`
 
 ## Active evals
 
-- `task-tags`
+- `task-ecount`
 
 ## Trial plan
 
@@ -21,7 +21,7 @@ without a corresponding product hypothesis.
 
 ## New eval proposals
 
-- Count: `0`
+- Count: `1`
 - Difficulty: no harder than ecount; prefer a small practical programming or
   systems-administration task.
 
@@ -30,9 +30,9 @@ without a corresponding product hypothesis.
 - Dispatch tickets present at cycle start: `yes`
 - Dispatch newly created tickets in this cycle: `no`
 
-## Approved tickets
+## Ticket policy
 
-- None.
+- Select the first approved ticket: `yes`
 
 ## Role overrides
 
@@ -42,8 +42,10 @@ environment override in the invocation, using names such as
 
 ## Required outputs
 
-- task-tags executor pass;
-- a worker session report and extracted thinking transcript;
+- one approved ticket implementation and linked pre-merge replay when a ticket
+  is available, otherwise one task-ecount eval;
+- one eval-design proposal pending review;
+- worker session reports and extracted thinking transcripts;
 - a run-level cost report covering every Pi session;
 - a `## North-star impact` section in each narrative role report;
 - a concise `RUN.md` result.

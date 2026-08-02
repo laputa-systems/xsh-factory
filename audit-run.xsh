@@ -195,7 +195,8 @@ pure report_document_ok(text: Str, headings: List[Str]) -> Bool {
 }
 
 proc audit_run(run_dir: Path, requested_mode: Str, factory_dir: Path) [fs, error] -> Result[Int] {
-  if requested_mode != "eval" and requested_mode != "ticket-implementation" {
+  if requested_mode != "eval" and requested_mode != "ticket-implementation" and
+    requested_mode != "eval-design" {
     eprint f"unsupported audit mode: ${requested_mode}"
     return Ok(2)
   }
@@ -365,7 +366,7 @@ proc audit_run(run_dir: Path, requested_mode: Str, factory_dir: Path) [fs, error
 
   let provenance = fp"${run_dir}/PROVENANCE.md"
   let provenance_ok = fs.exists(provenance)? and report_document_ok(
-    provenance.read_text()?, ["Run", "XSH input", "Execution environment", "Lineage and admission"]
+    provenance.read_text()?, ["Run", "XSH input", "Candidate input", "Execution environment", "Lineage and admission"]
   )
   if ! provenance_ok { findings = findings.push("provenance is missing or incomplete") }
 
@@ -383,21 +384,27 @@ proc audit_run(run_dir: Path, requested_mode: Str, factory_dir: Path) [fs, error
   if ! lineage_ok { findings = findings.push("handbook lineage is missing or incomplete") }
 
   let director_report = fp"${run_dir}/DIRECTOR-REPORT.md"
-  let director_ok = fs.exists(director_report)? and control.director_report_contract_ok(director_report.read_text()?) and
-    control.report_field(director_report.read_text()?, "Result") == "pass"
+  let director_ok = if requested_mode == "eval-design" {
+    true
+  } else {
+    fs.exists(director_report)? and control.director_report_contract_ok(director_report.read_text()?) and
+      control.report_field(director_report.read_text()?, "Result") == "pass"
+  }
   let manager_ok = if requested_mode == "eval" {
     manager_reports.len() > 0 and control.manager_report_contract_ok(manager_reports[0].read_text()?) and
       control.report_field(manager_reports[0].read_text()?, "Result") == "pass"
   } else {
     true
   }
-  let designer_required = requested_mode == "eval" and request_exists and control.request_new_eval_count(request_text)? > 0
+  let designer_required = requested_mode == "eval-design" or
+    (requested_mode == "eval" and request_exists and control.request_new_eval_count(request_text)? > 0)
   let designer_ok = if designer_required {
-    designer_reports.len() > 0 and control.designer_report_contract_ok(designer_reports[0].read_text()?)
+    designer_reports.len() > 0 and control.designer_report_contract_ok(designer_reports[0].read_text()?) and
+      control.report_field(designer_reports[0].read_text()?, "Result") == "ready-for-review"
   } else {
     true
   }
-  let controller_ok = director_ok and manager_ok and designer_ok
+  let controller_ok = (requested_mode == "eval-design" or director_ok) and manager_ok and designer_ok
   if ! director_ok { findings = findings.push("director report is missing, invalid, or reports failure") }
   if ! manager_ok { findings = findings.push("eval-manager report is missing, invalid, or reports failure") }
   if ! designer_ok { findings = findings.push("required eval-designer report is missing or invalid") }

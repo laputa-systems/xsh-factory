@@ -11,6 +11,11 @@
 
 - Commit: `{{XSH_COMMIT}}`
 
+## Candidate input
+
+- Ticket: `{{CANDIDATE_TICKET}}`
+- Worktree: `{{CANDIDATE_WORKTREE}}`
+
 ## Execution environment
 
 - Image: `{{IMAGE}}`

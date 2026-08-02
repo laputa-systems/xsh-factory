@@ -11,6 +11,18 @@ Each merged ticket is a post-merge acceptance assignment. Evaluate its exact
 acceptance criteria against this cycle's XSH commit and record an explicit
 decision. Do not dispatch a merged ticket back to SWE.
 
+## Candidate re-evaluation
+
+- Ticket: `{{CANDIDATE_TICKET}}`
+- SWE worktree: `{{CANDIDATE_WORKTREE}}`
+- Candidate XSH commit: `{{XSH_COMMIT}}`
+
+When the candidate ticket is not `not-reevaluation`, this is a pre-merge
+validation of the exact clean SWE worktree. Do not mark the ticket merged, do
+not dispatch SWE, and do not treat the branch as main. Decide whether the
+executor evidence supports the proposed fix and record that decision in the
+manager report.
+
 The controller requires exactly `{{TRIAL_COUNT}}` fresh trial(s). Preserve
 separate evidence under `{{RUN_DIR}}/workers/eval-worker/` and inspect each
 executor report, worker report, session JSONL, extracted `thinking.md`,

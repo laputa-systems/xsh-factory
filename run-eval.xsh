@@ -41,8 +41,15 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   let platform = env.get_or("FACTORY_PLATFORM", "linux/arm64")?
   let target = env.get_or("XSH_TARGET", "aarch64-unknown-linux-musl")?
   let xsh_repo = env.path("FACTORY_XSH_REPO", fp"${factory_dir}/../xsh")?
+  let candidate_ticket = env.get_or("FACTORY_REEVAL_TICKET", "not-reevaluation")?
+  let candidate_worktree = env.get_or("FACTORY_REEVAL_WORKTREE", "not-reevaluation")?
   let stamp = time.now()
-  let run_dir = fp"${factory_dir}/runs/run-${stamp}"
+  let configured_phase_dir = env.get_or("FACTORY_PHASE_DIR", "")?
+  let run_dir = if configured_phase_dir == "" {
+    fp"${factory_dir}/runs/run-${stamp}"
+  } else {
+    Path(configured_phase_dir)
+  }
   let worker_root = fp"${run_dir}/workers"
   let active_run = fp"${factory_dir}/runs/ACTIVE"
   let _run_lock = runtime.acquire_run_lock(factory_dir)?
@@ -67,7 +74,12 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   fs.copy(fp"${factory_dir}/runtime/handbook.md", baseline_handbook, overwrite: true)?
 
   let xsh_commit = run.text "git" "-C" $xsh_repo.display() "rev-parse" "HEAD" ?
-  let merged_tickets = runtime.reconcile_tickets(factory_dir, xsh_repo, xsh_commit.trim())?
+  let skip_reconcile = env.get_or("FACTORY_SKIP_TICKET_RECONCILE", "false")? == "true"
+  let merged_tickets = if skip_reconcile {
+    []
+  } else {
+    runtime.reconcile_tickets(factory_dir, xsh_repo, xsh_commit.trim())?
+  }
   let build_id = f"${xsh_commit.trim()}-${stamp.float().format(precision: 0)}"
   let xsh_git_status = run.text "git" "-C" $xsh_repo.display() "status" "--porcelain" ?
   if xsh_git_status.trim() != "" {
@@ -146,6 +158,8 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     {key: "REQUEST", value: "CYCLE-REQUEST.md"},
     {key: "BUILD_ID", value: build_id},
     {key: "XSH_COMMIT", value: xsh_commit.trim()},
+    {key: "CANDIDATE_TICKET", value: candidate_ticket},
+    {key: "CANDIDATE_WORKTREE", value: candidate_worktree},
     {key: "IMAGE", value: image},
     {key: "IMAGE_ID", value: image_id.trim()},
     {key: "PLATFORM", value: platform},
@@ -193,6 +207,8 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     {key: "TRIAL_COUNT", value: trial_count.float().format(precision: 0)},
     {key: "TRIAL_INSTRUCTIONS", value: trial_instructions},
     {key: "MERGED_TICKET_PATHS", value: merged_ticket_paths},
+    {key: "CANDIDATE_TICKET", value: candidate_ticket},
+    {key: "CANDIDATE_WORKTREE", value: candidate_worktree},
   ]
   fs.write(manager_message, control.fill_template(manager_template.read_text()?, manager_values))?
 

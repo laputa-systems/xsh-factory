@@ -31,7 +31,7 @@ provider, model, thinking level, tools, and budget from the role-specific
 directly.
 
 The cycle request selects the workflow mode. In `ticket-implementation` mode,
-the controller has already admitted accepted tickets, created their worktrees,
+the controller has already admitted approved tickets, created their worktrees,
 and written `TICKET-DISPATCH.md` plus one immutable, inline assignment file per
 ticket. The controller-selected dispatch table is the complete worker list.
 Do not discover tickets, search the ticket directory, select a ticket, run

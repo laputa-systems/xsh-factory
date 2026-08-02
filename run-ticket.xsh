@@ -18,7 +18,12 @@ proc run_ticket_cycle(
   }
   let xsh_path = process.which("xsh")?
   let stamp = time.now()
-  let run_dir = fp"${factory_dir}/runs/run-${stamp}"
+  let configured_phase_dir = env.get_or("FACTORY_PHASE_DIR", "")?
+  let run_dir = if configured_phase_dir == "" {
+    fp"${factory_dir}/runs/run-${stamp}"
+  } else {
+    Path(configured_phase_dir)
+  }
   let active_run = fp"${factory_dir}/runs/ACTIVE"
   let _run_lock = runtime.acquire_run_lock(factory_dir)?
   let worktree_root = fp"${run_dir}/worktrees"
@@ -63,9 +68,9 @@ proc run_ticket_cycle(
       if control.ticket_is_merged(ticket_text) {
         eprint f"ticket ${ticket_id} is already Merged; run its linked eval cycle for acceptance"
       } else {
-        eprint f"ticket is missing or not accepted: ${ticket_id}"
+        eprint f"ticket is missing or not Approved: ${ticket_id}"
       }
-      runtime.emit_event(event_template, run_dir, f"ticket-${ticket_id}-rejected", ticket_id, "failed", 1, "admission", "ticket is not checked-in with Accepted status")?
+      runtime.emit_event(event_template, run_dir, f"ticket-${ticket_id}-rejected", ticket_id, "failed", 1, "admission", "ticket is not checked-in with Approved status")?
       return 1
     }
     let worktree = fp"${worktree_root}/${ticket_id}"
@@ -132,6 +137,8 @@ proc run_ticket_cycle(
     {key: "REQUEST", value: "CYCLE-REQUEST.md"},
     {key: "BUILD_ID", value: "not-used-ticket-cycle"},
     {key: "XSH_COMMIT", value: xsh_commit.trim()},
+    {key: "CANDIDATE_TICKET", value: "not-reevaluation"},
+    {key: "CANDIDATE_WORKTREE", value: "not-reevaluation"},
     {key: "IMAGE", value: "not-used-ticket-cycle"},
     {key: "IMAGE_ID", value: "not-used-ticket-cycle"},
     {key: "PLATFORM", value: platform},

@@ -85,6 +85,26 @@ export proc accepted_ticket(ticket_path: Path) [fs, error] -> Result[Bool] {
   return control.ticket_is_accepted(fs.read_text(ticket_path)?)
 }
 
+## Selects the first explicitly approved ticket for an organization cycle.
+export proc first_approved_ticket(factory_dir: Path) [fs, error] -> Result[Str] {
+  let ticket_dir = fp"${factory_dir}/tickets"
+  if ! fs.exists(ticket_dir)? {
+    return ""
+  }
+  let entries = fs.files(ticket_dir, gitignore: false, hidden: true)?
+    |> sort-by .path.display()
+    |> collect()
+  for entry in entries {
+    if ! entry.name.ends_with(".md") {
+      continue
+    }
+    if control.ticket_is_accepted(entry.path.read_text()?) {
+      return entry.name.replace(".md", "")
+    }
+  }
+  return ""
+}
+
 proc commit_is_ancestor(xsh_repo: Path, commit: Str) [process, error] -> Result[Bool] {
   if commit == "" {
     return false
@@ -162,7 +182,7 @@ proc find_merged_implementation(
   }
 }
 
-## Reconciles accepted tickets against the current XSH HEAD.
+## Reconciles approved tickets against the current XSH HEAD.
 export proc reconcile_tickets(
   factory_dir: Path,
   xsh_repo: Path,
@@ -190,7 +210,7 @@ export proc reconcile_tickets(
     let ticket_path = entry.path
     let ticket_text = fs.read_text(ticket_path)?
     let status = control.ticket_status(ticket_text)
-    if status != "Accepted." and status != "Merged." {
+    if status != "Accepted." and status != "Approved." and status != "Merged." {
       continue
     }
     let evidence = find_merged_implementation(

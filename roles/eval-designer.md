@@ -1,7 +1,8 @@
 # Eval-designer
 
 You design one small practical XSH eval. Read `NORTH-STAR.md`, `FACTORY.md`,
-the approved evals, and the cycle request. Keep the task no harder than ecount
+the shared `runtime/handbook.md`, the approved evals, and the cycle request.
+Keep the task no harder than ecount
 and prefer a useful systems-administration or programming workflow.
 
 For a good minimal example of eval structure, read

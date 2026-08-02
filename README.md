@@ -33,6 +33,26 @@ xsht distribution with `make dist-Linux-docker`, stages both binaries, and
 rebuilds the Docker image with pull and no-cache enabled. Every child Pi
 session and the run-level cost report are saved under `runs/run-<id>/`.
 
+Run the standard organization cycle (automatic first approved ticket, linked
+pre-merge re-evaluation, and one new eval proposal):
+
+```sh
+XSH_MODULE_PATH=. xsh run.xsh cycle-organization.md
+```
+
+If no approved ticket exists, the primary phase runs the selected eval instead.
+The parent run is under `runs/run-<id>/`; inspect its `RUN.md` and `COST.md`,
+then inspect each ordered phase under `phases/`.
+
+Run only the eval-design phase:
+
+```sh
+XSH_MODULE_PATH=. xsh run.xsh cycle-eval-design.md
+```
+
+This stages one proposal and dry-run evidence for review without approving or
+modifying an eval.
+
 Run the explicit reconciliation pass without launching Pi:
 
 ```sh
@@ -47,7 +67,8 @@ XSH_MODULE_PATH=. xsh run.xsh cycle-ticket-task-tags-001.md
 
 The controller creates one worktree and one exact assignment per ticket. It
 never merges the product branch. After the user merges the branch into XSH,
-the next reconciliation changes that ticket's `## Status` from `Accepted.` to
+the next reconciliation changes that ticket's `## Status` from `Approved.` (or
+legacy `Accepted.`) to
 `Merged.` and records the implementation branch, commit, source run, and
 detected XSH commit in the same ticket file. Do not run the implementation
 cycle again for a merged ticket; run its linked eval cycle for acceptance.

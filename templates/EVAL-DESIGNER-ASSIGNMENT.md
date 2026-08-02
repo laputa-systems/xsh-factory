@@ -1,6 +1,7 @@
 # Eval-designer assignment
 
 Read `{{FACTORY_DIR}}/NORTH-STAR.md`, `{{FACTORY_DIR}}/FACTORY.md`,
+`{{FACTORY_DIR}}/runtime/handbook.md`,
 `{{FACTORY_DIR}}/roles/eval-designer.md`, and the cycle request. The
 controller has dispatched exactly one new proposal row. Do not redesign an
 approved eval or invent additional proposals.
