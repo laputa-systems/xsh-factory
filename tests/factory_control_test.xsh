@@ -63,3 +63,39 @@ proc test_checked_in_templates_are_the_provenance_source(ctx: TestContext) [fs, 
   test.ok(rendered.contains("{{XSH_COMMIT}}"))?
   let _ = ctx
 }
+
+proc test_controller_assignment_inlines_one_ticket_and_forbids_selection(ctx: TestContext) [fs, error] {
+  let template_path = fp"${fs.cwd()?}/templates/XSH-SWE-ASSIGNMENT.md"
+  let template = fs.read_text(template_path)?
+  let values: List[control.TemplateValue] = [
+    {key: "TICKET_ID", value: "task-tags-001"},
+    {key: "TICKET_PATH", value: "/factory/runs/run-test/tickets/task-tags-001.md"},
+    {key: "TICKET_SHA", value: "ticket-sha"},
+    {key: "WORKTREE", value: "/xsh-worktree"},
+    {key: "BRANCH", value: "factory/task-tags-001/run-test"},
+    {key: "XSH_COMMIT", value: "xsh-sha"},
+    {key: "SWE_REPORT", value: "/factory/runs/run-test/workers/xsh-swe/task-tags-001/SWE-REPORT.md"},
+    {key: "FACTORY_DIR", value: "/factory"},
+    {key: "FACTORY_RUN_DIR", value: "/factory/runs/run-test"},
+    {key: "NORTH_STAR_FILE", value: "/factory/NORTH-STAR.md"},
+    {key: "HANDBOOK_FILE", value: "/factory/runtime/handbook.md"},
+    {key: "XSH_AGENTS_FILE", value: "/xsh-worktree/AGENTS.md"},
+    {key: "XSH_RATIONALE_FILE", value: "/xsh-worktree/docs/CHAPTER-01-why-xsh.md"},
+    {key: "TICKET_TEXT", value: "## Observation\n\nThe controller chose this exact ticket."},
+  ]
+  let rendered = control.fill_template(template, values)
+  test.ok(rendered.contains("Ticket ID: `task-tags-001`"))?
+  test.ok(rendered.contains("The controller chose this exact ticket."))?
+  test.ok(rendered.contains("Do not search for open tickets"))?
+  test.ok(rendered.contains("choose another ticket"))?
+  test.ok(rendered.contains("/factory/runtime/handbook.md"))?
+  test.ok(! rendered.contains("{{TICKET_TEXT}}"))?
+  let message_path = "/factory/runs/run-test/messages/task-tags-001.md"
+  test.ok(control.xsh_swe_assignment_ok(
+    "/factory/runs/run-test", "task-tags-001", message_path, "/xsh-worktree", rendered
+  ))?
+  test.ok(! control.xsh_swe_assignment_ok(
+    "/factory/runs/run-test", "task-tags-002", message_path, "/xsh-worktree", rendered
+  ))?
+  let _ = ctx
+}

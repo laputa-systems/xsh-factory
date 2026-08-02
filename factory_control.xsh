@@ -136,3 +136,20 @@ export pure fill_template(template: Str, values: List[TemplateValue]) -> Str {
   }
   return rendered
 }
+
+## Verifies that an xsh-swe invocation carries the controller's exact assignment.
+export pure xsh_swe_assignment_ok(
+  run_dir: Str,
+  ticket_id: Str,
+  message_file: Str,
+  workdir: Str,
+  assignment: Str,
+) -> Bool {
+  let expected_message = run_dir + "/messages/" + ticket_id + ".md"
+  return ticket_id != "" and message_file == expected_message and
+    assignment.contains(f"- Ticket ID: `${ticket_id}`") and
+    assignment.contains(f"- Dedicated XSH worktree: `${workdir}`") and
+    assignment.contains("<!-- CONTROLLER_TICKET_SNAPSHOT_BEGIN -->") and
+    assignment.contains("<!-- CONTROLLER_TICKET_SNAPSHOT_END -->") and
+    assignment.contains("Do not search for open tickets")
+}

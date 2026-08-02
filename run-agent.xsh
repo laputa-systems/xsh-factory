@@ -1,5 +1,7 @@
 ##! Shared Pi worker runner. Every factory Pi session goes through this file.
 
+use factory_control as control
+
 pure role_prefix(role: Str) -> Str {
   if role == "director" { return "DIRECTOR" }
   if role == "eval-designer" { return "EVAL_DESIGNER" }
@@ -75,6 +77,8 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   let message_file = Path(argv[3])
   let factory_dir = env.path("FACTORY_DIR")?
   let run_dir = env.path("FACTORY_RUN_DIR")?
+  let handbook_file = env.path("FACTORY_HANDBOOK_FILE", fp"${factory_dir}/runtime/handbook.md")?
+  let north_star_file = env.path("FACTORY_NORTH_STAR_FILE", fp"${factory_dir}/NORTH-STAR.md")?
   let worker_dir = fp"${run_dir}/workers/${role}/${worker_id}"
   let process_registry = fp"${run_dir}/processes"
   let process_registry_file = fp"${process_registry}/${role}-${worker_id}.pids"
@@ -95,11 +99,34 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   let mode = env.get_or("FACTORY_MODE", "")?
   let eval_id = env.get_or("FACTORY_EVAL_ID", "")?
   let ticket_id = env.get_or("FACTORY_TICKET_ID", "")?
+  let assignment_sha = env.get_or("FACTORY_ASSIGNMENT_SHA", "")?
   let tools = role_setting(role, "TOOLS", default_tools(role))?
+  if role == "xsh-swe" {
+    if worker_id != ticket_id or assignment_sha == "" or ! fs.exists(message_file)? {
+      eprint "xsh-swe dispatch is missing its controller assignment identity"
+      abort(2)
+    }
+    let assignment = fs.read_text(message_file)?
+    let actual_assignment_sha = hash.sha256(message_file)?.hex()
+    if actual_assignment_sha != assignment_sha or ! control.xsh_swe_assignment_ok(
+      run_dir.display(), ticket_id, message_file.display(), workdir.display(), assignment
+    ) {
+      eprint "xsh-swe dispatch does not match the controller assignment"
+      abort(2)
+    }
+  }
+  fs.mkdir(fp"${run_dir}/locks")?
+  let claim_lock = fs.lock(fp"${run_dir}/locks/${role}-${worker_id}.lock", nonblocking: true)?
+  let claim_file = fp"${run_dir}/locks/${role}-${worker_id}.claimed"
+  if fs.exists(claim_file)? {
+    eprint f"worker slot already claimed: ${role}/${worker_id}"
+    abort(2)
+  }
+  fs.write_atomic(claim_file, f"${self_pid}\n${assignment_sha}\n")?
   fs.mkdir(process_registry)?
   fs.write(process_registry_file, f"${self_pid}\n")?
   fs.mkdir(worker_dir)?
-  fs.write(fp"${worker_dir}/WORKER.md", f"# Worker\n\n- Role: `${role}`\n- Worker: `${worker_id}`\n- Parent: `${parent}`\n- Mode: `${mode}`\n- Eval: `${eval_id}`\n- Ticket: `${ticket_id}`\n- Working directory: `${workdir.display()}`\n- Provider: `${provider}`\n- Model: `${model}`\n- Thinking: `${thinking}`\n- Budget: `${budget}`\n")?
+  fs.write(fp"${worker_dir}/WORKER.md", f"# Worker\n\n- Role: `${role}`\n- Worker: `${worker_id}`\n- Parent: `${parent}`\n- Mode: `${mode}`\n- Eval: `${eval_id}`\n- Ticket: `${ticket_id}`\n- Assignment SHA-256: `${assignment_sha}`\n- Working directory: `${workdir.display()}`\n- North star: `${north_star_file.display()}`\n- Shared handbook: `${handbook_file.display()}`\n- Provider: `${provider}`\n- Model: `${model}`\n- Thinking: `${thinking}`\n- Budget: `${budget}`\n")?
 
   let pi_argv = [
     pi_command,
@@ -131,7 +158,10 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     FACTORY_MODE: mode,
     FACTORY_EVAL_ID: eval_id,
     FACTORY_TICKET_ID: ticket_id,
+    FACTORY_ASSIGNMENT_SHA: assignment_sha,
     FACTORY_WORKDIR: workdir.display(),
+    FACTORY_HANDBOOK_FILE: handbook_file.display(),
+    FACTORY_NORTH_STAR_FILE: north_star_file.display(),
     FACTORY_XSH_REPO: env.get("FACTORY_XSH_REPO")?,
     FACTORY_XSH_COMMIT: env.get_or("FACTORY_XSH_COMMIT", "unknown")?,
     FACTORY_IMAGE_ID: env.get_or("FACTORY_IMAGE_ID", "unknown")?,

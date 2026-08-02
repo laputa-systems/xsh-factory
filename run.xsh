@@ -81,6 +81,19 @@ proc accepted_ticket(ticket_path: Path) [fs, error] -> Result[Bool] {
   return control.ticket_is_accepted(fs.read_text(ticket_path)?)
 }
 
+proc session_read_path(session: Path, expected: Path) [fs, error] -> Result[Bool] {
+  if ! fs.exists(session)? {
+    return false
+  }
+  var found = false
+  for line in fs.read_text(session)?.lines() {
+    if line.contains("\"name\":\"read\"") and line.contains(expected.display()) {
+      found = true
+    }
+  }
+  return found
+}
+
 proc run_ticket_cycle(
   request: Path,
   factory_dir: Path,
@@ -101,6 +114,8 @@ proc run_ticket_cycle(
   let worktree_root = fp"${run_dir}/worktrees"
   let event_template = fp"${factory_dir}/templates/EVENT.md"
   let provenance_template = fp"${factory_dir}/templates/PROVENANCE.md"
+  let assignment_template = fp"${factory_dir}/templates/XSH-SWE-ASSIGNMENT.md"
+  let assignment_template_text = assignment_template.read_text()?
   let platform = env.get_or("FACTORY_PLATFORM", "linux/arm64")?
   fs.mkdir(fp"${factory_dir}/runs")?
   fs.mkdir(run_dir)?
@@ -150,10 +165,29 @@ proc run_ticket_cycle(
     }
     fs.copy(ticket_path, fp"${run_dir}/tickets/${ticket_id}.md", overwrite: true)?
     let ticket_sha = hash.sha256(ticket_path)?.hex()
+    let ticket_text = ticket_path.read_text()?
     ticket_snapshots = if ticket_snapshots == "" { f"${ticket_id}: ${ticket_sha}" } else { ticket_snapshots + f"\n${ticket_id}: ${ticket_sha}" }
-    let message = f"# XSH SWE assignment: `${ticket_id}`\n\nRead `NORTH-STAR.md`, the copied ticket at `${run_dir}/tickets/${ticket_id}.md`, the linked eval and manager evidence, and the XSH repository's `AGENTS.md` and `docs/CHAPTER-01-why-xsh.md`.\n\nYour current working directory is the dedicated XSH worktree `${worktree.display()}` on branch `${branch}`, based at `${xsh_commit.trim()}`. Work only in this worktree. Do not edit XSH main, the factory main tree, or the ticket diagnosis.\n\nImplement the accepted ticket, add the narrowest appropriate product tests and canonical documentation, and run the relevant checks. Commit the product change on this branch. Before finishing, write `${run_dir}/workers/xsh-swe/${ticket_id}/SWE-REPORT.md` with the exact headings `## Result` (use `ready-for-review` only when the branch is committed and tested), `## Branch`, `## Commit`, `## Files changed`, `## Tests`, `## North-star impact`, and `## Remaining risks`.\n"
-    fs.write(fp"${run_dir}/messages/${ticket_id}.md", message)?
-    dispatch = dispatch + f"- Ticket: `${ticket_id}`\n  - Source: `tickets/${ticket_id}.md`\n  - Worktree: `${worktree.display()}`\n  - Branch: `${branch}`\n  - Base commit: `${xsh_commit.trim()}`\n  - Assignment: `messages/${ticket_id}.md`\n\n"
+    let assignment_values: List[control.TemplateValue] = [
+      {key: "TICKET_ID", value: ticket_id},
+      {key: "TICKET_PATH", value: fp"${run_dir}/tickets/${ticket_id}.md".display()},
+      {key: "TICKET_SHA", value: ticket_sha},
+      {key: "WORKTREE", value: worktree.display()},
+      {key: "BRANCH", value: branch},
+      {key: "XSH_COMMIT", value: xsh_commit.trim()},
+      {key: "SWE_REPORT", value: fp"${run_dir}/workers/xsh-swe/${ticket_id}/SWE-REPORT.md".display()},
+      {key: "FACTORY_DIR", value: factory_dir.display()},
+      {key: "FACTORY_RUN_DIR", value: run_dir.display()},
+      {key: "NORTH_STAR_FILE", value: fp"${factory_dir}/NORTH-STAR.md".display()},
+      {key: "HANDBOOK_FILE", value: fp"${factory_dir}/runtime/handbook.md".display()},
+      {key: "XSH_AGENTS_FILE", value: fp"${worktree}/AGENTS.md".display()},
+      {key: "XSH_RATIONALE_FILE", value: fp"${worktree}/docs/CHAPTER-01-why-xsh.md".display()},
+      {key: "TICKET_TEXT", value: ticket_text},
+    ]
+    let assignment = control.fill_template(assignment_template_text, assignment_values)
+    let assignment_path = fp"${run_dir}/messages/${ticket_id}.md"
+    fs.write(assignment_path, assignment)?
+    let assignment_sha = hash.sha256(assignment_path)?.hex()
+    dispatch = dispatch + f"- Ticket: `${ticket_id}`\n  - Source: `tickets/${ticket_id}.md`\n  - Worktree: `${worktree.display()}`\n  - Branch: `${branch}`\n  - Base commit: `${xsh_commit.trim()}`\n  - Assignment: `messages/${ticket_id}.md`\n  - Assignment SHA-256: `${assignment_sha}`\n\n"
     ticket_names = if ticket_names == "" { ticket_id } else { ticket_names + ", " + ticket_id }
     emit_event(event_template, run_dir, f"10-ticket-${ticket_id}-admitted", ticket_id, "admitted", 1, "admission", f"worktree ${worktree.display()} on ${branch}")?
   }
@@ -172,7 +206,7 @@ proc run_ticket_cycle(
   ]
   fs.write(fp"${run_dir}/PROVENANCE.md", control.fill_template(provenance_template.read_text()?, provenance_values))?
 
-  let director_message = f"# Director assignment\n\nRead `NORTH-STAR.md`, the cycle request at `${run_dir}/CYCLE-REQUEST.md`, `PROVENANCE.md`, `TICKET-DISPATCH.md`, and the shared Pi-session briefing. This is a `ticket-implementation` cycle; do not launch an eval-manager, eval-worker, or eval-designer.\n\nFor every admitted ticket in `TICKET-DISPATCH.md`, launch exactly one `xsh-swe` through the shared runner, using its recorded assignment and worktree:\n\n```sh\nFACTORY_PARENT_ID=director FACTORY_TICKET_ID=<ticket-id> FACTORY_WORKDIR=<worktree> xsh `${run_agent.display()}` -- xsh-swe <ticket-id> `${factory_dir}/roles/xsh-swe.md` `${run_dir}/messages/<ticket-id>.md`\n```\n\nWait for each child process to finish, inspect its session report and `SWE-REPORT.md`, and do not merge any branch. Finish `${run_dir}/DIRECTOR-REPORT.md` with the child result table, branch and commit links, required-output status, and an exact `## North-star impact` section. A branch is pending user review; do not alter the accepted ticket's diagnosis or status.\n"
+  let director_message = f"# Director assignment\n\nRead `NORTH-STAR.md`, the cycle request at `${run_dir}/CYCLE-REQUEST.md`, `PROVENANCE.md`, `TICKET-DISPATCH.md`, and the shared Pi-session briefing. This is a `ticket-implementation` cycle; do not launch an eval-manager, eval-worker, or eval-designer.\n\nThe controller has already admitted the complete ticket set and created one immutable assignment file per ticket. The dispatch table is the only worker list. For every row, launch exactly one `xsh-swe` through the shared runner with that row's exact ticket ID, worktree, assignment file, and assignment SHA-256. Do not discover tickets, search the factory ticket directory, select a different ticket, create a second worker for a row, or launch a worker for any ticket absent from `TICKET-DISPATCH.md`:\n\n```sh\nFACTORY_PARENT_ID=director FACTORY_TICKET_ID=<exact-ticket-id> FACTORY_ASSIGNMENT_SHA=<exact-assignment-sha> FACTORY_WORKDIR=<exact-worktree> xsh `${run_agent.display()}` -- xsh-swe <exact-ticket-id> `${factory_dir}/roles/xsh-swe.md` `${run_dir}/messages/<exact-ticket-id>.md`\n```\n\nThe assignment file inlines the controller-selected ticket and is the worker's sole ticket authority. The shared runner rejects a mismatched or already-claimed assignment before starting Pi. Wait for each child process to finish, inspect its session report and `SWE-REPORT.md`, and do not merge any branch. Finish `${run_dir}/DIRECTOR-REPORT.md` with the child result table, branch and commit links, required-output status, and an exact `## North-star impact` section. A branch is pending user review; do not alter the accepted ticket's diagnosis or status.\n"
   fs.write(fp"${run_dir}/DIRECTOR-REQUEST.md", director_message)?
 
   let director_env = {
@@ -187,6 +221,8 @@ proc run_ticket_cycle(
     FACTORY_EVAL_ID: "",
     FACTORY_TICKET_ID: "",
     FACTORY_WORKDIR: "",
+    FACTORY_HANDBOOK_FILE: fp"${factory_dir}/runtime/handbook.md".display(),
+    FACTORY_NORTH_STAR_FILE: fp"${factory_dir}/NORTH-STAR.md".display(),
     FACTORY_PLATFORM: platform,
     PI_AUTH_FILE: auth_file.display(),
     PI_COMMAND: pi_command,
@@ -222,12 +258,14 @@ proc run_ticket_cycle(
       "--output", fp"${run_dir}/COST.md".display()],
   ))?
   var all_tickets_ok = true
-  var results = "# SWE dispatch results\n\n| Ticket | Worker report | Branch | Commit | Worktree clean | Result |\n| --- | --- | --- | --- | --- | --- |\n"
+  var results = "# SWE dispatch results\n\n| Ticket | Worker report | North-star read | Handbook read | Branch | Commit | Worktree clean | Result |\n| --- | --- | --- | --- | --- | --- | --- | --- |\n"
   for ticket_id in tickets {
     let worktree = fp"${worktree_root}/${ticket_id}"
     let worker_dir = fp"${run_dir}/workers/xsh-swe/${ticket_id}"
     let swe_report = fp"${worker_dir}/SWE-REPORT.md"
     let session = fp"${worker_dir}/session.jsonl"
+    let north_star_read_ok = session_read_path(session, fp"${factory_dir}/NORTH-STAR.md")?
+    let handbook_read_ok = session_read_path(session, fp"${factory_dir}/runtime/handbook.md")?
     let report_ok = fs.exists(swe_report)? and fs.read_text(swe_report)?.contains("## Result\n\nready-for-review") and
       fs.read_text(swe_report)?.contains("## North-star impact")
     let branch = run.text "git" "-C" $worktree.display() "branch" "--show-current" ?
@@ -236,13 +274,13 @@ proc run_ticket_cycle(
     let branch_ok = branch.trim() == f"factory/${ticket_id}/${stamp}"
     let commit_ok = head.trim() != xsh_commit.trim()
     let clean = status.trim() == ""
-    let ticket_ok = fs.exists(session)? and report_ok and branch_ok and commit_ok and clean
+    let ticket_ok = fs.exists(session)? and report_ok and north_star_read_ok and handbook_read_ok and branch_ok and commit_ok and clean
     if ! ticket_ok { all_tickets_ok = false }
     let state = if ticket_ok { "ready-for-review" } else { "failed" }
     let report_state = if fs.exists(swe_report)? { "present" } else { "missing" }
-    results = results + f"| `${ticket_id}` | `${report_state}` | `${branch.trim()}` | `${head.trim()}` | `${clean}` | `${state}` |\n"
+    results = results + f"| `${ticket_id}` | `${report_state}` | `${north_star_read_ok}` | `${handbook_read_ok}` | `${branch.trim()}` | `${head.trim()}` | `${clean}` | `${state}` |\n"
     if ticket_ok {
-      emit_event(event_template, run_dir, f"80-ticket-${ticket_id}-completed", ticket_id, "completed", 1, "xsh-swe", f"branch ${branch.trim()} at ${head.trim()}")?
+      emit_event(event_template, run_dir, f"80-ticket-${ticket_id}-completed", ticket_id, "completed", 1, "xsh-swe", f"branch ${branch.trim()} at ${head.trim()}; north star and handbook read from session log")?
       emit_event(event_template, run_dir, f"85-ticket-${ticket_id}-validated", ticket_id, "validated", 1, "controller", "report, branch, commit, and clean-worktree checks passed")?
       emit_event(event_template, run_dir, f"90-ticket-${ticket_id}-ready", ticket_id, "ready-for-review", 1, "controller", "branch is pending user review")?
     } else {

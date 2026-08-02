@@ -1,4 +1,4 @@
-##! Runs the Pi eval-worker inside an isolated task image.
+##! Shared Pi eval-worker entry point used by every eval image.
 
 proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   let session = Path(argv[0])
@@ -16,7 +16,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   let _ = pi
 
   fs.write(session, "")?
-  let prompt = f"Complete ${task_path.name()} in /work. Run the required checks and leave the requested artifact and review.md there."
+  let prompt = f"Before coding, read /work/agents.md and /work/handbook.md with the read tool. Complete ${task_path.name()} in /work. Run the required checks and leave the requested artifact and review.md there."
   let pi_argv = [
     pi_command,
     "--provider", pi_provider,

@@ -32,10 +32,15 @@ directly.
 
 The cycle request selects the workflow mode. In `ticket-implementation` mode,
 the controller has already admitted accepted tickets, created their worktrees,
-and written `TICKET-DISPATCH.md`. Do not discover more tickets, run evals, or
-modify the ticket status. Launch exactly one `xsh-swe` child per dispatch entry,
-passing its `FACTORY_TICKET_ID`, `FACTORY_WORKDIR`, and assignment file to the
-shared runner. Wait for each child process to finish, inspect its
+and written `TICKET-DISPATCH.md` plus one immutable, inline assignment file per
+ticket. The controller-selected dispatch table is the complete worker list.
+Do not discover tickets, search the ticket directory, select a ticket, run
+evals, or modify ticket status. Launch exactly one `xsh-swe` child per dispatch
+entry, passing that row's exact `FACTORY_TICKET_ID`, `FACTORY_ASSIGNMENT_SHA`,
+`FACTORY_WORKDIR`, and assignment file to the shared runner. Never create a
+second worker for a row or launch a worker for a ticket absent from the dispatch
+table. The runner rejects an altered, mismatched, or already-claimed
+assignment before Pi starts. Wait for each child process to finish, inspect its
 `SWE-REPORT.md`, and record the branch and commit without merging.
 
 In eval mode, run active eval-managers and the other stages requested by the

@@ -178,3 +178,12 @@ workers before writing the partial run evidence.
 present, `run-agent.xsh` starts Pi with that directory as its actual process
 working directory and records it in `WORKER.md`; this is what makes an
 `xsh-swe` worktree boundary enforceable rather than prompt-only.
+
+Ticket implementation is controller-assigned, not worker-selected. `run.xsh`
+renders `templates/XSH-SWE-ASSIGNMENT.md` once per admitted ticket, inlines the
+ticket snapshot, records the assignment SHA-256 in `TICKET-DISPATCH.md`, and
+passes the exact ticket ID, worktree, assignment path, and hash to the director.
+`run-agent.xsh` rejects a missing, altered, mismatched, or already-claimed
+assignment before starting Pi. The controller also validates exact `read`
+tool calls for the factory `NORTH-STAR.md` and shared `runtime/handbook.md`
+paths in the worker session JSONL.

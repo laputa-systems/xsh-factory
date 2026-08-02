@@ -96,7 +96,7 @@ accepts or rejects the change with a controlled replay.
 | --- | --- | --- |
 | eval-executor | one eval, one handbook snapshot, one image | worker session/report, artifact, manifest, executor classification |
 | eval-manager | executor trials and Pi metrics | shared-handbook candidate, manager report, evidence-backed tickets |
-| xsh-swe | one approved ticket | branch/worktree, tests, implementation, completion report |
+| xsh-swe | one controller-assigned ticket snapshot and worktree | branch/worktree, tests, implementation, completion report |
 | eval-designer | factory mission and practical task idea | proposed eval contract, scaffolding, dry-run evidence |
 | director | approved cycle request | child reports, dispatch status, north-star impact, run summary and cost report |
 | user | proposed evals and completed branches | approval or rejection, merge or revert decision |
@@ -133,7 +133,12 @@ causes the next deterministic validation/output step. They are deliberately
 not a second agent-facing state database, and an agent must not infer authority
 from a session transcript or poll another worker's files.
 
-Ticket implementation is therefore a reviewable state transition:
+Ticket implementation is therefore a reviewable state transition. The
+controller renders one inline assignment per ticket, records its SHA-256 in
+`TICKET-DISPATCH.md`, and the shared runner verifies that exact assignment and
+claims the worker slot before starting Pi. The cycle validator also requires
+the session JSONL to show `read` tool calls for the exact factory north-star
+and handbook paths supplied in that assignment:
 
 ```text
 Accepted ticket
