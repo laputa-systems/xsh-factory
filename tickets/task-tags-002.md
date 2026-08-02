@@ -2,14 +2,14 @@
 
 ## Status
 
-Approved.
+Merged.
 
 ## Merge record
 
-- Implementation branch: `{{IMPLEMENTATION_BRANCH}}`
-- Implementation commit: `{{IMPLEMENTATION_COMMIT}}`
-- Detected at XSH commit: `{{DETECTED_XSH_COMMIT}}`
-- Implementation run: `{{IMPLEMENTATION_RUN}}`
+- Implementation branch: `factory/task-tags-002/1785661432884`
+- Implementation commit: `28861445adaebbe90993ad1873de3978c0ab6b99`
+- Detected at XSH commit: `defa805a18b4708efeecaa4da9de7d2096bcfb41`
+- Implementation run: `/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785661432406/phases/01-ticket`
 
 ## Source eval and manager
 

@@ -172,6 +172,70 @@ cp "$FACTORY_TEST_REPORT" "$FACTORY_PHASE_DIR/RUN-DESIGN.md"
   test.ok(first_end > second_start, "design and primary must overlap")?
 }
 
+proc test_organization_skips_design_when_request_count_is_zero(ctx: TestContext) [fs, process, env, error] {
+  let root = test.temp_dir(ctx, name: "organization-no-design")?
+  let factory = fs.cwd()?
+  fs.mkdir(fp"${root}/evals")?
+  fs.mkdir(fp"${root}/runtime")?
+  fs.mkdir(fp"${root}/tools")?
+  let _copied_templates = fs.copy_tree(fp"${factory}/templates", fp"${root}/templates")?
+  let _copied_eval = fs.copy_tree(fp"${factory}/evals/task-tags", fp"${root}/evals/task-tags")?
+  fs.copy(fp"${factory}/NORTH-STAR.md", fp"${root}/NORTH-STAR.md", overwrite: true)?
+  fs.copy(fp"${factory}/runtime/handbook.md", fp"${root}/runtime/handbook.md", overwrite: true)?
+  fs.copy(fp"${factory}/tools/session-report.xsh", fp"${root}/tools/session-report.xsh", overwrite: true)?
+
+  let fake_child = fp"${root}/fake-child.sh"
+  fs.write(fake_child, r"""#!/bin/sh
+set -eu
+printf 'start:%s\n' "$FACTORY_PHASE_DIR" >> "$FACTORY_TEST_LOG"
+printf 'end:%s\n' "$FACTORY_PHASE_DIR" >> "$FACTORY_TEST_LOG"
+cp "$FACTORY_TEST_REPORT" "$FACTORY_PHASE_DIR/RUN.md"
+""")?
+  let chmod = process.run(process.command_argv("chmod", ["chmod", "+x", fake_child.display()]))?
+  test.ok(chmod.ok, "fake organization child should be executable")?
+  let request = fp"${root}/cycle.md"
+  fs.copy(fp"${factory}/tests/fixtures/organization-no-design.md", request, overwrite: true)?
+  let log = fp"${root}/schedule.log"
+  let report = fp"${factory}/tests/fixtures/organization-pass.md"
+  let xsh = process.which("xsh")?
+  let product = fp"${factory}/../xsh"
+  let status = process.run(process.command_argv(
+    xsh,
+    [xsh.display(), fp"${factory}/run-organization.xsh".display(), "--", request.display()],
+    cwd: root,
+    env: {
+      PATH: env.get("PATH")?,
+      HOME: env.get("HOME")?,
+      FACTORY_DIR: root.display(),
+      XSH_MODULE_PATH: factory.display(),
+      FACTORY_XSH_REPO: product.display(),
+      FACTORY_CHILD_RUNNER: "/bin/sh",
+      FACTORY_PRIMARY_CONTROLLER: fake_child.display(),
+      FACTORY_DESIGN_CONTROLLER: fake_child.display(),
+      FACTORY_TEST_LOG: log.display(),
+      FACTORY_TEST_REPORT: report.display(),
+      FACTORY_SKIP_CYCLE_BUDGET: "true",
+    },
+  ))?
+  test.ok(status.ok, "organization cycle without eval design should complete")?
+  let schedule = fs.read_text(log)?
+  let start_count = schedule.lines() |> where .starts_with("start:") |> count()
+  test.eq(start_count, 1, "zero new eval proposals should launch only the primary phase")?
+  test.ok(! schedule.contains("eval-design"), "zero new eval proposals should not launch eval-design")?
+  var run_dir: Path? = null
+  for entry in fs.children(fp"${root}/runs", ordered: true)? {
+    if entry.name.starts_with("run-") {
+      run_dir = entry.path
+    }
+  }
+  test.ok(run_dir != null, "organization run directory should exist")?
+  let run_path = run_dir ?? Path("")
+  let run_report = fs.read_text(fp"${run_path}/RUN.md")?
+  test.contains(run_report, "Eval design: `not-requested`")?
+  test.contains(fs.read_text(fp"${run_path}/ORGANIZATION-PLAN.md")?, "Run eval-design phase when requested: `not-requested`")?
+  test.ok(! fs.exists(fp"${run_path}/phase-requests/02-eval-design.md")?, "design request should not be materialized")?
+}
+
 proc test_audit_run_preserves_separate_evaluator_outcomes(ctx: TestContext) [fs, process, error] {
   let root = test.temp_dir(ctx, name: "audit-run")?
   let run_dir = fp"${root}/run-1"

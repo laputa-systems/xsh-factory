@@ -8,7 +8,7 @@ Merged.
 
 - Implementation branch: `factory/task-tags-001/1785640252827`
 - Implementation commit: `e17fc1cd9538a4357460657b3f030caa0c1c7474`
-- Detected at XSH commit: `a66ade8218aacb38a2d1247db192f0c550cbb5cd`
+- Detected at XSH commit: `defa805a18b4708efeecaa4da9de7d2096bcfb41`
 - Implementation run: `/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785640252827`
 
 ## Source eval and manager

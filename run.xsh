@@ -103,10 +103,16 @@ proc preflight(
       return false
     }
   }
-  if mode == "organization" or mode == "eval-design" {
+  if mode == "eval-design" {
     let new_eval_count = control.request_new_eval_count(request_text)?
     if new_eval_count != 1 {
       eprint f"${mode} requires exactly one eval-design proposal"
+      return false
+    }
+  } else if mode == "organization" {
+    let new_eval_count = control.request_new_eval_count(request_text)?
+    if new_eval_count < 0 or new_eval_count > 1 {
+      eprint "organization cycles allow zero or one eval-design proposal"
       return false
     }
   }

@@ -15,13 +15,12 @@ This is the controller-owned plan recorded before worker dispatch.
 ## Phase schedule
 
 1. Start primary phase: `{{PRIMARY_MODE}}` at `{{PRIMARY_PHASE}}`
-2. Start eval-design phase: `{{DESIGN_PHASE}}`
+2. Run eval-design phase when requested: `{{DESIGN_PHASE}}`
 3. After ticket implementation passes, start re-evaluation at `{{REEVAL_PHASE}}`
 4. Run independent eval at `{{INDEPENDENT_EVAL_PHASE}}` after the required
    ticket path
 
 The re-evaluation phase is dispatched only after a ticket implementation phase
-produces a validated clean worktree. The eval-design phase is independent and
-overlaps the primary phase. The independent eval runs against XSH main after
-the required ticket path. The eval-design phase is always controller-dispatched
-once in this bounded cycle.
+produces a validated clean worktree. A requested eval-design phase is independent
+and overlaps the primary phase. The independent eval runs against XSH main after
+the required ticket path. When no new eval is requested, eval-design is omitted.
