@@ -172,16 +172,26 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     abort(2)
   }
   let requested_eval = control.request_eval(request_text)
-  let selected_eval = if selected_ticket != "" {
+  let ticket_eval = if selected_ticket != "" {
     control.ticket_eval(selected_ticket_path.read_text()?)
   } else {
-    requested_eval
+    ""
   }
-  let selected_eval_exists = fs.exists(fp"${factory_dir}/evals/${selected_eval}/EVAL.md")?
-  if ! control.valid_eval_id(selected_eval) or ! selected_eval_exists {
-    eprint f"organization cycle selected unsupported or missing eval: ${selected_eval}"
+  let independent_eval_exists = fs.exists(fp"${factory_dir}/evals/${requested_eval}/EVAL.md")?
+  if ! control.valid_eval_id(requested_eval) or ! independent_eval_exists {
+    eprint f"organization cycle selected unsupported or missing independent eval: ${requested_eval}"
     abort(2)
   }
+  let ticket_eval_exists = if selected_ticket == "" {
+    true
+  } else {
+    fs.exists(fp"${factory_dir}/evals/${ticket_eval}/EVAL.md")?
+  }
+  if selected_ticket != "" and (! control.valid_eval_id(ticket_eval) or ! ticket_eval_exists) {
+    eprint f"ticket ${selected_ticket} links unsupported or missing eval: ${ticket_eval}"
+    abort(2)
+  }
+  let selected_eval = if selected_ticket == "" { requested_eval } else { ticket_eval }
 
   let phases_dir = fp"${run_dir}/phases"
   let phase_requests_dir = fp"${run_dir}/phase-requests"
@@ -192,17 +202,19 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     fp"${phases_dir}/01-ticket"
   }
   let reeval_phase = fp"${phases_dir}/02-reeval"
+  let independent_eval_phase = fp"${phases_dir}/03-eval"
   let design_phase = if selected_ticket == "" {
     fp"${phases_dir}/02-eval-design"
   } else {
-    fp"${phases_dir}/03-eval-design"
+    fp"${phases_dir}/04-eval-design"
   }
   let primary_request = fp"${phase_requests_dir}/01-primary.md"
   let reeval_request = fp"${phase_requests_dir}/02-reeval.md"
+  let independent_eval_request = fp"${phase_requests_dir}/03-eval.md"
   let design_request = if selected_ticket == "" {
     fp"${phase_requests_dir}/02-eval-design.md"
   } else {
-    fp"${phase_requests_dir}/03-eval-design.md"
+    fp"${phase_requests_dir}/04-eval-design.md"
   }
   let event_template = fp"${factory_dir}/templates/EVENT.md"
   let phase_template = fp"${factory_dir}/templates/ORGANIZATION-PHASE-REQUEST.md"
@@ -219,6 +231,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   fs.mkdir(design_phase)?
   if selected_ticket != "" {
     fs.mkdir(reeval_phase)?
+    fs.mkdir(independent_eval_phase)?
   }
   fs.write(active_run, run_dir.display() + "\n")?
   defer fs.remove(active_run, missing_ok: true)?
@@ -234,7 +247,9 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   phase_request(phase_template, primary_request, primary_mode, selected_eval, trial_count, 0, ticket_value, primary_objective)?
   phase_request(phase_template, reeval_request, "eval", selected_eval, trial_count, 0, "None.",
     f"Validate the ${selected_ticket} implementation against the linked ${selected_eval} eval before merge.")?
-  phase_request(phase_template, design_request, "eval-design", selected_eval, 1, 1, "None.",
+  phase_request(phase_template, independent_eval_request, "eval", requested_eval, trial_count, 0, "None.",
+    f"Run the independent ${requested_eval} eval against the XSH main commit.")?
+  phase_request(phase_template, design_request, "eval-design", requested_eval, 1, 1, "None.",
     "Design and dry-run one small practical eval proposal for user review.")?
 
   let candidate_worktree = if selected_ticket == "" {
@@ -269,11 +284,13 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   let plan_values: List[control.TemplateValue] = [
     {key: "XSH_COMMIT", value: xsh_commit.trim()},
     {key: "TICKET_ID", value: if selected_ticket == "" { "none" } else { selected_ticket }},
-    {key: "EVAL_ID", value: selected_eval},
+    {key: "TICKET_EVAL_ID", value: if selected_ticket == "" { "not-applicable" } else { selected_eval }},
+    {key: "INDEPENDENT_EVAL_ID", value: requested_eval},
     {key: "TICKET_POLICY", value: ticket_policy},
     {key: "PRIMARY_MODE", value: primary_mode},
     {key: "PRIMARY_PHASE", value: primary_phase.display()},
     {key: "REEVAL_PHASE", value: if selected_ticket == "" { "not-applicable" } else { reeval_phase.display() }},
+    {key: "INDEPENDENT_EVAL_PHASE", value: if selected_ticket == "" { "not-applicable" } else { independent_eval_phase.display() }},
     {key: "DESIGN_PHASE", value: design_phase.display()},
   ]
   fs.write(fp"${run_dir}/ORGANIZATION-PLAN.md", control.fill_template(plan_template.read_text()?, plan_values))?
@@ -323,11 +340,34 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     }
   }
 
+  var independent_eval_state = if selected_ticket == "" { "not-applicable" } else { "not-run" }
+  var independent_eval_report_state = if selected_ticket == "" { "not-applicable" } else { "not-run" }
+  if selected_ticket != "" {
+    runtime.emit_event(event_template, run_dir, "10-independent-eval-started", requested_eval, "started", 1, "organization", "running the requested independent eval against XSH main")?
+    let independent_eval_ok = run_child(
+      fp"${factory_dir}/run-eval.xsh", independent_eval_request, independent_eval_phase, factory_dir,
+      xsh_repo, run_dir, xsh_commit.trim(), run_agent, auth_file, pi_command, docker, target, platform,
+      ["FACTORY_MODE=eval", f"FACTORY_EVAL_ID=${requested_eval}",
+        "FACTORY_REEVAL_TICKET=not-reevaluation", "FACTORY_REEVAL_WORKTREE=not-reevaluation",
+        "FACTORY_SKIP_TICKET_RECONCILE=false"],
+      fp"${run_dir}/independent-eval.stdout", fp"${run_dir}/independent-eval.stderr"
+    )?
+    let independent_eval_report_ok = phase_run_pass(independent_eval_phase, "RUN.md")?
+    let independent_eval_pass = independent_eval_ok and independent_eval_report_ok
+    independent_eval_state = if independent_eval_pass { "pass" } else { "fail" }
+    independent_eval_report_state = if independent_eval_report_ok { "pass" } else { "missing-or-failed" }
+    runtime.emit_event(event_template, run_dir, "80-independent-eval-completed", requested_eval,
+      if independent_eval_pass { "completed" } else { "failed" }, 1, "controller", "independent eval phase returned")?
+    if independent_eval_pass {
+      runtime.emit_event(event_template, run_dir, "85-independent-eval-validated", requested_eval, "validated", 1, "controller", "independent eval RUN.md passed")?
+    }
+  }
+
   runtime.emit_event(event_template, run_dir, "10-design-started", "eval-design", "started", 1, "organization", "one eval-design phase is mandatory")?
   let design_ok = run_child(
     fp"${factory_dir}/run-design.xsh", design_request, design_phase, factory_dir, xsh_repo,
     run_dir, xsh_commit.trim(), run_agent, auth_file, pi_command, docker, target, platform,
-    ["FACTORY_MODE=eval-design", f"FACTORY_EVAL_ID=${selected_eval}"],
+    ["FACTORY_MODE=eval-design", f"FACTORY_EVAL_ID=${requested_eval}"],
     fp"${run_dir}/design.stdout", fp"${run_dir}/design.stderr"
   )?
   let design_report_ok = phase_run_pass(design_phase, "RUN-DESIGN.md")?
@@ -348,23 +388,28 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   ))?
   let cost_state = if cost_status.ok { "present" } else { "failed" }
   let reeval_pass_for_result = if selected_ticket == "" { true } else { reeval_state == "pass" }
-  let result = if primary_pass and reeval_pass_for_result and design_pass and cost_status.ok { "pass" } else { "fail" }
+  let independent_eval_pass_for_result = if selected_ticket == "" { true } else { independent_eval_state == "pass" }
+  let result = if primary_pass and reeval_pass_for_result and independent_eval_pass_for_result and design_pass and cost_status.ok { "pass" } else { "fail" }
   let run_template = fp"${factory_dir}/templates/RUN-ORGANIZATION.md"
   let run_values: List[control.TemplateValue] = [
     {key: "RUN_ID", value: stamp.float().format(precision: 0)},
     {key: "RESULT", value: result},
     {key: "TICKET_ID", value: if selected_ticket == "" { "none" } else { selected_ticket }},
-    {key: "EVAL_ID", value: selected_eval},
+    {key: "TICKET_EVAL_ID", value: if selected_ticket == "" { "not-applicable" } else { selected_eval }},
+    {key: "INDEPENDENT_EVAL_ID", value: requested_eval},
     {key: "XSH_COMMIT", value: xsh_commit.trim()},
     {key: "PRIMARY_MODE", value: primary_mode},
     {key: "PRIMARY_STATE", value: primary_state},
     {key: "PRIMARY_PHASE", value: primary_phase.display()},
     {key: "REEVAL_STATE", value: reeval_state},
     {key: "REEVAL_PHASE", value: if selected_ticket == "" { "not-applicable" } else { reeval_phase.display() }},
+    {key: "INDEPENDENT_EVAL_STATE", value: independent_eval_state},
+    {key: "INDEPENDENT_EVAL_PHASE", value: if selected_ticket == "" { "not-applicable" } else { independent_eval_phase.display() }},
     {key: "DESIGN_STATE", value: design_state},
     {key: "DESIGN_PHASE", value: design_phase.display()},
     {key: "PRIMARY_REPORT_STATE", value: if primary_report_ok { "pass" } else { "missing-or-failed" }},
     {key: "REEVAL_REPORT_STATE", value: reeval_report_state},
+    {key: "INDEPENDENT_EVAL_REPORT_STATE", value: independent_eval_report_state},
     {key: "DESIGN_REPORT_STATE", value: design_report_state},
     {key: "COST_STATE", value: cost_state},
   ]

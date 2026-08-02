@@ -7,13 +7,16 @@ proc test_cycle_request_parsing() [error] {
   let eval_request = "# Cycle\n\n## Active evals\n\n- `task-ecount`\n"
   let planned_request = "# Cycle\n\n## Trial plan\n\n- Count: `2`\n\n## New eval proposals\n\n- Count: `1`\n"
   let ticket_request = "# Cycle\n\n## Mode\n\n- `ticket-implementation`\n\n## Approved tickets\n\n- `task-tags-001`\n- `task-ecount-002`\n"
-  let organization_request = "# Cycle\n\n## Mode\n\n- `organization`\n\n## Approved tickets\n\n- None.\n"
-  let design_request = "# Cycle\n\n## Mode\n\n- `eval-design`\n"
+  let organization_request = "# Cycle\n\n## Mode\n\n- `organization`\n\n## Active evals\n\n- `task-ecount`\n\n## Trial plan\n\n- Count: `1`\n\n## New eval proposals\n\n- Count: `1`\n\n## Approved tickets\n\n- None.\n"
+  let design_request = "# Cycle\n\n## Mode\n\n- `eval-design`\n\n## Active evals\n\n- `task-tags`\n\n## New eval proposals\n\n- Count: `1`\n"
   test.eq(control.request_mode(eval_request), "eval")?
   test.eq(control.request_eval(eval_request), "task-ecount")?
   test.eq(control.request_mode(ticket_request), "ticket-implementation")?
   test.eq(control.request_mode(organization_request), "organization")?
   test.eq(control.request_mode(design_request), "eval-design")?
+  test.eq(control.request_eval(organization_request), "task-ecount")?
+  test.eq(control.request_new_eval_count(organization_request)?, 1)?
+  test.eq(control.request_eval(design_request), "task-tags")?
   test.eq(control.request_tickets(ticket_request), ["task-tags-001", "task-ecount-002"])?
   test.eq(control.request_ticket_policy(ticket_request), "explicit")?
   test.eq(control.request_ticket_policy(organization_request), "none")?

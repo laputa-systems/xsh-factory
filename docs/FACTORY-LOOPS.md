@@ -105,6 +105,11 @@ ancestor, reconciliation updates that same `TICKET.md` to `Merged.` and fills
 its merge record. The linked eval-manager then accepts or rejects the change
 with a controlled replay.
 
+For the standard request with an approved ticket, the parent sequence is
+`ticket implementation -> linked candidate re-evaluation -> independent active
+eval on XSH main -> eval-design`. Without an approved ticket, the active eval
+occupies the primary phase and the candidate phase is not created.
+
 The controller writes `DISPATCH.md` for eval cycles, `TICKET-DISPATCH.md` for
 ticket cycles, and a one-row `DISPATCH.md` for standalone eval-design cycles.
 These are the authoritative ordered child lists. The director has no
@@ -160,8 +165,9 @@ Cycle requests select a mode. The current modes are:
   one XSH worktree per ticket, and
   dispatch one `xsh-swe` worker per worktree.
 - `organization`: admit at most one approved ticket automatically or from the
-  request; run its implementation and linked pre-merge re-evaluation in order,
-  or run an eval when no ticket is admitted; then run one eval-design phase.
+  request; run its implementation, linked pre-merge re-evaluation, and the
+  independent eval listed in the request in order, or run that eval as the
+  primary phase when no ticket is admitted; then run one eval-design phase.
 - `eval-design`: dispatch exactly one eval-designer proposal and dry run.
 
 Each run also has an `events/` ledger of small Markdown event records. The

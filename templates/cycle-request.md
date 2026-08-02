@@ -5,7 +5,8 @@
 Run the smallest complete organization cycle that proves the requested
 factory path and produces evidence toward `NORTH-STAR.md`. Keep the cycle
 cheap and preserve all worker evidence; do not create activity or tickets
-without a corresponding product hypothesis.
+without a corresponding product hypothesis. When a ticket is admitted, run
+its linked re-evaluation and the independent active eval sequentially.
 
 ## Mode
 
@@ -43,7 +44,9 @@ environment override in the invocation, using names such as
 ## Required outputs
 
 - one approved ticket implementation and linked pre-merge replay when a ticket
-  is available, otherwise one task-ecount eval;
+  is available;
+- one independent active eval when a ticket is available, otherwise one active
+  eval as the primary phase;
 - one eval-design proposal pending review;
 - worker session reports and extracted thinking transcripts;
 - a run-level cost report covering every Pi session;

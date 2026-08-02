@@ -4,9 +4,10 @@
 
 Run one bounded organization cycle. Admit at most one explicitly approved
 ticket, or automatically select the first approved ticket. If none is
-available, run the selected eval. After a ticket implementation, immediately
-re-evaluate its linked eval against the exact clean SWE worktree before merge.
-Always stage one small practical eval proposal for user review.
+available, run the selected eval. When a ticket is admitted, immediately
+re-evaluate its linked eval against the exact clean SWE worktree before merge,
+then run the independent `task-ecount` eval against XSH main. Always stage one
+small practical eval proposal for user review.
 
 ## Mode
 
@@ -39,6 +40,7 @@ deliberate override in the invocation with a role-specific setting.
 
 - one primary eval or ticket phase;
 - one linked candidate re-evaluation when a ticket is admitted;
+- one independent `task-ecount` eval when a ticket is admitted;
 - one eval-design proposal pending review;
 - aggregate cost and per-phase reports under one parent run;
 - no worker-selected tickets, evals, merges, or approvals.

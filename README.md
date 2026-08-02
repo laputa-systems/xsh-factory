@@ -34,15 +34,23 @@ rebuilds the Docker image with pull and no-cache enabled. Every child Pi
 session and the run-level cost report are saved under `runs/run-<id>/`.
 
 Run the standard organization cycle (automatic first approved ticket, linked
-pre-merge re-evaluation, and one new eval proposal):
+pre-merge re-evaluation, independent task-ecount eval, and one new eval
+proposal):
 
 ```sh
 XSH_MODULE_PATH=. xsh run.xsh cycle-organization.md
 ```
 
-If no approved ticket exists, the primary phase runs the selected eval instead.
-The parent run is under `runs/run-<id>/`; inspect its `RUN.md` and `COST.md`,
-then inspect each ordered phase under `phases/`.
+If no approved ticket exists, the selected eval runs as the primary phase
+instead. With an approved ticket, the selected active eval runs after the
+linked candidate replay against XSH main. The parent run is under
+`runs/run-<id>/`; inspect its `RUN.md` and `COST.md`, then inspect each ordered
+phase under `phases/`.
+
+Before dispatching any child, `run.xsh` checks the request shape, XSH
+worktree cleanliness, required factory files, Pi authentication, executable
+availability, active-run markers, and—when an eval will run—the Docker daemon
+and local build tool.
 
 Run only the eval-design phase:
 

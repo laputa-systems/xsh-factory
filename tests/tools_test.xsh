@@ -29,6 +29,27 @@ proc test_session_report_uses_synthetic_pi_session(ctx: TestContext) [fs, proces
   test.contains(thinking, "inspect the fixture")?
 }
 
+proc test_run_dispatcher_fails_preflight_before_agent_launch(ctx: TestContext) [fs, process, env, error] {
+  let root = test.temp_dir(ctx, name: "dispatcher-preflight")?
+  let request = fp"${root}/cycle.md"
+  fs.write(request, "# Cycle\n\n## Mode\n\n- `organization`\n\n## Active evals\n\n- `task-ecount`\n\n## Trial plan\n\n- Count: `1`\n\n## New eval proposals\n\n- Count: `1`\n")?
+  let xsh = process.which("xsh")?
+  let factory_dir = fs.cwd()?
+  let status = process.run(process.command_argv(
+    xsh,
+    [xsh.display(), fp"${factory_dir}/run.xsh".display(), "--", request.display()],
+    cwd: factory_dir,
+    env: {
+      PATH: env.get("PATH")?,
+      HOME: env.get("HOME")?,
+      FACTORY_DIR: root.display(),
+      XSH_MODULE_PATH: factory_dir.display(),
+    },
+  ))?
+  test.ok(! status.ok, "dispatcher should stop before workers when XSH repo admission fails")?
+  test.ok(! fs.exists(fp"${root}/runs/ORGANIZATION-ACTIVE")?)?
+}
+
 proc test_audit_run_preserves_separate_evaluator_outcomes(ctx: TestContext) [fs, process, error] {
   let root = test.temp_dir(ctx, name: "audit-run")?
   let run_dir = fp"${root}/run-1"
