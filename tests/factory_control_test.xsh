@@ -27,6 +27,10 @@ proc test_cycle_request_parsing() [error] {
 }
 
 proc test_role_configuration_has_one_coded_default() [env, error] {
+  test.eq(control.default_cycle_budget(), "0.50")?
+  test.eq(control.clamp_cycle_budget("0.50")?, "0.50")?
+  test.eq(control.clamp_cycle_budget("0.25")?, "0.25")?
+  test.eq(control.clamp_cycle_budget("2.00")?, "0.50")?
   for entry in [
     {role: "director", budget: "0.06"},
     {role: "eval-designer", budget: "0.30"},

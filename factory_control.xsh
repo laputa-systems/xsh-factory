@@ -83,6 +83,11 @@ export pure default_budget(role: Str) -> Str {
   return ""
 }
 
+## The hard maximum spend for one factory cycle.
+export pure default_cycle_budget() -> Str {
+  return "0.50"
+}
+
 ## Clamps an operator-supplied budget to the role's hard ceiling.
 export pure clamp_budget(role: Str, configured: Str) -> Result[Str] {
   let ceiling_text = default_budget(role)
@@ -90,6 +95,17 @@ export pure clamp_budget(role: Str, configured: Str) -> Result[Str] {
     return Ok(configured)
   }
   let requested = configured.parse_float()?
+  let ceiling = ceiling_text.parse_float()?
+  if requested > ceiling {
+    return Ok(ceiling_text)
+  }
+  return Ok(configured)
+}
+
+## An operator may lower the cycle cap, but never raise the factory hard ceiling.
+export pure clamp_cycle_budget(configured: Str) -> Result[Str] {
+  let requested = configured.parse_float()?
+  let ceiling_text = default_cycle_budget()
   let ceiling = ceiling_text.parse_float()?
   if requested > ceiling {
     return Ok(ceiling_text)

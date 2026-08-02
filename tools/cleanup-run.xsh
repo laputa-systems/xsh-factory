@@ -1,6 +1,6 @@
 ##! Drain the process and container registry for an interrupted factory run.
 
-proc signal_registry(run_dir: Path, signal: Str) [fs, process, error] -> Result[Unit] {
+proc signal_registry(run_dir: Path, signal: Str, excluded_pid: Int) [fs, process, error] -> Result[Unit] {
   if ! fs.exists(run_dir)? {
     return Ok()
   }
@@ -11,6 +11,9 @@ proc signal_registry(run_dir: Path, signal: Str) [fs, process, error] -> Result[
         if text != "" {
           match text.parse_int() {
             Ok(pid) => {
+              if pid == excluded_pid {
+                continue
+              }
               match unix.kill_process_group(pid, signal) {
                 Ok(_) => {}
                 Err(_) => {
@@ -45,14 +48,19 @@ proc stop_containers(run_dir: Path) [fs, process, env, error] -> Result[Unit] {
 
 proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   if argv.len() < 1 {
-    eprint "usage: cleanup-run.xsh RUN_DIR"
+    eprint "usage: cleanup-run.xsh RUN_DIR [--exclude-pid PID]"
     abort(2)
   }
   let run_dir = Path(argv[0])
-  signal_registry(run_dir, "INT")?
+  let excluded_pid = if argv.len() >= 3 and argv[1] == "--exclude-pid" {
+    argv[2].parse_int()?
+  } else {
+    -1
+  }
+  signal_registry(run_dir, "INT", excluded_pid)?
   stop_containers(run_dir)?
   time.sleep(250ms)?
-  signal_registry(run_dir, "KILL")?
+  signal_registry(run_dir, "KILL", excluded_pid)?
   stop_containers(run_dir)?
   fs.remove(fp"${run_dir}/ACTIVE", missing_ok: true)?
   fs.remove(fp"${run_dir.parent()}/ACTIVE", missing_ok: true)?

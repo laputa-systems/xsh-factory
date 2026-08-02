@@ -42,6 +42,11 @@ proc run_ticket_cycle(
   fs.mkdir(worktree_root)?
   fs.mkdir(fp"${run_dir}/messages")?
   fs.mkdir(fp"${run_dir}/tickets")?
+  runtime.register_cycle_controller(run_dir)?
+  let skip_cycle_budget = env.get_or("FACTORY_SKIP_CYCLE_BUDGET", "false")? == "true"
+  if ! skip_cycle_budget {
+    let _cycle_budget_watch = runtime.start_cycle_budget_watch(factory_dir, run_dir)?
+  }
   fs.write(active_run, run_dir.display() + "\n")?
   defer fs.remove(active_run, missing_ok: true)?
   fs.copy(request, fp"${run_dir}/CYCLE-REQUEST.md", overwrite: true)?
@@ -297,6 +302,9 @@ proc run_ticket_cycle(
     runtime.emit_event(event_template, run_dir, "95-cycle-validated", "ticket-implementation", "validated", 1, "controller", "all required review outputs passed")?
   } else {
     runtime.emit_event(event_template, run_dir, "90-cycle-failed", "ticket-implementation", "failed", 1, "controller", "one or more required outputs failed")?
+  }
+  if ! skip_cycle_budget {
+    runtime.stop_cycle_budget_watch(run_dir)?
   }
   print f"factory run: ${run_dir} (${result})"
   return if result == "pass" { 0 } else { 1 }

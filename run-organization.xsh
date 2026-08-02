@@ -48,6 +48,7 @@ proc spawn_child(
     "FACTORY_PLATFORM=" + platform,
     "XSH_TARGET=" + target,
     "FACTORY_BASE_IMAGE=" + base_image,
+    "FACTORY_SKIP_CYCLE_BUDGET=true",
     "PI_AUTH_FILE=" + auth_file.display(),
     "PI_COMMAND=" + pi_command,
     "DOCKER=" + docker,
@@ -180,6 +181,11 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   }
   let _organization_lock = fs.lock(fp"${factory_dir}/runs/organization.lock", nonblocking: true)?
   fs.mkdir(run_dir)?
+  runtime.register_cycle_controller(run_dir)?
+  let skip_cycle_budget = env.get_or("FACTORY_SKIP_CYCLE_BUDGET", "false")? == "true"
+  if ! skip_cycle_budget {
+    let _cycle_budget_watch = runtime.start_cycle_budget_watch(factory_dir, run_dir)?
+  }
   fs.write(active_run, run_dir.display() + "\n")?
   defer fs.remove(active_run, missing_ok: true)?
   let _ = runtime.reconcile_tickets(factory_dir, xsh_repo, xsh_commit.trim())?
@@ -470,6 +476,9 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     "organization", if result == "pass" { "completed" } else { "failed" }, 1, "controller", "organization RUN.md and aggregate COST.md written")?
   if result == "pass" {
     runtime.emit_event(event_template, run_dir, "95-cycle-validated", "organization", "validated", 1, "controller", "all required phases passed")?
+  }
+  if ! skip_cycle_budget {
+    runtime.stop_cycle_budget_watch(run_dir)?
   }
   print f"factory organization run: ${run_dir} (${result})"
   abort(if result == "pass" { 0 } else { 1 })

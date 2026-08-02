@@ -307,6 +307,135 @@ proc test_budget_watch_terminates_a_harmless_fake_worker(ctx: TestContext) [fs, 
   test.contains(fs.read_text(marker)?, "budget exceeded: 1.250000 > 1.00")?
 }
 
+proc test_cycle_budget_watch_writes_postmortem_and_cleans_process_tree(ctx: TestContext) [fs, process, env, error] {
+  let root = test.temp_dir(ctx, name: "cycle-budget-breach")?
+  let run_dir = fp"${root}/run"
+  let worker_dir = fp"${run_dir}/workers/eval-worker/task-tags-1"
+  let processes = fp"${run_dir}/processes"
+  let session = fp"${worker_dir}/session.jsonl"
+  let marker = fp"${run_dir}/AGGREGATE-BUDGET-BREACH"
+  let stop = fp"${run_dir}/AGGREGATE-BUDGET-STOP"
+  let postmortem = fp"${run_dir}/POSTMORTEM.md"
+  let factory = fs.cwd()?
+  let tool = fp"${factory}/tools/cycle-budget-watch.xsh"
+  fs.mkdir(worker_dir)?
+  fs.mkdir(processes)?
+  fs.write(session, r"""
+{"message":{"usage":{"cost":{"total":0.30}}}}
+{"message":{"usage":{"cost":{"total":0.25}}}}
+""")?
+  let child = spawn process.command_argv("sh", ["sh", "-c", "sleep 5"])?
+  fs.write(fp"${processes}/controller.pids", f"${child.pid}\n")?
+  let xsh = process.which("xsh")?
+  let status = process.run(process.command_argv(
+    xsh,
+    [xsh.display(), tool.display(), "--", "--run-dir", run_dir.display(),
+      "--pid", f"${child.pid}", "--budget-usd", "0.50", "--marker", marker.display(),
+      "--stop", stop.display(), "--postmortem", postmortem.display()],
+    cwd: factory,
+    env: {
+      PATH: env.get("PATH")?,
+      FACTORY_DIR: factory.display(),
+      XSH_MODULE_PATH: factory.display(),
+    },
+  ))?
+  test.ok(status.exited_with(3), "aggregate budget breach should use exit code 3")?
+  test.ok(fs.exists(marker)?, "aggregate breach should leave a durable marker")?
+  test.contains(fs.read_text(marker)?, "budget exceeded: 0.550000 > 0.50")?
+  test.ok(fs.exists(postmortem)?, "aggregate breach should write a postmortem")?
+  test.contains(fs.read_text(postmortem)?, "Hard cap: `$0.50`")?
+  test.contains(fs.read_text(postmortem)?, "Observed spend: `$0.550000`")?
+  let child_status = wait child?
+  test.ok(! child_status.ok, "aggregate cleanup should terminate the registered controller")?
+  test.ok(! (process.list()? |> any .pid == child.pid), "aggregate cleanup should terminate the registered controller")?
+}
+
+proc test_cycle_budget_watch_stops_cleanly_without_breach(ctx: TestContext) [fs, process, env, time, error] {
+  let root = test.temp_dir(ctx, name: "cycle-budget-stop")?
+  let run_dir = fp"${root}/run"
+  let worker_dir = fp"${run_dir}/workers/eval-worker/task-tags-1"
+  let session = fp"${worker_dir}/session.jsonl"
+  let marker = fp"${run_dir}/AGGREGATE-BUDGET-BREACH"
+  let stop = fp"${run_dir}/AGGREGATE-BUDGET-STOP"
+  let postmortem = fp"${run_dir}/POSTMORTEM.md"
+  let factory = fs.cwd()?
+  let tool = fp"${factory}/tools/cycle-budget-watch.xsh"
+  fs.mkdir(worker_dir)?
+  fs.write(session, "{\"message\":{\"usage\":{\"cost\":{\"total\":0.10}}}}\n")?
+  let child = spawn process.command_argv("sh", ["sh", "-c", "sleep 5"])?
+  let xsh = process.which("xsh")?
+  let watcher = spawn process.command_argv(
+    xsh,
+    [xsh.display(), tool.display(), "--", "--run-dir", run_dir.display(),
+      "--pid", f"${child.pid}", "--budget-usd", "0.50", "--marker", marker.display(),
+      "--stop", stop.display(), "--postmortem", postmortem.display()],
+    cwd: factory,
+    env: {
+      PATH: env.get("PATH")?,
+      FACTORY_DIR: factory.display(),
+      XSH_MODULE_PATH: factory.display(),
+    },
+  )?
+  time.sleep(150ms)?
+  fs.write_atomic(stop, "normal controller shutdown\n")?
+  let watcher_status = wait watcher?
+  test.ok(watcher_status.ok, "normal stop should let the aggregate watcher exit cleanly")?
+  test.ok(! fs.exists(marker)?, "normal stop should not create a breach marker")?
+  test.ok(! fs.exists(postmortem)?, "normal stop should not create a postmortem")?
+  test.ok(process.list()? |> any .pid == child.pid, "normal stop should not kill the controller")?
+  let kill_status = process.kill(child.pid, signal: "TERM")
+  let child_status = wait child?
+}
+
+proc test_cycle_budget_watch_fails_closed_on_unknown_cost(ctx: TestContext) [fs, process, env, error] {
+  let root = test.temp_dir(ctx, name: "cycle-budget-unknown")?
+  let run_dir = fp"${root}/run"
+  let worker_dir = fp"${run_dir}/workers/eval-worker/task-tags-1"
+  let session = fp"${worker_dir}/session.jsonl"
+  let marker = fp"${run_dir}/AGGREGATE-BUDGET-BREACH"
+  let stop = fp"${run_dir}/AGGREGATE-BUDGET-STOP"
+  let postmortem = fp"${run_dir}/POSTMORTEM.md"
+  let factory = fs.cwd()?
+  let tool = fp"${factory}/tools/cycle-budget-watch.xsh"
+  fs.mkdir(worker_dir)?
+  fs.write(session, "{\"message\":{\"usage\":{\"input\":10}}}\n")?
+  let child = spawn process.command_argv("sh", ["sh", "-c", "sleep 5"])?
+  let xsh = process.which("xsh")?
+  let status = process.run(process.command_argv(
+    xsh,
+    [xsh.display(), tool.display(), "--", "--run-dir", run_dir.display(),
+      "--pid", f"${child.pid}", "--budget-usd", "0.50", "--marker", marker.display(),
+      "--stop", stop.display(), "--postmortem", postmortem.display()],
+    cwd: factory,
+    env: {
+      PATH: env.get("PATH")?,
+      FACTORY_DIR: factory.display(),
+      XSH_MODULE_PATH: factory.display(),
+    },
+  ))?
+  test.ok(status.exited_with(3), "unknown cost should stop the cycle")?
+  test.contains(fs.read_text(marker)?, "budget exceeded: unknown > 0.50")?
+  test.contains(fs.read_text(postmortem)?, "Observed spend: `$unknown`")?
+  let child_status = wait child?
+  test.ok(! child_status.ok, "unknown cost shutdown should terminate the controller")?
+}
+
+proc test_cycle_budget_is_wired_once_per_top_level_controller(ctx: TestContext) [fs, error] {
+  let factory = fs.cwd()?
+  for controller in ["run-ticket.xsh", "run-eval.xsh", "run-design.xsh", "run-organization.xsh"] {
+    let source = fs.read_text(fp"${factory}/${controller}")?
+    test.contains(source, "runtime.start_cycle_budget_watch")?
+    test.contains(source, "runtime.stop_cycle_budget_watch")?
+    test.contains(source, "runtime.register_cycle_controller")?
+  }
+  let organization = fs.read_text(fp"${factory}/run-organization.xsh")?
+  test.contains(organization, "FACTORY_SKIP_CYCLE_BUDGET=true")?
+  let dispatcher = fs.read_text(fp"${factory}/run.xsh")?
+  test.contains(dispatcher, "templates/POSTMORTEM.md")?
+  test.contains(dispatcher, "top-level dispatcher cannot disable the aggregate cycle budget")?
+  let _ = ctx
+}
+
 proc test_eval_executor_disables_eval_when_mock_worker_breaches_budget(ctx: TestContext) [fs, process, env, error] {
   let root = test.temp_dir(ctx, name: "eval-budget-breach")?
   let factory = fs.cwd()?
@@ -572,4 +701,24 @@ proc test_cleanup_run_uses_a_mock_container_command(ctx: TestContext) [fs, proce
   test.ok(status.ok, "cleanup should tolerate stale and malformed registry entries")?
   test.ok(! (fs.exists(fp"${run_dir.parent()}/ACTIVE")?))?
   test.eq(fs.read_text(docker_log)?, "calledcalledcalledcalled")?
+}
+
+proc test_cleanup_run_can_leave_the_handling_controller_alive(ctx: TestContext) [fs, process, error] {
+  let run_dir = test.temp_dir(ctx, name: "cleanup-exclude")?
+  let registry = fp"${run_dir}/processes"
+  fs.mkdir(registry)?
+  let controller = spawn process.command_argv("sh", ["sh", "-c", "sleep 5"])?
+  fs.write(fp"${registry}/controller.pids", f"${controller.pid}\n")?
+  let tool = fp"${fs.cwd()?}/tools/cleanup-run.xsh"
+  let xsh = process.which("xsh")?
+  let status = process.run(process.command_argv(
+    xsh,
+    [xsh.display(), tool.display(), "--", run_dir.display(),
+      "--exclude-pid", f"${controller.pid}"],
+  ))?
+  test.ok(status.ok, "cleanup should support excluding the controller handling SIGINT")?
+  test.ok(process.list()? |> any .pid == controller.pid, "excluded controller should remain alive")?
+  let kill_status = process.kill(controller.pid, signal: "TERM")
+  let controller_status = wait controller?
+  test.ok(! controller_status.ok, "test controller should be terminated explicitly")?
 }

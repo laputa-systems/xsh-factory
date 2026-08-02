@@ -43,12 +43,65 @@ export proc cleanup_active_run() [fs, process, env, error] -> Result[Unit] {
   let run_text = fs.read_text(active_marker)?.trim()
   if run_text != "" {
     let xsh_path = process.which("xsh")?
+    let self_pid = process.current_pid()?
     let cleanup = fp"${factory_dir}/tools/cleanup-run.xsh"
     let _ = process.run(process.command_argv(
       xsh_path,
-      [xsh_path.display(), cleanup.display(), "--", run_text],
+      [xsh_path.display(), cleanup.display(), "--", run_text, "--exclude-pid", f"${self_pid}"],
     ))?
   }
+  return Ok()
+}
+
+## Registers a controller so cleanup covers phase and top-level processes alike.
+export proc register_cycle_controller(run_dir: Path) [fs, process, error] -> Result[Unit] {
+  let processes = fp"${run_dir}/processes"
+  fs.mkdir(processes)?
+  let pid = process.current_pid()?
+  fs.write_atomic(fp"${processes}/controller.pids", f"${pid}\n")?
+  return Ok()
+}
+
+## Starts the one aggregate watcher owned by a top-level cycle controller.
+export proc start_cycle_budget_watch(
+  factory_dir: Path,
+  run_dir: Path,
+) [fs, process, env, error] -> Result[ProcessHandle] {
+  let requested = env.get_or("FACTORY_CYCLE_BUDGET_USD", control.default_cycle_budget())?
+  let budget = control.clamp_cycle_budget(requested)?
+  let xsh = process.which("xsh")?
+  let env_path = process.which("env")?
+  let watcher = fp"${factory_dir}/tools/cycle-budget-watch.xsh"
+  let marker = fp"${run_dir}/AGGREGATE-BUDGET-BREACH"
+  let stop = fp"${run_dir}/AGGREGATE-BUDGET-STOP"
+  let postmortem = fp"${run_dir}/POSTMORTEM.md"
+  let controller_pid = process.current_pid()?
+  let module_path = env.get_or("XSH_MODULE_PATH", factory_dir.display())?
+  let assignments = [
+    "FACTORY_DIR=" + factory_dir.display(),
+    "XSH_MODULE_PATH=" + module_path,
+  ]
+  let command = assignments.extend([
+    xsh.display(), watcher.display(), "--",
+    "--run-dir", run_dir.display(),
+    "--pid", f"${controller_pid}",
+    "--budget-usd", budget,
+    "--marker", marker.display(),
+    "--stop", stop.display(),
+    "--postmortem", postmortem.display(),
+  ])
+  return spawn process.command_argv(
+    env_path,
+    [env_path.display()].extend(command),
+    cwd: factory_dir,
+    stdout: fp"${run_dir}/cycle-budget-watch.stdout",
+    stderr: fp"${run_dir}/cycle-budget-watch.stderr",
+  )
+}
+
+## Requests a clean watcher exit after a controller completes normally.
+export proc stop_cycle_budget_watch(run_dir: Path) [fs, error] -> Result[Unit] {
+  fs.write_atomic(fp"${run_dir}/AGGREGATE-BUDGET-STOP", "normal controller shutdown\n")?
   return Ok()
 }
 

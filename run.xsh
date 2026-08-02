@@ -28,7 +28,16 @@ proc preflight(
     eprint f"XSH repository does not exist: ${xsh_repo.display()}"
     return false
   }
-  for required in ["NORTH-STAR.md", "runtime/handbook.md", "run-agent.xsh"] {
+  for required in [
+    "NORTH-STAR.md",
+    "runtime/handbook.md",
+    "run-agent.xsh",
+    "factory_control.xsh",
+    "factory_runtime.xsh",
+    "tools/cleanup-run.xsh",
+    "tools/cycle-budget-watch.xsh",
+    "templates/POSTMORTEM.md",
+  ] {
     if ! fs.exists(fp"${factory_dir}/${required}")? {
       eprint f"factory prerequisite is missing: ${factory_dir}/${required}"
       return false
@@ -48,6 +57,12 @@ proc preflight(
   }
 
   let home = env.get("HOME")?
+  if env.get_or("FACTORY_SKIP_CYCLE_BUDGET", "false")? == "true" {
+    eprint "top-level dispatcher cannot disable the aggregate cycle budget"
+    return false
+  }
+  let requested_cycle_budget = env.get_or("FACTORY_CYCLE_BUDGET_USD", control.default_cycle_budget())?
+  let _cycle_budget = control.clamp_cycle_budget(requested_cycle_budget)?
   let auth_file = env.path("PI_AUTH_FILE", fp"${home}/.pi/agent/auth.json")?
   if ! fs.exists(auth_file)? {
     eprint f"Pi auth file does not exist: ${auth_file.display()}"

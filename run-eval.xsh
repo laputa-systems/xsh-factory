@@ -70,6 +70,11 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   fs.mkdir(run_dir)?
   fs.mkdir(worker_root)?
   fs.mkdir(lineage_dir)?
+  runtime.register_cycle_controller(run_dir)?
+  let skip_cycle_budget = env.get_or("FACTORY_SKIP_CYCLE_BUDGET", "false")? == "true"
+  if ! skip_cycle_budget {
+    let _cycle_budget_watch = runtime.start_cycle_budget_watch(factory_dir, run_dir)?
+  }
   fs.write(active_run, run_dir.display() + "\n")?
   defer fs.remove(active_run, missing_ok: true)?
   runtime.emit_event(event_template, run_dir, "00-cycle-started", eval_id, "started", 1, "controller", "eval-manager cycle")?
@@ -456,6 +461,9 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     runtime.emit_event(event_template, run_dir, "95-cycle-validated", eval_id, "validated", 1, "controller", "all required outputs passed")?
   } else {
     runtime.emit_event(event_template, run_dir, "90-cycle-failed", eval_id, "failed", 1, "controller", "one or more required outputs failed")?
+  }
+  if ! skip_cycle_budget {
+    runtime.stop_cycle_budget_watch(run_dir)?
   }
   print f"factory run: ${run_dir} (${result})"
   abort(if result == "pass" { 0 } else { 1 })

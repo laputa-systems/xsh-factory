@@ -7,6 +7,9 @@ prompts, tickets, and run evidence.
 
 Read [NORTH-STAR.md](NORTH-STAR.md) for the mission and
 [FACTORY.md](FACTORY.md) for the contracts and engineering rules.
+For an unattended, bounded improvement loop, read
+[AUTOMATOR.md](AUTOMATOR.md) and explicitly start the factory according to its
+instructions.
 
 ## Prerequisites
 
@@ -23,6 +26,10 @@ eval-designer, and `$0.50` for the eval-worker. Budget overrides can lower a
 ceiling but cannot raise it. Override other role settings at invocation time
 with variables such as `FACTORY_EVAL_MANAGER_MODEL` or
 `FACTORY_XSH_SWE_THINKING`.
+
+Each top-level cycle has a live aggregate cap of `$0.50`, which can be lowered
+with `FACTORY_CYCLE_BUDGET_USD`. A breach terminates the full run tree and
+writes `POSTMORTEM.md` in the run directory before returning control.
 
 ## Common actions
 

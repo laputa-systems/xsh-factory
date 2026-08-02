@@ -59,6 +59,11 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     abort(1)
   }
   fs.mkdir(run_dir)?
+  runtime.register_cycle_controller(run_dir)?
+  let skip_cycle_budget = env.get_or("FACTORY_SKIP_CYCLE_BUDGET", "false")? == "true"
+  if ! skip_cycle_budget {
+    let _cycle_budget_watch = runtime.start_cycle_budget_watch(factory_dir, run_dir)?
+  }
   fs.mkdir(worker_root)?
   fs.mkdir(messages_dir)?
   fs.mkdir(fp"${run_dir}/proposals")?
@@ -229,6 +234,9 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     {key: "AUDIT_RESULT", value: audit_result},
   ]
   fs.write(fp"${run_dir}/RUN-DESIGN.md", control.fill_template(run_template.read_text()?, run_values))?
+  if ! skip_cycle_budget {
+    runtime.stop_cycle_budget_watch(run_dir)?
+  }
   print f"factory run: ${run_dir} (${result})"
   abort(if result == "pass" { 0 } else { 1 })
 }
