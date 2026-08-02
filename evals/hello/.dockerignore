@@ -1,0 +1,7 @@
+*
+!.dist/
+!.dist/**
+!runtime/
+!runtime/**
+!eval-worker.xsh
+!Dockerfile

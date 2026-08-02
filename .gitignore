@@ -1,0 +1,4 @@
+runs/
+evals/*/.dist/
+evals/*/runtime/.DS_Store
+*.swp
