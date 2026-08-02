@@ -31,6 +31,7 @@ evidence needed for durable handbook or product decisions. See
 - Handbook lineage: `{{LINEAGE_STATE}}`
 - Cost report: `{{COST_STATE}}`
 - Deterministic audit: `{{AUDIT_STATE}}` (`{{AUDIT_RESULT}}`)
+- CTO briefing: `{{CTO_STATE}}`
 
 ## Handbook validation
 

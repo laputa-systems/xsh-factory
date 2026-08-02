@@ -209,19 +209,19 @@ proc audit_run(run_dir: Path, requested_mode: Str, factory_dir: Path) [fs, error
   let requested_tickets = if request_exists { control.request_tickets(request_text) } else { [] }
   var sessions: List[Path] = []
   var manifests: List[Path] = []
-  var swe_reports: List[Path] = []
+  var engineer_reports: List[Path] = []
   var manager_reports: List[Path] = []
   var designer_reports: List[Path] = []
   for entry in fs.files(run_dir, gitignore: false, hidden: true)? {
     if entry.name == "session.jsonl" { sessions = sessions.push(entry.path) }
     if entry.name == "run.json" { manifests = manifests.push(entry.path) }
-    if entry.name == "SWE-REPORT.md" { swe_reports = swe_reports.push(entry.path) }
+    if entry.name == "ENGINEER-REPORT.md" { engineer_reports = engineer_reports.push(entry.path) }
     if entry.name == "MANAGER-REPORT.md" { manager_reports = manager_reports.push(entry.path) }
     if entry.name == "DESIGNER-REPORT.md" { designer_reports = designer_reports.push(entry.path) }
   }
   sessions = sessions |> sort-by .display()
   manifests = manifests |> sort-by .display()
-  swe_reports = swe_reports |> sort-by .display()
+  engineer_reports = engineer_reports |> sort-by .display()
   manager_reports = manager_reports |> sort-by .display()
   designer_reports = designer_reports |> sort-by .display()
 
@@ -330,13 +330,13 @@ proc audit_run(run_dir: Path, requested_mode: Str, factory_dir: Path) [fs, error
 
   var ticket_ok = true
   var observed_tickets = 0
-  for report in swe_reports {
+  for report in engineer_reports {
     let report_text = report.read_text()?
     let relative = relative_path(run_name, report)
     let parts = relative.split("/")
     let ticket_id = if parts.len() >= 4 { parts[2] } else { "unknown" }
     let session = fp"${report.parent()}/session.jsonl"
-    let contract_ok = control.swe_report_contract_ok(report_text) and fs.exists(session)?
+    let contract_ok = control.engineer_report_contract_ok(report_text) and fs.exists(session)?
     let outcome = control.report_field(report_text, "Result")
     let branch = control.report_field(report_text, "Branch")
     let commit = control.report_field(report_text, "Commit")
@@ -349,7 +349,7 @@ proc audit_run(run_dir: Path, requested_mode: Str, factory_dir: Path) [fs, error
       {key: "KIND", value: "ticket"},
       {key: "IDENTIFIER", value: ticket_id},
       {key: "OUTCOME", value: outcome},
-      {key: "CLASSIFICATION", value: "xsh-swe"},
+      {key: "CLASSIFICATION", value: "engineer"},
       {key: "CONTRACT", value: if contract_ok { "pass" } else { "fail" }},
       {key: "SESSION", value: if fs.exists(session)? { relative_path(run_name, session) } else { "missing" }},
       {key: "REPORT", value: relative},
@@ -432,7 +432,7 @@ proc audit_run(run_dir: Path, requested_mode: Str, factory_dir: Path) [fs, error
     {key: "EXPECTED_TRIALS", value: expected_trials.float().format(precision: 0)},
     {key: "SESSION_COUNT", value: sessions.len().float().format(precision: 0)},
     {key: "MANIFEST_COUNT", value: manifests.len().float().format(precision: 0)},
-    {key: "TICKET_COUNT", value: swe_reports.len().float().format(precision: 0)},
+    {key: "TICKET_COUNT", value: engineer_reports.len().float().format(precision: 0)},
     {key: "PROVENANCE_STATE", value: provenance_text},
     {key: "COST_STATE", value: cost_text},
     {key: "LINEAGE_STATE", value: lineage_text},

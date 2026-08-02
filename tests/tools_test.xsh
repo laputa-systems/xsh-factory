@@ -75,8 +75,8 @@ proc test_eval_image_stages_shared_factory_modules(ctx: TestContext) [fs, error]
   let _ = ctx
 }
 
-proc test_swe_patch_artifact_survives_worktree_cleanup(ctx: TestContext) [fs, process, error] {
-  let root = test.temp_dir(ctx, name: "swe-patch-cleanup")?
+proc test_engineer_patch_artifact_survives_worktree_cleanup(ctx: TestContext) [fs, process, error] {
+  let root = test.temp_dir(ctx, name: "engineer-patch-cleanup")?
   let product = fp"${root}/xsh"
   let worktree = fp"${root}/worktree"
   let patch_file = fp"${root}/patches/task.diff"
@@ -99,17 +99,17 @@ proc test_swe_patch_artifact_survives_worktree_cleanup(ctx: TestContext) [fs, pr
   let add_worktree = process.run(process.command_argv(
     "git", ["git", "-C", product.display(), "worktree", "add", "-b", branch, worktree.display(), base.trim()],
   ))?
-  test.ok(add_worktree.ok, "fixture SWE worktree should initialize")?
+  test.ok(add_worktree.ok, "fixture engineer worktree should initialize")?
   fs.write(fp"${worktree}/README", "base\nchanged\n")?
   let add_change = process.run(process.command_argv("git", ["git", "-C", worktree.display(), "add", "README"]))?
   test.ok(add_change.ok)?
   let commit_change = process.run(process.command_argv("git", ["git", "-C", worktree.display(), "commit", "-m", "change"]))?
   test.ok(commit_change.ok)?
   let head = run.text "git" "-C" $worktree.display() "rev-parse" "HEAD" ?
-  let patch_ok = runtime.write_swe_patch(worktree, base.trim(), head.trim(), patch_file, patch_stderr)?
-  test.ok(patch_ok, "validated SWE output should produce a non-empty patch")?
+  let patch_ok = runtime.write_engineer_patch(worktree, base.trim(), head.trim(), patch_file, patch_stderr)?
+  test.ok(patch_ok, "validated engineer output should produce a non-empty patch")?
   test.contains(fs.read_text(patch_file)?, "+changed")?
-  test.ok(runtime.remove_clean_worktree(product, worktree)?, "clean SWE worktree should be removable")?
+  test.ok(runtime.remove_clean_worktree(product, worktree)?, "clean engineer worktree should be removable")?
   test.ok(! fs.exists(worktree)?, "worktree contents should be removed")?
   let branches = run.text "git" "-C" $product.display() "branch" "--list" $branch ?
   test.contains(branches, branch, "review branch must survive worktree cleanup")?
@@ -169,6 +169,7 @@ proc test_organization_overlaps_design_with_primary_using_fake_children(ctx: Tes
   fs.copy(fp"${factory}/NORTH-STAR.md", fp"${root}/NORTH-STAR.md", overwrite: true)?
   fs.copy(fp"${factory}/runtime/handbook.md", fp"${root}/runtime/handbook.md", overwrite: true)?
   fs.copy(fp"${factory}/tools/session-report.xsh", fp"${root}/tools/session-report.xsh", overwrite: true)?
+  fs.copy(fp"${factory}/tools/cto-report.xsh", fp"${root}/tools/cto-report.xsh", overwrite: true)?
 
   let fake_child = fp"${root}/fake-child.sh"
   fs.write(fake_child, r"""#!/bin/sh
@@ -244,6 +245,7 @@ proc test_organization_skips_design_when_request_count_is_zero(ctx: TestContext)
   fs.copy(fp"${factory}/NORTH-STAR.md", fp"${root}/NORTH-STAR.md", overwrite: true)?
   fs.copy(fp"${factory}/runtime/handbook.md", fp"${root}/runtime/handbook.md", overwrite: true)?
   fs.copy(fp"${factory}/tools/session-report.xsh", fp"${root}/tools/session-report.xsh", overwrite: true)?
+  fs.copy(fp"${factory}/tools/cto-report.xsh", fp"${root}/tools/cto-report.xsh", overwrite: true)?
 
   let fake_child = fp"${root}/fake-child.sh"
   fs.write(fake_child, r"""#!/bin/sh
@@ -329,6 +331,7 @@ proc test_organization_overlaps_independent_eval_with_ticket(ctx: TestContext) [
   fs.copy(fp"${factory}/NORTH-STAR.md", fp"${root}/NORTH-STAR.md", overwrite: true)?
   fs.copy(fp"${factory}/runtime/handbook.md", fp"${root}/runtime/handbook.md", overwrite: true)?
   fs.copy(fp"${factory}/tools/session-report.xsh", fp"${root}/tools/session-report.xsh", overwrite: true)?
+  fs.copy(fp"${factory}/tools/cto-report.xsh", fp"${root}/tools/cto-report.xsh", overwrite: true)?
   fs.copy(fp"${factory}/tests/fixtures/organization-ticket-overlap-ticket.md",
     fp"${root}/tickets/task-overlap.md", overwrite: true)?
   let fake_child = fp"${root}/fake-child.sh"
@@ -649,6 +652,8 @@ proc test_cycle_budget_is_wired_once_per_top_level_controller(ctx: TestContext) 
     test.contains(source, "runtime.start_cycle_budget_watch")?
     test.contains(source, "runtime.stop_cycle_budget_watch")?
     test.contains(source, "runtime.register_cycle_controller")?
+    test.contains(source, "runtime.write_cto_report")?
+    test.contains(source, "CTO_STATE")?
   }
   let organization = fs.read_text(fp"${factory}/run-organization.xsh")?
   test.contains(organization, "FACTORY_SKIP_CYCLE_BUDGET=true")?
@@ -656,6 +661,52 @@ proc test_cycle_budget_is_wired_once_per_top_level_controller(ctx: TestContext) 
   test.contains(dispatcher, "templates/POSTMORTEM.md")?
   test.contains(dispatcher, "top-level dispatcher cannot disable the aggregate cycle budget")?
   let _ = ctx
+}
+
+proc test_cto_report_consolidates_phases_costs_and_employee_decisions(ctx: TestContext) [fs, process, env, error] {
+  let root = test.temp_dir(ctx, name: "cto-report")?
+  let run_dir = fp"${root}/run-1"
+  let manager_dir = fp"${run_dir}/workers/eval-manager/task-tags"
+  let designer_dir = fp"${run_dir}/workers/eval-designer/proposal-1"
+  let phase_dir = fp"${run_dir}/phases/eval"
+  fs.mkdir(manager_dir)?
+  fs.mkdir(designer_dir)?
+  fs.mkdir(phase_dir)?
+  fs.write(fp"${run_dir}/CYCLE-REQUEST.md", fs.read_text(fp"${fs.cwd()?}/tests/fixtures/organization-no-ticket.md")?)?
+  fs.write(fp"${run_dir}/AUDIT.md", "# Factory audit\n\n## Result\n\npass\n")?
+  fs.write(fp"${run_dir}/PROVENANCE.md", "# Factory provenance\n")?
+  fs.write(fp"${run_dir}/RUN.md", "# Organization run\n\n## Result\n\npass\n")?
+  fs.write(fp"${run_dir}/phases/eval/RUN.md", "# Factory run\n\n## Result\n\npass\n")?
+  let fixtures = fp"${fs.cwd()?}/tests/fixtures"
+  fs.copy(fp"${fixtures}/cto-report-cost.md", fp"${run_dir}/COST.md", overwrite: true)?
+  fs.copy(fp"${fixtures}/cto-report-director.md", fp"${run_dir}/DIRECTOR-REPORT.md", overwrite: true)?
+  fs.copy(fp"${fixtures}/cto-report-manager.md", fp"${manager_dir}/MANAGER-REPORT.md", overwrite: true)?
+  fs.copy(fp"${fixtures}/cto-report-designer.md", fp"${designer_dir}/DESIGNER-REPORT.md", overwrite: true)?
+  let output = fp"${run_dir}/CTO-REPORT.md"
+  let xsh = process.which("xsh")?
+  let factory = fs.cwd()?
+  let status = process.run(process.command_argv(
+    xsh,
+    [xsh.display(), fp"${factory}/tools/cto-report.xsh".display(), "--",
+      "--run-dir", run_dir.display(), "--output", output.display(), "--result", "pass"],
+    cwd: factory,
+    env: {
+      PATH: env.get("PATH")?,
+      FACTORY_DIR: factory.display(),
+      XSH_MODULE_PATH: factory.display(),
+    },
+  ))?
+  test.ok(status.ok, "CTO briefing should render from deterministic run evidence")?
+  let rendered = fs.read_text(output)?
+  test.contains(rendered, "# CTO briefing run-1")?
+  test.contains(rendered, "Mode: `organization`")?
+  test.contains(rendered, "- Role: `director`")?
+  test.contains(rendered, "- Role: `eval-manager`")?
+  test.contains(rendered, "- Role: `eval-designer`")?
+  test.contains(rendered, "eval-manager/task-tags")?
+  test.contains(rendered, "Total provider cost: `$0.12`")?
+  test.contains(rendered, "Open task-tags-003 for a reproducible follow-up.")?
+  test.contains(rendered, "Proposal is ready for review.")?
 }
 
 proc test_eval_executor_disables_eval_when_mock_worker_breaches_budget(ctx: TestContext) [fs, process, env, error] {
@@ -711,8 +762,8 @@ proc test_eval_executor_disables_eval_when_mock_worker_breaches_budget(ctx: Test
   test.contains(executor, "Budget watcher: `breached`")?
 }
 
-proc test_run_agent_closes_assigned_ticket_when_mock_swe_breaches_budget(ctx: TestContext) [fs, process, env, error] {
-  let root = test.temp_dir(ctx, name: "swe-budget-breach")?
+proc test_run_agent_closes_assigned_ticket_when_mock_engineer_breaches_budget(ctx: TestContext) [fs, process, env, error] {
+  let root = test.temp_dir(ctx, name: "engineer-budget-breach")?
   let factory = fs.cwd()?
   let run_dir = fp"${root}/runs/run-1"
   let workdir = fp"${run_dir}/worktrees/task-tags-002"
@@ -727,7 +778,7 @@ proc test_run_agent_closes_assigned_ticket_when_mock_swe_breaches_budget(ctx: Te
   fs.write(fp"${root}/tickets/task-tags-002.md", "# Ticket task-tags-002\n\n## Status\n\nApproved.\n")?
   fs.write(fp"${root}/NORTH-STAR.md", "north star\n")?
   fs.write(fp"${root}/runtime/handbook.md", "handbook\n")?
-  for name in ["WORKER.md", "BUDGET-BREACH.md", "XSH-SWE-ASSIGNMENT.md"] {
+  for name in ["WORKER.md", "BUDGET-BREACH.md", "ENGINEER-ASSIGNMENT.md"] {
     fs.copy(fp"${factory}/templates/${name}", fp"${root}/templates/${name}", overwrite: true)?
   }
   for name in ["budget-watch.xsh", "session-report.xsh"] {
@@ -738,7 +789,7 @@ proc test_run_agent_closes_assigned_ticket_when_mock_swe_breaches_budget(ctx: Te
   let chmod = process.run(process.command_argv("chmod", ["chmod", "+x", fake_pi.display()]))?
   test.ok(chmod.ok)?
   let ticket_path = fp"${root}/tickets/task-tags-002.md"
-  let assignment_template = fs.read_text(fp"${factory}/templates/XSH-SWE-ASSIGNMENT.md")?
+  let assignment_template = fs.read_text(fp"${factory}/templates/ENGINEER-ASSIGNMENT.md")?
   let assignment = control.fill_template(assignment_template, [
     {key: "TICKET_ID", value: "task-tags-002"},
     {key: "TICKET_PATH", value: ticket_path.display()},
@@ -746,7 +797,7 @@ proc test_run_agent_closes_assigned_ticket_when_mock_swe_breaches_budget(ctx: Te
     {key: "WORKTREE", value: workdir.display()},
     {key: "BRANCH", value: "factory/task-tags-002/run-1"},
     {key: "XSH_COMMIT", value: "xsh-sha"},
-    {key: "SWE_REPORT", value: fp"${run_dir}/workers/xsh-swe/task-tags-002/SWE-REPORT.md".display()},
+    {key: "ENGINEER_REPORT", value: fp"${run_dir}/workers/engineer/task-tags-002/ENGINEER-REPORT.md".display()},
     {key: "FACTORY_DIR", value: root.display()},
     {key: "FACTORY_RUN_DIR", value: run_dir.display()},
     {key: "NORTH_STAR_FILE", value: fp"${root}/NORTH-STAR.md".display()},
@@ -760,8 +811,8 @@ proc test_run_agent_closes_assigned_ticket_when_mock_swe_breaches_budget(ctx: Te
   let xsh = process.which("xsh")?
   let status = process.run(process.command_argv(
     xsh,
-    [xsh.display(), fp"${factory}/run-agent.xsh".display(), "--", "xsh-swe", "task-tags-002",
-      fp"${factory}/roles/xsh-swe.md".display(), message.display()],
+    [xsh.display(), fp"${factory}/run-agent.xsh".display(), "--", "engineer", "task-tags-002",
+      fp"${factory}/roles/engineer.md".display(), message.display()],
     cwd: root,
     env: {
       PATH: f"${root}/bin:${env.get("PATH")?}",
@@ -775,17 +826,17 @@ proc test_run_agent_closes_assigned_ticket_when_mock_swe_breaches_budget(ctx: Te
       FACTORY_ASSIGNMENT_SHA: assignment_sha,
       FACTORY_WORKDIR: workdir.display(),
       FACTORY_XSH_REPO: fp"${factory}/../xsh".display(),
-      FACTORY_XSH_SWE_BUDGET_USD: "2",
+      FACTORY_ENGINEER_BUDGET_USD: "2",
       PI_AUTH_FILE: "/dev/null",
       PI_COMMAND: "fake-pi",
     },
   ))?
-  test.ok(! status.ok, "an over-budget SWE runner must fail the worker")?
+  test.ok(! status.ok, "an over-budget engineer runner must fail the worker")?
   let ticket = fs.read_text(ticket_path)?
   test.ok(control.ticket_is_closed(ticket))?
   test.contains(ticket, "Reason: too difficult")?
-  test.contains(ticket, "runs/run-1/workers/xsh-swe/task-tags-002/WORKER-REPORT.md")?
-  test.ok(fs.exists(fp"${run_dir}/workers/xsh-swe/task-tags-002/BUDGET-BREACH")?)?
+  test.contains(ticket, "runs/run-1/workers/engineer/task-tags-002/WORKER-REPORT.md")?
+  test.ok(fs.exists(fp"${run_dir}/workers/engineer/task-tags-002/BUDGET-BREACH")?)?
 }
 
 proc test_audit_run_accepts_standalone_eval_design_evidence(ctx: TestContext) [fs, process, error] {
@@ -843,15 +894,15 @@ proc test_audit_run_accepts_ready_for_review_ticket_evidence(ctx: TestContext) [
   let root = test.temp_dir(ctx, name: "audit-ticket")?
   let run_dir = fp"${root}/run-1"
   let director_dir = fp"${run_dir}/workers/director/director"
-  let swe_dir = fp"${run_dir}/workers/xsh-swe/task-tags-002"
+  let engineer_dir = fp"${run_dir}/workers/engineer/task-tags-002"
   let factory = fs.cwd()?
   fs.mkdir(director_dir)?
-  fs.mkdir(swe_dir)?
+  fs.mkdir(engineer_dir)?
   fs.copy(fp"${factory}/tests/fixtures/audit-ticket-request.md", fp"${run_dir}/CYCLE-REQUEST.md", overwrite: true)?
   fs.copy(fp"${factory}/tests/fixtures/audit-ticket-director-report.md", fp"${run_dir}/DIRECTOR-REPORT.md", overwrite: true)?
   fs.copy(fp"${factory}/tests/fixtures/audit-ticket-cost.md", fp"${run_dir}/COST.md", overwrite: true)?
-  fs.copy(fp"${factory}/tests/fixtures/audit-ticket-swe-report.md", fp"${swe_dir}/SWE-REPORT.md", overwrite: true)?
-  for target in [director_dir, swe_dir] {
+  fs.copy(fp"${factory}/tests/fixtures/audit-ticket-engineer-report.md", fp"${engineer_dir}/ENGINEER-REPORT.md", overwrite: true)?
+  for target in [director_dir, engineer_dir] {
     fs.copy(fp"${factory}/tests/fixtures/audit-ticket-session.jsonl", fp"${target}/session.jsonl", overwrite: true)?
   }
 
@@ -875,7 +926,7 @@ proc test_audit_run_accepts_ready_for_review_ticket_evidence(ctx: TestContext) [
   let xsh = process.which("xsh")?
   for entry in [
     {path: director_dir, role: "director", worker: "director"},
-    {path: swe_dir, role: "xsh-swe", worker: "task-tags-002"},
+    {path: engineer_dir, role: "engineer", worker: "task-tags-002"},
   ] {
     let report_status = process.run(process.command_argv(
       xsh,
@@ -890,12 +941,12 @@ proc test_audit_run_accepts_ready_for_review_ticket_evidence(ctx: TestContext) [
   let audit_status = process.run(process.command_argv(
     xsh, [xsh.display(), fp"${factory}/audit-run.xsh".display(), "--", run_dir.display(), "ticket-implementation"],
   ))?
-  test.ok(audit_status.ok, "ticket audit should accept a ready-for-review SWE report")?
+  test.ok(audit_status.ok, "ticket audit should accept a ready-for-review engineer report")?
   let audit = fs.read_text(fp"${run_dir}/AUDIT.md")?
   test.ok(control.audit_report_contract_ok(audit))?
   test.eq(control.audit_result(audit), "pass")?
   test.ok(audit.contains("Ticket evidence") and ! audit.contains("Ticket evidence: fail"))?
-  test.contains(audit, "| ticket | task-tags-002 | ready-for-review | xsh-swe | pass |")?
+  test.contains(audit, "| ticket | task-tags-002 | ready-for-review | engineer | pass |")?
 }
 
 proc test_cleanup_run_uses_a_mock_container_command(ctx: TestContext) [fs, process, error] {
@@ -978,6 +1029,7 @@ proc test_clean_factory_removes_runs_and_dist_but_keeps_branches(ctx: TestContex
   fs.mkdir(fp"${root}/evals/task-tags/.dist")?
   fs.mkdir(fp"${root}/runs/.cache")?
   fs.write(fp"${root}/runs/.cache/xsh-test-aarch64-unknown-linux-musl.stamp", "fixture\n")?
+  fs.write(fp"${root}/runs/organization.lock", "")?
   fs.write(fp"${root}/evals/.dist/xsh", "staged")?
   fs.write(fp"${root}/evals/task-tags/.dist/xsht", "staged")?
   let tool = fp"${factory}/tools/clean-factory.xsh"
@@ -998,6 +1050,7 @@ proc test_clean_factory_removes_runs_and_dist_but_keeps_branches(ctx: TestContex
   test.ok(! fs.exists(fp"${root}/evals/.dist")?, "clean should remove shared build staging")?
   test.ok(! fs.exists(fp"${root}/evals/task-tags/.dist")?, "clean should remove eval build staging")?
   test.ok(! fs.exists(fp"${root}/runs/.cache")?, "clean should remove the toolchain cache")?
+  test.ok(! fs.exists(fp"${root}/runs/organization.lock")?, "clean should remove the advisory organization lock")?
   test.ok(! fs.exists(worktree)?, "clean should remove product worktree contents")?
   let branches = run.text "git" "-C" $product.display() "branch" "--list" $branch ?
   test.contains(branches, branch, "clean should retain the review branch")?

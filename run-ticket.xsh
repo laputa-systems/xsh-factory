@@ -31,7 +31,7 @@ proc run_ticket_cycle(
   let patch_root = fp"${run_dir}/patches"
   let event_template = fp"${factory_dir}/templates/EVENT.md"
   let provenance_template = fp"${factory_dir}/templates/PROVENANCE.md"
-  let assignment_template = fp"${factory_dir}/templates/XSH-SWE-ASSIGNMENT.md"
+  let assignment_template = fp"${factory_dir}/templates/ENGINEER-ASSIGNMENT.md"
   let assignment_template_text = assignment_template.read_text()?
   let platform = env.get_or("FACTORY_PLATFORM", "linux/arm64")?
   fs.mkdir(fp"${factory_dir}/runs")?
@@ -108,7 +108,7 @@ proc run_ticket_cycle(
       {key: "WORKTREE", value: worktree.display()},
       {key: "BRANCH", value: branch},
       {key: "XSH_COMMIT", value: xsh_commit.trim()},
-      {key: "SWE_REPORT", value: fp"${run_dir}/workers/xsh-swe/${ticket_id}/SWE-REPORT.md".display()},
+      {key: "ENGINEER_REPORT", value: fp"${run_dir}/workers/engineer/${ticket_id}/ENGINEER-REPORT.md".display()},
       {key: "FACTORY_DIR", value: factory_dir.display()},
       {key: "FACTORY_RUN_DIR", value: run_dir.display()},
       {key: "NORTH_STAR_FILE", value: fp"${factory_dir}/NORTH-STAR.md".display()},
@@ -191,15 +191,15 @@ proc run_ticket_cycle(
     FACTORY_DIRECTOR_THINKING: control.configured_role_setting("director", "THINKING")?,
     FACTORY_DIRECTOR_BUDGET_USD: control.configured_role_setting("director", "BUDGET_USD")?,
     FACTORY_DIRECTOR_TOOLS: control.configured_role_setting("director", "TOOLS")?,
-    FACTORY_XSH_SWE_PROVIDER: control.configured_role_setting("xsh-swe", "PROVIDER")?,
-    FACTORY_XSH_SWE_MODEL: control.configured_role_setting("xsh-swe", "MODEL")?,
-    FACTORY_XSH_SWE_THINKING: control.configured_role_setting("xsh-swe", "THINKING")?,
-    FACTORY_XSH_SWE_BUDGET_USD: control.configured_role_setting("xsh-swe", "BUDGET_USD")?,
-    FACTORY_XSH_SWE_TOOLS: control.configured_role_setting("xsh-swe", "TOOLS")?,
+    FACTORY_ENGINEER_PROVIDER: control.configured_role_setting("engineer", "PROVIDER")?,
+    FACTORY_ENGINEER_MODEL: control.configured_role_setting("engineer", "MODEL")?,
+    FACTORY_ENGINEER_THINKING: control.configured_role_setting("engineer", "THINKING")?,
+    FACTORY_ENGINEER_BUDGET_USD: control.configured_role_setting("engineer", "BUDGET_USD")?,
+    FACTORY_ENGINEER_TOOLS: control.configured_role_setting("engineer", "TOOLS")?,
   }
-  runtime.emit_event(event_template, run_dir, "20-director-started", "director", "started", 1, "controller", "dispatching admitted XSH SWE workers")?
+  runtime.emit_event(event_template, run_dir, "20-director-started", "director", "started", 1, "controller", "dispatching admitted engineer workers")?
   for ticket_id in tickets {
-    runtime.emit_event(event_template, run_dir, f"20-ticket-${ticket_id}-started", ticket_id, "started", 1, "director", "dispatching xsh-swe worker")?
+    runtime.emit_event(event_template, run_dir, f"20-ticket-${ticket_id}-started", ticket_id, "started", 1, "director", "dispatching engineer worker")?
   }
   let director_status = process.run(process.command_argv(
     xsh_path,
@@ -222,13 +222,13 @@ proc run_ticket_cycle(
   var result_rows = ""
   for ticket_id in tickets {
     let worktree = fp"${worktree_root}/${ticket_id}"
-    let worker_dir = fp"${run_dir}/workers/xsh-swe/${ticket_id}"
-    let swe_report = fp"${worker_dir}/SWE-REPORT.md"
+    let worker_dir = fp"${run_dir}/workers/engineer/${ticket_id}"
+    let engineer_report = fp"${worker_dir}/ENGINEER-REPORT.md"
     let session = fp"${worker_dir}/session.jsonl"
     let north_star_read_ok = runtime.session_read_path(session, fp"${factory_dir}/NORTH-STAR.md")?
     let handbook_read_ok = runtime.session_read_path(session, fp"${factory_dir}/runtime/handbook.md")?
-    let report_ok = fs.exists(swe_report)? and ! fs.exists(fp"${worker_dir}/REPORT-MISSING")? and
-      control.swe_report_contract_ok(fs.read_text(swe_report)?)
+    let report_ok = fs.exists(engineer_report)? and ! fs.exists(fp"${worker_dir}/REPORT-MISSING")? and
+      control.engineer_report_contract_ok(fs.read_text(engineer_report)?)
     let branch = run.text "git" "-C" $worktree.display() "branch" "--show-current" ?
     let head = run.text "git" "-C" $worktree.display() "rev-parse" "HEAD" ?
     let status = run.text "git" "-C" $worktree.display() "status" "--porcelain" ?
@@ -239,7 +239,7 @@ proc run_ticket_cycle(
     let patch_path = fp"${patch_root}/${ticket_id}.diff"
     let patch_stderr = fp"${patch_root}/${ticket_id}.stderr"
     let patch_ok = if ticket_ok {
-      runtime.write_swe_patch(worktree, xsh_commit.trim(), head.trim(), patch_path, patch_stderr)?
+      runtime.write_engineer_patch(worktree, xsh_commit.trim(), head.trim(), patch_path, patch_stderr)?
     } else {
       false
     }
@@ -259,10 +259,10 @@ proc run_ticket_cycle(
     if ! final_ticket_ok { all_tickets_ok = false }
     if ! patch_ok { all_patches_ok = false }
     let state = if final_ticket_ok { "ready-for-review" } else { "failed" }
-    let report_state = if fs.exists(swe_report)? { "present" } else { "missing" }
+    let report_state = if fs.exists(engineer_report)? { "present" } else { "missing" }
     let patch_state = if patch_ok { "present" } else { "missing" }
     let patch_sha = if patch_ok { hash.sha256(patch_path)?.hex() } else { "missing" }
-    let patch_template = fp"${factory_dir}/templates/SWE-PATCH.md"
+    let patch_template = fp"${factory_dir}/templates/ENGINEER-PATCH.md"
     fs.write(fp"${patch_root}/${ticket_id}.md", control.fill_template(
       patch_template.read_text()?, [
         {key: "TICKET_ID", value: ticket_id},
@@ -275,7 +275,7 @@ proc run_ticket_cycle(
         {key: "WORKTREE_ACTION", value: worktree_action},
       ]
     ))?
-    let result_row_template = fp"${factory_dir}/templates/SWE-RESULTS-ROW.md"
+    let result_row_template = fp"${factory_dir}/templates/ENGINEER-RESULTS-ROW.md"
     let result_row_values: List[control.TemplateValue] = [
       {key: "TICKET_ID", value: ticket_id},
       {key: "REPORT_STATE", value: report_state},
@@ -290,15 +290,15 @@ proc run_ticket_cycle(
     ]
     result_rows = result_rows + control.fill_template(result_row_template.read_text()?, result_row_values)
     if final_ticket_ok {
-      runtime.emit_event(event_template, run_dir, f"80-ticket-${ticket_id}-completed", ticket_id, "completed", 1, "xsh-swe", f"branch ${branch.trim()} at ${head.trim()}; north star and handbook read from session log")?
+      runtime.emit_event(event_template, run_dir, f"80-ticket-${ticket_id}-completed", ticket_id, "completed", 1, "engineer", f"branch ${branch.trim()} at ${head.trim()}; north star and handbook read from session log")?
       runtime.emit_event(event_template, run_dir, f"85-ticket-${ticket_id}-validated", ticket_id, "validated", 1, "controller", f"report, patch, branch, commit, and worktree checks passed; ${worktree_action}")?
       runtime.emit_event(event_template, run_dir, f"90-ticket-${ticket_id}-ready", ticket_id, "ready-for-review", 1, "controller", "branch and portable patch are pending user review")?
     } else {
       runtime.emit_event(event_template, run_dir, f"80-ticket-${ticket_id}-failed", ticket_id, "failed", 1, "controller", f"worker output, patch, or worktree validation failed for ${ticket_id}")?
     }
   }
-  let results_template = fp"${factory_dir}/templates/SWE-RESULTS.md"
-  fs.write(fp"${run_dir}/SWE-RESULTS.md", control.fill_template(
+  let results_template = fp"${factory_dir}/templates/ENGINEER-RESULTS.md"
+  fs.write(fp"${run_dir}/ENGINEER-RESULTS.md", control.fill_template(
     results_template.read_text()?, [{key: "ROWS", value: result_rows}]
   ))?
   let director_report = fp"${run_dir}/DIRECTOR-REPORT.md"
@@ -322,10 +322,12 @@ proc run_ticket_cycle(
     runtime.emit_event(event_template, run_dir, "85-cycle-audited", "ticket-implementation",
       "failed", 1, "controller", "deterministic audit artifact written")?
   }
-  let result = if director_status.ok and cost_status.ok and all_tickets_ok and all_patches_ok and director_report_ok and audit_pass { "pass" } else { "fail" }
+  let initial_result = if director_status.ok and cost_status.ok and all_tickets_ok and all_patches_ok and director_report_ok and audit_pass { "pass" } else { "fail" }
+  let cto_status = runtime.write_cto_report(factory_dir, run_dir, initial_result)?
+  let result = if initial_result == "pass" and cto_status { "pass" } else { "fail" }
   let director_state = if fs.exists(fp"${run_dir}/workers/director/director/session.jsonl")? { "present" } else { "missing" }
   let cost_state = if cost_status.ok { "present" } else { "failed" }
-  let swe_state = if all_tickets_ok { "ready-for-review" } else { "failed" }
+  let engineer_state = if all_tickets_ok { "ready-for-review" } else { "failed" }
   let director_report_state = if director_report_ok { "present" } else { "missing north-star section" }
   let run_template = fp"${factory_dir}/templates/RUN-TICKET.md"
   let run_values: List[control.TemplateValue] = [
@@ -334,12 +336,13 @@ proc run_ticket_cycle(
     {key: "TICKET_NAMES", value: ticket_names},
     {key: "XSH_COMMIT", value: xsh_commit.trim()},
     {key: "DIRECTOR_STATE", value: director_state},
-    {key: "SWE_STATE", value: swe_state},
+    {key: "ENGINEER_STATE", value: engineer_state},
     {key: "PATCH_STATE", value: if all_patches_ok { "present" } else { "partial-or-missing" }},
     {key: "COST_STATE", value: cost_state},
     {key: "DIRECTOR_REPORT_STATE", value: director_report_state},
     {key: "AUDIT_STATE", value: if audit_report_ok { "present" } else { "failed" }},
     {key: "AUDIT_RESULT", value: audit_result},
+    {key: "CTO_STATE", value: if cto_status { "present" } else { "failed" }},
   ]
   let run_report = control.fill_template(run_template.read_text()?, run_values)
   fs.write(fp"${run_dir}/RUN.md", run_report)?

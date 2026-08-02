@@ -22,7 +22,7 @@ Use the defaults codified by `run.xsh` and `run-agent.xsh`.
 ## Required outputs
 
 - one dedicated XSH worktree and branch per approved ticket;
-- one xsh-swe Pi session, thinking transcript, worker report, and SWE report;
+- one engineer Pi session, thinking transcript, worker report, and engineer report;
 - product tests and canonical documentation appropriate to the ticket;
 - a deterministic branch/commit/worktree verification report;
 - a run-level cost report and event ledger;

@@ -1,4 +1,4 @@
-# SWE patch artifact
+# engineer patch artifact
 
 ## Ticket
 
@@ -17,4 +17,4 @@
 The diff is the portable review and application artifact. The implementation
 branch remains in the XSH repository for provenance; the temporary worktree is
 removed only after the linked re-evaluation has passed, or after a standalone
-ticket cycle has validated the SWE output.
+ticket cycle has validated the engineer output.

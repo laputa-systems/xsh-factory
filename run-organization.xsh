@@ -58,7 +58,7 @@ proc spawn_child(
   }
   assignments = assignments.push("FACTORY_ACTIVE_RUN=" + fp"${phase_dir}/ACTIVE".display())
   assignments = assignments.push("FACTORY_LOCK_PATH=" + fp"${phase_dir}/factory.lock".display())
-  for role in ["director", "eval-designer", "eval-manager", "eval-worker", "xsh-swe"] {
+  for role in ["director", "eval-designer", "eval-manager", "eval-worker", "engineer"] {
     let prefix = control.role_prefix(role)
     assignments = assignments.push(f"FACTORY_${prefix}_PROVIDER=${control.configured_role_setting(role, "PROVIDER")?}")
     assignments = assignments.push(f"FACTORY_${prefix}_MODEL=${control.configured_role_setting(role, "MODEL")?}")
@@ -426,7 +426,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   var worktree_cleanup_state = if selected_ticket == "" { "not-applicable" } else { "retained-until-reevaluation" }
   var worktree_cleanup_ok = selected_ticket == ""
   if selected_ticket != "" and primary_pass {
-    runtime.emit_event(event_template, run_dir, "10-reeval-started", f"${selected_ticket}-reevaluation", "started", 1, "organization", "validated SWE worktree is available")?
+    runtime.emit_event(event_template, run_dir, "10-reeval-started", f"${selected_ticket}-reevaluation", "started", 1, "organization", "validated engineer worktree is available")?
     let reeval_ok = run_child(
       reeval_controller, reeval_request, reeval_phase, factory_dir,
       fp"${primary_phase}/worktrees/${selected_ticket}", run_dir, xsh_commit.trim(), run_agent,
@@ -512,7 +512,9 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   let reeval_pass_for_result = if selected_ticket == "" { true } else { reeval_state == "pass" }
   let independent_eval_pass_for_result = if selected_ticket == "" { true } else { independent_eval_state == "pass" }
   let design_pass_for_result = design_state == "pass" or design_state == "not-requested"
-  let result = if primary_pass and reeval_pass_for_result and independent_eval_pass_for_result and design_pass_for_result and worktree_cleanup_ok and cost_status.ok { "pass" } else { "fail" }
+  let initial_result = if primary_pass and reeval_pass_for_result and independent_eval_pass_for_result and design_pass_for_result and worktree_cleanup_ok and cost_status.ok { "pass" } else { "fail" }
+  let cto_status = runtime.write_cto_report(factory_dir, run_dir, initial_result)?
+  let result = if initial_result == "pass" and cto_status { "pass" } else { "fail" }
   let run_template = fp"${factory_dir}/templates/RUN-ORGANIZATION.md"
   let run_values: List[control.TemplateValue] = [
     {key: "RUN_ID", value: stamp.float().format(precision: 0)},
@@ -537,6 +539,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     {key: "COST_STATE", value: cost_state},
     {key: "PATCH_ARTIFACT", value: patch_artifact},
     {key: "WORKTREE_STATE", value: worktree_cleanup_state},
+    {key: "CTO_STATE", value: if cto_status { "present" } else { "failed" }},
   ]
   fs.write(fp"${run_dir}/RUN.md", control.fill_template(run_template.read_text()?, run_values))?
   runtime.emit_event(event_template, run_dir, if result == "pass" { "90-cycle-completed" } else { "90-cycle-failed" },

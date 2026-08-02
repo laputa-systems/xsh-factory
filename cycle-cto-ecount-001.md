@@ -1,11 +1,11 @@
-# Cycle request: automator implementation cycle
+# Cycle request: CTO implementation cycle
 
 ## Objective
 
 Implement the approved `task-ecount-003` ticket, immediately re-evaluate the
 candidate on the linked `task-ecount` eval, and run the independent approved
 `task-envcfg` eval against XSH main. Do not dispatch eval-design because the
-new eval was already approved before this cycle. Leave the SWE branch pending
+new eval was already approved before this cycle. Leave the engineer branch pending
 top-level review and merge.
 
 ## Mode
@@ -38,7 +38,7 @@ top-level review and merge.
 
 ## Required outputs
 
-- one `task-ecount-003` SWE branch pending top-level review;
+- one `task-ecount-003` engineer branch pending top-level review;
 - one linked task-ecount candidate re-evaluation;
 - one independent task-envcfg evaluation;
 - no eval-design phase;

@@ -24,6 +24,7 @@
 - Shared handbook read: `{{HANDBOOK_READ}}`
 - Cost report: `{{COST_STATE}}`
 - Deterministic audit: `{{AUDIT_STATE}}` (`{{AUDIT_RESULT}}`)
+- CTO briefing: `{{CTO_STATE}}`
 
 ## Evidence
 

@@ -34,6 +34,7 @@ to select its own work.
 - Patch artifact: `{{PATCH_ARTIFACT}}`
 - Worktree lifecycle: `{{WORKTREE_STATE}}`
 - Aggregate cost report: `{{COST_STATE}}`
+- CTO briefing: `{{CTO_STATE}}`
 
 Each phase retains its own `RUN.md`, `AUDIT.md`, provenance, session reports,
 and raw worker evidence. Product branches and eval proposals remain pending

@@ -40,7 +40,7 @@ eval-design phase runs alongside the primary phase.
 
 Use the defaults codified by `run.xsh` and `run-agent.xsh`. Put any deliberate
 environment override in the invocation, using names such as
-`FACTORY_EVAL_MANAGER_MODEL` or `FACTORY_XSH_SWE_THINKING`.
+`FACTORY_EVAL_MANAGER_MODEL` or `FACTORY_ENGINEER_THINKING`.
 
 ## Required outputs
 

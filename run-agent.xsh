@@ -32,8 +32,8 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     fp"${worker_dir}/MANAGER-REPORT.md".display()
   } else if role == "eval-designer" {
     fp"${worker_dir}/DESIGNER-REPORT.md".display()
-  } else if role == "xsh-swe" {
-    fp"${worker_dir}/SWE-REPORT.md".display()
+  } else if role == "engineer" {
+    fp"${worker_dir}/ENGINEER-REPORT.md".display()
   } else {
     ""
   }
@@ -55,17 +55,17 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   let ticket_id = env.get_or("FACTORY_TICKET_ID", "")?
   let assignment_sha = env.get_or("FACTORY_ASSIGNMENT_SHA", "")?
   let tools = control.configured_role_setting(role, "TOOLS")?
-  if role == "xsh-swe" {
+  if role == "engineer" {
     if worker_id != ticket_id or assignment_sha == "" or ! fs.exists(message_file)? {
-      eprint "xsh-swe dispatch is missing its controller assignment identity"
+      eprint "engineer dispatch is missing its controller assignment identity"
       abort(2)
     }
     let assignment = fs.read_text(message_file)?
     let actual_assignment_sha = hash.sha256(message_file)?.hex()
-    if actual_assignment_sha != assignment_sha or ! control.xsh_swe_assignment_ok(
+    if actual_assignment_sha != assignment_sha or ! control.engineer_assignment_ok(
       run_dir.display(), ticket_id, message_file.display(), workdir.display(), assignment
     ) {
-      eprint "xsh-swe dispatch does not match the controller assignment"
+      eprint "engineer dispatch does not match the controller assignment"
       abort(2)
     }
   }
@@ -164,11 +164,11 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     FACTORY_EVAL_WORKER_THINKING: control.configured_role_setting("eval-worker", "THINKING")?,
     FACTORY_EVAL_WORKER_BUDGET_USD: control.configured_role_setting("eval-worker", "BUDGET_USD")?,
     FACTORY_EVAL_WORKER_TOOLS: control.configured_role_setting("eval-worker", "TOOLS")?,
-    FACTORY_XSH_SWE_PROVIDER: control.configured_role_setting("xsh-swe", "PROVIDER")?,
-    FACTORY_XSH_SWE_MODEL: control.configured_role_setting("xsh-swe", "MODEL")?,
-    FACTORY_XSH_SWE_THINKING: control.configured_role_setting("xsh-swe", "THINKING")?,
-    FACTORY_XSH_SWE_BUDGET_USD: control.configured_role_setting("xsh-swe", "BUDGET_USD")?,
-    FACTORY_XSH_SWE_TOOLS: control.configured_role_setting("xsh-swe", "TOOLS")?,
+    FACTORY_ENGINEER_PROVIDER: control.configured_role_setting("engineer", "PROVIDER")?,
+    FACTORY_ENGINEER_MODEL: control.configured_role_setting("engineer", "MODEL")?,
+    FACTORY_ENGINEER_THINKING: control.configured_role_setting("engineer", "THINKING")?,
+    FACTORY_ENGINEER_BUDGET_USD: control.configured_role_setting("engineer", "BUDGET_USD")?,
+    FACTORY_ENGINEER_TOOLS: control.configured_role_setting("engineer", "TOOLS")?,
     PI_AUTH_FILE: env.get("PI_AUTH_FILE")?,
     PI_COMMAND: pi_command,
   }
@@ -205,7 +205,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     fs.write(fp"${worker_dir}/REPORT-MISSING", f"required report missing: ${required_report}\n")?
   }
   let budget_breach = fs.exists(fp"${worker_dir}/BUDGET-BREACH")?
-  if budget_breach and role == "xsh-swe" {
+  if budget_breach and role == "engineer" {
     let closed = runtime.close_ticket_too_difficult(factory_dir, ticket_id, worker_dir)?
     if ! closed {
       eprint f"unable to close over-budget ticket: ${ticket_id}"

@@ -36,8 +36,13 @@ proc preflight(
     "factory_runtime.xsh",
     "tools/cleanup-run.xsh",
     "tools/cycle-budget-watch.xsh",
+    "tools/cto-report.xsh",
     "templates/POSTMORTEM.md",
-    "templates/SWE-PATCH.md",
+    "templates/CTO-REPORT.md",
+    "templates/CTO-EMPLOYEE.md",
+    "templates/CTO-ACTION.md",
+    "templates/CTO-PHASE.md",
+    "templates/ENGINEER-PATCH.md",
   ] {
     if ! fs.exists(fp"${factory_dir}/${required}")? {
       eprint f"factory prerequisite is missing: ${factory_dir}/${required}"

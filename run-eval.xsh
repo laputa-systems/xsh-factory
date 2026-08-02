@@ -394,11 +394,11 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     FACTORY_EVAL_WORKER_THINKING: control.configured_role_setting("eval-worker", "THINKING")?,
     FACTORY_EVAL_WORKER_BUDGET_USD: control.configured_role_setting("eval-worker", "BUDGET_USD")?,
     FACTORY_EVAL_WORKER_TOOLS: control.configured_role_setting("eval-worker", "TOOLS")?,
-    FACTORY_XSH_SWE_PROVIDER: control.configured_role_setting("xsh-swe", "PROVIDER")?,
-    FACTORY_XSH_SWE_MODEL: control.configured_role_setting("xsh-swe", "MODEL")?,
-    FACTORY_XSH_SWE_THINKING: control.configured_role_setting("xsh-swe", "THINKING")?,
-    FACTORY_XSH_SWE_BUDGET_USD: control.configured_role_setting("xsh-swe", "BUDGET_USD")?,
-    FACTORY_XSH_SWE_TOOLS: control.configured_role_setting("xsh-swe", "TOOLS")?,
+    FACTORY_ENGINEER_PROVIDER: control.configured_role_setting("engineer", "PROVIDER")?,
+    FACTORY_ENGINEER_MODEL: control.configured_role_setting("engineer", "MODEL")?,
+    FACTORY_ENGINEER_THINKING: control.configured_role_setting("engineer", "THINKING")?,
+    FACTORY_ENGINEER_BUDGET_USD: control.configured_role_setting("engineer", "BUDGET_USD")?,
+    FACTORY_ENGINEER_TOOLS: control.configured_role_setting("engineer", "TOOLS")?,
   }
   runtime.emit_event(event_template, run_dir, "20-manager-started", "eval-manager", "started", 1, "controller", "dispatch row admitted")?
   if new_eval_count == 1 {
@@ -512,7 +512,9 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     (trial_count == 1 or fs.exists(trial2_report)?) and
     cost_status.ok and candidate_exists and lineage_ok and trial1_report_ok and trial2_report_ok and
     director_report_ok and manager_report_ok and designer_output_ok and audit_pass
-  let result = if director_status.ok and required { "pass" } else { "fail" }
+  let initial_result = if director_status.ok and required { "pass" } else { "fail" }
+  let cto_status = runtime.write_cto_report(factory_dir, run_dir, initial_result)?
+  let result = if initial_result == "pass" and cto_status { "pass" } else { "fail" }
   if audit_pass {
     runtime.mark_phase_completed(event_template, run_dir, "85-cycle-audited", eval_id,
       1, "controller", "deterministic audit artifact written")?
@@ -540,6 +542,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     {key: "COST_STATE", value: cost_state},
     {key: "AUDIT_STATE", value: if audit_report_ok { "present" } else { "failed" }},
     {key: "AUDIT_RESULT", value: audit_result},
+    {key: "CTO_STATE", value: if cto_status { "present" } else { "failed" }},
     {key: "APPROVED_SNAPSHOT_UNCHANGED", value: if approved_snapshot_unchanged { "true" } else { "false" }},
     {key: "CHECKED_IN_HANDBOOK_UNCHANGED", value: if checked_in_handbook_unchanged { "true" } else { "false" }},
     {key: "CANDIDATE_SHA", value: candidate_sha},

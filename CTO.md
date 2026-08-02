@@ -1,13 +1,13 @@
-# Factory automator
+# Factory CTO
 
 This is the operating contract for the highest-level factory loop. It is
 invoked explicitly with an instruction such as:
 
 ```text
-Start the factory according to AUTOMATOR.md.
+Start the factory according to CTO.md.
 ```
 
-The automator acts as the user's bounded review and operations proxy for that
+The CTO acts as the user's bounded review and operations proxy for that
 invocation. It may make the decisions described here, but it must preserve the
 factory's controller boundaries, evidence chain, and safety rules. It does not
 turn Pi workers into an autonomous organization: `run.xsh` remains the
@@ -24,7 +24,7 @@ The durable targets are:
 - efficient agent sessions without sacrificing correctness or clarity;
 - a simpler, more reliable factory with reproducible evidence.
 
-The automator optimizes for durable product improvement, not for activity,
+The CTO optimizes for durable product improvement, not for activity,
 ticket count, eval count, pass rate, handbook size, or lower token count in
 isolation. Every decision must identify the evidence, the general lesson, and
 the next replay or review that could falsify it.
@@ -34,7 +34,7 @@ Read these files before making a paid decision:
 1. `README.md` for available commands and safety behavior;
 2. `NORTH-STAR.md` for the mission;
 3. `FACTORY.md` and `docs/FACTORY-LOOPS.md` for layer contracts;
-4. `AUTOMATOR.md` for this loop's bounds;
+4. `CTO.md` for this loop's bounds;
 5. `../xsh/AGENTS.md` and `../xsh/docs/CHAPTER-01-why-xsh.md` for product
    standards and the XSH ethos.
 
@@ -42,7 +42,7 @@ Read these files before making a paid decision:
 
 Each iteration is one narrow, reviewable organization cycle.
 
-- Admit at most one ticket implementation to SWE in a cycle.
+- Admit at most one ticket implementation to engineer in a cycle.
 - Run at most one linked candidate re-evaluation for that implementation.
 - Run at most one independent active eval.
 - Stage at most one new eval proposal, and approve or add at most one new eval.
@@ -52,7 +52,7 @@ Each iteration is one narrow, reviewable organization cycle.
 - Promote at most one handbook candidate in a cycle, and only with replay
   evidence.
 - Merge at most one XSH product branch in a cycle. A branch is never merged
-  merely because its SWE session completed; it needs code review, relevant
+  merely because its engineer session completed; it needs code review, relevant
   tests, a clean worktree, and a passing pre-merge candidate evaluation.
 - Never run two top-level factory cycles concurrently.
 - Never retry a paid phase blindly. Repair a deterministic factory defect,
@@ -74,7 +74,7 @@ Proposals under a run directory do not count until approved and staged under
   retiring an inactive eval's contract, or improving the factory; do not ask it
   to produce a new eval.
 - A user instruction explicitly changing this cap is required before it can
-  change. The automator must never raise it for convenience.
+  change. The CTO must never raise it for convenience.
 
 The current controller recognizes `Disabled.` as the non-runnable eval state.
 When an eval is conceptually inactive because it is solved or stagnant, write
@@ -91,13 +91,13 @@ Role ceilings remain the hard per-worker limits coded in `factory_control.xsh`:
 | --- | ---: |
 | `director` | `$0.06` |
 | `eval-manager` | `$0.15` |
-| `xsh-swe` | `$0.25` |
+| `engineer` | `$0.25` |
 | `eval-designer` | `$0.30` |
 | `eval-worker` | `$0.50` |
 
 The default aggregate cap for one full organization cycle is `$0.50`. It is a
 cycle-level stop budget, not a promise that every worker may spend its ceiling.
-The automator may lower it for a smaller cycle, but may not raise it silently.
+The CTO may lower it for a smaller cycle, but may not raise it silently.
 The cap is chosen for frugality relative to the last observed full cycle; if
 the factory later changes the default, update this document and the executable
 control plane together.
@@ -120,11 +120,13 @@ Inspect the latest run before planning new work.
 
 - Reconcile product tickets against `../xsh` and let the controller update a
   ticket to `Merged.` only when its recorded implementation commit is proven
-  to be an ancestor of XSH `HEAD` or its portable SWE patch is proven
+  to be an ancestor of XSH `HEAD` or its portable engineer patch is proven
   equivalent by Git patch comparison.
-- Read the latest `RUN.md`, `COST.md`, `AUDIT.md`, phase reports, manager
-  reports, SWE reports, evaluator manifests, handbook lineage, and raw session
-  evidence for any open decision.
+- Read the latest `CTO-REPORT.md` first. It is the deterministic briefing for
+  phase outcomes, per-role accounting, employee decisions, and the action
+  queue. Then inspect `RUN.md`, `COST.md`, `AUDIT.md`, phase reports, manager
+  reports, engineer reports, evaluator manifests, handbook lineage, and raw
+  session evidence for any open decision.
 - List open, approved, merged, closed, and disabled records. Do not infer a
   ticket or eval from a worker transcript.
 - Count the eval contracts under `evals/` before considering eval creation.
@@ -154,7 +156,7 @@ Review at most two open tickets and make explicit decisions based on evidence.
 Approve a ticket only when its observation is general, the proposed change is
 small enough for the role budget, acceptance criteria are testable, and the
 linked eval/replay is clear. An approved ticket may be dispatched once by the
-controller; the SWE worker never chooses it.
+controller; the engineer worker never chooses it.
 
 Reject a ticket when it is task-specific, duplicated, contradicted by the
 evidence, too vague to test, or not worth its expected spend. Record the reason
@@ -162,7 +164,7 @@ durably in the ticket and the cycle report with `Closed.` only when the reason
 is explicit; do not silently erase or relabel it. A budget breach is a
 different decision and must retain the controller's `too difficult` reason.
 
-For a completed SWE branch, merge only when all of the following hold:
+For a completed engineer branch, merge only when all of the following hold:
 
 - the branch is the controller-assigned branch for the linked ticket;
 - the diff is scoped, simple, tested, and has no unexplained churn;
@@ -201,7 +203,7 @@ trial; the extra trial must be worth its cost.
 ### 5. Monitor the live run
 
 Start the cycle through `run.xsh` and keep the parent run as the sole control
-handle. The controller may overlap independent safe phases, but the automator
+handle. The controller may overlap independent safe phases, but the CTO
 does not start a second top-level cycle or manually launch `pi`.
 
 Track:
@@ -218,8 +220,9 @@ the next section. Do not wait for the current phase to produce a report.
 
 ### 6. Inspect results as a product loop
 
-After completion, inspect the high-level result first, then the evidence that
-supports it.
+After completion, inspect `CTO-REPORT.md` first, then the evidence that
+supports its condensed view. The briefing is a navigation aid, not a source
+of truth: raw Pi session JSONL and evaluator manifests remain canonical.
 
 - Separate product correctness from protocol, restriction, timing, harness,
   and accounting failures.
@@ -293,7 +296,7 @@ or session behavior that will falsify it.
 
 Treat the handbook as an employee product. Eval workers must read it before
 API discovery, managers must distinguish a reusable handbook gap from a
-product defect, and the automator must review handbook candidates for concise
+product defect, and the CTO must review handbook candidates for concise
 general guidance rather than task recipes. A handbook hypothesis belongs on
 the shared lineage and is promoted only after replay evidence.
 
@@ -310,7 +313,7 @@ layers when one explicit on-disk output is sufficient.
 Use controller-owned process overlap whenever phases have disjoint inputs and
 outputs. In the standard organization cycle, eval design may overlap the
 primary phase, and an independent eval may overlap ticket implementation; the
-linked candidate replay still waits for the SWE patch. Any new overlap must
+linked candidate replay still waits for the engineer patch. Any new overlap must
 have isolated run directories, unique image identities, a short build lock for
 shared staging, and a native scheduling or lifecycle test before it is paid.
 
@@ -340,7 +343,7 @@ approved scope extension, or an explicit user decision.
 The durable handoff is the run directory, not the chat summary. Ensure the run
 contains its `RUN.md`, `COST.md`, `AUDIT.md`, provenance, phase reports,
 session JSONL, evaluator manifests, ticket decisions, and proposal/handbook
-lineage. The automator's decision record must state:
+lineage. The CTO's decision record must state:
 
 - what was admitted and why;
 - what passed, failed, or remained uncertain;
@@ -376,7 +379,7 @@ cap, or when accounting becomes unknown while paid workers are still active.
    postmortem and remediation have been reviewed.
 
 An individual worker breach still applies its role-specific consequence: an
-eval-worker disables its eval, and an xsh-swe worker closes its ticket as too
+eval-worker disables its eval, and an engineer worker closes its ticket as too
 difficult with a link to the attempted run. The aggregate breach is broader:
 it stops the entire factory even if no individual worker crossed its ceiling.
 
@@ -391,6 +394,6 @@ When uncertain, prefer the smallest reversible action that preserves evidence:
   around it; and
 - stop on unsafe accounting rather than infer that a missing cost is zero.
 
-The automator is successful when each bounded cycle makes the next cycle more
+The CTO is successful when each bounded cycle makes the next cycle more
 informative, cheaper, and more reliable—and when the factory can be left alone
 without losing control of spend, provenance, or product quality.

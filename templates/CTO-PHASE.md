@@ -1,0 +1,1 @@
+- `{{PATH}}`: result `{{RESULT}}`; report `{{REPORT}}`

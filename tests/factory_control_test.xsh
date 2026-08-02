@@ -36,7 +36,7 @@ proc test_role_configuration_has_one_coded_default() [env, error] {
     {role: "eval-designer", budget: "0.30"},
     {role: "eval-manager", budget: "0.15"},
     {role: "eval-worker", budget: "0.50"},
-    {role: "xsh-swe", budget: "0.25"},
+    {role: "engineer", budget: "0.25"},
   ] {
     test.ok(control.role_prefix(entry.role) != "")?
     test.eq(control.default_provider(entry.role), "openrouter")?
@@ -103,19 +103,19 @@ proc test_budget_breach_transitions_are_durable_and_idempotent(ctx: TestContext)
   fs.mkdir(fp"${factory}/tickets")?
   fs.mkdir(fp"${factory}/evals/task-tags")?
   fs.mkdir(fp"${factory}/templates")?
-  fs.mkdir(fp"${factory}/runs/run-1/workers/xsh-swe/task-tags-002")?
+  fs.mkdir(fp"${factory}/runs/run-1/workers/engineer/task-tags-002")?
   fs.mkdir(fp"${factory}/runs/run-2/workers/eval-worker/task-tags-1")?
   fs.copy(fp"${fs.cwd()?}/templates/BUDGET-BREACH.md", fp"${factory}/templates/BUDGET-BREACH.md", overwrite: true)?
   fs.write(fp"${factory}/tickets/task-tags-002.md", "# Ticket task-tags-002\n\n## Status\n\nApproved.\n")?
   fs.write(fp"${factory}/evals/task-tags/EVAL.md", "# Eval task-tags\n\n## Status\n\nApproved.\n")?
 
-  let ticket_worker = fp"${factory}/runs/run-1/workers/xsh-swe/task-tags-002"
+  let ticket_worker = fp"${factory}/runs/run-1/workers/engineer/task-tags-002"
   let eval_worker = fp"${factory}/runs/run-2/workers/eval-worker/task-tags-1"
   test.ok(runtime.close_ticket_too_difficult(factory, "task-tags-002", ticket_worker)?)?
   let closed = fs.read_text(fp"${factory}/tickets/task-tags-002.md")?
   test.ok(control.ticket_is_closed(closed))?
   test.contains(closed, "Reason: too difficult")?
-  test.contains(closed, "runs/run-1/workers/xsh-swe/task-tags-002/WORKER-REPORT.md")?
+  test.contains(closed, "runs/run-1/workers/engineer/task-tags-002/WORKER-REPORT.md")?
   let closed_again = runtime.close_ticket_too_difficult(factory, "task-tags-002", ticket_worker)?
   test.ok(closed_again)?
   test.eq(fs.read_text(fp"${factory}/tickets/task-tags-002.md")?, closed)?
@@ -245,13 +245,13 @@ proc test_report_contract_requires_result_and_section_content() [error] {
 }
 
 proc test_role_report_contracts_are_fail_closed() [error] {
-  let swe = "# SWE\n\n## Result\n\nready-for-review\n\n## Branch\n\nbranch\n\n## Commit\n\ncommit\n\n## Files changed\n\nfiles\n\n## Tests\n\npass\n\n## North-star impact\n\nimpact\n\n## Remaining risks\n\nNone.\n"
+  let engineer = "# engineer\n\n## Result\n\nready-for-review\n\n## Branch\n\nbranch\n\n## Commit\n\ncommit\n\n## Files changed\n\nfiles\n\n## Tests\n\npass\n\n## North-star impact\n\nimpact\n\n## Remaining risks\n\nNone.\n"
   let manager = "## Result\n\npass\n\n## Effort metrics\n\nturns and tools\n\n## Usage and cost\n\nprovider cost\n\n## Thinking evidence\n\nthinking blocks\n\n## Timing evidence\n\nratio\n\n## Observation classification\n\nreusable signal\n\n## Handbook decision\n\nunchanged\n\n## Tickets created\n\nzero\n\n## Post-merge decisions\n\nnone\n\n## Next replay\n\nnext eval\n\n## North-star impact\n\npractical XSH\n"
   let director = "## Result\n\npass\n\n## Cycle\n\ncycle\n\n## Children\n\nchildren\n\n## Required-output status\n\nstatus\n\n## North-star impact\n\nimpact\n"
   let executor = "## Result\n\npass\n\n## Failure classification\n\npass\n\n## Trial\n\n1\n\n## Artifact\n\npresent\n\n## Evidence\n\npaths\n"
   let designer = "## Result\n\nready-for-review\n\n## Proposal\n\nproposal\n\n## Dry run\n\npass\n\n## North-star impact\n\nimpact\n\n## Known risks\n\nNone.\n\n## Review path\n\npath\n"
-  test.ok(control.swe_report_contract_ok(swe))?
-  test.ok(! control.swe_report_contract_ok(swe.replace("## Tests", "## Missing")))?
+  test.ok(control.engineer_report_contract_ok(engineer))?
+  test.ok(! control.engineer_report_contract_ok(engineer.replace("## Tests", "## Missing")))?
   test.ok(control.manager_report_contract_ok(manager))?
   test.ok(control.report_result_is("## Result\n\npass. The evidence is good.\n", "pass"))?
   test.ok(! control.report_result_is("## Result\n\npassenger\n", "pass"))?
@@ -289,7 +289,7 @@ proc test_checked_in_templates_are_the_provenance_source(ctx: TestContext) [fs, 
 }
 
 proc test_controller_assignment_inlines_one_ticket_and_forbids_selection(ctx: TestContext) [fs, error] {
-  let template_path = fp"${fs.cwd()?}/templates/XSH-SWE-ASSIGNMENT.md"
+  let template_path = fp"${fs.cwd()?}/templates/ENGINEER-ASSIGNMENT.md"
   let template = fs.read_text(template_path)?
   let values: List[control.TemplateValue] = [
     {key: "TICKET_ID", value: "task-tags-001"},
@@ -298,7 +298,7 @@ proc test_controller_assignment_inlines_one_ticket_and_forbids_selection(ctx: Te
     {key: "WORKTREE", value: "/xsh-worktree"},
     {key: "BRANCH", value: "factory/task-tags-001/run-test"},
     {key: "XSH_COMMIT", value: "xsh-sha"},
-    {key: "SWE_REPORT", value: "/factory/runs/run-test/workers/xsh-swe/task-tags-001/SWE-REPORT.md"},
+    {key: "ENGINEER_REPORT", value: "/factory/runs/run-test/workers/engineer/task-tags-001/ENGINEER-REPORT.md"},
     {key: "FACTORY_DIR", value: "/factory"},
     {key: "FACTORY_RUN_DIR", value: "/factory/runs/run-test"},
     {key: "NORTH_STAR_FILE", value: "/factory/NORTH-STAR.md"},
@@ -315,10 +315,10 @@ proc test_controller_assignment_inlines_one_ticket_and_forbids_selection(ctx: Te
   test.ok(rendered.contains("/factory/runtime/handbook.md"))?
   test.ok(! rendered.contains("{{TICKET_TEXT}}"))?
   let message_path = "/factory/runs/run-test/messages/task-tags-001.md"
-  test.ok(control.xsh_swe_assignment_ok(
+  test.ok(control.engineer_assignment_ok(
     "/factory/runs/run-test", "task-tags-001", message_path, "/xsh-worktree", rendered
   ))?
-  test.ok(! control.xsh_swe_assignment_ok(
+  test.ok(! control.engineer_assignment_ok(
     "/factory/runs/run-test", "task-tags-002", message_path, "/xsh-worktree", rendered
   ))?
   let _ = ctx

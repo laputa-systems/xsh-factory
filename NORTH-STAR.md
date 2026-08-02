@@ -47,7 +47,7 @@ Every cycle should connect a capability hypothesis to evidence:
    from task confusion, harness failures, and noise.
 4. A handbook update or ticket states the general lesson, links its evidence,
    and names the next replay that could falsify it.
-5. An XSH SWE implements an approved ticket with product tests and canonical
+5. An engineer implements an approved ticket with product tests and canonical
    documentation; the user decides whether to merge it.
 6. The linked eval-manager replays the merged change and accepts or rejects the
    result. A handbook claim becomes trusted only after repeated evidence across

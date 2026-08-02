@@ -23,15 +23,16 @@ branch remains pending user review.
 ## Required outputs
 
 - Director session: `{{DIRECTOR_STATE}}`
-- SWE dispatch: `{{SWE_STATE}}`
+- engineer dispatch: `{{ENGINEER_STATE}}`
 - Patch artifacts: `{{PATCH_STATE}}`
 - Cost report: `{{COST_STATE}}`
 - Director report: `{{DIRECTOR_REPORT_STATE}}`
 - Deterministic audit: `{{AUDIT_STATE}}` (`{{AUDIT_RESULT}}`)
+- CTO briefing: `{{CTO_STATE}}`
 
 Each validated ticket has a portable patch under `patches/`. A standalone
 ticket cycle removes its clean temporary worktree after writing the patch;
 an organization cycle retains it until the linked re-evaluation passes, then
 removes it. The review branch remains in the XSH repository. See
-`TICKET-DISPATCH.md`, `SWE-RESULTS.md`, `patches/`, `DIRECTOR-REPORT.md`,
+`TICKET-DISPATCH.md`, `ENGINEER-RESULTS.md`, `patches/`, `DIRECTOR-REPORT.md`,
 `PROVENANCE.md`, `COST.md`, and `AUDIT.md`.

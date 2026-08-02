@@ -163,11 +163,11 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     FACTORY_EVAL_WORKER_THINKING: control.configured_role_setting("eval-worker", "THINKING")?,
     FACTORY_EVAL_WORKER_BUDGET_USD: control.configured_role_setting("eval-worker", "BUDGET_USD")?,
     FACTORY_EVAL_WORKER_TOOLS: control.configured_role_setting("eval-worker", "TOOLS")?,
-    FACTORY_XSH_SWE_PROVIDER: control.configured_role_setting("xsh-swe", "PROVIDER")?,
-    FACTORY_XSH_SWE_MODEL: control.configured_role_setting("xsh-swe", "MODEL")?,
-    FACTORY_XSH_SWE_THINKING: control.configured_role_setting("xsh-swe", "THINKING")?,
-    FACTORY_XSH_SWE_BUDGET_USD: control.configured_role_setting("xsh-swe", "BUDGET_USD")?,
-    FACTORY_XSH_SWE_TOOLS: control.configured_role_setting("xsh-swe", "TOOLS")?,
+    FACTORY_ENGINEER_PROVIDER: control.configured_role_setting("engineer", "PROVIDER")?,
+    FACTORY_ENGINEER_MODEL: control.configured_role_setting("engineer", "MODEL")?,
+    FACTORY_ENGINEER_THINKING: control.configured_role_setting("engineer", "THINKING")?,
+    FACTORY_ENGINEER_BUDGET_USD: control.configured_role_setting("engineer", "BUDGET_USD")?,
+    FACTORY_ENGINEER_TOOLS: control.configured_role_setting("engineer", "TOOLS")?,
   }
   runtime.emit_event(event_template, run_dir, "20-designer-started", "eval-designer", "started", 1, "controller", "one proposal row dispatched")?
   let worker_status = process.run(process.command_argv(
@@ -205,12 +205,14 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     control.audit_report_contract_ok(audit_file.read_text()?)
   let audit_result = if audit_report_ok { control.audit_result(audit_file.read_text()?) } else { "missing" }
   let audit_pass = audit_report_ok and audit_result == "pass"
-  let result = if worker_status.ok and cost_status.ok and session_ok and worker_report_ok and
+  let initial_result = if worker_status.ok and cost_status.ok and session_ok and worker_report_ok and
     designer_report_ok and proposal_ok and north_star_read_ok and handbook_read_ok and audit_pass {
     "pass"
   } else {
     "fail"
   }
+  let cto_status = runtime.write_cto_report(factory_dir, run_dir, initial_result)?
+  let result = if initial_result == "pass" and cto_status { "pass" } else { "fail" }
   if result == "pass" {
     runtime.emit_event(event_template, run_dir, "85-designer-validated", "eval-designer", "validated", 1, "controller", "proposal, reports, reads, cost, and audit passed")?
     runtime.emit_event(event_template, run_dir, "90-cycle-completed", "eval-design", "completed", 1, "controller", "eval-design report written")?
@@ -234,6 +236,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     {key: "COST_STATE", value: if cost_status.ok { "present" } else { "failed" }},
     {key: "AUDIT_STATE", value: if audit_report_ok { "present" } else { "failed" }},
     {key: "AUDIT_RESULT", value: audit_result},
+    {key: "CTO_STATE", value: if cto_status { "present" } else { "failed" }},
   ]
   fs.write(fp"${run_dir}/RUN-DESIGN.md", control.fill_template(run_template.read_text()?, run_values))?
   if ! skip_cycle_budget {

@@ -96,16 +96,16 @@ ID, then snapshots provenance before launching Pi:
 The director launches children through `run-agent.xsh`, which is the only
 authorized Pi launcher. Role-specific provider, model, thinking level, tools,
 and budget are environment settings with explicit defaults; budget ceilings are
-`$0.06` for director, `$0.15` for eval-manager, `$0.25` for xsh-swe, `$0.30` for
+`$0.06` for director, `$0.15` for eval-manager, `$0.25` for engineer, `$0.30` for
 eval-designer, and `$0.50` for eval-worker. Ctrl-C is handled
 at the cycle boundary and terminates the owned child process groups, including
 nested Pi workers, before returning partial evidence.
 
-The director coordinates eval-managers and xsh-swe workers in their respective
+The director coordinates eval-managers and engineer workers in their respective
 child phases. The standalone `run-design.xsh` controller dispatches exactly
 one eval-designer through the shared runner; it does not require the director
 to invent work. No controller merges XSH changes. The user approves new evals
-and merges completed XSH SWE branches. Reconciliation compares each approved
+and merges completed engineer branches. Reconciliation compares each approved
 ticket's recorded implementation commit with XSH `HEAD`; when it is an
 ancestor, reconciliation updates that same `TICKET.md` to `Merged.` and fills
 its merge record. The linked eval-manager then accepts or rejects the change
@@ -115,7 +115,7 @@ For the standard request with an approved ticket, the parent starts
 `ticket implementation`, the independent eval, and optional `eval-design`
 concurrently when their inputs are disjoint. After the ticket implementation
 passes, it runs the linked candidate re-evaluation; that replay waits for the
-SWE patch but does not wait for the independent eval's Pi work. Without an
+engineer patch but does not wait for the independent eval's Pi work. Without an
 approved ticket, the active eval occupies the primary phase while `eval-design`
 runs alongside it, and the candidate phase is not created.
 
@@ -125,7 +125,7 @@ These are the authoritative ordered child lists. The director has no
 discretion to discover work or infer a role from prose. An organization cycle
 always has one eval-design phase; a direct eval cycle gets an eval-designer row
 only when the request explicitly sets `New eval proposals` to one. Newly
-created tickets are never sent to SWE in the same cycle.
+created tickets are never sent to engineer in the same cycle.
 
 After child completion, `audit-run.xsh` compiles the run into one
 `AUDIT.md`. It reads the canonical session JSONL, derived worker reports,
@@ -136,15 +136,20 @@ does not promote a handbook candidate, accept a ticket, or reinterpret a
 qualitative manager decision. It gives later agents one concise index while
 preserving the original evidence files.
 
+The controller also writes `CTO-REPORT.md`, a deterministic first-pass briefing
+that consolidates phase results, per-role cost accounting, employee decisions,
+and the remaining action queue. It is a navigation aid for the CTO; the raw
+Pi session JSONL, evaluator manifests, and employee reports remain canonical.
+
 ## Layer outputs
 
 | Layer | Input | Durable output |
 | --- | --- | --- |
 | eval-executor | one eval, one handbook snapshot, one image | worker session/report, artifact, manifest, executor classification |
 | eval-manager | executor trials and Pi metrics | shared-handbook candidate, manager report, evidence-backed tickets |
-| xsh-swe | one controller-assigned ticket snapshot and worktree | branch/worktree, tests, implementation, completion report |
+| engineer | one controller-assigned ticket snapshot and worktree | branch/worktree, tests, implementation, completion report |
 | eval-designer | factory mission and practical task idea | proposed eval contract, scaffolding, dry-run evidence |
-| organization controller | one bounded request plus admission state | ordered phase requests, parent plan, events, aggregate cost, and `RUN.md` |
+| organization controller | one bounded request plus admission state | ordered phase requests, parent plan, events, aggregate cost, `CTO-REPORT.md`, and `RUN.md` |
 | director | approved cycle request | child reports, dispatch status, north-star impact, run summary, cost report, and deterministic audit |
 | user | proposed evals and completed branches | approval or rejection, merge or revert decision |
 
@@ -172,7 +177,7 @@ Cycle requests select a mode. The current modes are:
 - `ticket-implementation`: admit only the explicitly listed tickets whose
   checked-in status is `Approved.` (with legacy `Accepted.` support), create
   one XSH worktree per ticket, and
-  dispatch one `xsh-swe` worker per worktree.
+  dispatch one `engineer` worker per worktree.
 - `organization`: admit at most one approved ticket automatically or from the
   request; start its implementation, independent eval, and one eval-design
   phase concurrently when requested, run the linked pre-merge re-evaluation
@@ -198,7 +203,7 @@ and handbook paths supplied in that assignment:
 Approved ticket
   -> admitted event
   -> isolated worktree at recorded XSH commit
-  -> xsh-swe process completion
+  -> engineer process completion
   -> branch/commit/clean-worktree/report validation
   -> ready-for-review branch
   -> user merges product branch
@@ -209,7 +214,7 @@ Approved ticket
 
 The current controller contract uses one admissible input, one durable event,
 one validator, and one callback/output at each cycle boundary. The remaining
-human-gated transitions are eval approval, SWE acceptance/rejection, and the
+human-gated transitions are eval approval, engineer-branch review, and the
 eval-manager's post-merge decision. Branch merging is still user-owned;
 reconciliation only proves and records what already happened. Pi remains
 useful for judgment and diagnosis, but it does not invent the organization's

@@ -51,7 +51,7 @@ export pure role_prefix(role: Str) -> Str {
   if role == "eval-designer" { return "EVAL_DESIGNER" }
   if role == "eval-manager" { return "EVAL_MANAGER" }
   if role == "eval-worker" { return "EVAL_WORKER" }
-  if role == "xsh-swe" { return "XSH_SWE" }
+  if role == "engineer" { return "ENGINEER" }
   return ""
 }
 
@@ -79,7 +79,7 @@ export pure default_budget(role: Str) -> Str {
   if role == "eval-designer" { return "0.30" }
   if role == "eval-manager" { return "0.15" }
   if role == "eval-worker" { return "0.50" }
-  if role == "xsh-swe" { return "0.25" }
+  if role == "engineer" { return "0.25" }
   return ""
 }
 
@@ -638,8 +638,8 @@ export pure narrative_report_contract_ok(report: Str, required_sections: List[St
     report_contract_ok(report, required_sections, "")
 }
 
-## Validates every required xsh-swe report heading and result.
-export pure swe_report_contract_ok(report: Str) -> Bool {
+## Validates every required engineer report heading and result.
+export pure engineer_report_contract_ok(report: Str) -> Bool {
   return report_contract_ok(report,
     ["Branch", "Commit", "Files changed", "Tests", "North-star impact", "Remaining risks"],
     "ready-for-review")
@@ -702,8 +702,8 @@ export pure fill_template(template: Str, values: List[TemplateValue]) -> Str {
   return rendered
 }
 
-## Verifies that an xsh-swe invocation carries the controller's exact assignment.
-export pure xsh_swe_assignment_ok(
+## Verifies that an engineer invocation carries the controller's exact assignment.
+export pure engineer_assignment_ok(
   run_dir: Str,
   ticket_id: Str,
   message_file: Str,

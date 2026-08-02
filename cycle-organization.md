@@ -5,7 +5,7 @@
 Run one bounded organization cycle. Admit at most one explicitly approved
 ticket, or automatically select the first approved ticket. If none is
 available, run the selected eval. When a ticket is admitted, immediately
-re-evaluate its linked eval against the exact clean SWE worktree before merge,
+re-evaluate its linked eval against the exact clean engineer worktree before merge,
 then run the independent `task-ecount` eval against XSH main. Always stage one
 small practical eval proposal for user review.
 

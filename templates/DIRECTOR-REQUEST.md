@@ -9,7 +9,7 @@ clear, composable systems glue.
 The controller-owned `{{DISPATCH_FILE}}` is authoritative. Execute exactly
 its rows in order, once each, and wait for each child to finish. Do not
 discover work, infer additional roles, select a different ticket, or create a
-second worker. In eval mode, do not launch xsh-swe. In ticket-implementation
+second worker. In eval mode, do not launch engineer. In ticket-implementation
 mode, do not launch eval-manager, eval-worker, or eval-designer. Use the shared
 runner for every child and never invoke bare `pi`.
 

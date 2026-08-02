@@ -19,7 +19,7 @@ or ordinary noise. Interpret turns, thinking, tokens, cost, and timing as
 diagnostic evidence—not as goals independent of correctness and clarity. Open a
 ticket only for one strong reproducible observation. Use the fixed headings in
 `templates/TICKET.md`; link the exact eval, lineage, session, executor run, and
-XSH commit. A new ticket is open for the next cycle, not for same-cycle SWE
+XSH commit. A new ticket is open for the next cycle, not for same-cycle engineer
 dispatch. Leave the `## Merge record` placeholders untouched; reconciliation
 fills them after the user merges the implementation branch.
 
@@ -32,7 +32,7 @@ The controller reconciles ticket provenance before each cycle. When an
 approved ticket's recorded implementation commit is an ancestor of the XSH
 commit under test, it updates that ticket's `## Status` to `Merged.` and adds
 the merge fields in the same ticket. Treat it as a post-merge acceptance
-assignment, never as new SWE work. Record the decision and evidence in
+assignment, never as new engineer work. Record the decision and evidence in
 `## Post-merge decisions`.
 
 Use this bounded evidence order: read the current phase `RUN.md` when it is

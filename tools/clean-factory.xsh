@@ -48,6 +48,7 @@ proc remove_run_state(runs: Path) [fs, error] -> Result[Unit] {
   for child in fs.children(runs, stat: false, ordered: true)? {
     if child.name.starts_with("run-") or child.name == ".cache" or
       child.name == "eval-build.lock" or child.name == "factory.lock" or
+      child.name == "organization.lock" or
       child.name == "ACTIVE" or child.name == "ORGANIZATION-ACTIVE" {
       fs.remove(child.path, missing_ok: true)?
     }

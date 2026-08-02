@@ -22,11 +22,11 @@ The controller owns phase ordering and safe overlap. Launch each assigned row
 exactly once, wait on the child process, and never poll another worker's files
 or invent a replacement dispatch. Read the current phase output before any
 diagnostic search. Repeated missing-path or contradictory-output patterns are
-factory evidence for the automator, not a reason to widen this cycle.
+factory evidence for the CTO, not a reason to widen this cycle.
 
 Your job is to run one bounded organization cycle. Resolve the XSH main commit
 once, preserve its value in the run report, and use isolated worktrees for any
-SWE work.
+engineer work.
 
 Use the shared runner for every child Pi session. Never invoke bare `pi`:
 
@@ -47,17 +47,17 @@ the controller has already admitted approved tickets, created their worktrees,
 and written `TICKET-DISPATCH.md` plus one immutable, inline assignment file per
 ticket. The controller-selected dispatch table is the complete worker list.
 Do not discover tickets, search the ticket directory, select a ticket, run
-evals, or modify ticket status. Launch exactly one `xsh-swe` child per dispatch
+evals, or modify ticket status. Launch exactly one `engineer` child per dispatch
 entry, passing that row's exact `FACTORY_TICKET_ID`, `FACTORY_ASSIGNMENT_SHA`,
 `FACTORY_WORKDIR`, and assignment file to the shared runner. Never create a
 second worker for a row or launch a worker for a ticket absent from the dispatch
 table. The runner rejects an altered, mismatched, or already-claimed
 assignment before Pi starts. Wait for each child process to finish, inspect its
-`SWE-REPORT.md`, and record the branch and commit without merging.
+`ENGINEER-REPORT.md`, and record the branch and commit without merging.
 
 In eval mode, follow the controller-generated `DISPATCH.md` exactly. It is the
 complete ordered child list: run each row once, wait for it, and do not infer a
-designer, manager, worker, or SWE stage from the cycle request prose. Newly
+designer, manager, worker, or engineer stage from the cycle request prose. Newly
 created tickets wait for the next cycle. Every stage completion is an event
 recorded by the controller; do not implement a polling loop in an agent.
 Collect every child report. Write `DIRECTOR-REPORT.md` incrementally before

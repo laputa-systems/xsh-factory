@@ -105,8 +105,28 @@ export proc stop_cycle_budget_watch(run_dir: Path) [fs, error] -> Result[Unit] {
   return Ok()
 }
 
-## Captures the committed SWE change as a portable patch before any worktree cleanup.
-export proc write_swe_patch(
+## Writes the deterministic first-pass briefing used by the CTO.
+export proc write_cto_report(
+  factory_dir: Path,
+  run_dir: Path,
+  result: Str,
+) [fs, process, error] -> Result[Bool] {
+  let xsh = process.which("xsh")?
+  let tool = fp"${factory_dir}/tools/cto-report.xsh"
+  let output = fp"${run_dir}/CTO-REPORT.md"
+  let status = process.run(process.command_argv(
+    xsh,
+    [xsh.display(), tool.display(), "--",
+      "--run-dir", run_dir.display(),
+      "--output", output.display(),
+      "--result", result],
+    cwd: factory_dir,
+  ))?
+  return status.ok and fs.exists(output)?
+}
+
+## Captures the committed engineer change as a portable patch before any worktree cleanup.
+export proc write_engineer_patch(
   worktree: Path,
   base_commit: Str,
   head_commit: Str,
@@ -212,7 +232,7 @@ proc budget_breach_section(
   return control.fill_template(template.read_text()?, values)
 }
 
-## Closes an over-budget xsh-swe assignment in its checked-in ticket.
+## Closes an over-budget engineer assignment in its checked-in ticket.
 export proc close_ticket_too_difficult(
   factory_dir: Path,
   ticket_id: Str,
@@ -230,7 +250,7 @@ export proc close_ticket_too_difficult(
     return false
   }
   let breach = budget_breach_section(
-    factory_dir, worker_dir, "too difficult", "xsh-swe run"
+    factory_dir, worker_dir, "too difficult", "engineer run"
   )?
   var updated = control.replace_status(ticket_text, "Closed.")
   updated = control.replace_section(updated, "Budget breach", breach)
@@ -324,14 +344,14 @@ proc find_merged_implementation(
     for run_entry in fs.dirs(runs, gitignore: false, hidden: true)? {
       let run_dir = run_entry.path
       let summary = fp"${run_dir}/RUN.md"
-      let report = fp"${run_dir}/workers/xsh-swe/${ticket_id}/SWE-REPORT.md"
+      let report = fp"${run_dir}/workers/engineer/${ticket_id}/ENGINEER-REPORT.md"
       if ! fs.exists(summary)? or ! fs.exists(report)? {
         continue
       }
       let summary_text = fs.read_text(summary)?
       let report_text = fs.read_text(report)?
       if ! summary_text.contains("## Result\n\npass") or
-        ! control.swe_report_contract_ok(report_text) {
+        ! control.engineer_report_contract_ok(report_text) {
         continue
       }
       let branch = control.report_field(report_text, "Branch")

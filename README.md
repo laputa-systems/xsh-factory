@@ -8,7 +8,7 @@ prompts, tickets, and run evidence.
 Read [NORTH-STAR.md](NORTH-STAR.md) for the mission and
 [FACTORY.md](FACTORY.md) for the contracts and engineering rules.
 For an unattended, bounded improvement loop, read
-[AUTOMATOR.md](AUTOMATOR.md) and explicitly start the factory according to its
+[CTO.md](CTO.md) and explicitly start the factory according to its
 instructions.
 
 ## Prerequisites
@@ -21,11 +21,11 @@ instructions.
 
 The default provider, model, thinking level, tools, and role budget are coded
 in `factory_control.xsh`. The default budgets are `$0.06` for the director,
-`$0.15` for the eval-manager, `$0.25` for xsh-swe, `$0.30` for the
+`$0.15` for the eval-manager, `$0.25` for engineer, `$0.30` for the
 eval-designer, and `$0.50` for the eval-worker. Budget overrides can lower a
 ceiling but cannot raise it. Override other role settings at invocation time
 with variables such as `FACTORY_EVAL_MANAGER_MODEL` or
-`FACTORY_XSH_SWE_THINKING`.
+`FACTORY_ENGINEER_THINKING`.
 
 Each top-level cycle has a live aggregate cap of `$0.50`, which can be lowered
 with `FACTORY_CYCLE_BUDGET_USD`. A breach terminates the full run tree and
@@ -63,10 +63,12 @@ XSH_MODULE_PATH=. xsh run.xsh cycle-organization.md
 
 If no approved ticket exists, the selected eval runs as the primary phase
 instead. With an approved ticket, the independent active eval starts alongside
-ticket implementation, while the linked candidate replay waits for the SWE
+ticket implementation, while the linked candidate replay waits for the engineer
 patch. The parent run is under
 `runs/run-<id>/`; inspect its `RUN.md` and `COST.md`, then inspect each ordered
-phase under `phases/`.
+phase under `phases/`. `CTO-REPORT.md` is the deterministic first-pass briefing
+with phase outcomes, per-role accounting, employee decisions, and the action
+queue; use it to decide where deeper inspection is needed.
 
 Before dispatching any child, `run.xsh` checks the request shape, XSH
 worktree cleanliness, required factory files, Pi authentication, executable
@@ -134,6 +136,7 @@ Inspect the latest run:
 ```sh
 ls -td runs/run-* | head -1
 less runs/run-<id>/RUN.md
+less runs/run-<id>/CTO-REPORT.md
 less runs/run-<id>/COST.md
 less runs/run-<id>/AUDIT.md
 ```
@@ -166,7 +169,7 @@ propose a revert or follow-up.
 
 If a worker crosses its hard budget, the controller preserves the partial run
 and records the durable consequence: an eval-worker disables its eval, while
-an xsh-swe worker closes its assigned ticket as too difficult with a link to
+an engineer worker closes its assigned ticket as too difficult with a link to
 the attempted run.
 
 Run the cheap non-agent checks with:

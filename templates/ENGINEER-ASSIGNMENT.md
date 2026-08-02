@@ -1,4 +1,4 @@
-# Controller-assigned XSH SWE ticket
+# Controller-assigned engineer ticket
 
 This is an immutable controller assignment for one implementation worker.
 The controller, not the worker, selected the ticket, snapshot, worktree, and
@@ -12,7 +12,7 @@ branch.
 - Dedicated XSH worktree: `{{WORKTREE}}`
 - Branch: `{{BRANCH}}`
 - XSH base commit: `{{XSH_COMMIT}}`
-- SWE report: `{{SWE_REPORT}}`
+- engineer report: `{{ENGINEER_REPORT}}`
 - Factory root: `{{FACTORY_DIR}}`
 - Run evidence root: `{{FACTORY_RUN_DIR}}`
 
@@ -57,7 +57,7 @@ language, tooling, test, or canonical-documentation change supported by the
 ticket. Run the narrowest relevant checks, commit the product change on this
 branch, and leave the worktree clean.
 
-Write `{{SWE_REPORT}}` with these exact headings:
+Write `{{ENGINEER_REPORT}}` with these exact headings:
 
 ```markdown
 ## Result
