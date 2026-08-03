@@ -267,7 +267,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   if result == "pass" {
     runtime.emit_event(event_template, run_dir, "85-designer-validated", "eval-designer", "validated", 1, "controller", "proposal, reports, reads, cost, and audit passed")?
     runtime.emit_event(event_template, run_dir, "90-cycle-completed", "eval-design", "completed", 1, "controller", "eval-design report written")?
-    runtime.emit_event(event_template, run_dir, "95-cycle-validated", "eval-design", "validated", 1, "controller", "proposal is ready for user review")?
+    runtime.emit_event(event_template, run_dir, "95-cycle-validated", "eval-design", "validated", 1, "controller", "proposal is ready for CTO review")?
   } else {
     runtime.emit_event(event_template, run_dir, "85-designer-failed", "eval-designer", "failed", 1, "controller", "one or more design outputs failed validation")?
     runtime.emit_event(event_template, run_dir, "90-cycle-failed", "eval-design", "failed", 1, "controller", "one or more required outputs failed")?

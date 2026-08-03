@@ -11,7 +11,7 @@ verify a targeted language contract, API, diagnostic, or native test pattern
 when the handbook and task-tags scaffold do not answer the question. It is a
 reference, not a second exploration project.
 Do not modify the product checkout: product changes belong to an approved
-ticket, an isolated engineer worktree, and the user's merge decision.
+ticket, an isolated engineer worktree, and the CTO's merge decision.
 
 For a good minimal example of eval structure, read
 `evals/task-tags/EVAL.md` and its `runtime/` directory. It is intentionally
@@ -49,7 +49,11 @@ incomplete.
 
 The controller has already staged the complete task-tags proposal scaffold,
 including `evaluator.xsh`, and a fail-closed `REPORT.md` skeleton. As soon as
-the task shape is selected, edit `EVAL.md`, the runtime task/artifact files,
+the task shape is selected, first replace the scaffold's `task-tags` title and
+ID with a new valid `task-*` ID that is not already present under `evals/`, and
+change `Disabled.` to `Draft.`. Never begin API queries or a dry run while the
+proposal still identifies `task-tags`: the retired checked-in eval would cause
+promotion to fail closed. Then edit `EVAL.md`, the runtime task/artifact files,
 executor, and evaluator before beginning the dry run. Run only the smallest
 representative cases needed to prove the contract. The dry run validates a
 materialized proposal; it is not a substitute for staging one. Finish the

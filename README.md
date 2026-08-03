@@ -1,7 +1,7 @@
 # XSH factory
 
 This repository is the control plane for improving XSH: practical evals,
-agent guidance, product tickets, and user-reviewed changes. The product
+agent guidance, product tickets, and CTO-reviewed changes. The product
 checkout is the adjacent `../xsh` repository.
 
 Start with [NORTH-STAR.md](NORTH-STAR.md), then read
@@ -87,8 +87,10 @@ a package-owned `evaluator.xsh`; adding one must not modify
 `evaluate_common.xsh`.
 
 Every completed cycle must leave one measurable factory-wide improvement in
-`CTO-IMPROVEMENT.md`. The next CTO pass validates or safely reverts that
-improvement before starting paid work.
+`CTO-IMPROVEMENT.md`. The CTO may implement it immediately and leave it
+`pending-validation`; that status is a verification handoff, not an approval
+gate. The next CTO pass validates or safely reverts it before starting paid
+work.
 
 For ticket cycles, the review artifact is a portable patch:
 
@@ -98,9 +100,9 @@ git -C ../xsh apply "$PWD/runs/run-<id>/patches/<ticket>.diff"
 ```
 
 The factory removes a clean temporary worktree after its patch is captured.
-It never merges or applies a product change. User review and merge remain the
-authority; the next reconciliation updates the linked `TICKET.md` to
-`Merged.` when the recorded implementation is proven in XSH `HEAD`.
+The CTO reviews the patch and decides whether to merge or apply the product
+change. The next reconciliation updates the linked `TICKET.md` to `Merged.`
+when the recorded implementation is proven in XSH `HEAD`.
 
 ## Reset and test
 

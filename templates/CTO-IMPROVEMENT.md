@@ -4,6 +4,10 @@
 
 pending-validation
 
+`pending-validation` means the CTO has already implemented this change. It is
+not awaiting another approval; the next cycle verifies the named metric or
+applies the safe inverse.
+
 ## Change
 
 Describe the concrete factory-wide code, prompt, controller, test, or policy
@@ -28,5 +32,6 @@ State the evidence that falsifies the change and the safe inverse action.
 
 ## Next-cycle disposition
 
-The next CTO must replace `pending-validation` with `validated` or `reverted`,
-and link the evidence.
+The next CTO must replace `pending-validation` with `validated` or `reverted`
+after running the named verification, and link the evidence before admitting
+paid work.

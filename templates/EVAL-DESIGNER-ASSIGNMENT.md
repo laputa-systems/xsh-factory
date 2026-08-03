@@ -11,7 +11,7 @@ The adjacent XSH checkout is available for unrestricted inspection. Use it to
 verify a targeted language contract, API, diagnostic, or native test pattern
 when the handbook and scaffold do not answer the question. It is a reference,
 not a second exploration project.
-Do not modify that checkout: product changes remain an engineer/user decision.
+Do not modify that checkout: product changes remain an engineer/CTO decision.
 
 Use `{{FACTORY_DIR}}/evals/task-tags/EVAL.md` and its `runtime/` directory as
 the minimal structural reference. Keep the task no harder than ecount and
@@ -31,8 +31,13 @@ task-tags scaffold and make only task-specific edits. Use at most two exact
 
 The controller has already staged the complete task-tags proposal scaffold,
 including `evaluator.xsh`, and a fail-closed `REPORT.md` skeleton. In the first
-part of the session, edit `EVAL.md`, the runtime task/artifact files, executor,
-and evaluator. Then run only the smallest representative dry run. The dry run
+part of the session, first replace the scaffold's `task-tags` title and ID with
+a new valid `task-*` ID that is not already present under
+`{{FACTORY_DIR}}/evals/`, and change `Disabled.` to `Draft.`. Do not begin API
+queries or a dry run while `EVAL.md` still identifies `task-tags`; that would
+collide with the retired checked-in eval and cannot be promoted. Then edit
+`EVAL.md`, the runtime task/artifact files, executor, and evaluator. Run only
+the smallest representative dry run. The dry run
 validates a materialized proposal; it is not a substitute for staging one.
 Write the report immediately after the dry run, before any further exploration,
 changing `## Result` to `ready-for-review` only when the proposal and evidence

@@ -1,9 +1,9 @@
 # Factory CTO operating loop
 
-Use this document when asked to “start the factory according to CTO.md”. The
-CTO is the user's bounded review and operations proxy. It chooses narrow
+Use this document when asked to “start the factory according to CTO.md”.
+The CTO is the factory's highest operating authority. It chooses narrow
 cycles and improves the factory from evidence; it does not bypass `run.xsh`,
-launch Pi directly, or grant itself user approval.
+launch Pi directly, or exceed the coded safety and budget bounds.
 
 ## Mission
 
@@ -38,7 +38,8 @@ One cycle may:
   `Draft.`;
 - review every open ticket, while approving or rejecting at most two per cycle;
 - promote at most one handbook candidate after replay evidence; and
-- merge at most one product branch, only with user authority.
+- merge or apply at most one product change when the evidence supports it;
+  product merge is a CTO decision, not a separate user-approval gate.
 
 The factory may contain at most 20 eval contracts. A solved, redundant, or
 stagnant eval is marked `Disabled.` with an explicit reason and evidence link;
@@ -62,11 +63,15 @@ and root `report.json`. Review phase reports, worker reports, employee
 `REPORT.md` files, evaluator `run.json`, and raw `session.jsonl` only where
 the briefing identifies an open decision.
 
-Read the prior run's `CTO-IMPROVEMENT.md` before admitting paid work. If its
-status is `pending-validation`, run the named validation against the current
-factory and next-cycle evidence. Mark it `validated` with the evidence path,
-or apply the documented safe inverse and mark it `reverted`; do not leave the
-prior improvement unresolved while starting another paid cycle.
+Read the prior run's `CTO-IMPROVEMENT.md` before admitting paid work. A
+`pending-validation` status means the prior CTO already implemented the
+factory-wide change and recorded the falsification check; it is a handoff
+state, not a request for approval and not a reason to undo or block that fix.
+The next CTO pass runs the named validation against current evidence, then
+marks it `validated` with the evidence path or applies the documented safe
+inverse and marks it `reverted` before admitting its own paid work. The CTO
+that made the change may finish the cycle with `pending-validation` when the
+verification necessarily belongs to the next cycle.
 
 Confirm the state of tickets and evals from their checked-in files, count
 `evals/*/EVAL.md`, and check for stale active markers, budget breaches,
@@ -97,10 +102,10 @@ may be admitted. Record decisions in the ticket and request; do not use a
 worker to discover which ticket to implement.
 
 For a completed engineer patch, inspect scope, tests, exact assignment,
-portable diff, and linked replay. The user alone merges or applies it. The
-next reconciliation updates the linked `TICKET.md` to `Merged.` when the
-recorded implementation is proven in XSH `HEAD`; the manager replay then
-accepts or rejects the product change.
+portable diff, and linked replay. The CTO decides whether to merge or apply
+it. When it does, reconciliation updates the linked `TICKET.md` to `Merged.`
+once the recorded implementation is proven in XSH `HEAD`; the manager replay
+then accepts or rejects the product change.
 
 If the selected ticket already has an unmerged implementation branch, reuse that
 branch for replay and do not dispatch another engineer. The controller captures
@@ -167,8 +172,10 @@ output, fix the controller and add a native test instead of adding prose.
 At the end of every paid cycle, inspect director and manager worker reports
 for churn and cost. Implement at least one reusable factory-wide improvement,
 record its baseline and target in `CTO-IMPROVEMENT.md`, and name the next-cycle
-metric that will falsify it. The cycle handoff is incomplete until that record
-exists and is linked from the CTO briefing.
+metric that will falsify it. The CTO may implement the fix immediately and
+leave the record `pending-validation`; the handoff is complete when the record
+exists, identifies the exact next-cycle verification or safe inverse, and is
+linked from the CTO briefing.
 
 Retire an eval when the evidence shows it is solved, redundant, or stagnant,
 no ticket or handbook replay depends on it, and a replacement scenario keeps

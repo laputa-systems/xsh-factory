@@ -25,7 +25,7 @@ ticket only for one strong reproducible observation. Use the fixed headings in
 `templates/TICKET.md`; link the exact eval, lineage, session, executor run, and
 XSH commit. A new ticket is open for the next cycle, not for same-cycle engineer
 dispatch. Leave the `## Merge record` placeholders untouched; reconciliation
-fills them after the user merges the implementation branch.
+fills them after the CTO merges the implementation branch.
 
 The handbook is a hypothesis until replay supports it. Prefer a short,
 general rule that removes repeated agent friction over a large collection of

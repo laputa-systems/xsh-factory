@@ -2,14 +2,14 @@
 
 ## Status
 
-Approved.
+Merged.
 
 ## Merge record
 
-- Implementation branch: `{{IMPLEMENTATION_BRANCH}}`
-- Implementation commit: `{{IMPLEMENTATION_COMMIT}}`
-- Detected at XSH commit: `{{DETECTED_XSH_COMMIT}}`
-- Implementation run: `{{IMPLEMENTATION_RUN}}`
+- Implementation branch: `master` (CTO-applied from `factory/task-ecount-003/1785687504767`)
+- Implementation commit: `51b035a`
+- Detected at XSH commit: `51b035a`
+- Implementation run: `runs/run-1785777983535/phases/01-ticket`
 
 ## Source eval and manager
 

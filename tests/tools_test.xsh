@@ -278,13 +278,18 @@ proc test_eval_dispatch_is_package_owned() [fs, error] {
 proc test_eval_design_stages_and_promotes_complete_package() [fs, error] {
   let controller = fs.read_text(fp"${fs.cwd()?}/run-design.xsh")?
   let assignment = fs.read_text(fp"${fs.cwd()?}/templates/EVAL-DESIGNER-ASSIGNMENT.md")?
+  let role = fs.read_text(fp"${fs.cwd()?}/roles/eval-designer.md")?
   let review = fs.read_text(fp"${fs.cwd()?}/templates/CTO-EVAL-REVIEW.md")?
   test.contains(controller, "\"evaluator.xsh\"")?
   test.contains(controller, "promote_eval_proposal")?
   test.contains(controller, "84-cto-reviewed")?
   test.contains(controller, "evaluator_check_ok")?
   test.contains(assignment, "including `evaluator.xsh`")?
+  test.contains(assignment, "new valid `task-*` ID")?
+  test.contains(assignment, "not already present under")?
   test.contains(assignment, "before any further exploration")?
+  test.contains(role, "new valid `task-*` ID")?
+  test.contains(role, "promotion to fail closed")?
   test.contains(review, "may set `Approved.`")?
   test.contains(review, "MISSING_PACKAGE_FILES")?
   test.contains(review, "Checked-in status")?

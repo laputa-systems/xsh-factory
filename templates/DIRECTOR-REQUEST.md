@@ -15,8 +15,8 @@ child row is already complete evidence; in ticket mode launch only the
 controller-admitted engineer rows.
 
 Do not modify the approved shared handbook, approved evals, or the XSH main
-branch. Ticket branches remain pending user review; eval proposals and newly
-created tickets wait for the next human-approved transition.
+branch. Ticket branches remain pending CTO review; eval proposals and newly
+created tickets wait for the next CTO-approved transition.
 
 The controller has staged a fail-closed report skeleton at
 `{{RUN_DIR}}/workers/director/director/REPORT.md`. Open it before inspecting

@@ -40,7 +40,7 @@ when the count is zero, so invalid API discovery calls cannot disappear in a
 long narrative.
 
 The shared handbook is `runtime/handbook.md`. Each trial receives a snapshot;
-candidate promotion is a user-approved global change. A causal handbook
+candidate promotion is a CTO-approved global change. A causal handbook
 replay uses an approved snapshot for the baseline trial and a candidate
 snapshot for the comparison trial.
 
@@ -54,8 +54,8 @@ cannot discover another ticket.
 
 The output is the portable `patches/<ticket>.diff`, the raw session,
 `report.json`, and the engineer's `REPORT.md`. After the patch is captured, a
-clean temporary worktree is removed. The user reviews and applies or merges
-the patch. Reconciliation then updates the linked `TICKET.md` to `Merged.`;
+clean temporary worktree is removed. The CTO reviews and applies or merges the
+patch. Reconciliation then updates the linked `TICKET.md` to `Merged.`;
 the linked manager replay decides whether the change should remain.
 
 ## Design loop: eval-designer
@@ -92,9 +92,9 @@ replay consumes its worktree or patch. The independent eval and design phase
 have disjoint inputs and may overlap with implementation. If no ticket is
 admitted, the independent eval becomes the primary phase.
 
-The user remains the authority for product merges, handbook promotion, eval
-approval, and reversion. The CTO reviews the evidence and chooses the next
-narrow cycle within the coded spend and eval-count limits.
+The CTO is the authority for product merges, handbook promotion, eval
+approval, and reversion. It reviews the evidence and chooses the next narrow
+cycle within the coded spend and eval-count limits.
 
 ## Durable output hierarchy
 

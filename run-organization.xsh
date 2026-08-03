@@ -358,7 +358,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     f"Run the independent ${requested_eval} eval against the XSH main commit.")?
   if design_requested {
     phase_request(phase_template, design_request, "eval-design", requested_eval, 1, 1, "None.",
-      "Design and dry-run one small practical eval proposal for user review.")?
+      "Design and dry-run one small practical eval proposal for CTO review.")?
   }
 
   let candidate_worktree = if selected_ticket == "" {

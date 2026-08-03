@@ -135,6 +135,17 @@ proc test_standard_cycle_uses_diverse_active_eval() [fs, error] {
   test.contains(task_tags, "special exception")?
   test.contains(improvement, "## Baseline metric")?
   test.contains(improvement, "## Revert condition")?
+  test.contains(improvement, "not awaiting another approval")?
+  test.contains(improvement, "before admitting")?
+  let cto = fs.read_text(fp"${fs.cwd()?}/CTO.md")?
+  let factory = fs.read_text(fp"${fs.cwd()?}/FACTORY.md")?
+  test.contains(cto, "not a request for approval")?
+  test.contains(cto, "may finish the cycle with `pending-validation`")?
+  test.contains(cto, "product merge is a CTO decision")?
+  test.contains(cto, "The CTO decides whether to merge or apply")?
+  test.ok(! cto.contains("user authority"))?
+  test.ok(! factory.contains("user authority"))?
+  test.ok(! factory.contains("user approves"))?
   test.contains(launcher, "templates/CTO-IMPROVEMENT.md")?
 }
 

@@ -241,7 +241,7 @@ proc run_ticket_cycle(
     if final_ticket_ok {
       runtime.emit_event(event_template, run_dir, f"80-ticket-${ticket_id}-completed", ticket_id, "completed", 1, "engineer", f"branch ${branch.trim()} at ${head.trim()}; north star and handbook read from session log")?
       runtime.emit_event(event_template, run_dir, f"85-ticket-${ticket_id}-validated", ticket_id, "validated", 1, "controller", f"report, patch, branch, commit, and worktree checks passed; ${worktree_action}")?
-      runtime.emit_event(event_template, run_dir, f"90-ticket-${ticket_id}-ready", ticket_id, "ready-for-review", 1, "controller", "branch and portable patch are pending user review")?
+      runtime.emit_event(event_template, run_dir, f"90-ticket-${ticket_id}-ready", ticket_id, "ready-for-review", 1, "controller", "branch and portable patch are pending CTO review")?
     } else {
       runtime.emit_event(event_template, run_dir, f"80-ticket-${ticket_id}-failed", ticket_id, "failed", 1, "controller", f"worker output, patch, or worktree validation failed for ${ticket_id}")?
     }

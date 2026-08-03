@@ -40,7 +40,7 @@ for every failed Pi tool result in the structured worker and manager
 
 Follow the trial instructions above exactly. A one-trial plan may stage one
 concise provisional handbook candidate when the evidence supports a reusable
-lesson. Promotion still requires later replay and human approval. A two-trial
+lesson. Promotion still requires later replay and CTO approval. A two-trial
 plan must state whether its candidate was actually replayed by the controller;
 do not claim validation that did not occur.
 
