@@ -71,14 +71,22 @@ proc preflight(
   }
 
   let requested_tickets = control.request_tickets(request_text)
-  let candidate_ticket = if requested_tickets.len() == 1 {
-    requested_tickets[0]
+  let candidate_tickets = if requested_tickets.len() > 0 {
+    requested_tickets
   } else if mode == "organization" and control.request_ticket_policy(request_text) != "none" {
-    runtime.first_approved_ticket(factory_dir)?
+    runtime.first_approved_tickets(factory_dir, control.max_concurrent_engineers())?
   } else {
-    ""
+    []
   }
-  if candidate_ticket != "" {
+  if candidate_tickets.len() > control.max_concurrent_engineers() {
+    eprint f"cycle admits at most ${control.max_concurrent_engineers()} tickets"
+    return false
+  }
+  for candidate_ticket in candidate_tickets {
+    if ! control.valid_ticket_id(candidate_ticket) {
+      eprint f"unsafe ticket id: ${candidate_ticket}"
+      return false
+    }
     let ticket_path = fp"${factory_dir}/tickets/${candidate_ticket}.md"
     if fs.exists(ticket_path)? and runtime.accepted_ticket(ticket_path)? {
       let open_branch = runtime.open_ticket_branch(xsh_repo, candidate_ticket)?

@@ -198,8 +198,8 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   }
   let design_requested = new_eval_count == 1
   let requested_tickets = control.request_tickets(request_text)
-  if requested_tickets.len() > 1 {
-    eprint "organization cycles admit at most one ticket"
+  if requested_tickets.len() > control.max_concurrent_engineers() {
+    eprint f"organization cycles admit at most ${control.max_concurrent_engineers()} tickets"
     abort(2)
   }
   let xsh_repo = env.path("FACTORY_XSH_REPO", fp"${factory_dir}/../xsh")?
@@ -219,6 +219,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   }
   let _organization_lock = fs.lock(fp"${factory_dir}/runs/organization.lock", nonblocking: true)?
   fs.mkdir(run_dir)?
+  runtime.stage_cto_improvement(factory_dir, run_dir)?
   runtime.register_cycle_controller(run_dir)?
   let skip_cycle_budget = env.get_or("FACTORY_SKIP_CYCLE_BUDGET", "false")? == "true"
   if ! skip_cycle_budget {
@@ -228,13 +229,14 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   defer fs.remove(active_run, missing_ok: true)?
   let _ = runtime.reconcile_tickets(factory_dir, xsh_repo, xsh_commit.trim())?
   let ticket_policy = control.request_ticket_policy(request_text)
-  let selected_ticket = if requested_tickets.len() == 1 {
-    requested_tickets[0]
+  let selected_tickets = if requested_tickets.len() > 0 {
+    requested_tickets
   } else if ticket_policy == "none" {
-    ""
+    []
   } else {
-    runtime.first_approved_ticket(factory_dir)?
+    runtime.first_approved_tickets(factory_dir, control.max_concurrent_engineers())?
   }
+  let selected_ticket = if selected_tickets.len() > 0 { selected_tickets[0] } else { "" }
   if selected_ticket != "" and ! control.valid_ticket_id(selected_ticket) {
     eprint f"unsafe ticket id: ${selected_ticket}"
     abort(2)
@@ -248,14 +250,27 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     eprint f"selected ticket is missing or not Approved: ${selected_ticket}"
     abort(2)
   }
-  let open_branch = if selected_ticket == "" {
-    ""
-  } else {
+  let selected_open_branch = if selected_tickets.len() == 1 {
     runtime.open_ticket_branch(xsh_repo, selected_ticket)?
+  } else {
+    ""
   }
-  let reuse_existing_branch = open_branch != ""
+  let reuse_existing_branch = selected_open_branch != ""
   if reuse_existing_branch {
-    eprint f"reusing existing implementation branch for ${selected_ticket}: ${open_branch}"
+    eprint f"reusing existing implementation branch for ${selected_ticket}: ${selected_open_branch}"
+  }
+  for ticket_id in selected_tickets {
+    let ticket_path = fp"${factory_dir}/tickets/${ticket_id}.md"
+    if ! control.valid_ticket_id(ticket_id) or ! runtime.accepted_ticket(ticket_path)? {
+      eprint f"selected ticket is missing or not Approved: ${ticket_id}"
+      abort(2)
+    }
+    let open_branch = runtime.open_ticket_branch(xsh_repo, ticket_id)?
+    if open_branch != "" and ! (reuse_existing_branch and ticket_id == selected_ticket) {
+      eprint f"ticket ${ticket_id} already has an unmerged implementation branch: ${open_branch}"
+      eprint "replay or review that branch before dispatching another engineer"
+      abort(2)
+    }
   }
   let requested_eval = control.request_eval(request_text)
   let ticket_eval = if selected_ticket != "" {
@@ -297,7 +312,6 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   } else {
     fp"${phases_dir}/01-ticket"
   }
-  let reeval_phase = fp"${phases_dir}/02-reeval"
   let independent_eval_phase = fp"${phases_dir}/03-eval"
   let design_phase = if selected_ticket == "" {
     fp"${phases_dir}/02-eval-design"
@@ -305,7 +319,6 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     fp"${phases_dir}/04-eval-design"
   }
   let primary_request = fp"${phase_requests_dir}/01-primary.md"
-  let reeval_request = fp"${phase_requests_dir}/02-reeval.md"
   let independent_eval_request = fp"${phase_requests_dir}/03-eval.md"
   let design_request = if selected_ticket == "" {
     fp"${phase_requests_dir}/02-eval-design.md"
@@ -336,8 +349,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   if design_requested {
     fs.mkdir(design_phase)?
   }
-  if selected_ticket != "" {
-    fs.mkdir(reeval_phase)?
+  if selected_tickets.len() > 0 {
     fs.mkdir(independent_eval_phase)?
   }
   fs.write(active_run, run_dir.display() + "\n")?
@@ -345,15 +357,19 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   fs.copy(request, fp"${run_dir}/CYCLE-REQUEST.md", overwrite: true)?
   runtime.emit_event(event_template, run_dir, "00-cycle-started", "organization", "started", 1, "controller", "bounded organization cycle with independent eval-design overlap")?
 
-  let ticket_value = if selected_ticket == "" { "None." } else { f"`${selected_ticket}`" }
+  var ticket_value = "None."
+  if selected_tickets.len() > 0 {
+    ticket_value = ""
+    for ticket_id in selected_tickets {
+      ticket_value = if ticket_value == "" { f"`${ticket_id}`" } else { f"${ticket_value}\n- `${ticket_id}`" }
+    }
+  }
   let primary_objective = if selected_ticket == "" {
     f"Run one fresh ${selected_eval} eval because no approved ticket was admitted."
   } else {
     f"Implement exactly ${selected_ticket} in one isolated XSH worktree."
   }
   phase_request(phase_template, primary_request, primary_mode, selected_eval, trial_count, 0, ticket_value, primary_objective)?
-  phase_request(phase_template, reeval_request, "eval", selected_eval, trial_count, 0, "None.",
-    f"Validate the ${selected_ticket} implementation against the linked ${selected_eval} eval before merge.")?
   phase_request(phase_template, independent_eval_request, "eval", requested_eval, trial_count, 0, "None.",
     f"Run the independent ${requested_eval} eval against the XSH main commit.")?
   if design_requested {
@@ -361,11 +377,6 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
       "Design and dry-run one small practical eval proposal for CTO review.")?
   }
 
-  let candidate_worktree = if selected_ticket == "" {
-    "not-reevaluation"
-  } else {
-    fp"${primary_phase}/worktrees/${selected_ticket}".display()
-  }
   var design_handle: ProcessHandle? = null
   if design_requested {
     runtime.emit_event(event_template, run_dir, "10-design-started", "eval-design", "started", 1, "organization", "one independent eval-design phase was requested")?
@@ -377,12 +388,18 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     )?
   }
 
+  let candidate_worktree = if selected_ticket == "" {
+    "not-reevaluation"
+  } else {
+    fp"${primary_phase}/worktrees/${selected_ticket}".display()
+  }
   let primary_subject = if selected_ticket == "" { selected_eval } else { selected_ticket }
   var independent_eval_handles: List[ProcessHandle] = []
   runtime.emit_event(event_template, run_dir, "10-primary-started", primary_subject, "started", 1, "organization", primary_mode)?
   var primary_ok = false
   if reuse_existing_branch {
-    primary_ok = run_reuse_phase(primary_phase, factory_dir, xsh_repo, selected_ticket, open_branch, xsh_commit.trim())?
+    primary_ok = run_reuse_phase(primary_phase, factory_dir, xsh_repo, selected_ticket,
+      selected_open_branch, xsh_commit.trim())?
   } else {
     let primary_handle = spawn_child(
       primary_controller,
@@ -416,58 +433,47 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     runtime.emit_event(event_template, run_dir, "85-primary-validated", primary_subject, "validated", 1, "controller", "primary phase report.json passed")?
   }
 
-  var reeval_state = if selected_ticket == "" { "not-applicable" } else { "skipped" }
-  var reeval_report_state = if selected_ticket == "" { "not-applicable" } else { "not-run" }
-  var patch_artifact = if selected_ticket == "" {
-    "not-applicable"
-  } else {
-    fp"${primary_phase}/patches/${selected_ticket}.diff".display()
-  }
-  var worktree_cleanup_state = if selected_ticket == "" { "not-applicable" } else { "retained-until-reevaluation" }
+  var reeval_pass_for_result = selected_ticket == ""
   var worktree_cleanup_ok = selected_ticket == ""
-  if selected_ticket != "" and primary_pass {
-    runtime.emit_event(event_template, run_dir, "10-reeval-started", f"${selected_ticket}-reevaluation", "started", 1, "organization", "validated engineer worktree is available")?
-    let reeval_ok = run_child(
-      reeval_controller, reeval_request, reeval_phase, factory_dir,
-      fp"${primary_phase}/worktrees/${selected_ticket}", run_dir, xsh_commit.trim(), run_agent,
-      auth_file, pi_command, docker, target, platform,
-      ["FACTORY_MODE=eval", f"FACTORY_EVAL_ID=${selected_eval}",
-        f"FACTORY_REEVAL_TICKET=${selected_ticket}",
-        f"FACTORY_REEVAL_WORKTREE=${candidate_worktree}",
-        "FACTORY_SKIP_TICKET_RECONCILE=true"],
-      fp"${run_dir}/reeval.stdout", fp"${run_dir}/reeval.stderr"
-    )?
-    let reeval_report_ok = phase_run_pass(reeval_phase, "report.json")?
-    let reeval_pass = reeval_ok and reeval_report_ok
-    let reeval_exit = if reeval_pass { 0 } else { 1 }
-    runtime.emit_process_output(run_dir, f"reeval-${selected_ticket}", "stdout", fp"${run_dir}/reeval.stdout", reeval_exit)?
-    runtime.emit_process_output(run_dir, f"reeval-${selected_ticket}", "stderr", fp"${run_dir}/reeval.stderr", reeval_exit)?
-    reeval_state = if reeval_pass { "pass" } else { "fail" }
-    reeval_report_state = if reeval_report_ok { "pass" } else { "missing-or-failed" }
-    runtime.emit_event(event_template, run_dir, "80-reeval-completed", f"${selected_ticket}-reevaluation",
-      if reeval_pass { "completed" } else { "failed" }, 1, "controller", "candidate re-evaluation returned")?
-    if reeval_pass {
-      runtime.emit_event(event_template, run_dir, "85-reeval-validated", f"${selected_ticket}-reevaluation", "validated", 1, "controller", "candidate re-evaluation report.json passed")?
-    }
-  }
-
   if selected_ticket != "" {
-    let patch_ready = primary_pass and fs.exists(Path(patch_artifact))?
-    if patch_ready and reeval_state == "pass" {
-      worktree_cleanup_ok = runtime.remove_clean_worktree(
-        xsh_repo, Path(candidate_worktree)
+    reeval_pass_for_result = primary_pass
+    worktree_cleanup_ok = primary_pass
+    for ticket_id in selected_tickets {
+      let ticket_path = fp"${factory_dir}/tickets/${ticket_id}.md"
+      let ticket_eval_id = control.ticket_eval(ticket_path.read_text()?)
+      let ticket_reeval_phase = fp"${phases_dir}/02-reeval-${ticket_id}"
+      let ticket_reeval_request = fp"${phase_requests_dir}/02-reeval-${ticket_id}.md"
+      let ticket_worktree = fp"${primary_phase}/worktrees/${ticket_id}"
+      let ticket_patch = fp"${primary_phase}/patches/${ticket_id}.diff"
+      fs.mkdir(ticket_reeval_phase)?
+      phase_request(phase_template, ticket_reeval_request, "eval", ticket_eval_id, trial_count, 0,
+        f"`${ticket_id}`", f"Validate the ${ticket_id} implementation against the linked ${ticket_eval_id} eval before merge.")?
+      let ticket_candidate = ticket_worktree.display()
+      runtime.emit_event(event_template, run_dir, "10-reeval-started", f"${ticket_id}-reevaluation", "started", 1, "organization", "validated engineer worktree is available")?
+      let reeval_ok = primary_pass and run_child(
+        reeval_controller, ticket_reeval_request, ticket_reeval_phase, factory_dir,
+        ticket_worktree, run_dir, xsh_commit.trim(), run_agent,
+        auth_file, pi_command, docker, target, platform,
+        ["FACTORY_MODE=eval", f"FACTORY_EVAL_ID=${ticket_eval_id}",
+          f"FACTORY_REEVAL_TICKET=${ticket_id}",
+          f"FACTORY_REEVAL_WORKTREE=${ticket_candidate}",
+          "FACTORY_SKIP_TICKET_RECONCILE=true"],
+        fp"${run_dir}/reeval-${ticket_id}.stdout", fp"${run_dir}/reeval-${ticket_id}.stderr"
       )?
-      worktree_cleanup_state = if worktree_cleanup_ok {
-        "removed-after-reevaluation"
-      } else {
-        "cleanup-failed"
+      let reeval_report_ok = phase_run_pass(ticket_reeval_phase, "report.json")?
+      let reeval_pass = reeval_ok and reeval_report_ok
+      reeval_pass_for_result = reeval_pass_for_result and reeval_pass
+      let reeval_exit = if reeval_pass { 0 } else { 1 }
+      runtime.emit_process_output(run_dir, f"reeval-${ticket_id}", "stdout", fp"${run_dir}/reeval-${ticket_id}.stdout", reeval_exit)?
+      runtime.emit_process_output(run_dir, f"reeval-${ticket_id}", "stderr", fp"${run_dir}/reeval-${ticket_id}.stderr", reeval_exit)?
+      runtime.emit_event(event_template, run_dir, "80-reeval-completed", f"${ticket_id}-reevaluation",
+        if reeval_pass { "completed" } else { "failed" }, 1, "controller", "candidate re-evaluation returned")?
+      if reeval_pass {
+        runtime.emit_event(event_template, run_dir, "85-reeval-validated", f"${ticket_id}-reevaluation", "validated", 1, "controller", "candidate re-evaluation report.json passed")?
       }
-    } else if ! primary_pass {
-      worktree_cleanup_state = "retained-after-primary-failure"
-    } else if reeval_state != "pass" {
-      worktree_cleanup_state = "retained-after-reevaluation-failure"
-    } else {
-      worktree_cleanup_state = "retained-after-patch-failure"
+      let patch_ready = primary_pass and fs.exists(ticket_patch)?
+      let cleaned = patch_ready and reeval_pass and runtime.remove_clean_worktree(xsh_repo, ticket_worktree)?
+      worktree_cleanup_ok = worktree_cleanup_ok and cleaned
     }
   }
 
@@ -521,7 +527,6 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   let audit_report_ok = audit_status.ok and fs.exists(audit_file)? and schema.valid(json.read(audit_file)?, "run")
   let audit_result = if audit_report_ok { schema.value_text(json.get(json.read(audit_file)?, ["result"], "missing")) } else { "missing" }
   let audit_pass = audit_report_ok and audit_result == "pass"
-  let reeval_pass_for_result = if selected_ticket == "" { true } else { reeval_state == "pass" }
   let independent_eval_pass_for_result = if selected_ticket == "" { true } else { independent_eval_state == "pass" }
   let design_pass_for_result = design_state == "pass" or design_state == "not-requested"
   let initial_result = if primary_pass and reeval_pass_for_result and independent_eval_pass_for_result and design_pass_for_result and worktree_cleanup_ok and audit_pass { "pass" } else { "fail" }

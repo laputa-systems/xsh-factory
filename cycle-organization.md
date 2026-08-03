@@ -4,8 +4,9 @@
 
 Run one bounded organization cycle. Review every remaining `Open.` ticket for
 evidence, duplication, scope, and acceptance criteria before selecting work.
-Admit at most one explicitly approved ticket, or automatically select the
-first approved ticket after that review. If none is available, run the selected eval. When a ticket is admitted, immediately
+Admit up to two explicitly approved tickets, or automatically select the first
+two approved tickets after that review. If none is available, run the selected
+eval. When tickets are admitted, immediately
 re-evaluate its linked eval against the exact clean engineer worktree before merge,
 then run the independent `task-envcfg` eval against XSH main. Always produce
 one small practical eval proposal for immediate CTO review and promotion.
@@ -31,7 +32,7 @@ one small practical eval proposal for immediate CTO review and promotion.
 ## Ticket policy
 
 - Review all open tickets before selection: `yes`
-- Select the first approved ticket after review: `yes`
+- Select the first two approved tickets after review: `yes`
 
 ## Role overrides
 
@@ -41,7 +42,7 @@ deliberate override in the invocation with a role-specific setting.
 ## Required outputs
 
 - one primary eval or ticket phase;
-- one linked candidate re-evaluation when a ticket is admitted;
+- one linked candidate re-evaluation per admitted ticket;
 - one independent `task-envcfg` eval when a ticket is admitted, distinct from
   the linked ticket replay;
 - one eval-design proposal pending review;

@@ -5,13 +5,39 @@ use factory_runtime as runtime
 use report_schema as schema
 
 proc test_cycle_request_parsing() [error] {
-  let request = "# Cycle\n\n## Mode\n\n- `organization`\n\n## Active evals\n\n- `task-tags`\n\n## Trial plan\n\n- Count: `1`\n\n## New eval proposals\n\n- Count: `1`\n\n## Approved tickets\n\n- `task-tags-001`\n"
+  let request = "# Cycle\n\n## Mode\n\n- `organization`\n\n## Active evals\n\n- `task-tags`\n\n## Trial plan\n\n- Count: `1`\n\n## New eval proposals\n\n- Count: `1`\n\n## Approved tickets\n\n- `task-tags-001`\n- `task-tags-002`\n"
   test.eq(control.request_mode(request), "organization")?
   test.eq(control.request_eval(request), "task-tags")?
-  test.eq(control.request_tickets(request), ["task-tags-001"])?
+  test.eq(control.request_tickets(request), ["task-tags-001", "task-tags-002"])?
   test.eq(control.request_trial_count(request)?, 1)?
   test.eq(control.request_new_eval_count(request)?, 1)?
   test.eq(control.request_ticket_policy(request), "explicit")?
+}
+
+proc test_organization_selects_two_approved_tickets(ctx: TestContext) [fs, error] {
+  let root = test.temp_dir(ctx, name: "approved-ticket-selection")?
+  let tickets = fp"${root}/tickets"
+  fs.mkdir(tickets)?
+  fs.write(fp"${tickets}/task-z.md", "# Ticket\n\n## Status\n\nOpen.\n")?
+  fs.write(fp"${tickets}/task-b.md", "# Ticket\n\n## Status\n\nApproved.\n")?
+  fs.write(fp"${tickets}/task-a.md", "# Ticket\n\n## Status\n\nApproved.\n")?
+  test.eq(runtime.first_approved_tickets(root, 2)?, ["task-a", "task-b"])?
+}
+
+proc test_organization_phase_request_preserves_multiple_tickets() [fs, error] {
+  let template = fs.read_text(fp"${fs.cwd()?}/templates/ORGANIZATION-PHASE-REQUEST.md")?
+  let request = control.fill_template(template, [
+    {key: "MODE", value: "ticket-implementation"},
+    {key: "EVAL_ID", value: "task-envcfg"},
+    {key: "TRIAL_COUNT", value: "1"},
+    {key: "NEW_EVAL_COUNT", value: "0"},
+    {key: "TICKET_ID", value: "`task-a`\n- `task-b`"},
+    {key: "OBJECTIVE", value: "fixture"},
+  ])
+  let tickets = control.request_tickets(request)
+  test.eq(tickets.len(), 2)?
+  test.eq(tickets[0], "task-a")?
+  test.eq(tickets[1], "task-b")?
 }
 
 proc test_role_defaults_are_coded_and_capped() [env, error] {
@@ -26,6 +52,7 @@ proc test_role_defaults_are_coded_and_capped() [env, error] {
     test.ok(control.default_max_turns(role) != "")?
   }
   test.eq(control.default_max_turns("eval-designer"), "64")?
+  test.eq(control.default_max_wall_seconds("director"), "1800")?
   test.eq(control.default_max_wall_seconds("eval-designer"), "720")?
   test.eq(control.default_max_wall_seconds("eval-manager"), "900")?
   test.eq(control.default_max_wall_seconds("eval-worker"), "1800")?
@@ -129,6 +156,7 @@ proc test_standard_cycle_uses_diverse_active_eval() [fs, error] {
   let task_tags = fs.read_text(fp"${fs.cwd()?}/evals/task-tags/EVAL.md")?
   let improvement = fs.read_text(fp"${fs.cwd()?}/templates/CTO-IMPROVEMENT.md")?
   let launcher = fs.read_text(fp"${fs.cwd()?}/run.xsh")?
+  let organization = fs.read_text(fp"${fs.cwd()?}/run-organization.xsh")?
   test.contains(request, "`task-envcfg`")?
   test.ok(! request.contains("`task-tags`"))?
   test.ok(control.eval_is_disabled(task_tags))?
@@ -147,6 +175,12 @@ proc test_standard_cycle_uses_diverse_active_eval() [fs, error] {
   test.ok(! factory.contains("user authority"))?
   test.ok(! factory.contains("user approves"))?
   test.contains(launcher, "templates/CTO-IMPROVEMENT.md")?
+  test.contains(launcher, "candidate_tickets")?
+  test.contains(launcher, "first_approved_tickets")?
+  test.contains(organization, "first_approved_tickets")?
+  test.contains(organization, "for ticket_id in selected_tickets")?
+  test.contains(organization, "max_concurrent_engineers()")?
+  test.ok(! organization.contains("admit at most one ticket"))?
 }
 
 proc test_agent_completion_is_report_bound() [error] {

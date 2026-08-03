@@ -38,6 +38,11 @@ finite loop counts; never pair an unbounded producer such as `yes` with a large
 consumer limit or an unbounded write. If a probe grows unexpectedly, stop it and
 replace it with a small case before continuing.
 
+The task image is Alpine-based and provides BusyBox `sh`, not `bash`; use `sh`
+for shell probes and avoid bash-only syntax such as process substitution. XSH
+expressions use `and` and `or`, not shell `&&` and `||`; check a probe with
+`xsht check` before treating its result as product evidence.
+
 Before stopping, reopen `review.md`. Confirm both required section headings
 remain, replace `None.` only when you have evidence to report, and ensure no
 template marker such as `<title>` remains. A correct artifact with an

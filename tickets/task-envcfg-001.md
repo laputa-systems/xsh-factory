@@ -2,7 +2,7 @@
 
 ## Status
 
-Open.
+Approved.
 
 ## Merge record
 

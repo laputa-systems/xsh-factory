@@ -113,6 +113,17 @@ export proc stop_cycle_budget_watch(run_dir: Path) [fs, error] -> Result[Unit] {
   return Ok()
 }
 
+## Stages the CTO handoff in every controller-owned run directory.
+## The CTO fills this checked-in template after reviewing the evidence; the
+## controller must never leave a completed run without the handoff artifact.
+export proc stage_cto_improvement(factory_dir: Path, run_dir: Path) [fs, error] -> Result[Unit] {
+  let target = fp"${run_dir}/CTO-IMPROVEMENT.md"
+  if ! fs.exists(target)? {
+    fs.copy(fp"${factory_dir}/templates/CTO-IMPROVEMENT.md", target, overwrite: true)?
+  }
+  return Ok()
+}
+
 ## Writes the deterministic first-pass briefing used by the CTO.
 export proc write_cto_report(
   factory_dir: Path,
@@ -387,11 +398,13 @@ export proc disable_eval(
   return true
 }
 
-## Selects the first explicitly approved ticket for an organization cycle.
-export proc first_approved_ticket(factory_dir: Path) [fs, error] -> Result[Str] {
+## Selects the first explicitly approved tickets for an organization cycle.
+export proc first_approved_tickets(factory_dir: Path, limit: Int) [fs, error] -> Result[List[Str]] {
   let ticket_dir = fp"${factory_dir}/tickets"
+  var selected: List[Str] = []
+  if limit <= 0 { return selected }
   if ! fs.exists(ticket_dir)? {
-    return ""
+    return selected
   }
   let entries = fs.files(ticket_dir, gitignore: false, hidden: true)?
     |> sort-by .path.display()
@@ -401,10 +414,17 @@ export proc first_approved_ticket(factory_dir: Path) [fs, error] -> Result[Str] 
       continue
     }
     if control.ticket_is_accepted(entry.path.read_text()?) {
-      return entry.name.replace(".md", "")
+      selected = selected.push(entry.name.replace(".md", ""))
+      if selected.len() >= limit { return selected }
     }
   }
-  return ""
+  return selected
+}
+
+## Backward-compatible single-ticket selector for focused controllers.
+export proc first_approved_ticket(factory_dir: Path) [fs, error] -> Result[Str] {
+  let selected = first_approved_tickets(factory_dir, 1)?
+  return if selected.len() == 1 { selected[0] } else { "" }
 }
 
 proc commit_is_ancestor(xsh_repo: Path, commit: Str) [process, error] -> Result[Bool] {

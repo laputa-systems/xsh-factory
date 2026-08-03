@@ -48,6 +48,7 @@ proc run_ticket_cycle(
   fs.mkdir(patch_root)?
   fs.mkdir(fp"${run_dir}/messages")?
   fs.mkdir(fp"${run_dir}/tickets")?
+  runtime.stage_cto_improvement(factory_dir, run_dir)?
   runtime.register_cycle_controller(run_dir)?
   let skip_cycle_budget = env.get_or("FACTORY_SKIP_CYCLE_BUDGET", "false")? == "true"
   let retain_worktree = env.get_or("FACTORY_RETAIN_WORKTREE", "false")? == "true"
@@ -191,6 +192,12 @@ proc run_ticket_cycle(
     stdout: fp"${run_dir}/director.stdout",
     stderr: fp"${run_dir}/director.stderr",
   ))?
+  if ! director_status.ok {
+    # A director can have launched engineer children before its own session
+    # fails or reaches a limit. Drain the controller-owned registry before
+    # validating reports so failed dispatch cannot leave paid children alive.
+    runtime.cleanup_active_run()?
+  }
   runtime.emit_event(event_template, run_dir, "80-director-completed", "director", if director_status.ok { "completed" } else { "failed" }, 1, "director", "director process returned")?
   let director_exit = if director_status.ok { 0 } else { director_status.exit_code() ?? 1 }
   runtime.emit_process_output(run_dir, "director", "stdout", fp"${run_dir}/director.stdout", director_exit)?

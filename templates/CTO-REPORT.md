@@ -47,5 +47,4 @@ This is the deterministic first-pass briefing for the CTO. The structured
 
 - Structured run or phase report: `{{REPORT_SCHEMA}}`
 - Raw employee sessions and structured worker reports: `workers/`
-- Factory improvement handoff: `CTO-IMPROVEMENT.md` (required; next CTO must
-  validate or revert it before paid work)
+- Factory improvement handoff: {{IMPROVEMENT}}

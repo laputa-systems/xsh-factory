@@ -76,12 +76,28 @@ proc worker_block(run_dir: Path, report: Path, template: Str) [fs, error] -> Res
   ])
 }
 
-proc eval_review_block(run_dir: Path) [fs, error] -> Result[Str] {
-  let review = fp"${run_dir}/CTO-EVAL-REVIEW.md"
-  if ! fs.exists(review)? {
+proc eval_review_block(run_dir: Path, reviews: List[Path]) [fs, error] -> Result[Str] {
+  if reviews.len() == 0 {
     return "No CTO eval review was recorded."
   }
-  return f"`{relative_path(run_dir, review)}`\n\n${review.read_text()?}"
+  var result = ""
+  for review in reviews {
+    result = result + f"`${relative_path(run_dir, review)}`\n\n${review.read_text()?}\n"
+  }
+  return result
+}
+
+proc improvement_block(run_dir: Path) [fs, error] -> Result[Str] {
+  let handoff = fp"${run_dir}/CTO-IMPROVEMENT.md"
+  if ! fs.exists(handoff)? {
+    return f"MISSING: `${relative_path(run_dir, handoff)}`"
+  }
+  let status = control.report_field(handoff.read_text()?, "Status")
+  return if status == "" {
+    f"`${relative_path(run_dir, handoff)}` (status not recorded)"
+  } else {
+    f"`${relative_path(run_dir, handoff)}` status: `${status}`"
+  }
 }
 
 proc tool_error_blocks(run_dir: Path, reports: List[Path], template: Str) [fs, error] -> Result[Str] {
@@ -151,6 +167,7 @@ proc main(...argv: List[Str]) [fs, env, error, io] {
   var phase_reports: List[Path] = []
   var employee_reports: List[Path] = []
   var worker_reports: List[Path] = []
+  var eval_reviews: List[Path] = []
   for entry in fs.walk(run_dir, gitignore: false, hidden: true)? |> where .kind == "file" {
     if entry.name == "report.json" and entry.path.display().contains("/phases/") {
       phase_reports = phase_reports.push(entry.path)
@@ -161,10 +178,14 @@ proc main(...argv: List[Str]) [fs, env, error, io] {
     if entry.name == "report.json" and entry.path.display().contains("/workers/") {
       worker_reports = worker_reports.push(entry.path)
     }
+    if entry.name == "CTO-EVAL-REVIEW.md" {
+      eval_reviews = eval_reviews.push(entry.path)
+    }
   }
   phase_reports = phase_reports |> sort-by .display()
   employee_reports = employee_reports |> sort-by .display()
   worker_reports = worker_reports |> sort-by .display()
+  eval_reviews = eval_reviews |> sort-by .display()
 
   var employees = ""
   for report in employee_reports {
@@ -199,7 +220,8 @@ proc main(...argv: List[Str]) [fs, env, error, io] {
     {key: "TOOL_ERRORS", value: tool_error_blocks(run_dir, worker_reports, error_template)?},
     {key: "COST_SUMMARY", value: cost_summary},
     {key: "EMPLOYEE_DECISIONS", value: employees},
-    {key: "EVAL_REVIEW", value: eval_review_block(run_dir)?},
+    {key: "EVAL_REVIEW", value: eval_review_block(run_dir, eval_reviews)?},
+    {key: "IMPROVEMENT", value: improvement_block(run_dir)?},
     {key: "ACTION_QUEUE", value: "Review the structured report and employee narratives before the next paid cycle."},
   ]
   fs.write(output, control.fill_template(template, values))?

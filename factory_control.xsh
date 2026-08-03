@@ -94,8 +94,10 @@ export pure default_max_turns(role: Str) -> Str {
 }
 
 ## Hard wall-clock ceilings are enforced by the controller-side session watcher.
+## The director coordinates engineer children, so its ceiling must cover the
+## same bounded child lifetime instead of expiring while healthy children run.
 export pure default_max_wall_seconds(role: Str) -> Str {
-  if role == "director" { return "300" }
+  if role == "director" { return "1800" }
   if role == "eval-designer" { return "720" }
   if role == "eval-manager" { return "900" }
   if role == "eval-worker" { return "1800" }

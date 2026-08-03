@@ -29,7 +29,8 @@ test, policy, or other reusable infrastructure.
 
 One cycle may:
 
-- admit at most two engineer tickets in a ticket-implementation cycle;
+- admit two engineer tickets in a ticket-implementation cycle whenever two
+  evidence-backed Approved tickets are available;
 - run one linked re-evaluation plus one independent active eval when a ticket
   is admitted (two distinct eval runs);
 - produce and immediately review at most one new eval proposal;
@@ -97,9 +98,10 @@ observation is reproducible, general, small enough for the engineer ceiling,
 and has testable acceptance criteria. Reject duplicates, task-specific
 workarounds, vague hypotheses, or changes whose expected value is below their
 spend. The review pass may cover every Open ticket, but no more than two
-ticket statuses may change in one cycle and no more than one engineer ticket
-may be admitted. Record decisions in the ticket and request; do not use a
-worker to discover which ticket to implement.
+ticket statuses may change in one cycle and no more than two engineer tickets
+may be admitted. Dispatch both when two evidence-backed Approved tickets are
+available. Record decisions in the ticket and request; do not use a worker to
+discover which ticket to implement.
 
 For a completed engineer patch, inspect scope, tests, exact assignment,
 portable diff, and linked replay. The CTO decides whether to merge or apply

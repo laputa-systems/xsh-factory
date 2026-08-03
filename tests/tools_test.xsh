@@ -83,6 +83,8 @@ proc write_eval_phase_fixture(root: Path, factory: Path) [fs, error] -> Result[U
   fs.mkdir(fp"${root}/workers/eval-manager/task-tags")?
   fs.mkdir(fp"${root}/workers/director/director")?
   fs.mkdir(fp"${root}/lineage")?
+  fs.mkdir(fp"${root}/phases/02-eval-design")?
+  fs.write(fp"${root}/phases/02-eval-design/CTO-EVAL-REVIEW.md", "# Eval review\n\nphase review\n")?
   fs.write(fp"${root}/CYCLE-REQUEST.md", "# Cycle\n\n## Mode\n\n- `eval`\n\n## Active evals\n\n- `task-tags`\n\n## Trial plan\n\n- Count: `1`\n\n## New eval proposals\n\n- Count: `0`\n")?
   fs.write(fp"${root}/lineage/handbook-approved.md", "approved\n")?
   fs.write(fp"${root}/lineage/handbook-candidate.md", "candidate\n")?
@@ -172,7 +174,9 @@ proc test_cto_briefing_reads_json_not_projection(ctx: TestContext) [fs, process,
   test.contains(text, "workers/eval-worker/task-tags-1/report.json")?
   test.contains(text, "Execution: `fail`; classification: `worker_failed`")?
   test.contains(text, "- Result: `pass`")?
-  test.contains(text, "No CTO eval review was recorded.")?
+  test.contains(text, "phases/02-eval-design/CTO-EVAL-REVIEW.md")?
+  test.contains(text, "phase review")?
+  test.contains(text, "CTO-IMPROVEMENT.md")?
   test.ok(! text.contains("COST.md"))?
   test.ok(! text.contains("TOOL-ERRORS.md"))?
 }
@@ -243,6 +247,8 @@ proc test_ticket_cycle_bounds_concurrent_engineers() [fs, error] {
   let director = fs.read_text(fp"${fs.cwd()?}/roles/director.md")?
   test.contains(ticket, "max_concurrent_engineers()")?
   test.contains(ticket, r"""at most ${control.max_concurrent_engineers()} engineer tickets""")?
+  test.contains(ticket, "if ! director_status.ok")?
+  test.contains(ticket, "runtime.cleanup_active_run()")?
   test.contains(director, "launch all children")?
 }
 
@@ -306,6 +312,16 @@ proc test_process_output_is_written_to_event_ledger(ctx: TestContext) [fs, error
   test.contains(events, "hello\\n")?
 }
 
+proc test_cto_handoff_is_staged_for_every_run(ctx: TestContext) [fs, error] {
+  let root = test.temp_dir(ctx, name: "cto-handoff")?
+  let factory = fs.cwd()?
+  runtime.stage_cto_improvement(factory, root)?
+  let handoff = fp"${root}/CTO-IMPROVEMENT.md"
+  test.ok(fs.exists(handoff)?)?
+  test.contains(fs.read_text(handoff)?, "pending-validation")?
+  test.contains(fs.read_text(handoff)?, "## Revert condition")?
+}
+
 proc test_eval_executor_is_documented_as_controller_not_role() [fs, error] {
   let contract = fs.read_text(fp"${fs.cwd()?}/FACTORY.md")?
   let guide = fs.read_text(fp"${fs.cwd()?}/AGENTS.md")?
@@ -322,4 +338,11 @@ proc test_controllers_have_no_legacy_projection_outputs() [fs, error] {
     test.ok(! source.contains("TOOL-ERRORS.md"), f"${file} must use structured tool_errors")?
     test.ok(! source.contains("CURRENT-EVIDENCE.md"), f"${file} must not emit evidence projection")?
   }
+}
+
+proc test_eval_worker_prompt_matches_task_image() [fs, error] {
+  let prompt = fs.read_text(fp"${fs.cwd()?}/roles/eval-worker.md")?
+  test.contains(prompt, "BusyBox `sh`, not `bash`")?
+  test.contains(prompt, "avoid bash-only syntax")?
+  test.contains(prompt, "`and` and `or`, not shell `&&` and `||`")?
 }

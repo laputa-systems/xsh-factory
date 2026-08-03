@@ -61,6 +61,13 @@ table and launch each assigned engineer row exactly once through the shared
 runner. Newly created tickets wait for the next cycle. Every stage completion
 is an event recorded by the controller; do not implement a polling loop in an
 agent.
+
+After launching a child, capture its PID and use a bounded `wait` on that PID;
+do not substitute long `sleep` calls or an unbounded polling loop. The director
+ceiling is aligned with the engineer ceiling because healthy engineer work may
+take the full bounded interval. If the director itself fails, the controller
+terminates the registered children before validating their reports.
+
 Collect every child report. The controller pre-stages a fail-closed
 `REPORT.md`; open it before inspecting children and keep `## Result` as
 `not-ready` until all rows and required outputs are reconciled. Write it

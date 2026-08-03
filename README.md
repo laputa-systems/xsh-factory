@@ -37,7 +37,7 @@ XSH_MODULE_PATH=. xsh run.xsh cycle-organization.md
 
 Before launch, the CTO reviews every remaining `Open.` ticket for evidence,
 duplication, scope, and acceptance criteria. It reconciles merged tickets and
-admits at most one approved implementation,
+admits up to two approved implementations,
 starts safe independent phases concurrently, replays a successful ticket
 against its linked eval, runs a different independent active eval, and may
 produce, review, and promote one new eval proposal. With no approved

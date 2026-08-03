@@ -35,7 +35,7 @@ eval-design phase runs alongside the primary phase.
 ## Ticket policy
 
 - Review all open tickets before selection: `yes`
-- Select the first approved ticket after review: `yes`
+- Select the first two approved tickets after review: `yes`
 
 ## Role overrides
 
@@ -45,8 +45,8 @@ environment override in the invocation, using names such as
 
 ## Required outputs
 
-- one approved ticket implementation and linked pre-merge replay when a ticket
-  is available;
+- up to two approved ticket implementations and one linked pre-merge replay per
+  ticket when tickets are available;
 - one independent active eval when a ticket is available, otherwise one active
   eval as the primary phase;
 - one eval-design proposal pending review;
