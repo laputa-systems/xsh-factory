@@ -32,7 +32,10 @@ One cycle may:
 - admit at most two engineer tickets in a ticket-implementation cycle;
 - run one linked re-evaluation plus one independent active eval when a ticket
   is admitted (two distinct eval runs);
-- stage at most one new eval proposal;
+- produce and immediately review at most one new eval proposal;
+- promote that proposal package into `evals/` regardless of the review result;
+  set `Approved.` only when the evaluator and evidence pass, otherwise retain
+  `Draft.`;
 - review every open ticket, while approving or rejecting at most two per cycle;
 - promote at most one handbook candidate after replay evidence; and
 - merge at most one product branch, only with user authority.
@@ -108,10 +111,10 @@ the patch against the common ancestor and owns temporary worktree cleanup.
 Use `cycle-organization.md` when the standard path is appropriate:
 
 - with an approved ticket: implement it, run its linked replay, run one
-  different independent active eval, and stage one design proposal when below
-  the cap;
-- without an approved ticket: run one active eval as primary and stage one
-  design proposal when below the cap; or
+  different independent active eval, and produce, review, and promote one
+  design proposal when below the cap;
+- without an approved ticket: run one active eval as primary and produce,
+  review, and promote one design proposal when below the cap; or
 - at the eval cap: omit design and spend nothing on new eval creation.
 
 Use direct eval, ticket, or design requests when a smaller cycle is safer.
@@ -122,7 +125,16 @@ Safe independent phases may overlap because the controller owns their process
 handles and isolated directories. The linked replay waits for its engineer
 patch. The CTO never starts a second top-level run or manually launches Pi.
 
-### 5. Inspect the result
+### 5. Inspect and promote new evals
+
+When an eval-design phase completes, review `CTO-EVAL-REVIEW.md`, the designer
+report, and the materialized proposal package immediately. The controller
+promotes the package into `evals/<id>/` regardless of whether the review result
+is accepted or rejected. Approve it only after the package-owned evaluator
+syntax-checks and its evidence is strong; a rejected or incomplete proposal
+remains `Draft.` and must not be selected for paid work.
+
+### 6. Inspect the result
 
 The machine report is `report.json`; the raw session is `session.jsonl`; the
 employee's judgment is `REPORT.md`; the CTO briefing is a view. Compare:
@@ -139,7 +151,7 @@ repeated invalid `xsht api` queries, missing-file searches, redundant reads,
 and report misunderstandings as efficiency evidence. Managers must account
 for that array explicitly. A missing provider cost is unknown, not zero.
 
-### 6. Improve from evidence
+### 7. Improve from evidence
 
 Promote a handbook candidate only when it states reusable XSH guidance,
 removes repeated guesswork, cites the eval/session evidence, and has a replay
@@ -170,7 +182,7 @@ after one qualifying pass when its low information value is explicit and a
 more valuable replacement is active. Mark it `Disabled.` with the evidence
 path and preserve its history.
 
-### 7. Leave a durable handoff
+### 8. Leave a durable handoff
 
 The run directory must contain the structured reports, sessions, evaluator
 manifests, lifecycle `events.jsonl`, patches, employee narratives, and any

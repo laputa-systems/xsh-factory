@@ -49,6 +49,8 @@ proc test_north_star_contains_rationale_without_factory_symlink() [fs, error] {
 
 proc test_admission_and_report_contracts() [error] {
   test.ok(control.valid_eval_id("task-tags"))?
+  test.eq(control.eval_id_from_contract("# Eval task-probe\n\n## Status\n\nDraft.\n"), "task-probe")?
+  test.eq(control.eval_id_from_contract("# Proposal\n"), "")?
   test.ok(! control.valid_eval_id("../escape"))?
   test.ok(control.valid_ticket_id("task-tags-001"))?
   test.ok(! control.valid_ticket_id("task/tags"))?
@@ -60,6 +62,47 @@ proc test_admission_and_report_contracts() [error] {
   test.ok(control.manager_tool_error_findings_contract_ok("## Tool-error findings\n\nreport.json\n"))?
   test.eq(control.report_section("# Report\n\n## Result\n\npass\n\nDetails.\n\n## Evidence\n\nready\n", "Result"), "pass\n\nDetails.")?
   test.eq(control.report_field("# Report\n\n## Result\n\npass\n\nDetails.\n\n## Evidence\n\nready\n", "Result"), "pass")?
+}
+
+proc test_eval_proposal_is_promoted_without_acceptance(ctx: TestContext) [fs, error] {
+  let factory = test.temp_dir(ctx, name: "eval-promotion")?
+  let proposal = fp"${factory}/runs/run-1/proposals/proposal-1"
+  fs.mkdir(fp"${proposal}/runtime")?
+  fs.mkdir(fp"${factory}/evals")?
+  fs.write(fp"${proposal}/EVAL.md", "# Eval task-probe\n\n## Status\n\nDraft.\n")?
+  for relative in ["executor.xsh", "evaluate.xsh", "evaluator.xsh", "runtime/task.md", "runtime/artifact.md"] {
+    fs.write(fp"${proposal}/${relative}", f"${relative}\n")?
+  }
+  let run_dir = fp"${factory}/runs/run-1"
+  test.ok(runtime.promote_eval_proposal(factory, proposal, run_dir, "rejected")?)?
+  let promoted = fp"${factory}/evals/task-probe"
+  test.ok(fs.exists(fp"${promoted}/evaluator.xsh")?)?
+  let contract = fs.read_text(fp"${promoted}/EVAL.md")?
+  test.contains(contract, "## CTO review")?
+  test.contains(contract, "Result: `rejected`")?
+  test.contains(contract, "Package: `complete`")?
+  test.contains(contract, "Status: `Draft.`")?
+  test.ok(! runtime.promote_eval_proposal(factory, proposal, run_dir, "accepted")?)?
+
+  let partial = fp"${factory}/runs/run-2/proposals/proposal-1"
+  fs.mkdir(fp"${partial}/runtime")?
+  fs.write(fp"${partial}/EVAL.md", "# Eval task-legacy\n\n## Status\n\nDraft.\n")?
+  for relative in ["executor.xsh", "evaluate.xsh", "runtime/task.md", "runtime/artifact.md"] {
+    fs.write(fp"${partial}/${relative}", f"${relative}\n")?
+  }
+  test.ok(runtime.promote_eval_proposal(factory, partial, fp"${factory}/runs/run-2", "rejected")?)?
+  let partial_contract = fs.read_text(fp"${factory}/evals/task-legacy/EVAL.md")?
+  test.contains(partial_contract, "Package: `incomplete`")?
+  test.contains(partial_contract, "evaluator.xsh")?
+
+  let accepted = fp"${factory}/runs/run-3/proposals/proposal-1"
+  fs.mkdir(fp"${accepted}/runtime")?
+  fs.write(fp"${accepted}/EVAL.md", "# Eval task-accepted\n\n## Status\n\nDraft.\n")?
+  for relative in ["executor.xsh", "evaluate.xsh", "evaluator.xsh", "runtime/task.md", "runtime/artifact.md"] {
+    fs.write(fp"${accepted}/${relative}", f"${relative}\n")?
+  }
+  test.ok(runtime.promote_eval_proposal(factory, accepted, fp"${factory}/runs/run-3", "accepted")?)?
+  test.eq(control.ticket_status(fs.read_text(fp"${factory}/evals/task-accepted/EVAL.md")?), "Approved.")?
 }
 
 proc test_role_report_skeletons_are_fail_closed() [fs, error] {

@@ -35,6 +35,10 @@ This is the deterministic first-pass briefing for the CTO. The structured
 
 {{EMPLOYEE_DECISIONS}}
 
+## Eval proposal review
+
+{{EVAL_REVIEW}}
+
 ## CTO action queue
 
 {{ACTION_QUEUE}}

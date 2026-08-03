@@ -4,7 +4,8 @@
 
 Design and dry-run exactly one small practical XSH eval. Use task-tags as the
 minimal structural example, keep difficulty no harder than ecount, and leave
-the proposal pending user review.
+the proposal reviewed by the CTO and promoted into `evals/` with an explicit
+`Approved.` or `Draft.` decision.
 
 ## Mode
 
@@ -29,6 +30,6 @@ the proposal pending user review.
 ## Required outputs
 
 - one eval-designer session and worker report;
-- one staged proposal with dry-run evidence;
+- one proposal promoted into `evals/` with CTO review provenance;
 - aggregate cost and deterministic audit reports;
 - no modifications to approved evals or the shared handbook.

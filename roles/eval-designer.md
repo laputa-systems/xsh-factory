@@ -47,13 +47,15 @@ to debug infrastructure. Create the required report early and finish within
 the controller's turn and wall-clock bounds even when the proposal is
 incomplete.
 
-The controller has already staged the task-tags proposal scaffold and a
-fail-closed `REPORT.md` skeleton. As soon as the task shape is selected, edit
-`EVAL.md`, the runtime task/artifact files, executor, and evaluator before
-beginning the dry run. The dry run validates a materialized proposal; it is
-not a substitute for staging one. Finish the report immediately after the dry
-run, changing `## Result` to `ready-for-review` only when the proposal and
-evidence are complete.
+The controller has already staged the complete task-tags proposal scaffold,
+including `evaluator.xsh`, and a fail-closed `REPORT.md` skeleton. As soon as
+the task shape is selected, edit `EVAL.md`, the runtime task/artifact files,
+executor, and evaluator before beginning the dry run. Run only the smallest
+representative cases needed to prove the contract. The dry run validates a
+materialized proposal; it is not a substitute for staging one. Finish the
+report immediately after the dry run, before more discovery or polishing,
+changing `## Result` to `ready-for-review` only when the proposal and evidence
+are complete.
 
 Produce a proposal using `templates/EVAL.md`. It must include the north-star
 hypothesis, task prompt, agent boundary, evaluator and external oracle, hidden
@@ -65,4 +67,5 @@ modify an approved eval.
 Finish `REPORT.md` with exactly these headings: `## Result`,
 `## Proposal`, `## Dry run`, `## North-star impact`, `## Known risks`, and
 `## Review path`. Use `ready-for-review` for a proposal that is staged and
-dry-run evidence is preserved; the user still must approve it.
+dry-run evidence is preserved; the CTO review gate decides whether it becomes
+`Approved.` or stays `Draft.`.

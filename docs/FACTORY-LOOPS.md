@@ -64,7 +64,11 @@ The designer proposes at most one small practical systems-administration or
 programming eval per bounded cycle. `task-tags` is the minimal structural
 example; `task-ecount` is the current difficulty upper bound. A proposal must
 include the task, oracle, evaluator, restrictions, runtime scaffolding, cost
-expectation, and a dry run. It remains pending until the user approves it.
+expectation, and a dry run. The controller immediately gives the materialized
+package to the CTO review gate and promotes it into `evals/` whether that gate
+accepts or rejects the proposal. A passing evaluator and strong evidence let
+the CTO set `Approved.`; rejected or incomplete packages remain `Draft.` and
+stay out of active cycles.
 
 ## Organization loop
 

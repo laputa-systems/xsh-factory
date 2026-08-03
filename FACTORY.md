@@ -55,8 +55,11 @@ engineer never chooses a ticket. There is one process launcher,
   `report.json` is the machine contract; raw `session.jsonl` is canonical
   Pi evidence; `REPORT.md` is the employee's one qualitative narrative;
   `CTO-REPORT.md` is a navigation briefing.
-- Do not merge product branches, apply patches, promote handbook candidates,
-  or approve evals without explicit user authority.
+- Do not merge product branches, apply patches, or promote handbook candidates
+  without explicit user authority. The CTO reviews each newly materialized eval
+  immediately and promotes its package into `evals/` even when the review does
+  not accept it. A passing evaluator and strong evidence may set `Approved.`;
+  otherwise the package remains `Draft.` and is not admitted to paid work.
 
 ## Report contract
 
@@ -94,7 +97,8 @@ human-authored inputs or judgments. They are not machine-to-machine state.
 - `ticket-implementation`: create up to two isolated worktrees and one
   inlined ticket assignment per approved ticket, dispatching the admitted
   engineer rows concurrently, then capture a portable patch per ticket;
-- `eval-design`: dispatch one designer to stage one proposal and dry run; or
+- `eval-design`: dispatch one designer, review its package, and promote one
+  proposal while preserving `Draft.` status; or
 - `organization`: compose the bounded implementation, linked replay,
   independent eval, and optional design phases.
 
@@ -119,8 +123,12 @@ isolated product worktree.
 There is one shared rolling handbook at `runtime/handbook.md`. Trial workspaces
 receive snapshots; a candidate lives under the run until a user-approved
 decision promotes it. Every eval reads the same approved handbook lineage.
+Eval packages follow a separate path: the CTO promotes them into `evals/`
+immediately, then sets `Approved.` only after the evaluator and evidence pass.
+`Draft.` status keeps rejected or incomplete packages out of paid admission.
 
-The user approves new evals and product merges. Reconciliation examines the
+The CTO reviews and promotes new eval packages. The user approves their
+admission to active cycles and product merges. Reconciliation examines the
 linked ticket's recorded implementation and changes only that `TICKET.md`
 status to `Merged.` when the merge is proven. A linked manager replay can then
 accept or reject the product change with evidence.

@@ -44,6 +44,7 @@ proc preflight(
     "tools/cto-report.xsh",
     "templates/POSTMORTEM.md",
     "templates/CTO-REPORT.md",
+    "templates/CTO-EVAL-REVIEW.md",
     "templates/CTO-EMPLOYEE.md",
     "templates/CTO-PHASE.md",
     "templates/CTO-WORKER.md",

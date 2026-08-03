@@ -76,6 +76,14 @@ proc worker_block(run_dir: Path, report: Path, template: Str) [fs, error] -> Res
   ])
 }
 
+proc eval_review_block(run_dir: Path) [fs, error] -> Result[Str] {
+  let review = fp"${run_dir}/CTO-EVAL-REVIEW.md"
+  if ! fs.exists(review)? {
+    return "No CTO eval review was recorded."
+  }
+  return f"`{relative_path(run_dir, review)}`\n\n${review.read_text()?}"
+}
+
 proc tool_error_blocks(run_dir: Path, reports: List[Path], template: Str) [fs, error] -> Result[Str] {
   var rows = ""
   for report in reports {
@@ -191,6 +199,7 @@ proc main(...argv: List[Str]) [fs, env, error, io] {
     {key: "TOOL_ERRORS", value: tool_error_blocks(run_dir, worker_reports, error_template)?},
     {key: "COST_SUMMARY", value: cost_summary},
     {key: "EMPLOYEE_DECISIONS", value: employees},
+    {key: "EVAL_REVIEW", value: eval_review_block(run_dir)?},
     {key: "ACTION_QUEUE", value: "Review the structured report and employee narratives before the next paid cycle."},
   ]
   fs.write(output, control.fill_template(template, values))?

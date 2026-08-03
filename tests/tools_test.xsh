@@ -172,6 +172,7 @@ proc test_cto_briefing_reads_json_not_projection(ctx: TestContext) [fs, process,
   test.contains(text, "workers/eval-worker/task-tags-1/report.json")?
   test.contains(text, "Execution: `fail`; classification: `worker_failed`")?
   test.contains(text, "- Result: `pass`")?
+  test.contains(text, "No CTO eval review was recorded.")?
   test.ok(! text.contains("COST.md"))?
   test.ok(! text.contains("TOOL-ERRORS.md"))?
 }
@@ -272,6 +273,21 @@ proc test_eval_dispatch_is_package_owned() [fs, error] {
   for eval_id in ["task-tags", "task-ecount", "task-envcfg"] {
     test.ok(fs.exists(fp"${fs.cwd()?}/evals/${eval_id}/evaluator.xsh")?)?
   }
+}
+
+proc test_eval_design_stages_and_promotes_complete_package() [fs, error] {
+  let controller = fs.read_text(fp"${fs.cwd()?}/run-design.xsh")?
+  let assignment = fs.read_text(fp"${fs.cwd()?}/templates/EVAL-DESIGNER-ASSIGNMENT.md")?
+  let review = fs.read_text(fp"${fs.cwd()?}/templates/CTO-EVAL-REVIEW.md")?
+  test.contains(controller, "\"evaluator.xsh\"")?
+  test.contains(controller, "promote_eval_proposal")?
+  test.contains(controller, "84-cto-reviewed")?
+  test.contains(controller, "evaluator_check_ok")?
+  test.contains(assignment, "including `evaluator.xsh`")?
+  test.contains(assignment, "before any further exploration")?
+  test.contains(review, "may set `Approved.`")?
+  test.contains(review, "MISSING_PACKAGE_FILES")?
+  test.contains(review, "Checked-in status")?
 }
 
 proc test_process_output_is_written_to_event_ledger(ctx: TestContext) [fs, error] {

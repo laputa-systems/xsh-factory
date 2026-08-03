@@ -74,6 +74,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     "EVAL.md",
     "executor.xsh",
     "evaluate.xsh",
+    "evaluator.xsh",
     "runtime/task.md",
     "runtime/artifact.md",
   ] {
@@ -173,6 +174,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     FACTORY_ENGINEER_TOOLS: control.configured_role_setting("engineer", "TOOLS")?,
   }
   runtime.emit_event(event_template, run_dir, "20-designer-started", "eval-designer", "started", 1, "controller", "one proposal row dispatched")?
+  runtime.emit_event(event_template, run_dir, "21-proposal-started", "eval-proposal", "started", 1, "controller", "proposal package assigned")?
   let worker_status = process.run(process.command_argv(
     xsh_path,
     [xsh_path.display(), run_agent.display(), "--", "eval-designer", worker_id,
@@ -184,6 +186,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   ))?
   runtime.emit_event(event_template, run_dir, "80-designer-completed", "eval-designer",
     if worker_status.ok { "completed" } else { "failed" }, 1, "eval-designer", "worker process returned")?
+  runtime.emit_event(event_template, run_dir, "81-proposal-completed", "eval-proposal", "completed", 1, "eval-designer", "proposal package produced")?
   let designer_exit = if worker_status.ok { 0 } else { worker_status.exit_code() ?? 1 }
   runtime.emit_process_output(run_dir, "eval-designer-proposal-1", "stdout", fp"${run_dir}/designer.stdout", designer_exit)?
   runtime.emit_process_output(run_dir, "eval-designer-proposal-1", "stderr", fp"${run_dir}/designer.stderr", designer_exit)?
@@ -195,7 +198,19 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     control.designer_report_contract_ok(designer_report.read_text()?)
   let north_star_read_ok = runtime.session_read_path(session, fp"${factory_dir}/NORTH-STAR.md")?
   let handbook_read_ok = runtime.session_read_path(session, fp"${factory_dir}/runtime/handbook.md")?
-  let proposal_ok = fs.exists(proposal_dir)?
+  let proposal_ok = fs.exists(proposal_dir)? and fs.exists(fp"${proposal_dir}/EVAL.md")? and
+    fs.exists(fp"${proposal_dir}/executor.xsh")? and fs.exists(fp"${proposal_dir}/evaluate.xsh")? and
+    fs.exists(fp"${proposal_dir}/runtime/task.md")? and
+    fs.exists(fp"${proposal_dir}/runtime/artifact.md")?
+  let proposal_complete = proposal_ok and fs.exists(fp"${proposal_dir}/evaluator.xsh")?
+  let evaluator_check_ok = if proposal_complete {
+    process.run(process.command_argv(
+      "xsht", ["xsht", "check", fp"${proposal_dir}/evaluator.xsh".display()],
+      cwd: factory_dir,
+    ))?.ok
+  } else {
+    false
+  }
   let audit_status = process.run(process.command_argv(
     xsh_path,
     [xsh_path.display(), fp"${factory_dir}/audit-run.xsh", "--", run_dir.display(), "eval-design"],
@@ -206,8 +221,43 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     schema.valid(json.read(audit_file)?, "phase")
   let audit_result = if audit_report_ok { schema.value_text(json.get(json.read(audit_file)?, ["result"], "missing")) } else { "missing" }
   let audit_pass = audit_report_ok and audit_result == "pass"
+  let review_result = if designer_report_ok and proposal_complete and evaluator_check_ok and audit_pass { "accepted" } else { "rejected" }
+  let promoted = if proposal_ok {
+    runtime.promote_eval_proposal(factory_dir, proposal_dir, run_dir, review_result)?
+  } else {
+    false
+  }
+  let review_template = fp"${factory_dir}/templates/CTO-EVAL-REVIEW.md"
+  let eval_id = if fs.exists(fp"${proposal_dir}/EVAL.md")? {
+    control.eval_id_from_contract(fp"${proposal_dir}/EVAL.md".read_text()?)
+  } else { "" }
+  let proposal_path = control.factory_relative_path(factory_dir.display(), proposal_dir)
+  let promoted_path = if eval_id != "" { f"evals/${eval_id}" } else { "not-promoted" }
+  let package_state = if proposal_complete { "complete" } else { "incomplete" }
+  let missing_package_files = if proposal_complete { "None." } else { "evaluator.xsh (package-owned evaluator)" }
+  let promoted_status = if review_result == "accepted" { "Approved." } else { "Draft." }
+  let review_reason = if review_result == "accepted" {
+    "The designer report, materialized package, evaluator syntax check, required reads, and deterministic audit passed."
+  } else {
+    "The package was preserved for inspection, but one or more CTO review gates did not pass."
+  }
+  let promotion_result = if promoted { "completed" } else { "not completed" }
+  fs.write(fp"${run_dir}/CTO-EVAL-REVIEW.md", control.fill_template(review_template.read_text()?, [
+    {key: "EVAL_ID", value: if eval_id == "" { "unknown" } else { eval_id }},
+    {key: "RESULT", value: review_result},
+    {key: "REASON", value: review_reason},
+    {key: "PROPOSAL_PATH", value: proposal_path},
+    {key: "PROMOTION", value: if promoted { "promoted" } else { "not-promoted" }},
+    {key: "PROMOTED_PATH", value: promoted_path},
+    {key: "STATUS", value: promoted_status},
+    {key: "PACKAGE_STATE", value: package_state},
+    {key: "MISSING_PACKAGE_FILES", value: missing_package_files},
+  ]))?
+  runtime.emit_event(event_template, run_dir, "84-cto-reviewed", "eval-proposal",
+    if promoted { "validated" } else { "failed" }, 1, "eval-designer",
+    f"CTO review ${review_result}; promotion ${promotion_result}")?
   let initial_result = if worker_status.ok and session_ok and worker_report_ok and
-    designer_report_ok and proposal_ok and north_star_read_ok and handbook_read_ok and audit_pass {
+    designer_report_ok and proposal_complete and evaluator_check_ok and promoted and north_star_read_ok and handbook_read_ok and audit_pass {
     "pass"
   } else {
     "fail"

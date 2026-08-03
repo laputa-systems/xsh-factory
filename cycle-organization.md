@@ -7,8 +7,8 @@ evidence, duplication, scope, and acceptance criteria before selecting work.
 Admit at most one explicitly approved ticket, or automatically select the
 first approved ticket after that review. If none is available, run the selected eval. When a ticket is admitted, immediately
 re-evaluate its linked eval against the exact clean engineer worktree before merge,
-then run the independent `task-envcfg` eval against XSH main. Always stage one
-small practical eval proposal for user review.
+then run the independent `task-envcfg` eval against XSH main. Always produce
+one small practical eval proposal for immediate CTO review and promotion.
 
 ## Mode
 

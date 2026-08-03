@@ -133,6 +133,69 @@ export proc write_cto_report(
   return status.ok and fs.exists(output)?
 }
 
+## Promotes one materialized eval proposal after the CTO review, setting
+## Approved. only for an accepted package and never overwriting an existing
+## checked-in eval. Older proposals may be incomplete; their missing package
+## files are recorded in
+## the checked-in contract and keep them out of paid admission.
+export proc promote_eval_proposal(
+  factory_dir: Path,
+  proposal_dir: Path,
+  run_dir: Path,
+  review_result: Str,
+) [fs, error] -> Result[Bool] {
+  let contract = fp"${proposal_dir}/EVAL.md"
+  if ! fs.exists(contract)? {
+    return false
+  }
+  let eval_text = contract.read_text()?
+  if control.ticket_status(eval_text) != "Draft." {
+    return false
+  }
+  let eval_id = control.eval_id_from_contract(eval_text)
+  if ! control.valid_eval_id(eval_id) {
+    return false
+  }
+  let target = fp"${factory_dir}/evals/${eval_id}"
+  if fs.exists(target)? {
+    return false
+  }
+  let package_files = [
+    "EVAL.md",
+    "executor.xsh",
+    "evaluate.xsh",
+    "runtime/task.md",
+    "runtime/artifact.md",
+  ]
+  for relative in package_files {
+    if ! fs.exists(fp"${proposal_dir}/${relative}")? {
+      return false
+    }
+  }
+  let optional_files = ["evaluator.xsh", "Dockerfile"]
+  fs.mkdir(target)?
+  fs.mkdir(fp"${target}/runtime")?
+  for relative in package_files {
+    let source = fp"${proposal_dir}/${relative}"
+    let destination = fp"${target}/${relative}"
+    fs.copy(source, destination, overwrite: false)?
+  }
+  for relative in optional_files {
+    let source = fp"${proposal_dir}/${relative}"
+    if fs.exists(source)? {
+      fs.copy(source, fp"${target}/${relative}", overwrite: false)?
+    }
+  }
+  let source_run = control.factory_relative_path(factory_dir.display(), run_dir)
+  let package_state = if fs.exists(fp"${proposal_dir}/evaluator.xsh")? { "complete" } else { "incomplete" }
+  let missing = if package_state == "complete" { "None." } else { "evaluator.xsh (package-owned evaluator)" }
+  let status = if review_result == "accepted" { "Approved." } else { "Draft." }
+  let updated_contract = control.replace_eval_status(fs.read_text(fp"${target}/EVAL.md")?, status)
+  let review = "\n## CTO review\n\n- Result: `" + review_result + "`\n- Promotion: `promoted`\n- Package: `" + package_state + "`\n- Missing package files: `" + missing + "`\n- Status: `" + status + "`\n- Source run: `" + source_run + "`\n"
+  fs.write_atomic(fp"${target}/EVAL.md", updated_contract + review)?
+  return true
+}
+
 ## Captures the committed engineer change as a portable patch before any worktree cleanup.
 export proc write_engineer_patch(
   worktree: Path,

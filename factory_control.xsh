@@ -451,6 +451,17 @@ export pure valid_eval_id(eval_id: Str) -> Bool {
     ! eval_id.contains("\\") and ! eval_id.contains(" ")
 }
 
+## Reads the identifier from the first-level heading of a proposed eval.
+export pure eval_id_from_contract(text: Str) -> Str {
+  for line in text.lines() {
+    let trimmed = line.trim()
+    if trimmed.starts_with("# Eval ") {
+      return trimmed.replace("# Eval ", "").trim()
+    }
+  }
+  return ""
+}
+
 ## Rejects ticket identifiers that could escape the ticket/worktree namespace.
 export pure valid_ticket_id(ticket_id: Str) -> Bool {
   return ticket_id != "" and ! ticket_id.contains("/") and ! ticket_id.contains("..") and

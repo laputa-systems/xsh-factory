@@ -40,7 +40,7 @@ duplication, scope, and acceptance criteria. It reconciles merged tickets and
 admits at most one approved implementation,
 starts safe independent phases concurrently, replays a successful ticket
 against its linked eval, runs a different independent active eval, and may
-stage one new eval proposal. With no approved
+produce, review, and promote one new eval proposal. With no approved
 ticket, the selected eval becomes the primary phase.
 
 If an approved ticket already has an unmerged factory branch, the organization
@@ -73,7 +73,9 @@ runs/run-<id>/workers/<role>/<worker>/report.json  normalized worker metrics
 runs/run-<id>/workers/<role>/<worker>/REPORT.md   employee judgment
 runs/run-<id>/events.jsonl                        canonical lifecycle and process-output ledger
 runs/run-<id>/CTO-REPORT.md                       human navigation briefing
+runs/run-<id>/CTO-EVAL-REVIEW.md                  immediate CTO eval review
 runs/run-<id>/CTO-IMPROVEMENT.md                  measurable CTO handoff
+evals/<new-id>/                                   promoted package and CTO status.
 ```
 
 Read `CTO-REPORT.md` first, then follow the report paths it names. The

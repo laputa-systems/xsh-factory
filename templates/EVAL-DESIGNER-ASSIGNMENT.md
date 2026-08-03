@@ -29,13 +29,16 @@ task-tags scaffold and make only task-specific edits. Use at most two exact
 `xsht api` queries. After two focused scaffold corrections, stop and report
 `not-ready`; do not spend the remaining session debugging infrastructure.
 
-The controller has already staged the task-tags proposal scaffold and a
-fail-closed `REPORT.md` skeleton. Edit `EVAL.md`, the runtime task/artifact
-files, executor, and evaluator before beginning the dry run. The dry run
+The controller has already staged the complete task-tags proposal scaffold,
+including `evaluator.xsh`, and a fail-closed `REPORT.md` skeleton. In the first
+part of the session, edit `EVAL.md`, the runtime task/artifact files, executor,
+and evaluator. Then run only the smallest representative dry run. The dry run
 validates a materialized proposal; it is not a substitute for staging one.
-Finish the report immediately after the dry run, changing `## Result` to
-`ready-for-review` only when the proposal and evidence are complete. Finish
-within the controller's hard turn and wall-clock bounds.
+Write the report immediately after the dry run, before any further exploration,
+changing `## Result` to `ready-for-review` only when the proposal and evidence
+are complete. The CTO will review and promote the package after the session, so
+leave the proposal as `Draft.` and finish within the controller's hard turn and
+wall-clock bounds.
 
 Stage the proposal under `{{RUN_DIR}}/proposals/{{WORKER_ID}}/` and preserve
 the scaffolding and dry-run evidence there. Do not mark it Approved and do not
@@ -64,5 +67,5 @@ task-specific hacks, oracle or timing risks, and missing checks
 
 ## Review path
 
-the exact proposal path pending user approval
+the exact promoted eval path and the evidence for the CTO approval decision
 ```

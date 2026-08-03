@@ -22,4 +22,5 @@ Complete with task-specific, oracle, timing, and missing-check risks.
 
 ## Review path
 
-Complete with the exact proposal path pending user approval.
+Complete with the exact promoted eval path and the evidence the CTO should use
+for its approval decision.
