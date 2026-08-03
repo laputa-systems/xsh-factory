@@ -43,6 +43,17 @@ against its linked eval, runs a different independent active eval, and may
 produce, review, and promote one new eval proposal. With no approved
 ticket, the selected eval becomes the primary phase.
 
+Use the deterministic CTO inventory before an organization request when
+reviewing ticket state:
+
+```sh
+XSH_MODULE_PATH=. xsh run-cto.xsh
+```
+
+The organization controller also persists the same inventory as
+`CTO-TICKET-INVENTORY.md` and `CTO-TICKET-INVENTORY.json` in every run before
+ticket admission.
+
 If an approved ticket already has an unmerged factory branch, the organization
 controller reuses that exact branch for the linked replay instead of dispatching
 another engineer. It captures a portable patch, then removes only the temporary

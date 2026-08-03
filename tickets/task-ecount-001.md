@@ -2,7 +2,18 @@
 
 ## Status
 
-Open.
+Approved.
+
+## CTO review
+
+- Review cycle: `run-1785787490432` (2026-08-03)
+- Decision: Approved for the next ticket-implementation cycle.
+- Basis: The missing `language:stream.*` signatures and module-function text
+  signatures are independently reproduced, affect general API discovery, and
+  have concrete acceptance criteria covering API output, compatibility, and a
+  task-ecount replay.
+- Assignment boundary: repair the API reference payloads and text rendering
+  described here; do not broaden into unrelated stream semantics.
 
 ## Merge record
 

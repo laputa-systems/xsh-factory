@@ -33,6 +33,18 @@ proc test_organization_selects_two_approved_tickets(ctx: TestContext) [fs, error
   test.eq(runtime.first_approved_tickets(root, 2)?, ["task-a", "task-b"])?
 }
 
+proc test_cto_inventory_surfaces_ticket_state() [error] {
+  let markdown = runtime.cto_inventory_markdown([
+    {id: "task-a", status: "Open.", eval_id: "task-envcfg", cto_review: false, open_branch: "", path: "tickets/task-a.md"},
+    {id: "task-b", status: "Approved.", eval_id: "task-ecount", cto_review: true, open_branch: "", path: "tickets/task-b.md"},
+  ])
+  test.contains(markdown, "Open tickets: 1")?
+  test.contains(markdown, "Approved tickets: 1")?
+  test.contains(markdown, "`task-a` | `Open.`")?
+  test.contains(markdown, "`task-b` | `Approved.`")?
+  test.contains(markdown, "| present |")?
+}
+
 proc test_handbook_candidate_gate_requires_ledger_disposition(ctx: TestContext) [fs, error] {
   let root = test.temp_dir(ctx, name: "handbook-gate")?
   fs.mkdir(fp"${root}/runtime")?
@@ -180,6 +192,7 @@ proc test_standard_cycle_uses_diverse_active_eval() [fs, error] {
   let ledger = fs.read_text(fp"${fs.cwd()?}/runtime/handbook-ledger.md")?
   let launcher = fs.read_text(fp"${fs.cwd()?}/run.xsh")?
   let organization = fs.read_text(fp"${fs.cwd()?}/run-organization.xsh")?
+  let cto_runner = fs.read_text(fp"${fs.cwd()?}/run-cto.xsh")?
   test.contains(request, "`task-envcfg`")?
   test.ok(! request.contains("`task-tags`"))?
   test.ok(control.eval_is_disabled(task_tags))?
@@ -203,7 +216,10 @@ proc test_standard_cycle_uses_diverse_active_eval() [fs, error] {
   test.contains(launcher, "candidate_tickets")?
   test.contains(launcher, "first_approved_tickets")?
   test.contains(launcher, "unresolved_handbook_candidates")?
+  test.contains(launcher, "run-cto.xsh")?
   test.contains(organization, "first_approved_tickets")?
+  test.contains(organization, "write_cto_inventory")?
+  test.contains(cto_runner, "cto_ticket_inventory")?
   test.contains(organization, "for ticket_id in selected_tickets")?
   test.contains(organization, "max_concurrent_engineers()")?
   test.ok(! organization.contains("admit at most one ticket"))?

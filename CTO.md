@@ -96,7 +96,8 @@ test a controller defect before launching another worker.
 
 ### 3. Make bounded decisions
 
-Review all Open tickets before selecting work. Approve a ticket only when its
+Review all Open tickets before selecting work and before admitting paid work.
+Approve a ticket only when its
 observation is reproducible, general, small enough for the engineer ceiling,
 and has testable acceptance criteria. Reject duplicates, task-specific
 workarounds, vague hypotheses, or changes whose expected value is below their
@@ -108,8 +109,8 @@ discover which ticket to implement.
 
 For a completed engineer patch, inspect scope, tests, exact assignment,
 portable diff, and linked replay. Each passing engineer row receives its own
-linked replay; a sibling ticket failure does not suppress it. The CTO decides
-whether to merge or apply the patch. When it does, reconciliation updates the linked `TICKET.md` to `Merged.`
+linked replay; a sibling ticket failure does not suppress it. The CTO decides whether to merge or apply
+the patch. When it does, reconciliation updates the linked `TICKET.md` to `Merged.`
 once the recorded implementation is proven in XSH `HEAD`; the manager replay
 then accepts or rejects the product change.
 

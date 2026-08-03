@@ -4,6 +4,62 @@ use factory_control as control
 use factory_runtime as runtime
 use report_schema as schema
 
+# Starts one controller-assigned engineer through the shared worker runner.
+# The controller owns the exact row; no paid agent decides what to launch.
+proc spawn_engineer(
+  factory_dir: Path,
+  run_dir: Path,
+  xsh_repo: Path,
+  run_agent: Path,
+  auth_file: Path,
+  pi_command: Str,
+  platform: Str,
+  xsh_commit: Str,
+  ticket_id: Str,
+  worktree: Path,
+  assignment: Path,
+) [fs, process, env, error] -> Result[ProcessHandle] {
+  let xsh_path = process.which("xsh")?
+  let engineer_env = {
+    PATH: env.get("PATH")?,
+    HOME: env.get("HOME")?,
+    XSH_MODULE_PATH: env.get_or("XSH_MODULE_PATH", factory_dir.display())?,
+    FACTORY_DIR: factory_dir.display(),
+    FACTORY_RUN_DIR: run_dir.display(),
+    FACTORY_RUN_AGENT: run_agent.display(),
+    FACTORY_XSH_REPO: xsh_repo.display(),
+    FACTORY_XSH_COMMIT: xsh_commit,
+    FACTORY_MODE: "ticket-implementation",
+    FACTORY_PARENT_ID: "controller",
+    FACTORY_TICKET_ID: ticket_id,
+    FACTORY_ASSIGNMENT_SHA: hash.sha256(assignment)?.hex(),
+    FACTORY_WORKDIR: worktree.display(),
+    FACTORY_HANDBOOK_FILE: fp"${factory_dir}/runtime/handbook.md".display(),
+    FACTORY_NORTH_STAR_FILE: fp"${factory_dir}/NORTH-STAR.md".display(),
+    FACTORY_PLATFORM: platform,
+    FACTORY_ENGINEER_PROVIDER: control.configured_role_setting("engineer", "PROVIDER")?,
+    FACTORY_ENGINEER_MODEL: control.configured_role_setting("engineer", "MODEL")?,
+    FACTORY_ENGINEER_THINKING: control.configured_role_setting("engineer", "THINKING")?,
+    FACTORY_ENGINEER_BUDGET_USD: control.configured_role_setting("engineer", "BUDGET_USD")?,
+    FACTORY_ENGINEER_MAX_TURNS: control.configured_role_setting("engineer", "MAX_TURNS")?,
+    FACTORY_ENGINEER_MAX_WALL_SECONDS: control.configured_role_setting("engineer", "MAX_WALL_SECONDS")?,
+    FACTORY_ENGINEER_TOOLS: control.configured_role_setting("engineer", "TOOLS")?,
+    PI_AUTH_FILE: auth_file.display(),
+    PI_COMMAND: pi_command,
+  }
+  let worker_dir = fp"${run_dir}/workers/engineer/${ticket_id}"
+  fs.mkdir(worker_dir)?
+  return spawn process.command_argv(
+    xsh_path,
+    [xsh_path.display(), run_agent.display(), "--", "engineer", ticket_id,
+      fp"${factory_dir}/roles/engineer.md".display(), assignment.display()],
+    cwd: factory_dir,
+    env: engineer_env,
+    stdout: fp"${run_dir}/engineer-${ticket_id}.stdout",
+    stderr: fp"${run_dir}/engineer-${ticket_id}.stderr",
+  )
+}
+
 proc run_ticket_cycle(
   request: Path,
   factory_dir: Path,
@@ -142,9 +198,26 @@ proc run_ticket_cycle(
     {key: "RUN_DIR", value: run_dir.display()},
     {key: "RUN_AGENT", value: run_agent.display()},
     {key: "MODE", value: "ticket-implementation"},
-    {key: "EXECUTION_DIRECTIVE", value: "Launch every assigned engineer row through the shared runner before waiting; then wait for each process and inspect every report. This permits the admitted engineer rows to run concurrently. Do not launch eval roles."},
+    {key: "EXECUTION_DIRECTIVE", value: "The controller has already launched every assigned engineer row concurrently through the shared runner. Do not launch engineers or eval roles. Inspect each completed worker report and write the director reconciliation report."},
   ]
   fs.write(director_message, control.fill_template(director_template.read_text()?, director_values))?
+
+  var engineer_handles: List[ProcessHandle] = []
+  runtime.emit_event(event_template, run_dir, "20-director-started", "director", "started", 1, "controller", "controller-dispatching engineers; director will reconcile")?
+  for ticket_id in tickets {
+    let assignment = fp"${run_dir}/messages/${ticket_id}.md"
+    let worktree = fp"${worktree_root}/${ticket_id}"
+    runtime.emit_event(event_template, run_dir, f"20-ticket-${ticket_id}-started", ticket_id, "started", 1, "controller", "controller-dispatching engineer worker")?
+    engineer_handles = engineer_handles.push(spawn_engineer(
+      factory_dir, run_dir, xsh_repo, run_agent, auth_file, pi_command, platform,
+      xsh_commit.trim(), ticket_id, worktree, assignment
+    )?)
+  }
+  var engineer_dispatch_ok = true
+  for handle in engineer_handles {
+    let engineer_status = wait handle?
+    engineer_dispatch_ok = engineer_dispatch_ok and engineer_status.ok
+  }
 
   let director_env = {
     PATH: env.get("PATH")?,
@@ -156,6 +229,7 @@ proc run_ticket_cycle(
     FACTORY_XSH_REPO: xsh_repo.display(),
     FACTORY_XSH_COMMIT: xsh_commit.trim(),
     FACTORY_MODE: "ticket-implementation",
+    FACTORY_DIRECTOR_RECONCILE_ONLY: "true",
     FACTORY_EVAL_ID: "",
     FACTORY_TICKET_ID: "",
     FACTORY_WORKDIR: "",
@@ -178,10 +252,6 @@ proc run_ticket_cycle(
     FACTORY_ENGINEER_MAX_TURNS: control.configured_role_setting("engineer", "MAX_TURNS")?,
     FACTORY_ENGINEER_MAX_WALL_SECONDS: control.configured_role_setting("engineer", "MAX_WALL_SECONDS")?,
     FACTORY_ENGINEER_TOOLS: control.configured_role_setting("engineer", "TOOLS")?,
-  }
-  runtime.emit_event(event_template, run_dir, "20-director-started", "director", "started", 1, "controller", "dispatching admitted engineer workers")?
-  for ticket_id in tickets {
-    runtime.emit_event(event_template, run_dir, f"20-ticket-${ticket_id}-started", ticket_id, "started", 1, "director", "dispatching engineer worker")?
   }
   let director_status = process.run(process.command_argv(
     xsh_path,
@@ -273,7 +343,7 @@ proc run_ticket_cycle(
     runtime.emit_event(event_template, run_dir, "85-cycle-audited", "ticket-implementation",
       "failed", 1, "controller", "deterministic audit artifact written")?
   }
-  let initial_result = if director_status.ok and all_tickets_ok and all_patches_ok and director_report_ok and audit_pass { "pass" } else { "fail" }
+  let initial_result = if engineer_dispatch_ok and director_status.ok and all_tickets_ok and all_patches_ok and director_report_ok and audit_pass { "pass" } else { "fail" }
   let cto_status = runtime.write_cto_report(factory_dir, run_dir, initial_result)?
   let result = if initial_result == "pass" and cto_status { "pass" } else { "fail" }
   if result == "pass" {

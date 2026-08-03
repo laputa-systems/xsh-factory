@@ -427,6 +427,85 @@ export proc first_approved_ticket(factory_dir: Path) [fs, error] -> Result[Str] 
   return if selected.len() == 1 { selected[0] } else { "" }
 }
 
+## Builds the complete ticket inventory used by the CTO pre-cycle briefing.
+## This is deterministic controller state, not a worker-selected work list.
+export proc cto_ticket_inventory(
+  factory_dir: Path,
+  xsh_repo: Path,
+) [fs, process, error] -> Result[List[Any]] {
+  let ticket_dir = fp"${factory_dir}/tickets"
+  var tickets: List[Any] = []
+  if ! fs.exists(ticket_dir)? {
+    return tickets
+  }
+  let entries = fs.files(ticket_dir, gitignore: false, hidden: true)?
+    |> sort-by .path.display()
+    |> collect()
+  for entry in entries {
+    if ! entry.name.ends_with(".md") {
+      continue
+    }
+    let ticket_text = entry.path.read_text()?
+    let status = control.ticket_status(ticket_text)
+    let branch = if status == "Open." or status == "Approved." {
+      open_ticket_branch(xsh_repo, entry.name.replace(".md", ""))?
+    } else {
+      ""
+    }
+    tickets = tickets.push({
+      id: entry.name.replace(".md", ""),
+      status: status,
+      eval_id: control.ticket_eval(ticket_text),
+      cto_review: ticket_text.contains("## CTO review"),
+      open_branch: branch,
+      path: entry.path.display(),
+    })
+  }
+  return tickets
+}
+
+## Renders the programmatic ticket inventory for a human CTO handoff.
+export pure cto_inventory_markdown(tickets: List[Any]) -> Str {
+  var open_count = 0
+  var approved_count = 0
+  var markdown = "# CTO ticket inventory\n\n"
+  for ticket in tickets {
+    if ticket.status == "Open." { open_count += 1 }
+    if ticket.status == "Approved." or ticket.status == "Accepted." {
+      approved_count += 1
+    }
+  }
+  markdown = markdown + f"- Open tickets: ${open_count}\n"
+  markdown = markdown + f"- Approved tickets: ${approved_count}\n"
+  markdown = markdown + f"- Ticket rows: ${tickets.len()}\n\n"
+  markdown = markdown + "| Ticket | Status | Linked eval | CTO review marker | Open branch |\n"
+  markdown = markdown + "| --- | --- | --- | --- | --- |\n"
+  for ticket in tickets {
+    let review = if ticket.cto_review { "present" } else { "missing" }
+    let branch = if ticket.open_branch == "" { "none" } else { ticket.open_branch }
+    markdown = markdown + f"| `${ticket.id}` | `${ticket.status}` | `${ticket.eval_id}` | ${review} | `${branch}` |\n"
+  }
+  return markdown
+}
+
+## Persists the CTO inventory into a controller-owned run directory.
+export proc write_cto_inventory(
+  factory_dir: Path,
+  run_dir: Path,
+  xsh_repo: Path,
+) [fs, process, error] -> Result[Unit] {
+  let tickets = cto_ticket_inventory(factory_dir, xsh_repo)?
+  fs.write_atomic(
+    fp"${run_dir}/CTO-TICKET-INVENTORY.json",
+    json.encode({tickets: tickets})? + "\n",
+  )?
+  fs.write_atomic(
+    fp"${run_dir}/CTO-TICKET-INVENTORY.md",
+    cto_inventory_markdown(tickets),
+  )?
+  return Ok()
+}
+
 proc commit_is_ancestor(xsh_repo: Path, commit: Str) [process, error] -> Result[Bool] {
   if commit == "" {
     return false

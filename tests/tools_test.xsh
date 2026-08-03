@@ -257,6 +257,9 @@ proc test_ticket_cycle_bounds_concurrent_engineers() [fs, error] {
   test.contains(ticket, r"""at most ${control.max_concurrent_engineers()} engineer tickets""")?
   test.contains(ticket, "if ! director_status.ok")?
   test.contains(ticket, "runtime.cleanup_active_run()")?
+  test.contains(ticket, "spawn_engineer")?
+  test.contains(ticket, "engineer_handles")?
+  test.contains(ticket, "controller-dispatching engineer worker")?
   test.contains(director, "launch all children")?
   test.contains(organization, "ticket_worker_pass(primary_phase, ticket_id)")?
   test.contains(organization, "let reeval_ok = ticket_primary_pass and run_child")?

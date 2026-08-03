@@ -2,7 +2,18 @@
 
 ## Status
 
-Open.
+Approved.
+
+## CTO review
+
+- Review cycle: `run-1785787490432` (2026-08-03)
+- Decision: Approved for the next ticket-implementation cycle.
+- Basis: The misleading diagnostics for `||`, `&&`, and `then` reproduce in
+  minimal programs, the defect is general parser behavior, and the acceptance
+  criteria are narrow, testable, and replayable.
+- Assignment boundary: improve token attribution and the constructive
+  diagnostic for the unsupported forms; preserve valid `or`/`and` semantics
+  and do not take on the separate envcfg tickets.
 
 ## Budget breach
 

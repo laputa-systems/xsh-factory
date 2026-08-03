@@ -36,3 +36,14 @@ candidate snapshots are represented by the same hash and need no second entry.
 
 Future candidates require a new explicit CTO disposition and must not be
 auto-promoted merely because a lineage file exists.
+
+## Explicit CTO disposition — 2026-08-03
+
+| Candidate SHA-256 | Disposition |
+| --- | --- |
+| `d0bc39f423d8202e60101d3e2bfa3cf1fcc247725097d23fb644115560767d9d` | deferred pending cross-eval replay; not promoted |
+
+The boolean-operator sentence is valid and remains visible in the originating
+lineage, but the source run explicitly required a second conditional-writing
+eval and the linked diagnostics-ticket replay before promotion. The next CTO
+may promote it after that falsification evidence exists.

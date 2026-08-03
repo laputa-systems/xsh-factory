@@ -33,6 +33,7 @@ proc preflight(
     "runtime/handbook.md",
     "run-agent.xsh",
     "run-ticket-reuse.xsh",
+    "run-cto.xsh",
     "factory_control.xsh",
     "factory_runtime.xsh",
     "factory_report.xsh",

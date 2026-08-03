@@ -18,9 +18,12 @@ turn investigating only when a child report contradicts a dispatch row or a
 required output is missing; otherwise collect the current evidence and close
 the cycle.
 
-The controller owns phase ordering and safe overlap. Launch each assigned row
-exactly once, wait on the child process, and never poll another worker's files
-or invent a replacement dispatch. Read the current phase output before any
+The controller owns phase ordering and safe overlap. In the normal dispatch
+path, launch each assigned row exactly once, wait on the child process, and
+never poll another worker's files or invent a replacement dispatch. If the
+controller sets `FACTORY_DIRECTOR_RECONCILE_ONLY=true`, it has already launched
+every assigned engineer concurrently; do not launch children again, and only
+reconcile their completed reports. Read the current phase output before any
 diagnostic search. Repeated missing-path or contradictory-output patterns are
 factory evidence for the CTO, not a reason to widen this cycle.
 
@@ -56,11 +59,12 @@ assignment before Pi starts. For multiple admitted rows, launch all children
 before waiting so their sessions overlap; then wait for each child, inspect its
 `REPORT.md`, and record every branch and commit without merging.
 
-In ticket-implementation mode, follow the dispatch
-table and launch each assigned engineer row exactly once through the shared
-runner. Newly created tickets wait for the next cycle. Every stage completion
-is an event recorded by the controller; do not implement a polling loop in an
-agent.
+In ticket-implementation mode, follow the dispatch table and launch each
+assigned engineer row exactly once through the shared runner unless
+`FACTORY_DIRECTOR_RECONCILE_ONLY=true`; in that mode the controller already
+launched the rows and you only reconcile them. Newly created tickets wait for
+the next cycle. Every stage completion is an event recorded by the controller;
+do not implement a polling loop in an agent.
 
 After launching a child, capture its PID and use a bounded `wait` on that PID;
 do not substitute long `sleep` calls or an unbounded polling loop. The director
