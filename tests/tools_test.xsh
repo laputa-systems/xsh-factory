@@ -237,6 +237,31 @@ proc test_organization_reuses_existing_branch_without_duplicate_dispatch() [fs, 
   test.contains(launcher, "open_branch != \"\" and mode != \"organization\"")?
 }
 
+proc test_ticket_cycle_bounds_concurrent_engineers() [fs, error] {
+  let ticket = fs.read_text(fp"${fs.cwd()?}/run-ticket.xsh")?
+  let director = fs.read_text(fp"${fs.cwd()?}/roles/director.md")?
+  test.contains(ticket, "max_concurrent_engineers()")?
+  test.contains(ticket, r"""at most ${control.max_concurrent_engineers()} engineer tickets""")?
+  test.contains(director, "launch all children")?
+}
+
+proc test_eval_mode_has_no_paid_director_review() [fs, error] {
+  let evaluator = fs.read_text(fp"${fs.cwd()?}/run-eval.xsh")?
+  let auditor = fs.read_text(fp"${fs.cwd()?}/audit-run.xsh")?
+  test.ok(! evaluator.contains("20-director-started"))?
+  test.ok(! evaluator.contains("director_handle"))?
+  test.contains(auditor, "result: \"not-requested\"")?
+  test.contains(auditor, "if mode == \"ticket-implementation\"")?
+}
+
+proc test_eval_executor_is_documented_as_controller_not_role() [fs, error] {
+  let contract = fs.read_text(fp"${fs.cwd()?}/FACTORY.md")?
+  let guide = fs.read_text(fp"${fs.cwd()?}/AGENTS.md")?
+  test.contains(contract, "controller program, not a Pi role")?
+  test.contains(contract, "it is not an")?
+  test.contains(guide, "controller-owned infrastructure, not a role or employee")?
+}
+
 proc test_controllers_have_no_legacy_projection_outputs() [fs, error] {
   for file in ["run.xsh", "run-eval.xsh", "run-ticket.xsh", "run-design.xsh", "run-organization.xsh", "audit-run.xsh", "tools/session-report.xsh"] {
     let source = fs.read_text(fp"${fs.cwd()?}/${file}")?

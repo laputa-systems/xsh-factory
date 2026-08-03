@@ -75,6 +75,7 @@ with the nearest controller/tool and its native test under `tests/`.
 
 ## Terminology
 
-Use the current organization names: `CTO`, `director`, `eval-designer`,
-`eval-manager`, `eval-executor`, `eval-worker`, and `engineer`. Older references
-to “automator” or “xsh-swe” are legacy terminology, not new role names.
+Use the current Pi role names: `CTO`, `director`, `eval-designer`,
+`eval-manager`, `eval-worker`, and `engineer`. `eval-executor.xsh` is
+controller-owned infrastructure, not a role or employee. Older references to
+“automator” or “xsh-swe” are legacy terminology, not new role names.

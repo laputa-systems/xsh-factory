@@ -2,7 +2,15 @@
 
 ## Status
 
-Approved.
+Disabled.
+
+## Retirement record
+
+This was the factory's minimal proof-of-concept seed. Per the CTO's explicit
+retirement decision, treat it as a special exception to the normal repeated-
+run threshold: it is too trivial to justify further paid cycles and does not
+exercise a distinct systems boundary. Preserve the contract and history for
+provenance while focusing active cycles on more diverse scenarios.
 
 ## Purpose
 

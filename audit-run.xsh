@@ -293,7 +293,11 @@ proc audit_phase(run_dir: Path, mode: Str, factory_dir: Path) [fs, env, process,
   let director_path = fp"${run_dir}/workers/director/director/REPORT.md"
   let designer_path = fp"${run_dir}/workers/eval-designer/proposal-1/REPORT.md"
   let manager_state = narrative_state(manager_path, "eval-manager")?
-  let director_state = narrative_state(director_path, "director")?
+  let director_state = if mode == "eval" {
+    {path: director_path.display(), role: "director", present: false, valid: true, result: "not-requested"}
+  } else {
+    narrative_state(director_path, "director")?
+  }
   let designer_required = mode == "eval-design" or (request_exists and control.request_new_eval_count(request)? > 0)
   let designer_state = if designer_required {
     narrative_state(designer_path, "eval-designer")?
@@ -306,7 +310,7 @@ proc audit_phase(run_dir: Path, mode: Str, factory_dir: Path) [fs, env, process,
     []
   }
   let manager_ok = if mode == "eval" { boolean(json.get(manager_state, ["present"], false)) and boolean(json.get(manager_state, ["valid"], false)) } else { true }
-  let director_ok = if mode == "eval" or mode == "ticket-implementation" { boolean(json.get(director_state, ["present"], false)) and boolean(json.get(director_state, ["valid"], false)) } else { true }
+  let director_ok = if mode == "ticket-implementation" { boolean(json.get(director_state, ["present"], false)) and boolean(json.get(director_state, ["valid"], false)) } else { true }
   let designer_ok = ! designer_required or (boolean(json.get(designer_state, ["present"], false)) and boolean(json.get(designer_state, ["valid"], false)))
   let engineer_ok = if mode == "ticket-implementation" { engineer_states.len() > 0 } else { true }
   if ! manager_ok { findings = findings.push({kind: "manager-report", state: manager_state}) }

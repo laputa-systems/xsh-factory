@@ -2,11 +2,12 @@
 
 ## Objective
 
-Run one bounded organization cycle. Admit at most one explicitly approved
-ticket, or automatically select the first approved ticket. If none is
-available, run the selected eval. When a ticket is admitted, immediately
+Run one bounded organization cycle. Review every remaining `Open.` ticket for
+evidence, duplication, scope, and acceptance criteria before selecting work.
+Admit at most one explicitly approved ticket, or automatically select the
+first approved ticket after that review. If none is available, run the selected eval. When a ticket is admitted, immediately
 re-evaluate its linked eval against the exact clean engineer worktree before merge,
-then run the independent `task-ecount` eval against XSH main. Always stage one
+then run the independent `task-envcfg` eval against XSH main. Always stage one
 small practical eval proposal for user review.
 
 ## Mode
@@ -15,7 +16,7 @@ small practical eval proposal for user review.
 
 ## Active evals
 
-- `task-ecount`
+- `task-envcfg`
 
 ## Trial plan
 
@@ -29,7 +30,8 @@ small practical eval proposal for user review.
 
 ## Ticket policy
 
-- Select the first approved ticket: `yes`
+- Review all open tickets before selection: `yes`
+- Select the first approved ticket after review: `yes`
 
 ## Role overrides
 
@@ -40,7 +42,10 @@ deliberate override in the invocation with a role-specific setting.
 
 - one primary eval or ticket phase;
 - one linked candidate re-evaluation when a ticket is admitted;
-- one independent `task-ecount` eval when a ticket is admitted;
+- one independent `task-envcfg` eval when a ticket is admitted, distinct from
+  the linked ticket replay;
 - one eval-design proposal pending review;
 - aggregate cost and per-phase reports under one parent run;
+- one `CTO-IMPROVEMENT.md` factory-wide improvement handoff with a next-cycle
+  validation or revert condition;
 - no worker-selected tickets, evals, merges, or approvals.

@@ -49,6 +49,7 @@ proc preflight(
     "templates/CTO-WORKER.md",
     "templates/CTO-TOOL-ERROR.md",
     "templates/CTO-TOTAL.md",
+    "templates/CTO-IMPROVEMENT.md",
   ] {
     if ! fs.exists(fp"${factory_dir}/${required}")? {
       eprint f"factory prerequisite is missing: ${factory_dir}/${required}"

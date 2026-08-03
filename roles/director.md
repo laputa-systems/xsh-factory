@@ -52,13 +52,11 @@ evals, or modify ticket status. Launch exactly one `engineer` child per dispatch
 `FACTORY_WORKDIR`, and assignment file to the shared runner. Never create a
 second worker for a row or launch a worker for a ticket absent from the dispatch
 table. The runner rejects an altered, mismatched, or already-claimed
-assignment before Pi starts. Wait for each child process to finish, inspect its
-`REPORT.md`, and record the branch and commit without merging.
+assignment before Pi starts. For multiple admitted rows, launch all children
+before waiting so their sessions overlap; then wait for each child, inspect its
+`REPORT.md`, and record every branch and commit without merging.
 
-In eval mode, the controller has already run the executor, eval-manager, and
-optional eval-designer rows. Follow the controller-generated phase `report.json`
-as the complete evidence list: do not launch any
-child or wait on a worker. In ticket-implementation mode, follow the dispatch
+In ticket-implementation mode, follow the dispatch
 table and launch each assigned engineer row exactly once through the shared
 runner. Newly created tickets wait for the next cycle. Every stage completion
 is an event recorded by the controller; do not implement a polling loop in an

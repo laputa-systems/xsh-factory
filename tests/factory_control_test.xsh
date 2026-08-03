@@ -15,8 +15,9 @@ proc test_cycle_request_parsing() [error] {
 }
 
 proc test_role_defaults_are_coded_and_capped() [env, error] {
-  test.eq(control.default_cycle_budget(), "0.50")?
-  test.eq(control.clamp_cycle_budget("2.00")?, "0.50")?
+  test.eq(control.default_cycle_budget(), "1.00")?
+  test.eq(control.clamp_cycle_budget("2.00")?, "1.00")?
+  test.eq(control.max_concurrent_engineers(), 2)?
   for role in ["director", "eval-designer", "eval-manager", "eval-worker", "engineer"] {
     test.eq(control.default_provider(role), "openrouter")?
     test.eq(control.default_model(role), "deepseek/deepseek-v4-flash-0731")?
@@ -78,6 +79,20 @@ proc test_role_report_skeletons_are_fail_closed() [fs, error] {
   test.contains(runner, "EVAL-MANAGER-REPORT.md")?
   test.contains(runner, "DIRECTOR-REPORT.md")?
   test.contains(runner, "ENGINEER-REPORT.md")?
+}
+
+proc test_standard_cycle_uses_diverse_active_eval() [fs, error] {
+  let request = fs.read_text(fp"${fs.cwd()?}/cycle-organization.md")?
+  let task_tags = fs.read_text(fp"${fs.cwd()?}/evals/task-tags/EVAL.md")?
+  let improvement = fs.read_text(fp"${fs.cwd()?}/templates/CTO-IMPROVEMENT.md")?
+  let launcher = fs.read_text(fp"${fs.cwd()?}/run.xsh")?
+  test.contains(request, "`task-envcfg`")?
+  test.ok(! request.contains("`task-tags`"))?
+  test.ok(control.eval_is_disabled(task_tags))?
+  test.contains(task_tags, "special exception")?
+  test.contains(improvement, "## Baseline metric")?
+  test.contains(improvement, "## Revert condition")?
+  test.contains(launcher, "templates/CTO-IMPROVEMENT.md")?
 }
 
 proc test_agent_completion_is_report_bound() [error] {

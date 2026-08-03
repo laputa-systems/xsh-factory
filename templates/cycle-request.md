@@ -15,7 +15,7 @@ eval-design phase runs alongside the primary phase.
 
 ## Active evals
 
-- `task-ecount`
+- `task-envcfg`
 
 ## Trial plan
 
@@ -34,7 +34,8 @@ eval-design phase runs alongside the primary phase.
 
 ## Ticket policy
 
-- Select the first approved ticket: `yes`
+- Review all open tickets before selection: `yes`
+- Select the first approved ticket after review: `yes`
 
 ## Role overrides
 
@@ -52,4 +53,6 @@ environment override in the invocation, using names such as
 - structured worker reports and raw Pi sessions;
 - a run-level `report.json` covering every worker;
 - a `## North-star impact` section in each narrative role report;
+- one `CTO-IMPROVEMENT.md` factory-wide improvement handoff with a measurable
+  next-cycle validation or revert condition;
 - a `CTO-REPORT.md` briefing generated from the structured reports.

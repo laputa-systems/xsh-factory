@@ -4,10 +4,10 @@ The north star is to make XSH a practical, easy-to-learn, token-efficient
 systems-glue language that coding agents can use reliably. The loops have
 different authorities and outputs.
 
-## Inner loop: eval-executor
+## Inner loop: `eval-executor.xsh` controller
 
-The executor is pure and isolated. For one assigned eval and handbook
-snapshot, `eval-executor.xsh`:
+The executor is pure controller infrastructure, not a Pi role or employee. For
+one assigned eval and handbook snapshot, `eval-executor.xsh`:
 
 1. creates the worker workspace;
 2. launches the eval-worker in Docker;

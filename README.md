@@ -24,7 +24,8 @@ individually configurable with `FACTORY_<ROLE>_*` variables. The coded role
 budgets and aggregate cycle cap are in `factory_control.xsh`. The default
 session wall limits are 12 minutes for eval designers, 15 minutes for eval
 managers, and 30 minutes for eval workers and engineers; dollar and aggregate
-caps remain hard limits.
+caps remain hard limits. Ticket-implementation cycles may dispatch up to two
+engineers concurrently, with a default aggregate cap of `$1.00`.
 
 ## Start a cycle
 
@@ -34,9 +35,12 @@ Run the standard organization request:
 XSH_MODULE_PATH=. xsh run.xsh cycle-organization.md
 ```
 
-It reconciles merged tickets, admits at most one approved implementation,
+Before launch, the CTO reviews every remaining `Open.` ticket for evidence,
+duplication, scope, and acceptance criteria. It reconciles merged tickets and
+admits at most one approved implementation,
 starts safe independent phases concurrently, replays a successful ticket
-against its linked eval, and may stage one new eval proposal. With no approved
+against its linked eval, runs a different independent active eval, and may
+stage one new eval proposal. With no approved
 ticket, the selected eval becomes the primary phase.
 
 If an approved ticket already has an unmerged factory branch, the organization
@@ -69,6 +73,7 @@ runs/run-<id>/workers/<role>/<worker>/report.json  normalized worker metrics
 runs/run-<id>/workers/<role>/<worker>/REPORT.md   employee judgment
 runs/run-<id>/events.jsonl                        append-only lifecycle events
 runs/run-<id>/CTO-REPORT.md                       human navigation briefing
+runs/run-<id>/CTO-IMPROVEMENT.md                  measurable CTO handoff
 ```
 
 Read `CTO-REPORT.md` first, then follow the report paths it names. The
@@ -76,6 +81,10 @@ structured schema and field meanings are in
 [docs/REPORT-SCHEMA.md](docs/REPORT-SCHEMA.md). Tool failures are entries in
 the worker `tool_errors` array; there is no separate tool-error Markdown
 file. Pi's raw JSONL remains available for exact inspection.
+
+Every completed cycle must leave one measurable factory-wide improvement in
+`CTO-IMPROVEMENT.md`. The next CTO pass validates or safely reverts that
+improvement before starting paid work.
 
 For ticket cycles, the review artifact is a portable patch:
 

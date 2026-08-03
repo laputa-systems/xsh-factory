@@ -421,16 +421,6 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     ]
     fs.write(designer_message, control.fill_template(designer_template.read_text()?, designer_values))?
   }
-  let director_message = fp"${run_dir}/DIRECTOR-REQUEST.md"
-  let director_template = fp"${factory_dir}/templates/DIRECTOR-REQUEST.md"
-  let director_values: List[control.TemplateValue] = [
-    {key: "FACTORY_DIR", value: factory_dir.display()},
-    {key: "RUN_DIR", value: run_dir.display()},
-    {key: "RUN_AGENT", value: run_agent.display()},
-    {key: "MODE", value: "eval"},
-    {key: "EXECUTION_DIRECTIVE", value: "The controller has already executed the listed eval-worker, eval-manager, and eval-designer processes. Review their reports and evidence; do not launch or wait for any child."},
-  ]
-  fs.write(director_message, control.fill_template(director_template.read_text()?, director_values))?
   let eval_worker_root = fp"${run_dir}/workers/eval-worker"
   fs.mkdir(eval_worker_root)?
   var designer_handle: ProcessHandle? = null
@@ -503,15 +493,6 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     cwd: factory_dir,
   ))?
 
-  runtime.emit_event(event_template, run_dir, "20-director-started", "director", "started", 1, "controller", "dispatching post-run review")?
-  let director_handle = spawn_agent(
-    factory_dir, run_dir, xsh_path, run_agent, common_assignments,
-    "director", "director", fp"${factory_dir}/roles/director.md",
-    director_message, fp"${run_dir}/director.stdout", fp"${run_dir}/director.stderr",
-  )?
-  let director_status = wait director_handle?
-  runtime.emit_event(event_template, run_dir, "80-director-completed", "director", if director_status.ok { "completed" } else { "failed" }, 1, "director", "director process returned")?
-
   let manager_session = fp"${run_dir}/workers/eval-manager/${eval_id}/session.jsonl"
   let trial1_report = fp"${run_dir}/workers/eval-worker/${eval_id}-1/report.json"
   let trial2_report = fp"${run_dir}/workers/eval-worker/${eval_id}-2/report.json"
@@ -539,10 +520,6 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   }
   let lineage_ok = candidate_exists and approved_snapshot_unchanged and checked_in_handbook_unchanged and
     trial1_sha == baseline_sha and trial_lineage_ok
-  let director_report = fp"${run_dir}/workers/director/director/REPORT.md"
-  let director_report_marker = fp"${run_dir}/workers/director/director/REPORT-MISSING"
-  let director_report_ok = fs.exists(director_report)? and ! fs.exists(director_report_marker)? and
-    control.director_report_contract_ok(fs.read_text(director_report)?)
   let manager_report = fp"${run_dir}/workers/eval-manager/${eval_id}/REPORT.md"
   let manager_report_marker = fp"${run_dir}/workers/eval-manager/${eval_id}/REPORT-MISSING"
   let manager_worker_report = fp"${run_dir}/workers/eval-manager/${eval_id}/report.json"
@@ -569,9 +546,6 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   } else {
     runtime.session_read_path(designer_session, fp"${factory_dir}/runtime/handbook.md")?
   }
-  let director_evidence_read = runtime.session_read_path(
-    fp"${run_dir}/workers/director/director/session.jsonl", fp"${run_dir}/report.json"
-  )?
   let designer_output_ok = if new_eval_count == 0 {
     true
   } else {
@@ -601,10 +575,10 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     trial1_process_ok and trial2_process_ok and fs.exists(trial1_report)? and
     (trial_count == 1 or fs.exists(trial2_report)?) and
     candidate_exists and lineage_ok and trial1_report_ok and trial2_report_ok and
-    director_report_ok and manager_report_ok and designer_output_ok and audit_pass and
+    manager_report_ok and designer_output_ok and audit_pass and
     worker_handbook_read and manager_evidence_read and manager_handbook_read and
-    designer_handbook_read and director_evidence_read
-  let initial_result = if director_status.ok and required { "pass" } else { "fail" }
+    designer_handbook_read
+  let initial_result = if required { "pass" } else { "fail" }
   let cto_status = runtime.write_cto_report(factory_dir, run_dir, initial_result)?
   let result = if initial_result == "pass" and cto_status { "pass" } else { "fail" }
   if audit_pass {

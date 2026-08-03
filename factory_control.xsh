@@ -125,7 +125,12 @@ export pure clamp_session_limit(role: Str, key: Str, configured: Str) -> Result[
 
 ## The hard maximum spend for one factory cycle.
 export pure default_cycle_budget() -> Str {
-  return "0.50"
+  return "1.00"
+}
+
+## Hard ticket-cycle admission limit for concurrently dispatched engineers.
+export pure max_concurrent_engineers() -> Int {
+  return 2
 }
 
 ## Clamps an operator-supplied budget to the role's hard ceiling.

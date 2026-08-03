@@ -9,15 +9,28 @@ from `NORTH-STAR.md` and the adjacent XSH checkout.
 
 ```text
 CTO
-└── director
-    ├── eval-manager ── eval-executor ── eval-worker
-    ├── eval-designer
+├── eval cycle controller
+│   ├── eval-executor.xsh (controller program, not a Pi role) ── eval-worker
+│   ├── eval-manager
+│   └── eval-designer
+└── director (ticket-implementation only)
     └── engineer
 ```
 
+| Role | Owns | Does not own |
+| --- | --- | --- |
+| CTO | Cross-cycle strategy, ticket/eval portfolio, policy, factory improvements, and validation/revert decisions | Per-trial execution, worker implementation, or direct Pi launching |
+| eval-manager | Trial interpretation, effort evidence, handbook candidates, and reproducible ticket recommendations | Executor reruns, product edits, or ticket selection |
+| eval-designer | New eval contracts, scaffolding, oracle design, and proposal dry runs | Approving or enabling an eval, editing approved evals, or product changes |
+| director | Ticket-cycle dispatch, engineer process supervision, and output reconciliation | Eval-mode review, ticket selection, product decisions, handbook promotion, or merge |
+| engineer | One controller-assigned product implementation in an isolated worktree | Ticket selection, scope expansion, merge, or ticket-status changes |
+| eval-worker | One isolated eval artifact and its task review | Host/factory/oracle inspection, handbook edits, or evaluator changes |
+
 The controller assigns work. Agents interpret evidence and make qualitative
-decisions inside their assignments. The director never searches for work and
-an engineer never chooses a ticket. There is one process launcher,
+decisions inside their assignments. `eval-executor.xsh` is a controller-owned
+inner-loop program that launches the isolated `eval-worker`; it is not an
+agent, employee, or Pi role. The director never searches for work and an
+engineer never chooses a ticket. There is one process launcher,
 `run-agent.xsh`, and one top-level dispatcher, `run.xsh`.
 
 ## Engineering rules
@@ -76,9 +89,11 @@ human-authored inputs or judgments. They are not machine-to-machine state.
 `run.xsh` admits one explicit mode after preflight:
 
 - `eval`: build the local XSH/xsht distribution, run one or two pure eval
-  trials, then dispatch the manager and optional designer/director reviews;
-- `ticket-implementation`: create one worktree and one inlined ticket
-  assignment per approved ticket, then capture a portable patch;
+  trials through `eval-executor.xsh`, then dispatch the manager and optional
+  designer review;
+- `ticket-implementation`: create up to two isolated worktrees and one
+  inlined ticket assignment per approved ticket, dispatching the admitted
+  engineer rows concurrently, then capture a portable patch per ticket;
 - `eval-design`: dispatch one designer to stage one proposal and dry run; or
 - `organization`: compose the bounded implementation, linked replay,
   independent eval, and optional design phases.
@@ -90,8 +105,9 @@ Process handles and lifecycle events, not polling agents, advance the state
 machine. Lifecycle events are JSON lines in `events.jsonl`; state files under
 `states/` prevent invalid transitions.
 
-The inner eval executor is pure: it runs the assigned worker and evaluator,
-then writes the worker report and evaluator manifest. The eval-manager reads
+The inner eval executor is pure controller infrastructure: it runs the assigned
+worker and evaluator, then writes the worker report and evaluator manifest. The
+eval-manager reads
 those outputs, measures effort and qualitative friction, and may propose a
 handbook candidate or standardized ticket. It does not repair the product in
 place. An engineer works only on a controller-assigned approved ticket in an

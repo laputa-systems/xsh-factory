@@ -18,21 +18,29 @@ Before a paid decision, read `README.md`, `NORTH-STAR.md`, `FACTORY.md`, and
 structured `report.json` paths and raw sessions only as needed. Read the
 adjacent product `AGENTS.md` and rationale when a product change is involved.
 
+Every completed cycle must leave one concrete, measurable factory-wide
+improvement. The CTO records it in that run's `CTO-IMPROVEMENT.md` using the
+checked-in template, including the baseline, target, validation, and revert
+condition. A report-only observation, a new ticket, or a new eval proposal is
+not sufficient unless the CTO also changes the factory's controller, prompt,
+test, policy, or other reusable infrastructure.
+
 ## Bounds
 
 One cycle may:
 
-- admit at most one engineer ticket;
-- run at most one linked re-evaluation and one independent active eval;
+- admit at most two engineer tickets in a ticket-implementation cycle;
+- run one linked re-evaluation plus one independent active eval when a ticket
+  is admitted (two distinct eval runs);
 - stage at most one new eval proposal;
-- approve or reject at most two open tickets;
+- review every open ticket, while approving or rejecting at most two per cycle;
 - promote at most one handbook candidate after replay evidence; and
 - merge at most one product branch, only with user authority.
 
-The factory may contain at most 20 eval contracts. A solved or stagnant eval
-is marked `Disabled.` with an explicit reason and evidence link; it still
-counts toward the cap. Never create an eval merely to keep the organization
-busy.
+The factory may contain at most 20 eval contracts. A solved, redundant, or
+stagnant eval is marked `Disabled.` with an explicit reason and evidence link;
+it still counts toward the cap. Never create an eval merely to keep the
+organization busy.
 
 The coded per-role ceilings and aggregate cycle cap are the authority. A
 cycle that exceeds its aggregate cap must stop the entire factory, terminate
@@ -51,10 +59,20 @@ and root `report.json`. Review phase reports, worker reports, employee
 `REPORT.md` files, evaluator `run.json`, and raw `session.jsonl` only where
 the briefing identifies an open decision.
 
+Read the prior run's `CTO-IMPROVEMENT.md` before admitting paid work. If its
+status is `pending-validation`, run the named validation against the current
+factory and next-cycle evidence. Mark it `validated` with the evidence path,
+or apply the documented safe inverse and mark it `reverted`; do not leave the
+prior improvement unresolved while starting another paid cycle.
+
 Confirm the state of tickets and evals from their checked-in files, count
 `evals/*/EVAL.md`, and check for stale active markers, budget breaches,
 unknown costs, dirty product state, incomplete reports, and unmerged engineer
-branches. Never infer work from an employee transcript.
+branches. Enumerate every ticket whose checked-in status is `Open.` and review
+its observation, linked eval, evidence lineage, reproducibility, duplication,
+scope, acceptance criteria, and branch state. A ticket may remain Open after
+review; record why it is deferred, rejected, or eligible for approval in the
+cycle decision record. Never infer work from an employee transcript.
 
 ### 2. Run deterministic preflight
 
@@ -66,11 +84,14 @@ test a controller defect before launching another worker.
 
 ### 3. Make bounded decisions
 
-Approve a ticket only when its observation is reproducible, general, small
-enough for the engineer ceiling, and has testable acceptance criteria. Reject
-duplicates, task-specific workarounds, vague hypotheses, or changes whose
-expected value is below their spend. Record decisions in the ticket and
-request; do not use a worker to discover which ticket to implement.
+Review all Open tickets before selecting work. Approve a ticket only when its
+observation is reproducible, general, small enough for the engineer ceiling,
+and has testable acceptance criteria. Reject duplicates, task-specific
+workarounds, vague hypotheses, or changes whose expected value is below their
+spend. The review pass may cover every Open ticket, but no more than two
+ticket statuses may change in one cycle and no more than one engineer ticket
+may be admitted. Record decisions in the ticket and request; do not use a
+worker to discover which ticket to implement.
 
 For a completed engineer patch, inspect scope, tests, exact assignment,
 portable diff, and linked replay. The user alone merges or applies it. The
@@ -87,7 +108,8 @@ the patch against the common ancestor and owns temporary worktree cleanup.
 Use `cycle-organization.md` when the standard path is appropriate:
 
 - with an approved ticket: implement it, run its linked replay, run one
-  independent active eval, and stage one design proposal when below the cap;
+  different independent active eval, and stage one design proposal when below
+  the cap;
 - without an approved ticket: run one active eval as primary and stage one
   design proposal when below the cap; or
 - at the eval cap: omit design and spend nothing on new eval creation.
@@ -131,12 +153,22 @@ cause redundant discovery. If the problem is missing or ambiguous machine
 output, fix the controller and add a native test instead of adding prose.
 
 At the end of every paid cycle, inspect director and manager worker reports
-for churn and cost. Record the evidence path, make the smallest repair, and
-name the next-cycle metric that will falsify the improvement.
+for churn and cost. Implement at least one reusable factory-wide improvement,
+record its baseline and target in `CTO-IMPROVEMENT.md`, and name the next-cycle
+metric that will falsify it. The cycle handoff is incomplete until that record
+exists and is linked from the CTO briefing.
 
-Retire an eval only after at least three qualifying stable passes show that it
-is solved or stagnant, no ticket or handbook replay depends on it, and it is
-unlikely to teach anything new. Mark it disabled; preserve its history.
+Retire an eval when the evidence shows it is solved, redundant, or stagnant,
+no ticket or handbook replay depends on it, and a replacement scenario keeps
+the eval stream diverse. A qualifying review includes a valid evaluator
+manifest, required worker/manager reports, and a checked-in record of whether
+the run produced a new reproducible product defect, reusable handbook
+guidance, accepted ticket, or other durable learning. Three consecutive
+qualifying runs with no durable learning are sufficient evidence of
+stagnation. A deliberately minimal seed or redundant eval may be disabled
+after one qualifying pass when its low information value is explicit and a
+more valuable replacement is active. Mark it `Disabled.` with the evidence
+path and preserve its history.
 
 ### 7. Leave a durable handoff
 

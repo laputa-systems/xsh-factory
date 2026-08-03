@@ -17,6 +17,10 @@ proc run_ticket_cycle(
     eprint "ticket-implementation cycle has no approved tickets"
     return 1
   }
+  if tickets.len() > control.max_concurrent_engineers() {
+    eprint f"ticket-implementation cycles admit at most ${control.max_concurrent_engineers()} engineer tickets"
+    return 1
+  }
   let xsh_path = process.which("xsh")?
   let stamp = time.now()
   let configured_phase_dir = env.get_or("FACTORY_PHASE_DIR", "")?
@@ -137,7 +141,7 @@ proc run_ticket_cycle(
     {key: "RUN_DIR", value: run_dir.display()},
     {key: "RUN_AGENT", value: run_agent.display()},
     {key: "MODE", value: "ticket-implementation"},
-    {key: "EXECUTION_DIRECTIVE", value: "Launch exactly the assigned engineer rows through the shared runner, wait for each process, and inspect its report. Do not launch eval roles."},
+    {key: "EXECUTION_DIRECTIVE", value: "Launch every assigned engineer row through the shared runner before waiting; then wait for each process and inspect every report. This permits the admitted engineer rows to run concurrently. Do not launch eval roles."},
   ]
   fs.write(director_message, control.fill_template(director_template.read_text()?, director_values))?
 
