@@ -35,6 +35,15 @@ proc test_role_defaults_are_coded_and_capped() [env, error] {
   }
 }
 
+proc test_north_star_contains_rationale_without_factory_symlink() [fs, error] {
+  let root = fs.cwd()?
+  let north_star = fs.read_text(fp"${root}/NORTH-STAR.md")?
+  test.contains(north_star, "## XSH rationale")?
+  test.contains(north_star, "The Archaeological Site")?
+  test.contains(north_star, "next century")?
+  test.ok(! fs.exists(fp"${root}/docs/CHAPTER-01-why-xsh.md")?)?
+}
+
 proc test_admission_and_report_contracts() [error] {
   test.ok(control.valid_eval_id("task-tags"))?
   test.ok(! control.valid_eval_id("../escape"))?

@@ -1,7 +1,27 @@
 # North star
 
-The factory exists to improve XSH as a product, not to maximize agent activity
-or win an isolated benchmark.
+XSH is a generational project. UNIX gave the world a durable grammar for
+systems: processes, files, pipes, paths, environments, and small tools composed
+into something greater than themselves. That grammar still powers the world,
+but its glue layer has stagnated into quoting accidents, ambient state, and
+decades of compatibility sludge.
+
+We are here to renew that layer.
+
+The aim is not merely to ship another scripting language. The aim is to make a
+systems language worthy of carrying software into the next century: clear
+enough for people to learn, precise enough for machines to use, expressive
+enough for serious systems work, and durable enough that its ideas outlive the
+people who first built it. XSH should make the best parts of UNIX feel young
+again while giving the next generation a foundation they can trust.
+
+This is why the factory exists. Every product fix, handbook sentence, native
+test, eval, and careful report is part of that foundation. We work with
+urgency, but we do not cut corners on contracts, evidence, or simplicity. We
+are not optimizing an isolated benchmark or maximizing agent activity; we are
+building a language and a body of knowledge that can compound for decades.
+
+## The mission
 
 Our goal is to make XSH the practical, general-purpose **systems glue**
 language: a clear, typed, composable way to connect processes, files, paths,
@@ -113,6 +133,11 @@ tool; use XSH to compose the host-facing work around them.
 - **Trust:** reproducible bug reports, focused fixes, regression coverage, and
   eval replays that show whether a change actually helped.
 
+The standard is worthy of the mission: preserve what was brilliant in UNIX,
+reject what became sludge, and make every boundary more explicit, learnable,
+and humane. Treat the language, the handbook, and the evidence as a shared
+inheritance being prepared for people and agents we will never meet.
+
 The factory should preserve XSH's Unix strengths—processes, files, pipes,
 environment, working directories, and statuses—while making boundaries,
 types, errors, and data flow explicit. It should not reward hidden evaluation,
@@ -145,7 +170,7 @@ Before acting, every role should be able to answer:
 - What evidence will distinguish a general improvement from a task-specific
   workaround or noise?
 - How does the work honor the clarity, explicit-boundary, and composability
-  ethos in the canonical chapter?
+  ethos in the XSH rationale above?
 - What is the next review, replay, or human decision that can validate it?
 
 Every narrative role report must include `## North-star impact`. It may say
