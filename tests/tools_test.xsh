@@ -83,6 +83,8 @@ proc write_eval_phase_fixture(root: Path, factory: Path) [fs, error] -> Result[U
   fs.mkdir(fp"${root}/workers/eval-manager/task-tags")?
   fs.mkdir(fp"${root}/workers/director/director")?
   fs.mkdir(fp"${root}/lineage")?
+  fs.copy(fp"${factory}/runtime/handbook.md", fp"${root}/lineage/handbook-approved.md", overwrite: true)?
+  fs.write(fp"${root}/lineage/handbook-candidate.md", "candidate handbook\n")?
   fs.mkdir(fp"${root}/phases/02-eval-design")?
   fs.write(fp"${root}/phases/02-eval-design/CTO-EVAL-REVIEW.md", "# Eval review\n\nphase review\n")?
   fs.write(fp"${root}/CYCLE-REQUEST.md", "# Cycle\n\n## Mode\n\n- `eval`\n\n## Active evals\n\n- `task-tags`\n\n## Trial plan\n\n- Count: `1`\n\n## New eval proposals\n\n- Count: `0`\n")?
@@ -177,6 +179,11 @@ proc test_cto_briefing_reads_json_not_projection(ctx: TestContext) [fs, process,
   test.contains(text, "phases/02-eval-design/CTO-EVAL-REVIEW.md")?
   test.contains(text, "phase review")?
   test.contains(text, "CTO-IMPROVEMENT.md")?
+  test.contains(text, "## Handbook lineage")?
+  test.contains(text, "lineage/handbook-candidate.md")?
+  test.contains(text, "promotion or rejection decision required")?
+  test.contains(text, "Historical candidates:")?
+  test.contains(text, "ledger-dispositioned:")?
   test.ok(! text.contains("COST.md"))?
   test.ok(! text.contains("TOOL-ERRORS.md"))?
 }
@@ -245,11 +252,14 @@ proc test_organization_reuses_existing_branch_without_duplicate_dispatch() [fs, 
 proc test_ticket_cycle_bounds_concurrent_engineers() [fs, error] {
   let ticket = fs.read_text(fp"${fs.cwd()?}/run-ticket.xsh")?
   let director = fs.read_text(fp"${fs.cwd()?}/roles/director.md")?
+  let organization = fs.read_text(fp"${fs.cwd()?}/run-organization.xsh")?
   test.contains(ticket, "max_concurrent_engineers()")?
   test.contains(ticket, r"""at most ${control.max_concurrent_engineers()} engineer tickets""")?
   test.contains(ticket, "if ! director_status.ok")?
   test.contains(ticket, "runtime.cleanup_active_run()")?
   test.contains(director, "launch all children")?
+  test.contains(organization, "ticket_worker_pass(primary_phase, ticket_id)")?
+  test.contains(organization, "let reeval_ok = ticket_primary_pass and run_child")?
 }
 
 proc test_eval_mode_has_no_paid_director_review() [fs, error] {

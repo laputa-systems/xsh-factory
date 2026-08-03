@@ -1,5 +1,7 @@
 ##! Package-owned evaluator for task-jsonfilter.
 
+use factory_control as control
+
 type Case = {name: Str, document: Str, missing: Bool, expect_fail: Bool}
 
 type CaseResult = {
@@ -104,8 +106,7 @@ printf '%s\n' "$rendered" > "$out"
   }
   let source = if artifact_present { artifact.read_text()? } else { "" }
   let restriction_ok = artifact_present and source.contains("json.") and
-    ! source.contains("process.") and ! source.contains("spawn ") and
-    ! source.contains("run ") and ! source.contains("jq")
+    ! control.source_has_forbidden_subprocess(source) and ! source.contains("jq")
   let protocol_ok = review_ok()?
   let passed = all_exact and restriction_ok and protocol_ok
   json.write(p"/session/run.json", {

@@ -2,7 +2,7 @@
 
 ## Status
 
-Approved.
+Closed.
 
 ## Budget breach
 
@@ -10,10 +10,10 @@ None.
 
 ## Merge record
 
-- Implementation branch: `{{IMPLEMENTATION_BRANCH}}`
-- Implementation commit: `{{IMPLEMENTATION_COMMIT}}`
-- Detected at XSH commit: `{{DETECTED_XSH_COMMIT}}`
-- Implementation run: `{{IMPLEMENTATION_RUN}}`
+- Implementation branch: `factory/task-envcfg-005/1785784386279`
+- Implementation commit: `746a851a7b3ac51e84be8f6d0af34dcaa612687d`
+- Detected at XSH commit: `d2d87d2`
+- Implementation run: `runs/run-1785784385782`
 
 ## Source eval and manager
 

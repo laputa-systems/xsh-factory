@@ -39,6 +39,14 @@ This is the deterministic first-pass briefing for the CTO. The structured
 
 {{EVAL_REVIEW}}
 
+## Handbook lineage
+
+{{HANDBOOK_LINEAGE}}
+
+## Historical handbook backlog
+
+{{HANDBOOK_BACKLOG}}
+
 ## CTO action queue
 
 {{ACTION_QUEUE}}

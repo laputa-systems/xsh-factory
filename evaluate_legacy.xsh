@@ -164,8 +164,7 @@ printf 'host=%s\nport=%s\ndebug=%s\n' "${CFG_HOST-localhost}" "${CFG_PORT-8080}"
       hidden_utf8_exact and hidden_debug_false_exact and hidden_malformed_exact and
       hidden_empty_port_exact
     let source = fs.read_text(p"/work/envcfg.xsh")?
-    forbidden_operations = ! source.contains("process.") and
-      ! source.contains("spawn ") and ! source.contains("run ")
+    forbidden_operations = ! control.source_has_forbidden_subprocess(source)
     env_referenced = source.contains("env.")
     if ! all_exact or ! forbidden_operations or ! env_referenced {
       eval_status = 1
@@ -317,8 +316,7 @@ proc run_task_tags() [fs, process, env, time, error, io] -> Result[Int] {
     empty_exact = empty_candidate.status.ok and empty_oracle.status.ok and
       fs.read_text(p"/session/candidate.3.stdout")? == fs.read_text(p"/session/oracle.3.stdout")?
     let source = fs.read_text(p"/work/tag.xsh")?
-    forbidden_operations = ! source.contains("process.") and
-      ! source.contains("spawn ") and ! source.contains("run ")
+    forbidden_operations = ! control.source_has_forbidden_subprocess(source)
     if ! public_exact or ! hidden_exact or ! empty_exact or ! forbidden_operations {
       eval_status = 1
     }
@@ -424,8 +422,7 @@ proc run_task_ecount() [fs, process, env, time, error, io] -> Result[Int] {
       eval_status = 1
     }
     let source = fs.read_text(p"/work/ecount.xsh")?
-    forbidden_operations = ! source.contains("process.") and
-      ! source.contains("spawn ") and ! source.contains("run ")
+    forbidden_operations = ! control.source_has_forbidden_subprocess(source)
     if candidate_status.ok and oracle_ok {
       let candidate_output = fs.read_text(p"/session/candidate.stdout")?
       if candidate_output == oracle_output {

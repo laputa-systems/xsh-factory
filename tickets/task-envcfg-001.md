@@ -2,7 +2,7 @@
 
 ## Status
 
-Approved.
+Closed.
 
 ## Merge record
 
@@ -165,3 +165,8 @@ XSH commit using the current approved handbook lineage, verify that the
 malformed-port path uses the documented constructor without a fake host call,
 confirm all 10 oracle cases still pass, and record acceptance or rejection in
 that run's manager report.
+
+## Budget breach
+
+- Reason: too difficult
+- Worker run: [engineer run](runs/run-1785784385782/phases/01-ticket/workers/engineer/task-envcfg-001/report.json)

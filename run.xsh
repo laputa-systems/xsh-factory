@@ -51,6 +51,7 @@ proc preflight(
     "templates/CTO-TOOL-ERROR.md",
     "templates/CTO-TOTAL.md",
     "templates/CTO-IMPROVEMENT.md",
+    "runtime/handbook-ledger.md",
   ] {
     if ! fs.exists(fp"${factory_dir}/${required}")? {
       eprint f"factory prerequisite is missing: ${factory_dir}/${required}"
@@ -96,6 +97,11 @@ proc preflight(
         return false
       }
     }
+  }
+  let unresolved_handbook = runtime.unresolved_handbook_candidates(factory_dir)?
+  if unresolved_handbook > 0 {
+    eprint f"${unresolved_handbook} handbook candidates require CTO disposition before paid work"
+    return false
   }
 
   let home = env.get("HOME")?

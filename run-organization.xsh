@@ -121,6 +121,14 @@ proc phase_run_pass(phase_dir: Path, report_name: Str) [fs, error] -> Result[Boo
   return schema.value_text(json.get(json.read(report)?, ["result"], "unknown")) == "pass"
 }
 
+proc ticket_worker_pass(phase_dir: Path, ticket_id: Str) [fs, error] -> Result[Bool] {
+  let report = fp"${phase_dir}/workers/engineer/${ticket_id}/report.json"
+  if ! fs.exists(report)? or ! schema.valid(json.read(report)?, "worker") {
+    return false
+  }
+  return schema.value_text(json.get(json.read(report)?, ["result"], "unknown")) == "pass"
+}
+
 proc run_reuse_phase(
   phase_dir: Path,
   factory_dir: Path,
@@ -450,7 +458,8 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
         f"`${ticket_id}`", f"Validate the ${ticket_id} implementation against the linked ${ticket_eval_id} eval before merge.")?
       let ticket_candidate = ticket_worktree.display()
       runtime.emit_event(event_template, run_dir, "10-reeval-started", f"${ticket_id}-reevaluation", "started", 1, "organization", "validated engineer worktree is available")?
-      let reeval_ok = primary_pass and run_child(
+      let ticket_primary_pass = ticket_worker_pass(primary_phase, ticket_id)?
+      let reeval_ok = ticket_primary_pass and run_child(
         reeval_controller, ticket_reeval_request, ticket_reeval_phase, factory_dir,
         ticket_worktree, run_dir, xsh_commit.trim(), run_agent,
         auth_file, pi_command, docker, target, platform,
@@ -471,7 +480,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
       if reeval_pass {
         runtime.emit_event(event_template, run_dir, "85-reeval-validated", f"${ticket_id}-reevaluation", "validated", 1, "controller", "candidate re-evaluation report.json passed")?
       }
-      let patch_ready = primary_pass and fs.exists(ticket_patch)?
+      let patch_ready = ticket_primary_pass and fs.exists(ticket_patch)?
       let cleaned = patch_ready and reeval_pass and runtime.remove_clean_worktree(xsh_repo, ticket_worktree)?
       worktree_cleanup_ok = worktree_cleanup_ok and cleaned
     }

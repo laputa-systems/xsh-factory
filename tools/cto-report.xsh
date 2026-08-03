@@ -12,6 +12,10 @@ pure relative_path(run_dir: Path, target: Path) -> Str {
   return control.factory_relative_path(run_dir.display(), target)
 }
 
+pure factory_path(factory_dir: Path, target: Path) -> Str {
+  return control.factory_relative_path(factory_dir.display(), target)
+}
+
 pure worker_identifier(run_dir: Path, report: Path) -> Str {
   let parts = relative_path(run_dir, report).split("/")
   if parts.len() >= 3 and parts[0] == "workers" {
@@ -100,6 +104,68 @@ proc improvement_block(run_dir: Path) [fs, error] -> Result[Str] {
   }
 }
 
+proc handbook_lineage_block(factory_dir: Path, run_dir: Path, files: List[Path]) [fs, error] -> Result[Str] {
+  let current = fp"${factory_dir}/runtime/handbook.md"
+  let current_sha = if fs.exists(current)? { hash.sha256(current)?.hex() } else { "missing" }
+  let ledger_path = fp"${factory_dir}/runtime/handbook-ledger.md"
+  let ledger = if fs.exists(ledger_path)? { ledger_path.read_text()? } else { "" }
+  if files.len() == 0 {
+    return f"No handbook lineage snapshots were recorded for this run. Checked-in handbook: `${current_sha}`."
+  }
+  var rows = f"Checked-in `runtime/handbook.md`: `${current_sha}`\n"
+  for file in files {
+    let sha = hash.sha256(file)?.hex()
+    let kind = if file.name == "handbook-candidate.md" { "candidate" } else { "approved snapshot" }
+    let state = if sha == current_sha and ledger.contains(sha) {
+      "promoted by CTO ledger; matches checked-in handbook"
+    } else if sha == current_sha {
+      "matches checked-in handbook"
+    } else if ledger.contains(sha) {
+      "dispositioned in CTO ledger; differs from current handbook"
+    } else {
+      "DIFFERS; CTO promotion or rejection decision required"
+    }
+    rows = rows + f"- ${kind}: `${relative_path(run_dir, file)}` sha256 `${sha}` — ${state}\n"
+  }
+  return rows
+}
+
+proc handbook_backlog_block(factory_dir: Path) [fs, error] -> Result[Str] {
+  let current = fp"${factory_dir}/runtime/handbook.md"
+  let current_sha = if fs.exists(current)? { hash.sha256(current)?.hex() } else { "missing" }
+  let ledger_path = fp"${factory_dir}/runtime/handbook-ledger.md"
+  let ledger = if fs.exists(ledger_path)? { ledger_path.read_text()? } else { "" }
+  let runs_dir = fp"${factory_dir}/runs"
+  if ! fs.exists(runs_dir)? {
+    return "No historical run directory exists."
+  }
+  var candidates = 0
+  var changed = 0
+  var dispositioned = 0
+  var unresolved = 0
+  var rows = ""
+  for entry in fs.walk(runs_dir, gitignore: false, hidden: true)? |> where .kind == "file" {
+    if entry.name != "handbook-candidate.md" {
+      continue
+    }
+    candidates = candidates + 1
+    let sha = hash.sha256(entry.path)?.hex()
+    if sha != current_sha {
+      changed = changed + 1
+      if ledger.contains(sha) {
+        dispositioned = dispositioned + 1
+      } else {
+        unresolved = unresolved + 1
+        rows = rows + f"- `${factory_path(factory_dir, entry.path)}` sha256 `${sha}`\n"
+      }
+    }
+  }
+  let summary = f"Historical candidates: ${candidates}; differing: ${changed}; ledger-dispositioned: ${dispositioned}; unresolved: ${unresolved}."
+  return if rows == "" { summary + "\nNo unresolved candidate content is present." } else {
+    summary + "\nUnresolved candidates requiring one explicit CTO decision:\n" + rows
+  }
+}
+
 proc tool_error_blocks(run_dir: Path, reports: List[Path], template: Str) [fs, error] -> Result[Str] {
   var rows = ""
   for report in reports {
@@ -168,6 +234,7 @@ proc main(...argv: List[Str]) [fs, env, error, io] {
   var employee_reports: List[Path] = []
   var worker_reports: List[Path] = []
   var eval_reviews: List[Path] = []
+  var handbook_lineage: List[Path] = []
   for entry in fs.walk(run_dir, gitignore: false, hidden: true)? |> where .kind == "file" {
     if entry.name == "report.json" and entry.path.display().contains("/phases/") {
       phase_reports = phase_reports.push(entry.path)
@@ -181,11 +248,15 @@ proc main(...argv: List[Str]) [fs, env, error, io] {
     if entry.name == "CTO-EVAL-REVIEW.md" {
       eval_reviews = eval_reviews.push(entry.path)
     }
+    if entry.name == "handbook-candidate.md" or entry.name == "handbook-approved.md" {
+      handbook_lineage = handbook_lineage.push(entry.path)
+    }
   }
   phase_reports = phase_reports |> sort-by .display()
   employee_reports = employee_reports |> sort-by .display()
   worker_reports = worker_reports |> sort-by .display()
   eval_reviews = eval_reviews |> sort-by .display()
+  handbook_lineage = handbook_lineage |> sort-by .display()
 
   var employees = ""
   for report in employee_reports {
@@ -221,6 +292,8 @@ proc main(...argv: List[Str]) [fs, env, error, io] {
     {key: "COST_SUMMARY", value: cost_summary},
     {key: "EMPLOYEE_DECISIONS", value: employees},
     {key: "EVAL_REVIEW", value: eval_review_block(run_dir, eval_reviews)?},
+    {key: "HANDBOOK_LINEAGE", value: handbook_lineage_block(factory_dir, run_dir, handbook_lineage)?},
+    {key: "HANDBOOK_BACKLOG", value: handbook_backlog_block(factory_dir)?},
     {key: "IMPROVEMENT", value: improvement_block(run_dir)?},
     {key: "ACTION_QUEUE", value: "Review the structured report and employee narratives before the next paid cycle."},
   ]

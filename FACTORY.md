@@ -104,7 +104,9 @@ human-authored inputs or judgments. They are not machine-to-machine state.
   independent eval, and optional design phases.
 
 Child phases may overlap only when their inputs and product state are
-independent. Ticket implementation completes before its candidate replay.
+independent. Ticket implementation completes before each ticket's candidate
+replay; a passing engineer row is re-evaluated independently even when a
+sibling ticket fails.
 The independent eval and eval-design phase may run concurrently with it.
 Process handles and lifecycle events, not polling agents, advance the state
 machine. `events.jsonl` is the canonical cycle ledger: lifecycle transitions
@@ -123,7 +125,9 @@ isolated product worktree.
 
 There is one shared rolling handbook at `runtime/handbook.md`. Trial workspaces
 receive snapshots; a candidate lives under the run until a CTO-approved
-decision promotes it. Every eval reads the same approved handbook lineage.
+decision promotes it. `runtime/handbook-ledger.md` records each candidate
+disposition, and an undispositioned candidate blocks the next paid cycle. Every
+eval reads the same approved handbook lineage.
 Eval packages follow a separate path: the CTO promotes them into `evals/`
 immediately, then sets `Approved.` only after the evaluator and evidence pass.
 `Draft.` status keeps rejected or incomplete packages out of paid admission.

@@ -48,6 +48,18 @@ Bind values with let:
     let name = "world"
     let answer = 40 + 2
 
+Bindings are immutable by default. When a binding must be reassigned, declare
+it with `var` and use `=`; `let mut` is not valid syntax:
+
+    var total = 0
+    total = total + 1
+
+Comments start with `#` and extend to the end of the line. `//` is not a
+comment marker and causes a parse error, so use `#` for inline notes:
+
+    # CFG_PORT must be a run of decimal digits.
+    let digits = port.delete("0123456789")
+
 Values have explicit types. Common types include Str, Int, Bool, Path,
 List[T], Map[T], and Result[T]. Records have named fields, accessed with dot
 syntax:
@@ -70,6 +82,12 @@ effects include error:
 Use the exact return type and effect information shown by `xsht api`. Do not
 turn an expected host failure into an unchecked assumption.
 
+For deliberate validation failure, propagate an expected failure from a typed
+conversion such as `env.int(...)` or a `parse_int` result and let postfix `?`
+produce the nonzero exit. This build has no generic `Error(...)` constructor;
+do not invent an error value or use an unrelated host failure when a typed
+conversion can express the rejected input.
+
 ## Paths and filesystem values
 
 Path literals use the p prefix:
@@ -85,6 +103,13 @@ The filesystem stream entries expose structured fields such as kind, ext,
 name, and path. A regular-file filter is normally expressed by checking the
 kind field. The API contract, not a guessed field name or string convention,
 is authoritative.
+
+Path literals are literal and do not interpolate: `p"$name"` contains the
+characters, not the value of `name`. To build a Path from a runtime Str, use
+the direct `Path(str)` cast or the Result-typed
+`Path.parse_bytes(bytes.from_text(str))?` conversion. For a dynamic path
+string, `fp"${expr}"` is the interpolated, lint-preferred form. There is no
+`Str.to_path` conversion in the pinned image.
 
 ## Streams and collections
 
@@ -112,6 +137,17 @@ semantics matter:
     xsht api language:stream.sort-by
     xsht api language:stream.fold
 
+Stream stage blocks accept at most one parameter. A group-by terminal returns
+records with `key` and `items`, so counting occurrences uses the length of a
+group’s `items`; accumulator-style two-parameter fold/reduce blocks are not
+the counting path in this build. When a terminal stage ends a procedure, bind
+its result rather than leaving a bare terminal as the final statement:
+
+    let _ = files |> each { |f| print $f.display() }
+
+This avoids a runtime type error that can appear after the terminal has already
+produced output.
+
 Maps and lists are values. Map.set returns an updated map value, and Map.get
 has a fallback overload:
 
@@ -129,10 +165,25 @@ string, and Path.ext reads a path extension without reading file contents:
     let lower = text.lower()
     let extension = path.ext()
 
+String length is type-specific: Str exposes `byte_len()`, `count_chars()`, and
+`count_bytes()`; `len()` is a List method, not a Str method.
+
 print writes values to standard output. Use explicit value interpolation or
 print separate values when the output contract requires a particular layout:
 
     print "count" $count
+
+Print arguments are command words, not general expressions: `+` is not string
+concatenation inside `print`, and a bare identifier must be written `$var` to
+dereference it. Build concatenated text in expression position and then print
+the value:
+
+    let line = if argv.len() == 0 { "" } else { " " + joined }
+    print "tags:"$line
+
+Ordinary string literals do not interpolate, and path literals do not either.
+Use a display string (`f"host=${host} port=${port}"`) to compose exact dynamic
+text, including multi-line file content, then write it with `fs.write`.
 
 For an exact-output task, preserve required spaces, leading padding, and final
 newlines. Do not add explanatory output.
@@ -157,6 +208,14 @@ Then query an exact module function, method, or language rule:
     xsht api method:Path.ext
     xsht api method:Str.lower
     xsht api language:stream.sort-by
+
+Language-rule ids live under `language:core.*` and `language.effect.*`. The
+`xsht api search:TERM` form accepts one search term. A bare receiver query such
+as `method:Str` or `method:Str.` is rejected; enumerate a type with the summary
+index and filter it, or search an exact member:
+
+    xsht api summary | grep Str
+    xsht api search:parse_bytes
 
 Use module and language prefixes for an overview:
 
@@ -195,3 +254,19 @@ inside the XSH solution is a separate design choice and may be forbidden. Do
 not search for hidden source, repository examples, or implementation details.
 The intended path is this handbook, xsht api discovery, xsht feedback, and a
 small XSH program.
+
+## Environment and configuration
+
+The process environment is a normal host surface. Discover it with:
+
+    xsht api module:env
+    xsht api module:env.get_or
+    xsht api module:env.int
+    xsht api module:env.bool
+
+Read an environment variable with a default using `env.get_or(NAME, default)`;
+the default applies only when the variable is absent, not when it is present
+but empty. Write text with `fs.write(path, text)` and declare the `env` and
+`fs` effects. The typed `env.int` and `env.bool` helpers are convenience
+readers, not strict format validators, so byte-exact decimal or boolean
+contracts must be checked explicitly.

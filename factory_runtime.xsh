@@ -641,3 +641,28 @@ export proc verify_factory_handbook(factory_dir: Path, expected_sha: Str) [fs, e
   let handbook = fp"${factory_dir}/runtime/handbook.md"
   return fs.exists(handbook)? and hash.sha256(handbook)?.hex() == expected_sha
 }
+
+## Counts historical candidate snapshots with no explicit ledger disposition.
+## A nonzero result blocks the next paid cycle until the CTO promotes or
+## rejects the candidate; lineage files must never become invisible backlog.
+export proc unresolved_handbook_candidates(factory_dir: Path) [fs, error] -> Result[Int] {
+  let handbook = fp"${factory_dir}/runtime/handbook.md"
+  let runs_dir = fp"${factory_dir}/runs"
+  let ledger_path = fp"${factory_dir}/runtime/handbook-ledger.md"
+  if ! fs.exists(handbook)? or ! fs.exists(runs_dir)? {
+    return 0
+  }
+  let current_sha = hash.sha256(handbook)?.hex()
+  let ledger = if fs.exists(ledger_path)? { ledger_path.read_text()? } else { "" }
+  var unresolved = 0
+  for entry in fs.walk(runs_dir, gitignore: false, hidden: true)? |> where .kind == "file" {
+    if entry.name != "handbook-candidate.md" {
+      continue
+    }
+    let sha = hash.sha256(entry.path)?.hex()
+    if sha != current_sha and ! ledger.contains(sha) {
+      unresolved = unresolved + 1
+    }
+  }
+  return unresolved
+}

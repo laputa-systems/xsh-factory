@@ -1,5 +1,7 @@
 ##! Package-owned evaluator for task-dupcheck.
 
+use factory_control as control
+
 type FixtureFile = {dir: Str, name: Str, data: Str}
 type Case = {name: Str, dirs: List[Str], files: List[FixtureFile], missing: Bool}
 
@@ -149,8 +151,7 @@ END { if (n > 1) print out }'
   }
   let source = if artifact_present { artifact.read_text()? } else { "" }
   let restriction_ok = artifact_present and source.contains("hash.") and
-    ! source.contains("process.") and ! source.contains("spawn ") and
-    ! source.contains("run ")
+    ! control.source_has_forbidden_subprocess(source)
   let protocol_ok = review_ok()?
   let passed = all_exact and restriction_ok and protocol_ok
   json.write(p"/session/run.json", {

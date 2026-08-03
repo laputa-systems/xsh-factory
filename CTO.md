@@ -77,7 +77,10 @@ verification necessarily belongs to the next cycle.
 Confirm the state of tickets and evals from their checked-in files, count
 `evals/*/EVAL.md`, and check for stale active markers, budget breaches,
 unknown costs, dirty product state, incomplete reports, and unmerged engineer
-branches. Enumerate every ticket whose checked-in status is `Open.` and review
+branches. Read the CTO report's handbook lineage and historical backlog, then
+verify every `runs/**/lineage/handbook-candidate.md` against
+`runtime/handbook-ledger.md`; an undispositioned candidate blocks paid work.
+Enumerate every ticket whose checked-in status is `Open.` and review
 its observation, linked eval, evidence lineage, reproducibility, duplication,
 scope, acceptance criteria, and branch state. A ticket may remain Open after
 review; record why it is deferred, rejected, or eligible for approval in the
@@ -104,8 +107,9 @@ available. Record decisions in the ticket and request; do not use a worker to
 discover which ticket to implement.
 
 For a completed engineer patch, inspect scope, tests, exact assignment,
-portable diff, and linked replay. The CTO decides whether to merge or apply
-it. When it does, reconciliation updates the linked `TICKET.md` to `Merged.`
+portable diff, and linked replay. Each passing engineer row receives its own
+linked replay; a sibling ticket failure does not suppress it. The CTO decides
+whether to merge or apply the patch. When it does, reconciliation updates the linked `TICKET.md` to `Merged.`
 once the recorded implementation is proven in XSH `HEAD`; the manager replay
 then accepts or rejects the product change.
 

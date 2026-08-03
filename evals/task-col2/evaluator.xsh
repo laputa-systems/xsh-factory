@@ -1,5 +1,7 @@
 ##! Package-owned evaluator for task-col2.
 
+use factory_control as control
+
 type Case = {name: Str, data: Str, missing: Bool}
 
 type CaseResult = {
@@ -95,8 +97,7 @@ proc main() [fs, process, env, time, error, io] {
   }
   let source = if artifact_present { artifact.read_text()? } else { "" }
   let restriction_ok = artifact_present and source.contains("read_text") and
-    ! source.contains("process.") and ! source.contains("spawn ") and
-    ! source.contains("run ")
+    ! control.source_has_forbidden_subprocess(source)
   let protocol_ok = review_ok()?
   let passed = all_exact and restriction_ok and protocol_ok
   json.write(p"/session/run.json", {

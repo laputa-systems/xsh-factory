@@ -3,6 +3,17 @@
 ## One placeholder value used to fill a checked-in Markdown template.
 export type TemplateValue = {key: Str, value: Str}
 
+## Detect forbidden subprocess syntax without treating prose in `#` comments as code.
+export pure source_has_forbidden_subprocess(source: Str) -> Bool {
+  for line in source.lines() {
+    let code = line.split("#").get(0, "")
+    if code.contains("process.") or code.contains("spawn ") or code.contains("run ") {
+      return true
+    }
+  }
+  return false
+}
+
 ## Reads the current lifecycle marker from a ticket.
 export pure ticket_status(text: Str) -> Str {
   var in_status = false

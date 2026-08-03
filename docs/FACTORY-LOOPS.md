@@ -55,8 +55,10 @@ cannot discover another ticket.
 The output is the portable `patches/<ticket>.diff`, the raw session,
 `report.json`, and the engineer's `REPORT.md`. After the patch is captured, a
 clean temporary worktree is removed. The CTO reviews and applies or merges the
-patch. Reconciliation then updates the linked `TICKET.md` to `Merged.`;
-the linked manager replay decides whether the change should remain.
+patch. Each passing engineer row gets its own linked replay; one sibling's
+failure does not suppress another ticket's replay. Reconciliation then updates
+the linked `TICKET.md` to `Merged.`; the linked manager replay decides whether
+the change should remain.
 
 ## Design loop: eval-designer
 

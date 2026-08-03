@@ -14,6 +14,15 @@ proc test_cycle_request_parsing() [error] {
   test.eq(control.request_ticket_policy(request), "explicit")?
 }
 
+proc test_forbidden_subprocess_scan_ignores_comments() [error] {
+  test.ok(! control.source_has_forbidden_subprocess(
+    "# run a command in prose\nlet note = \"safe\"\n"))?
+  test.ok(control.source_has_forbidden_subprocess(
+    "# harmless\nlet status = process.run(command)\n"))?
+  test.ok(control.source_has_forbidden_subprocess(
+    "let child = spawn process.command_argv(\"xsh\", args)\n"))?
+}
+
 proc test_organization_selects_two_approved_tickets(ctx: TestContext) [fs, error] {
   let root = test.temp_dir(ctx, name: "approved-ticket-selection")?
   let tickets = fp"${root}/tickets"
@@ -22,6 +31,19 @@ proc test_organization_selects_two_approved_tickets(ctx: TestContext) [fs, error
   fs.write(fp"${tickets}/task-b.md", "# Ticket\n\n## Status\n\nApproved.\n")?
   fs.write(fp"${tickets}/task-a.md", "# Ticket\n\n## Status\n\nApproved.\n")?
   test.eq(runtime.first_approved_tickets(root, 2)?, ["task-a", "task-b"])?
+}
+
+proc test_handbook_candidate_gate_requires_ledger_disposition(ctx: TestContext) [fs, error] {
+  let root = test.temp_dir(ctx, name: "handbook-gate")?
+  fs.mkdir(fp"${root}/runtime")?
+  fs.mkdir(fp"${root}/runs/run-1/lineage")?
+  fs.write(fp"${root}/runtime/handbook.md", "approved\n")?
+  let candidate = fp"${root}/runs/run-1/lineage/handbook-candidate.md"
+  fs.write(candidate, "candidate\n")?
+  test.eq(runtime.unresolved_handbook_candidates(root)?, 1)?
+  let candidate_sha = hash.sha256(candidate)?.hex()
+  fs.write(fp"${root}/runtime/handbook-ledger.md", f"promoted ${candidate_sha}\n")?
+  test.eq(runtime.unresolved_handbook_candidates(root)?, 0)?
 }
 
 proc test_organization_phase_request_preserves_multiple_tickets() [fs, error] {
@@ -155,6 +177,7 @@ proc test_standard_cycle_uses_diverse_active_eval() [fs, error] {
   let request = fs.read_text(fp"${fs.cwd()?}/cycle-organization.md")?
   let task_tags = fs.read_text(fp"${fs.cwd()?}/evals/task-tags/EVAL.md")?
   let improvement = fs.read_text(fp"${fs.cwd()?}/templates/CTO-IMPROVEMENT.md")?
+  let ledger = fs.read_text(fp"${fs.cwd()?}/runtime/handbook-ledger.md")?
   let launcher = fs.read_text(fp"${fs.cwd()?}/run.xsh")?
   let organization = fs.read_text(fp"${fs.cwd()?}/run-organization.xsh")?
   test.contains(request, "`task-envcfg`")?
@@ -165,6 +188,8 @@ proc test_standard_cycle_uses_diverse_active_eval() [fs, error] {
   test.contains(improvement, "## Revert condition")?
   test.contains(improvement, "not awaiting another approval")?
   test.contains(improvement, "before admitting")?
+  test.contains(ledger, "One-time CTO consolidation")?
+  test.contains(ledger, "Future candidates require a new explicit CTO disposition")?
   let cto = fs.read_text(fp"${fs.cwd()?}/CTO.md")?
   let factory = fs.read_text(fp"${fs.cwd()?}/FACTORY.md")?
   test.contains(cto, "not a request for approval")?
@@ -177,6 +202,7 @@ proc test_standard_cycle_uses_diverse_active_eval() [fs, error] {
   test.contains(launcher, "templates/CTO-IMPROVEMENT.md")?
   test.contains(launcher, "candidate_tickets")?
   test.contains(launcher, "first_approved_tickets")?
+  test.contains(launcher, "unresolved_handbook_candidates")?
   test.contains(organization, "first_approved_tickets")?
   test.contains(organization, "for ticket_id in selected_tickets")?
   test.contains(organization, "max_concurrent_engineers()")?
