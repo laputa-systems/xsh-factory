@@ -24,6 +24,8 @@ proc test_role_defaults_are_coded_and_capped() [env, error] {
     test.ok(control.default_budget(role) != "")?
     test.ok(control.default_max_turns(role) != "")?
   }
+  test.eq(control.default_max_turns("eval-designer"), "64")?
+  test.eq(control.default_max_wall_seconds("eval-designer"), "720")?
   test.eq(control.default_max_wall_seconds("eval-manager"), "900")?
   test.eq(control.default_max_wall_seconds("eval-worker"), "1800")?
   test.eq(control.default_max_wall_seconds("engineer"), "1800")?
@@ -57,6 +59,25 @@ proc test_admission_and_report_contracts() [error] {
   test.ok(control.manager_tool_error_findings_contract_ok("## Tool-error findings\n\nreport.json\n"))?
   test.eq(control.report_section("# Report\n\n## Result\n\npass\n\nDetails.\n\n## Evidence\n\nready\n", "Result"), "pass\n\nDetails.")?
   test.eq(control.report_field("# Report\n\n## Result\n\npass\n\nDetails.\n\n## Evidence\n\nready\n", "Result"), "pass")?
+}
+
+proc test_role_report_skeletons_are_fail_closed() [fs, error] {
+  let root = fs.cwd()?
+  let manager = fs.read_text(fp"${root}/templates/EVAL-MANAGER-REPORT.md")?
+  let director = fs.read_text(fp"${root}/templates/DIRECTOR-REPORT.md")?
+  let engineer = fs.read_text(fp"${root}/templates/ENGINEER-REPORT.md")?
+  for report in [manager, director, engineer] {
+    test.contains(report, "## Result")?
+    test.contains(report, "not-ready")?
+  }
+  test.contains(manager, "## Tool-error findings")?
+  test.contains(manager, "## Next replay")?
+  test.contains(director, "## Required-output status")?
+  test.contains(engineer, "## Commit")?
+  let runner = fs.read_text(fp"${root}/run-agent.xsh")?
+  test.contains(runner, "EVAL-MANAGER-REPORT.md")?
+  test.contains(runner, "DIRECTOR-REPORT.md")?
+  test.contains(runner, "ENGINEER-REPORT.md")?
 }
 
 proc test_agent_completion_is_report_bound() [error] {

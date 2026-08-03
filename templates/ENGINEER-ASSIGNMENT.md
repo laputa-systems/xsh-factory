@@ -57,6 +57,11 @@ language, tooling, test, or canonical-documentation change supported by the
 ticket. Run the narrowest relevant checks, commit the product change on this
 branch, and leave the worktree clean.
 
+The controller has staged a fail-closed `not-ready` report at
+`{{ENGINEER_REPORT}}`. Complete that file in place; do not spend turns
+reconstructing its headings. Keep `## Result` as `not-ready` until the
+acceptance checks, commit, and clean-worktree validation are complete.
+
 Write `{{ENGINEER_REPORT}}` with these exact headings:
 
 ```markdown
@@ -89,6 +94,6 @@ ready-for-review
 <known limitations, or None.>
 ```
 
-Use `ready-for-review` only when the branch is committed, the worktree is
+Change `## Result` to `ready-for-review` only when the branch is committed, the worktree is
 clean, and the relevant checks passed. Do not merge the branch or update the
 ticket status; the deterministic controller records it for user review.

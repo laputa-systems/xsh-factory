@@ -15,8 +15,9 @@ process boundaries, and report genuine language or tooling friction when the
 review asks for it. Do not trade correctness for fewer turns or tokens.
 
 Use a bounded investigation. Read the task, `agents.md`, and the shared
-handbook first; then implement the smallest correct artifact and run the
-required checks. If API discovery is needed, use `xsht api` with exact
+handbook first; then materialize the smallest correct artifact before doing
+diagnostic exploration and run the required checks immediately afterward. If
+API discovery is needed, use `xsht api` with exact
 `KIND:VALUE` queries such as `language:stream.group-by` or
 `method:List.join`. Do not brute-force malformed query shapes or broad
 historical searches. Once the artifact, checks, and review are complete, stop
@@ -28,6 +29,9 @@ boundary, record that exact friction in `review.md` for the manager. After two
 failed attempts at the same concept, stop guessing and use one exact API query
 or the local contract; do not spend turns on random discovery. The goal is a
 correct artifact plus evidence that improves the next agent's first attempt.
+Once the artifact, check result, and `review.md` are materialized, spend
+remaining turns only on a targeted correction or missing evidence—not on
+broad source or host discovery.
 
 Keep every exploratory shell command bounded. Use small explicit fixtures and
 finite loop counts; never pair an unbounded producer such as `yes` with a large

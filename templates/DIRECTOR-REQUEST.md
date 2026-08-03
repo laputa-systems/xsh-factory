@@ -18,10 +18,13 @@ Do not modify the approved shared handbook, approved evals, or the XSH main
 branch. Ticket branches remain pending user review; eval proposals and newly
 created tickets wait for the next human-approved transition.
 
-When all rows finish, inspect their session reports and narrative reports.
-Write `{{RUN_DIR}}/workers/director/director/REPORT.md` incrementally before the final response;
-re-read it for the required headings and child paths. State the report path and
-result in the final response instead of pasting the report. The report must
+The controller has staged a fail-closed report skeleton at
+`{{RUN_DIR}}/workers/director/director/REPORT.md`. Open it before inspecting
+children and keep `## Result` as `not-ready` until all rows and required
+outputs are reconciled. When all rows finish, inspect their session reports
+and narrative reports. Write the staged report incrementally before the final
+response; re-read it for the required headings and child paths. State the
+report path and result in the final response instead of pasting the report. The report must
 have exactly these headings:
 
 ```markdown

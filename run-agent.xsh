@@ -72,6 +72,15 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   fs.mkdir(process_registry)?
   fs.write(process_registry_file, f"${self_pid}\n")?
   fs.mkdir(worker_dir)?
+  if required_report != "" and ! fs.exists(Path(required_report))? {
+    if role == "eval-manager" {
+      fs.copy(fp"${factory_dir}/templates/EVAL-MANAGER-REPORT.md", Path(required_report), overwrite: false)?
+    } else if role == "director" {
+      fs.copy(fp"${factory_dir}/templates/DIRECTOR-REPORT.md", Path(required_report), overwrite: false)?
+    } else if role == "engineer" {
+      fs.copy(fp"${factory_dir}/templates/ENGINEER-REPORT.md", Path(required_report), overwrite: false)?
+    }
+  }
   let worker_template = fp"${factory_dir}/templates/WORKER.md"
   let worker_values: List[control.TemplateValue] = [
     {key: "ROLE", value: role},

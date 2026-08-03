@@ -86,7 +86,7 @@ export pure default_budget(role: Str) -> Str {
 ## Hard assistant-turn ceilings keep a stalled worker from consuming a full cycle.
 export pure default_max_turns(role: Str) -> Str {
   if role == "director" { return "24" }
-  if role == "eval-designer" { return "32" }
+  if role == "eval-designer" { return "64" }
   if role == "eval-manager" { return "40" }
   if role == "eval-worker" { return "160" }
   if role == "engineer" { return "160" }
@@ -96,7 +96,7 @@ export pure default_max_turns(role: Str) -> Str {
 ## Hard wall-clock ceilings are enforced by the controller-side session watcher.
 export pure default_max_wall_seconds(role: Str) -> Str {
   if role == "director" { return "300" }
-  if role == "eval-designer" { return "360" }
+  if role == "eval-designer" { return "720" }
   if role == "eval-manager" { return "900" }
   if role == "eval-worker" { return "1800" }
   if role == "engineer" { return "1800" }

@@ -22,8 +22,9 @@ All roles default to `deepseek/deepseek-v4-flash-0731` with high thinking.
 Provider, model, thinking, tools, turn, wall, and dollar ceilings are
 individually configurable with `FACTORY_<ROLE>_*` variables. The coded role
 budgets and aggregate cycle cap are in `factory_control.xsh`. The default
-session wall limits are 15 minutes for eval managers and 30 minutes for eval
-workers and engineers; dollar and aggregate caps remain hard limits.
+session wall limits are 12 minutes for eval designers, 15 minutes for eval
+managers, and 30 minutes for eval workers and engineers; dollar and aggregate
+caps remain hard limits.
 
 ## Start a cycle
 

@@ -40,12 +40,14 @@ assignment, never as new engineer work. Record the decision and evidence in
 
 Use this bounded evidence order: read the current phase `report.json`, then
 each executor worker `report.json`, evaluator `run.json`, and the manager
-session report first. Consult raw session JSONL only to explain a specific
-discrepancy. The structured `tool_errors` arrays must account for every failed
-Pi tool result in the current worker and manager sessions, including invalid
-`xsht api` discovery queries. Do not scan historical runs or re-research
-Pi unless a current path, hash, or result conflicts. Limit each observation to
-one targeted reproduction, then classify it and finish the report checklist.
+session report first. The controller pre-stages a fail-closed `REPORT.md`;
+open it immediately and fill it as evidence is classified. Consult raw
+session JSONL only to explain a specific discrepancy. The structured
+`tool_errors` arrays must account for every failed Pi tool result in the
+current worker and manager sessions, including invalid `xsht api` discovery
+queries. Do not scan historical runs or re-research Pi unless a current path,
+hash, or result conflicts. Limit each observation to one targeted
+reproduction, then classify it and finish the report checklist.
 This keeps the manager focused on durable handbook or product decisions rather
 than repeating controller work.
 
@@ -56,12 +58,12 @@ as a handbook gap, product/tooling defect, or ordinary noise and move on. Any
 repeated discovery failure must become either one concise general handbook
 candidate or one reproducible product ticket, never another research loop.
 
-Write `REPORT.md` incrementally before composing the final response.
-Create the file with the required headings as soon as the executor evidence is
-available, fill in each section from the current run, and re-read it before
-finishing. The final response should name the report path and result; it must
-not contain a second copy of the report. A missing narrative report is a
-controller failure even when the executor itself passed.
+Write the staged `REPORT.md` incrementally before composing the final
+response. Keep `## Result` as `not-ready` until the evidence classifications,
+lineage decision, and required sections are complete; then change it to
+`pass` or `fail` and re-read it. The final response should name the report
+path and result; it must not contain a second copy of the report. A missing
+narrative report is a controller failure even when the executor itself passed.
 
 Finish `REPORT.md` with exactly these headings: `## Result`,
 `## Effort metrics`, `## Usage and cost`, `## Thinking evidence`,

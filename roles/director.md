@@ -63,9 +63,11 @@ table and launch each assigned engineer row exactly once through the shared
 runner. Newly created tickets wait for the next cycle. Every stage completion
 is an event recorded by the controller; do not implement a polling loop in an
 agent.
-Collect every child report. Write `REPORT.md` incrementally before
-composing the final response, re-read it for the required headings and child
-paths, and finish it with exactly
+Collect every child report. The controller pre-stages a fail-closed
+`REPORT.md`; open it before inspecting children and keep `## Result` as
+`not-ready` until all rows and required outputs are reconciled. Write it
+incrementally before composing the final response, re-read it for the required
+headings and child paths, and finish it with exactly
 `## Result`, `## Cycle`, `## Children`, `## Required-output status`, and
 `## North-star impact`. Do not invent a ticket when the evidence does not
 support one.

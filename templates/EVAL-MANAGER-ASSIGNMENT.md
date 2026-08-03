@@ -29,7 +29,9 @@ manager report.
 The controller has completed exactly `{{TRIAL_COUNT}}` fresh trial(s). Preserve
 separate evidence under `{{RUN_DIR}}/workers/eval-worker/` and inspect each
 worker `report.json`, session JSONL, evaluator `run.json`, artifact, review,
-and quantitative results. Your `## Tool-error findings` section must account
+and quantitative results. The controller has staged the required report
+skeleton at `{{RUN_DIR}}/workers/eval-manager/{{EVAL_ID}}/REPORT.md`; edit it in
+place instead of reconstructing the headings. Your `## Tool-error findings` section must account
 for every failed Pi tool result in the structured worker and manager
 `report.json` files, including invalid `xsht api` discovery queries, or say
 `None.` when all current sessions have zero errors.
@@ -42,12 +44,13 @@ lesson. Promotion still requires later replay and human approval. A two-trial
 plan must state whether its candidate was actually replayed by the controller;
 do not claim validation that did not occur.
 
-Begin the narrative output before final analysis: create
-`{{RUN_DIR}}/workers/eval-manager/{{EVAL_ID}}/REPORT.md` with all
-required headings, then fill it as evidence is classified. Re-read the file
-before finishing. Do not paste the full report into the final response; state
-the path and result only. If an API question remains unresolved after two
-exact probes, classify the friction and proceed.
+Begin the narrative output before final analysis: the controller has created
+`{{RUN_DIR}}/workers/eval-manager/{{EVAL_ID}}/REPORT.md` with a fail-closed
+`not-ready` result. Fill it as evidence is classified, change the result only
+after every required section is complete, and re-read it before finishing. Do
+not paste the full report into the final response; state the path and result
+only. If an API question remains unresolved after two exact probes, classify
+the friction and proceed.
 
 Compare the requested trials. Classify each meaningful observation as
 correctness, restriction, timing, worker friction, reusable handbook

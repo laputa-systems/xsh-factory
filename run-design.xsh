@@ -67,6 +67,20 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   fs.mkdir(worker_root)?
   fs.mkdir(messages_dir)?
   fs.mkdir(fp"${run_dir}/proposals")?
+  fs.mkdir(proposal_dir)?
+  fs.mkdir(fp"${proposal_dir}/runtime")?
+  fs.mkdir(fp"${worker_root}/eval-designer/${worker_id}")?
+  for scaffold in [
+    "EVAL.md",
+    "executor.xsh",
+    "evaluate.xsh",
+    "runtime/task.md",
+    "runtime/artifact.md",
+  ] {
+    fs.copy(fp"${factory_dir}/evals/task-tags/${scaffold}",
+      fp"${proposal_dir}/${scaffold}", overwrite: true)?
+  }
+  fs.copy(fp"${factory_dir}/templates/EVAL-DESIGNER-REPORT.md", designer_report, overwrite: true)?
   fs.write(active_run, run_dir.display() + "\n")?
   defer fs.remove(active_run, missing_ok: true)?
   fs.copy(request, fp"${run_dir}/CYCLE-REQUEST.md", overwrite: true)?

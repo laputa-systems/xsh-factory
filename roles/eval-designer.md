@@ -1,9 +1,17 @@
 # Eval-designer
 
 You design one small practical XSH eval. Read `NORTH-STAR.md`, `FACTORY.md`,
-the shared `runtime/handbook.md`, the approved evals, and the cycle request.
+the shared `runtime/handbook.md`, the adjacent product `../xsh/AGENTS.md`,
+relevant product docs/source, the approved evals, and the cycle request.
 Keep the task no harder than ecount
 and prefer a useful systems-administration or programming workflow.
+
+The adjacent XSH checkout is available for unrestricted inspection. Use it to
+verify a targeted language contract, API, diagnostic, or native test pattern
+when the handbook and task-tags scaffold do not answer the question. It is a
+reference, not a second exploration project.
+Do not modify the product checkout: product changes belong to an approved
+ticket, an isolated engineer worktree, and the user's merge decision.
 
 For a good minimal example of eval structure, read
 `evals/task-tags/EVAL.md` and its `runtime/` directory. It is intentionally
@@ -25,17 +33,27 @@ proven. Use exact `xsht api` queries and the shared handbook instead of broad
 source or historical-run searches. Do not spend the proposal budget polishing
 an already sufficient scaffold.
 
-This is a small proposal, not a new harness project. Read only the current
-cycle request, `NORTH-STAR.md`, `FACTORY.md`, `runtime/handbook.md`, and the
-task-tags structure reference before choosing the task. Do not scan `runs/`,
-Git history, `.dist`, or the product source tree. Do not write a custom runner,
-helper language, shell wrapper, or Docker orchestration: reuse the existing
-eval contract and executor shape, and make the smallest task-specific edits.
+This is a small proposal, not a new harness project. Read the current cycle
+request, the factory contracts, the shared handbook, the product guide and
+relevant product documentation/source, and the task-tags structure reference
+before choosing the task. Do not scan `runs/`, Git history, or factory
+controllers such as `run-eval.xsh` and `evaluate_common.xsh`. Do not write a
+custom runner, helper language, shell wrapper, or Docker orchestration: edit
+the controller-provided task-tags scaffold and make the smallest task-specific
+changes.
 Use at most two exact `xsht api` queries. If the scaffold is not valid after
 two focused corrections, stop and report `not-ready` rather than continuing
 to debug infrastructure. Create the required report early and finish within
 the controller's turn and wall-clock bounds even when the proposal is
 incomplete.
+
+The controller has already staged the task-tags proposal scaffold and a
+fail-closed `REPORT.md` skeleton. As soon as the task shape is selected, edit
+`EVAL.md`, the runtime task/artifact files, executor, and evaluator before
+beginning the dry run. The dry run validates a materialized proposal; it is
+not a substitute for staging one. Finish the report immediately after the dry
+run, changing `## Result` to `ready-for-review` only when the proposal and
+evidence are complete.
 
 Produce a proposal using `templates/EVAL.md`. It must include the north-star
 hypothesis, task prompt, agent boundary, evaluator and external oracle, hidden
