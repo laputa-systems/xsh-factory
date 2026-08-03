@@ -2,7 +2,7 @@
 
 ## Status
 
-Approved.
+Merged.
 
 ## CTO review
 
@@ -20,10 +20,11 @@ None.
 
 ## Merge record
 
-- Implementation branch: `{{IMPLEMENTATION_BRANCH}}`
-- Implementation commit: `{{IMPLEMENTATION_COMMIT}}`
-- Detected at XSH commit: `{{DETECTED_XSH_COMMIT}}`
-- Implementation run: `{{IMPLEMENTATION_RUN}}`
+- Implementation branch: `factory/task-envcfg-007/1785797450137`
+- Implementation commit: `b9251bc79ae42b6321e31d3c568d40a03afa9186`
+- Detected at XSH commit: `7c939db` (CTO merge commit)
+- Implementation run: `runs/run-1785797449435`
+- CTO merge verification: `cargo test -p xsht --test integration check_rejects_main_without_spread_parameter_but_accepts_spread` — 1 passed; full engineer integration evidence recorded 97 passed, 0 failed for the focused suite.
 
 ## Source eval and manager
 
@@ -122,8 +123,9 @@ gate for entry-point shape.
 
 ## Post-merge evaluation
 
-The `task-envcfg` eval-manager will run a controlled replay against the merged
-XSH commit using the current approved handbook lineage, verify the worker
-receives check-time feedback on the spread form instead of a run-time
-`compact-unsupported-main` round-trip, confirm all 10 oracle cases still pass,
-and record acceptance or rejection in that run's manager report.
+The controlled replay was started in `runs/run-1785797449435/phases/02-reeval-task-envcfg-007`,
+but the eval controller could not complete because the shared base-image build
+referenced a missing Pi artifact (`404`); no manager report was produced.
+Replay verification remains pending for the next cycle. The engineer evidence
+and focused post-merge check passed, so the CTO merged the product change and
+recorded the infrastructure verification gap explicitly.

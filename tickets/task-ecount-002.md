@@ -2,7 +2,7 @@
 
 ## Status
 
-Approved.
+Merged.
 
 ## CTO review
 
@@ -22,10 +22,11 @@ None.
 
 ## Merge record
 
-- Implementation branch: `{{IMPLEMENTATION_BRANCH}}`
-- Implementation commit: `{{IMPLEMENTATION_COMMIT}}`
-- Detected at XSH commit: `{{DETECTED_XSH_COMMIT}}`
-- Implementation run: `{{IMPLEMENTATION_RUN}}`
+- Implementation branch: `factory/task-ecount-002/1785797450137`
+- Implementation commit: `d9264c10f282ac310d50628046a226e8109bb211`
+- Detected at XSH commit: `aaa47c1` (CTO merge commit)
+- Implementation run: `runs/run-1785797449435`
+- CTO merge verification: `target/debug/xsht test tests/xsh/stdlib/fs.xsh` — 10 passed, 0 failed; positional `fs.files`/`fs.walk` regression passed.
 
 ## Source eval and manager
 
@@ -149,7 +150,9 @@ No change to default-argument semantics for named calls.
 
 ## Post-merge evaluation
 
-The `task-ecount` eval-manager will run a controlled replay against the merged
-XSH commit using the current approved handbook lineage, verify the positional
-optional-argument behavior described in the acceptance criteria, and record
-acceptance or rejection in that run's manager report.
+The controlled replay was started in `runs/run-1785797449435/phases/02-reeval-task-ecount-002`,
+but the eval controller could not complete because the shared base-image build
+referenced a missing Pi artifact (`404`); no manager report was produced.
+Replay verification remains pending for the next cycle. The engineer evidence
+and post-merge native regression passed, so the CTO merged the product change
+and recorded the infrastructure verification gap explicitly.

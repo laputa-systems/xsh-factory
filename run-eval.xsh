@@ -59,6 +59,38 @@ proc report_has_tool_errors(report: Path) [fs, error] -> Result[Bool] {
   }
 }
 
+proc write_preflight_failure_report(
+  run_dir: Path,
+  eval_id: Str,
+  stage: Str,
+  message: Str,
+) [fs, error] -> Result[Unit] {
+  json.write(fp"${run_dir}/report.json", {
+    schema_version: schema.SCHEMA_VERSION,
+    kind: "phase",
+    identity: {run_id: run_dir.name(), mode: "eval", eval_id: eval_id},
+    state: "completed",
+    result: "fail",
+    data: {
+      mode: "eval",
+      eval_id: eval_id,
+      xsh_commit: "unknown",
+      sessions: [],
+      workers: [],
+      trials: [],
+      narratives: [],
+      cost: {workers: 0, assistant_turns: 0, total_bucket_tokens: 0, cost_usd: 0.0, tool_errors: 0},
+      tool_errors: [],
+    },
+    findings: [{kind: "preflight-failure", stage: stage, message: message}],
+    artifacts: [
+      {kind: "raw-events", path: "events.jsonl"},
+      {kind: "build-log", path: f"${stage}-build.stderr"},
+    ],
+  }, pretty: true)?
+  return Ok()
+}
+
 proc run_executor_trial(
   factory_dir: Path,
   run_dir: Path,
@@ -288,6 +320,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     ),
   )?
   if ! build.ok {
+    write_preflight_failure_report(run_dir, eval_id, "xsh", "local XSH distribution build failed; see xsh-build.stderr")?
     eprint "unable to build the local XSH distribution"
     abort(build.exit_code() ?? 1)
   }
@@ -316,6 +349,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   ))?
   if ! stage_xsh.ok or ! stage_xsht.ok or ! stage_control.ok or ! stage_runtime.ok or
     ! stage_common.ok or ! stage_legacy.ok {
+    write_preflight_failure_report(run_dir, eval_id, "staging", "staging local XSH binaries or factory modules failed; see xsh-build.stderr")?
     eprint f"unable to stage local XSH binaries for the ${eval_id} image"
     abort(1)
   }
@@ -335,6 +369,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     stderr: fp"${run_dir}/base-image-build.stderr",
   ))?
   if ! base_status.ok {
+    write_preflight_failure_report(run_dir, eval_id, "base-image", "shared factory eval base image build failed; see base-image-build.stderr")?
     eprint "unable to build the shared factory eval base image"
     abort(base_status.exit_code() ?? 1)
   }
@@ -351,6 +386,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     ))?
   }
   if ! image_status.ok {
+    write_preflight_failure_report(run_dir, eval_id, "eval-image", f"${eval_id} eval image build failed; see image-build.stderr")?
     eprint f"unable to build the ${eval_id} eval image"
     abort(image_status.exit_code() ?? 1)
   }

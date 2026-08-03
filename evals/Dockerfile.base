@@ -3,8 +3,8 @@
 # tools and files.
 FROM alpine:3.24.1@sha256:28bd5fe8b56d1bd048e5babf5b10710ebe0bae67db86916198a6eec434943f8b
 
-ARG PI_RELEASE_URL=https://github.com/joshuarli/pi/releases/download/v0.83.0/pi-776ea644a-bun-1.3.14-linux-arm64-musl
-ARG PI_RELEASE_SHA256=9d881d312d1b7ff478d679e5f04cbe605f92a2c40cc5a78653412ef282dc1ca1
+ARG PI_RELEASE_URL=https://github.com/joshuarli/pi-headless-bun-musl-static/releases/download/pi-3aeca83d-bun-1.4.0-linux-arm64-musl/pi
+ARG PI_RELEASE_SHA256=443d39a4a2565e13edd70068ace8131baf71b3fd1edfa19a9d6b65a2ed7633ed
 
 RUN apk add --no-cache ca-certificates curl libstdc++
 

@@ -317,6 +317,8 @@ proc test_eval_image_inputs_are_local() [fs, error] {
   let executor = fs.read_text(fp"${fs.cwd()?}/eval-executor.xsh")?
   test.contains(dockerfile, ".dist/xsh")?
   test.contains(dockerfile, ".dist/xsht")?
+  test.contains(dockerfile, "pi-headless-bun-musl-static/releases/download/pi-3aeca83d-bun-1.4.0-linux-arm64-musl/pi")?
+  test.contains(dockerfile, "443d39a4a2565e13edd70068ace8131baf71b3fd1edfa19a9d6b65a2ed7633ed")?
   test.contains(controller, "dist-Linux-docker")?
   test.contains(controller, "stage_xsht")?
   test.contains(executor, "--pids-limit")?

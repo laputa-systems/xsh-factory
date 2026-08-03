@@ -277,6 +277,8 @@ proc test_eval_mode_has_no_paid_director_review() [fs, error] {
 proc test_eval_gate_diagnostics_are_persisted() [fs, error] {
   let evaluator = fs.read_text(fp"${fs.cwd()?}/run-eval.xsh")?
   test.contains(evaluator, "required-outputs.json")?
+  test.contains(evaluator, "write_preflight_failure_report")?
+  test.contains(evaluator, "preflight-failure")?
   test.contains(evaluator, "manager_evidence_read")?
   test.contains(evaluator, "designer_handbook_read")?
 }
