@@ -121,6 +121,8 @@ proc test_admission_and_report_contracts() [error] {
   test.ok(control.report_contract_ok("# Report\n\n## Result\n\npass\n\n## Evidence\n\nready\n", ["Evidence"], "pass"))?
   test.ok(! control.report_contract_ok("# Report\n\n## Result\n\npass\n", ["Evidence"], "pass"))?
   test.ok(control.manager_tool_error_findings_contract_ok("## Tool-error findings\n\nreport.json\n"))?
+  test.ok(control.manager_tool_error_findings_contract_ok("## Tool-error findings\n\nFour nonzero Pi tool results were accounted for.\n"))?
+  test.ok(! control.manager_tool_error_findings_contract_ok("## Tool-error findings\n\nFill every current tool error.\n"))?
   test.eq(control.report_section("# Report\n\n## Result\n\npass\n\nDetails.\n\n## Evidence\n\nready\n", "Result"), "pass\n\nDetails.")?
   test.eq(control.report_field("# Report\n\n## Result\n\npass\n\nDetails.\n\n## Evidence\n\nready\n", "Result"), "pass")?
 }
@@ -192,6 +194,7 @@ proc test_standard_cycle_uses_diverse_active_eval() [fs, error] {
   let ledger = fs.read_text(fp"${fs.cwd()?}/runtime/handbook-ledger.md")?
   let launcher = fs.read_text(fp"${fs.cwd()?}/run.xsh")?
   let organization = fs.read_text(fp"${fs.cwd()?}/run-organization.xsh")?
+  let runtime_source = fs.read_text(fp"${fs.cwd()?}/factory_runtime.xsh")?
   let cto_runner = fs.read_text(fp"${fs.cwd()?}/run-cto.xsh")?
   test.contains(request, "`task-envcfg`")?
   test.ok(! request.contains("`task-tags`"))?
@@ -208,6 +211,8 @@ proc test_standard_cycle_uses_diverse_active_eval() [fs, error] {
   test.contains(cto, "not a request for approval")?
   test.contains(cto, "may finish the cycle with `pending-validation`")?
   test.contains(cto, "product merge is a CTO decision")?
+  test.contains(cto, "Before declaring the cycle complete")?
+  test.contains(cto, "cto: close <run-id>")?
   test.contains(cto, "The CTO decides whether to merge or apply")?
   test.ok(! cto.contains("user authority"))?
   test.ok(! factory.contains("user authority"))?
@@ -223,6 +228,8 @@ proc test_standard_cycle_uses_diverse_active_eval() [fs, error] {
   test.contains(organization, "for ticket_id in selected_tickets")?
   test.contains(organization, "max_concurrent_engineers()")?
   test.ok(! organization.contains("admit at most one ticket"))?
+  test.contains(runtime_source, "passing engineer report")?
+  test.ok(! runtime_source.contains("git branch provenance"))?
 }
 
 proc test_agent_completion_is_report_bound() [error] {

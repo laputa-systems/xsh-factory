@@ -43,6 +43,21 @@ auto-promoted merely because a lineage file exists.
 | --- | --- |
 | `d0bc39f423d8202e60101d3e2bfa3cf1fcc247725097d23fb644115560767d9d` | deferred pending cross-eval replay; not promoted |
 
+| `0014e368e601214f6b47a41d94009d9e142b683a53dd656fbd4e6d97b23d3f20` | deferred pending cross-eval replay; not promoted |
+
+| `d9a2e262a449a28552b523f7a0d34c3542e7932f6c60a0761de28798229e8d35` | deferred pending strict-decimal replay; not promoted |
+
+The `d9a2e262…` candidate records a concrete regex-plus-expected-error idiom
+for byte-exact decimal validation. The source eval passed all ten cases, but
+the manager explicitly marks the guidance provisional after one trial; replay
+evidence is required before changing the shared handbook.
+
+The `0014e368…` candidate adds the reproducible compact-runtime `main`
+spread-form guidance and repeats the word-operator guidance. Its source
+manager report requires replay through `task-tags` and `task-ecount` before
+promotion, so this cycle must treat it as deferred rather than as an approved
+handbook snapshot.
+
 The boolean-operator sentence is valid and remains visible in the originating
 lineage, but the source run explicitly required a second conditional-writing
 eval and the linked diagnostics-ticket replay before promotion. The next CTO

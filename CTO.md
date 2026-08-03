@@ -39,8 +39,9 @@ One cycle may:
   `Draft.`;
 - review every open ticket, while approving or rejecting at most two per cycle;
 - promote at most one handbook candidate after replay evidence; and
-- merge or apply at most one product change when the evidence supports it;
-  product merge is a CTO decision, not a separate user-approval gate.
+- merge or apply up to two product changes when the evidence supports it,
+  normally one per passing engineer row; product merge is a CTO decision, not
+  a separate user-approval gate.
 
 The factory may contain at most 20 eval contracts. A solved, redundant, or
 stagnant eval is marked `Disabled.` with an explicit reason and evidence link;
@@ -183,6 +184,13 @@ metric that will falsify it. The CTO may implement the fix immediately and
 leave the record `pending-validation`; the handoff is complete when the record
 exists, identifies the exact next-cycle verification or safe inverse, and is
 linked from the CTO briefing.
+
+Before declaring the cycle complete, the CTO commits the reviewed changes in
+the factory checkout. Stage only the scoped controller, test, policy, ticket,
+eval, handbook-ledger, and documentation changes; do not stage generated
+`runs/` evidence or unrelated user work. Verify `git diff --check`, commit with
+`cto: close <run-id>`, and record the commit hash in the cycle handoff. A cycle
+without this factory commit is not closed.
 
 Retire an eval when the evidence shows it is solved, redundant, or stagnant,
 no ticket or handbook replay depends on it, and a replacement scenario keeps

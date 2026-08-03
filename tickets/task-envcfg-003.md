@@ -2,7 +2,7 @@
 
 ## Status
 
-Approved.
+Merged.
 
 ## CTO review
 
@@ -21,10 +21,11 @@ None.
 
 ## Merge record
 
-- Implementation branch: `{{IMPLEMENTATION_BRANCH}}`
-- Implementation commit: `{{IMPLEMENTATION_COMMIT}}`
-- Detected at XSH commit: `{{DETECTED_XSH_COMMIT}}`
-- Implementation run: `{{IMPLEMENTATION_RUN}}`
+- Implementation branch: `factory/task-envcfg-003/1785789595996`
+- Implementation commit: `71e7b84552a5a5614347c8c6faf064f76fd85317`
+- Detected at XSH commit: `84fe556cb48feb747d6b575e4925dbdc5848ecdb`
+- Implementation run: `runs/run-1785789595047`
+- CTO merge verification: focused parser regression tests passed
 
 ## Source eval and manager
 

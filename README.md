@@ -115,6 +115,10 @@ The CTO reviews the patch and decides whether to merge or apply the product
 change. The next reconciliation updates the linked `TICKET.md` to `Merged.`
 when the recorded implementation is proven in XSH `HEAD`.
 
+The CTO closes each paid cycle by committing the scoped factory changes with a
+`cto: close <run-id>` commit. Generated `runs/` evidence and unrelated local
+work stay out of that commit.
+
 ## Reset and test
 
 `make clean` removes generated runs, caches, staged eval binaries, and local

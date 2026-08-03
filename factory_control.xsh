@@ -762,8 +762,10 @@ export pure manager_report_contract_ok(report: Str) -> Bool {
 ## Requires managers to account for failed Pi tool results explicitly.
 export pure manager_tool_error_findings_contract_ok(report: Str) -> Bool {
   let findings = report_section(report, "Tool-error findings")
-  return findings != "" and (findings.contains("None.") or findings.contains("report.json") or
-    findings.contains("tool_errors") or findings.contains("No current"))
+  return findings != "" and ! findings.contains("Fill every current tool error") and
+    (findings.contains("None.") or findings.contains("report.json") or
+      findings.contains("tool_errors") or findings.contains("No current") or
+      findings.contains("nonzero") or findings.contains("tool error"))
 }
 
 ## A Pi process may return nonzero after producing a valid report because of

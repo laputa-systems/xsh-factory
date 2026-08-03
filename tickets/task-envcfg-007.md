@@ -2,7 +2,17 @@
 
 ## Status
 
-Open.
+Approved.
+
+## CTO review
+
+- Review cycle: `pre-cycle-1785796761` (2026-08-03)
+- Decision: Approved for the next two-engineer ticket cycle.
+- Basis: The check-pass/runtime-fail split is reproduced three times, affects
+  every compact CLI entry point, and has a small testable acceptance contract
+  for check-time feedback plus spread-form regression coverage.
+- Assignment boundary: align entry-point validation and diagnostics; preserve
+  valid spread-form execution and do not change unrelated `main` effects.
 
 ## Budget breach
 

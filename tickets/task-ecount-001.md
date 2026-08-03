@@ -2,7 +2,7 @@
 
 ## Status
 
-Approved.
+Merged.
 
 ## CTO review
 
@@ -17,10 +17,11 @@ Approved.
 
 ## Merge record
 
-- Implementation branch: `{{IMPLEMENTATION_BRANCH}}`
-- Implementation commit: `{{IMPLEMENTATION_COMMIT}}`
-- Detected at XSH commit: `{{DETECTED_XSH_COMMIT}}`
-- Implementation run: `{{IMPLEMENTATION_RUN}}`
+- Implementation branch: `factory/task-ecount-001/1785789595996`
+- Implementation commit: `c2402341d7f3cf29b504ca8c22b89be2cf7a3eba`
+- Detected at XSH commit: `c2402341d7f3cf29b504ca8c22b89be2cf7a3eba`
+- Implementation run: `runs/run-1785789595047`
+- CTO merge verification: `cargo test -p xsht` passed (164 tests)
 
 ## Source eval and manager
 

@@ -594,27 +594,10 @@ proc find_merged_implementation(
     }
   }
 
-  let branch_prefix = f"refs/heads/factory/${ticket_id}/"
-  let refs = run.text "git" "-C" $xsh_repo.display() "for-each-ref" "--format=%(refname:short)" $branch_prefix ?
-  for branch_line in refs.lines() {
-    let branch = branch_line.trim()
-    if branch == "" {
-      continue
-    }
-    let commit = run.text "git" "-C" $xsh_repo.display() "rev-parse" $branch ?
-    if commit.trim() != detected_xsh_commit and
-      commit_is_merged(xsh_repo, branch, commit.trim())? {
-      return {
-        merged: true,
-        ticket_id: ticket_id,
-        branch: branch,
-        implementation_commit: commit.trim(),
-        source_run: "git branch provenance",
-        detected_xsh_commit: detected_xsh_commit,
-      }
-    }
-  }
-
+  # Branch ancestry alone is not implementation evidence: an old ticket branch
+  # can point at any historical XSH commit already contained in HEAD. Only a
+  # passing engineer report with its exact implementation commit can reconcile
+  # a ticket as merged.
   return {
     merged: false,
     ticket_id: ticket_id,

@@ -98,6 +98,10 @@ The CTO is the authority for product merges, handbook promotion, eval
 approval, and reversion. It reviews the evidence and chooses the next narrow
 cycle within the coded spend and eval-count limits.
 
+The CTO closes a paid cycle by committing the reviewed factory changes with
+`cto: close <run-id>`. Generated run evidence and unrelated local work are not
+part of that commit.
+
 ## Durable output hierarchy
 
 ```text

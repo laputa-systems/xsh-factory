@@ -2,7 +2,19 @@
 
 ## Status
 
-Open.
+Approved.
+
+## CTO review
+
+- Review cycle: `pre-cycle-1785796761` (2026-08-03)
+- Decision: Approved for the next two-engineer ticket cycle.
+- Basis: The positional-optional-argument failure reproduces across `fs.files`
+  and `fs.walk`, contradicts the public `xsht api` signatures, and has a
+  narrow acceptance path covering runtime/checker agreement and named-argument
+  compatibility.
+- Assignment boundary: fix the compact-runtime/checker contract or provide a
+  precise diagnostic and reference correction; do not broaden into unrelated
+  indexed-IR work.
 
 ## Budget breach
 
