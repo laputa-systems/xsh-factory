@@ -40,6 +40,12 @@ only the requested artifact unless the task explicitly says otherwise.
   text to stdout.
 - Do not hard-code an oracle’s current result when the task asks for a
   general computation.
+- Keep exploratory commands resource-bounded. Use small explicit fixtures and
+  finite loop counts; never combine an unbounded producer such as `yes` with a
+  very large consumer limit, recursive process creation, or an unbounded file
+  write. The task container has hard memory, process, and temporary-storage
+  limits, so a failed probe should stop locally and be replaced with a smaller
+  one.
 
 ## Task Review
 

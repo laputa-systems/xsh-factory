@@ -97,9 +97,9 @@ export pure default_max_turns(role: Str) -> Str {
 export pure default_max_wall_seconds(role: Str) -> Str {
   if role == "director" { return "300" }
   if role == "eval-designer" { return "360" }
-  if role == "eval-manager" { return "480" }
-  if role == "eval-worker" { return "1200" }
-  if role == "engineer" { return "1200" }
+  if role == "eval-manager" { return "900" }
+  if role == "eval-worker" { return "1800" }
+  if role == "engineer" { return "1800" }
   return ""
 }
 
@@ -735,6 +735,18 @@ export pure manager_tool_error_findings_contract_ok(report: Str) -> Bool {
   let findings = report_section(report, "Tool-error findings")
   return findings != "" and (findings.contains("None.") or findings.contains("report.json") or
     findings.contains("tool_errors") or findings.contains("No current"))
+}
+
+## A Pi process may return nonzero after producing a valid report because of
+## an agent-level tool failure. Watchers and report production remain hard
+## completion gates; the process result is retained as structured evidence.
+export pure agent_completion_ok(
+  watcher_ok: Bool,
+  limit_ok: Bool,
+  report_ok: Bool,
+  required_report_ok: Bool,
+) -> Bool {
+  return watcher_ok and limit_ok and report_ok and required_report_ok
 }
 
 ## Validates the coordination headings required from a director.

@@ -216,6 +216,18 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   if required_report != "" and ! fs.exists(Path(required_report))? {
     fs.write(fp"${worker_dir}/REPORT-MISSING", f"required report missing: ${required_report}\n")?
   }
+  let required_report_ok = required_report == "" or fs.exists(Path(required_report))?
+  if fs.exists(report)? {
+    let worker_report = json.read(report)?
+    let enriched = json.set(worker_report, ["execution"], {
+      agent_process: if status.ok { "pass" } else { "nonzero-exit" },
+      watcher: if watcher_status.ok { "pass" } else { "failed" },
+      session_limit_watcher: if limit_status.ok { "pass" } else { "failed" },
+      reporting: if report_status.ok { "pass" } else { "failed" },
+      required_report: if required_report_ok { "present" } else { "missing" },
+    })?
+    json.write(report, enriched, pretty: true)?
+  }
   let budget_breach = fs.exists(fp"${worker_dir}/BUDGET-BREACH")?
   if budget_breach and role == "engineer" {
     let closed = runtime.close_ticket_too_difficult(factory_dir, ticket_id, worker_dir)?
@@ -223,6 +235,8 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
       eprint f"unable to close over-budget ticket: ${ticket_id}"
     }
   }
-  let code = if ! status.ok or ! watcher_status.ok or ! limit_status.ok or ! report_status.ok { 1 } else { 0 }
+  let code = if control.agent_completion_ok(
+    watcher_status.ok, limit_status.ok, report_status.ok, required_report_ok
+  ) { 0 } else { 1 }
   abort(code)
 }

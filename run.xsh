@@ -32,6 +32,7 @@ proc preflight(
     "NORTH-STAR.md",
     "runtime/handbook.md",
     "run-agent.xsh",
+    "run-ticket-reuse.xsh",
     "factory_control.xsh",
     "factory_runtime.xsh",
     "factory_report.xsh",
@@ -79,7 +80,7 @@ proc preflight(
     let ticket_path = fp"${factory_dir}/tickets/${candidate_ticket}.md"
     if fs.exists(ticket_path)? and runtime.accepted_ticket(ticket_path)? {
       let open_branch = runtime.open_ticket_branch(xsh_repo, candidate_ticket)?
-      if open_branch != "" {
+      if open_branch != "" and mode != "organization" {
         eprint f"ticket ${candidate_ticket} already has an unmerged implementation branch: ${open_branch}"
         eprint "replay or review that branch before dispatching another engineer"
         return false

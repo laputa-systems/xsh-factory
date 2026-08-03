@@ -89,6 +89,7 @@ proc write_eval_phase_fixture(root: Path, factory: Path) [fs, error] -> Result[U
   json.write(fp"${root}/workers/eval-worker/task-tags-1/report.json", {
     schema_version: 1, kind: "worker", identity: {role: "eval-worker", worker_id: "task-tags-1"},
     state: "completed", result: "pass", session: "workers/eval-worker/task-tags-1/session.jsonl",
+    execution: {result: "fail", classification: "worker_failed"},
     usage: {assistant_turns: 2, total_bucket_tokens: 30, cost_usd: 0.01, budget_usd: 0.50, tool_errors: 0},
     tool_errors: [], findings: [], artifacts: []
   }, pretty: true)?
@@ -122,6 +123,7 @@ proc test_audit_compiles_one_phase_report(ctx: TestContext) [fs, process, error]
   test.ok(schema.valid(report, "phase"))?
   test.eq(json.get(report, ["result"], ""), "pass")?
   test.eq(json.get(report, ["data", "cost", "tool_errors"], -1), 0)?
+  test.eq(json.get(report, ["data", "tool_errors"], []).len(), 0)?
   test.ok(! fs.exists(fp"${root}/AUDIT.md")?)?
   test.ok(! fs.exists(fp"${root}/COST.md")?)?
 }
@@ -168,6 +170,8 @@ proc test_cto_briefing_reads_json_not_projection(ctx: TestContext) [fs, process,
   let text = fs.read_text(output)?
   test.contains(text, "Structured run or phase report")?
   test.contains(text, "workers/eval-worker/task-tags-1/report.json")?
+  test.contains(text, "Execution: `fail`; classification: `worker_failed`")?
+  test.contains(text, "- Result: `pass`")?
   test.ok(! text.contains("COST.md"))?
   test.ok(! text.contains("TOOL-ERRORS.md"))?
 }
@@ -221,6 +225,16 @@ proc test_engineer_patch_survives_worktree_cleanup(ctx: TestContext) [fs, proces
   test.ok(runtime.remove_clean_worktree(product, worktree)?)?
   test.ok(! fs.exists(worktree)?)?
   test.contains(run.text "git" "-C" $product.display() "branch" "--list" "factory/test" ?, "factory/test")?
+}
+
+proc test_organization_reuses_existing_branch_without_duplicate_dispatch() [fs, error] {
+  let organization = fs.read_text(fp"${fs.cwd()?}/run-organization.xsh")?
+  let reuse = fs.read_text(fp"${fs.cwd()?}/run-ticket-reuse.xsh")?
+  let launcher = fs.read_text(fp"${fs.cwd()?}/run.xsh")?
+  test.contains(organization, "run_reuse_phase")?
+  test.contains(reuse, "mode: \"ticket-reuse\"")?
+  test.contains(reuse, "worktree", "existing branch must use a detached worktree")?
+  test.contains(launcher, "open_branch != \"\" and mode != \"organization\"")?
 }
 
 proc test_controllers_have_no_legacy_projection_outputs() [fs, error] {

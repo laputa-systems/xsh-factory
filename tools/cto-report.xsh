@@ -42,7 +42,7 @@ proc employee_block(run_dir: Path, report: Path, template: Str) [fs, error] -> R
   let narrative = report.read_text()?
   let identifier = worker_identifier(run_dir, report)
   let role = worker_role(run_dir, report)
-  let result = text(control.report_section(narrative, "Result"), "not reported")
+  let result = text(control.report_field(narrative, "Result"), "not reported")
   return control.fill_template(template, [
     {key: "IDENTIFIER", value: identifier},
     {key: "ROLE", value: role},
@@ -59,10 +59,13 @@ proc employee_block(run_dir: Path, report: Path, template: Str) [fs, error] -> R
 proc worker_block(run_dir: Path, report: Path, template: Str) [fs, error] -> Result[Str] {
   let value = json.read(report)?
   let usage = json.get(value, ["usage"], null)
+  let execution = json.get(value, ["execution"], null)
   return control.fill_template(template, [
     {key: "IDENTIFIER", value: worker_identifier(run_dir, report)},
     {key: "ROLE", value: worker_role(run_dir, report)},
     {key: "RESULT", value: text(json.get(value, ["result"], "unknown"))},
+    {key: "EXECUTION", value: text(json.get(execution, ["result"], "not recorded"), "not recorded")},
+    {key: "CLASSIFICATION", value: text(json.get(execution, ["classification"], "not recorded"), "not recorded")},
     {key: "REPORT", value: relative_path(run_dir, report)},
     {key: "TURNS", value: text(json.get(usage, ["assistant_turns"], 0), "0")},
     {key: "TOKENS", value: text(json.get(usage, ["total_bucket_tokens"], 0), "0")},

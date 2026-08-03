@@ -27,8 +27,9 @@ and raw Pi sessions only as needed.
 ## Repository boundary
 
 The product checkout is `../xsh`. Its local contract is
-[`../xsh/AGENTS.md`](../xsh/AGENTS.md), and its canonical rationale is
-[`../xsh/docs/CHAPTER-01-why-xsh.md`](../xsh/docs/CHAPTER-01-why-xsh.md).
+[`../xsh/AGENTS.md`](../xsh/AGENTS.md). The stable XSH rationale is in
+[`NORTH-STAR.md`](NORTH-STAR.md), so factory employees should use that single
+briefing instead of following a second rationale link.
 
 The product guide applies when editing files in `../xsh`; it is not the
 factory's guide. For factory work, this file and the factory documents above

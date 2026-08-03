@@ -24,6 +24,9 @@ proc test_role_defaults_are_coded_and_capped() [env, error] {
     test.ok(control.default_budget(role) != "")?
     test.ok(control.default_max_turns(role) != "")?
   }
+  test.eq(control.default_max_wall_seconds("eval-manager"), "900")?
+  test.eq(control.default_max_wall_seconds("eval-worker"), "1800")?
+  test.eq(control.default_max_wall_seconds("engineer"), "1800")?
   env FACTORY_ENGINEER_BUDGET_USD="2" {
     test.eq(control.configured_role_setting("engineer", "BUDGET_USD")?, control.default_budget("engineer"))?
   }
@@ -43,6 +46,16 @@ proc test_admission_and_report_contracts() [error] {
   test.ok(control.report_contract_ok("# Report\n\n## Result\n\npass\n\n## Evidence\n\nready\n", ["Evidence"], "pass"))?
   test.ok(! control.report_contract_ok("# Report\n\n## Result\n\npass\n", ["Evidence"], "pass"))?
   test.ok(control.manager_tool_error_findings_contract_ok("## Tool-error findings\n\nreport.json\n"))?
+  test.eq(control.report_section("# Report\n\n## Result\n\npass\n\nDetails.\n\n## Evidence\n\nready\n", "Result"), "pass\n\nDetails.")?
+  test.eq(control.report_field("# Report\n\n## Result\n\npass\n\nDetails.\n\n## Evidence\n\nready\n", "Result"), "pass")?
+}
+
+proc test_agent_completion_is_report_bound() [error] {
+  test.ok(control.agent_completion_ok(true, true, true, true))?
+  test.ok(! control.agent_completion_ok(false, true, true, true))?
+  test.ok(! control.agent_completion_ok(true, false, true, true))?
+  test.ok(! control.agent_completion_ok(true, true, false, true))?
+  test.ok(! control.agent_completion_ok(true, true, true, false))?
 }
 
 proc test_report_schema_is_single_machine_contract(ctx: TestContext) [fs, error] {
@@ -119,8 +132,12 @@ proc test_engineer_assignment_is_controller_bound() [error] {
 proc test_eval_image_inputs_are_local() [fs, error] {
   let dockerfile = fs.read_text(fp"${fs.cwd()?}/evals/Dockerfile.base")?
   let controller = fs.read_text(fp"${fs.cwd()?}/run-eval.xsh")?
+  let executor = fs.read_text(fp"${fs.cwd()?}/eval-executor.xsh")?
   test.contains(dockerfile, ".dist/xsh")?
   test.contains(dockerfile, ".dist/xsht")?
   test.contains(controller, "dist-Linux-docker")?
   test.contains(controller, "stage_xsht")?
+  test.contains(executor, "--pids-limit")?
+  test.contains(executor, "--memory")?
+  test.contains(executor, "size=64m")?
 }

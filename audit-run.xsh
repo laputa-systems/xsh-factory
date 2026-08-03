@@ -241,7 +241,16 @@ proc narrative_state(report_path: Path, role: Str) [fs, error] -> Result[Any] {
   }
 }
 
-proc audit_phase(run_dir: Path, mode: Str, factory_dir: Path) [fs, env, error] -> Result[Int] {
+proc current_xsh_commit(factory_dir: Path) [env, process, error] -> Result[Str] {
+  let configured = env.get_or("FACTORY_XSH_COMMIT", "")?
+  if configured != "" and configured != "unknown" {
+    return Ok(configured)
+  }
+  let repo = env.path("FACTORY_XSH_REPO", fp"${factory_dir}/../xsh")?
+  return run.text "git" "-C" $repo.display() "rev-parse" "HEAD"
+}
+
+proc audit_phase(run_dir: Path, mode: Str, factory_dir: Path) [fs, env, process, error] -> Result[Int] {
   let request_path = fp"${run_dir}/CYCLE-REQUEST.md"
   let request_exists = fs.exists(request_path)?
   let request = if request_exists { request_path.read_text()? } else { "" }
@@ -315,7 +324,7 @@ proc audit_phase(run_dir: Path, mode: Str, factory_dir: Path) [fs, env, error] -
   }
   if ! lineage_ok { findings = findings.push({kind: "handbook-lineage", state: "missing"}) }
   let open_tickets = open_ticket_snapshot(factory_dir)?
-  let xsh_commit = env.get_or("FACTORY_XSH_COMMIT", "unknown")?
+  let xsh_commit = current_xsh_commit(factory_dir)?.trim()
   var session_rows: List[Str] = []
   for session in sessions {
     session_rows = session_rows.push(relative_path(run_dir.display(), session))
@@ -352,6 +361,7 @@ proc audit_phase(run_dir: Path, mode: Str, factory_dir: Path) [fs, env, error] -
         candidate: candidate_lineage_path,
       },
       cost: workers.usage,
+      tool_errors: workers.tool_errors,
     },
     findings: findings,
     artifacts: [
@@ -364,7 +374,7 @@ proc audit_phase(run_dir: Path, mode: Str, factory_dir: Path) [fs, env, error] -
   return Ok(0)
 }
 
-proc audit_organization(run_dir: Path, factory_dir: Path) [fs, env, error] -> Result[Int] {
+proc audit_organization(run_dir: Path, factory_dir: Path) [fs, env, process, error] -> Result[Int] {
   let phases_dir = fp"${run_dir}/phases"
   var phases: List[Any] = []
   var findings: List[Any] = []
@@ -387,7 +397,7 @@ proc audit_organization(run_dir: Path, factory_dir: Path) [fs, env, error] -> Re
   let worker_reports = worker_report_paths(run_dir)?
   let workers = worker_data(run_dir, worker_reports)?
   let result = if all_pass and workers.usage.budget_failures == 0 and workers.usage.unknown_costs == 0 { "pass" } else { "fail" }
-  let xsh_commit = env.get_or("FACTORY_XSH_COMMIT", "unknown")?
+  let xsh_commit = current_xsh_commit(factory_dir)?.trim()
   let report = {
     schema_version: schema.SCHEMA_VERSION,
     kind: "run",

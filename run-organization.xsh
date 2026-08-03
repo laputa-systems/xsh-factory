@@ -121,6 +121,37 @@ proc phase_run_pass(phase_dir: Path, report_name: Str) [fs, error] -> Result[Boo
   return schema.value_text(json.get(json.read(report)?, ["result"], "unknown")) == "pass"
 }
 
+proc run_reuse_phase(
+  phase_dir: Path,
+  factory_dir: Path,
+  xsh_repo: Path,
+  ticket_id: Str,
+  branch: Str,
+  base_commit: Str,
+) [fs, process, env, error] -> Result[Bool] {
+  let xsh = process.which("xsh")?
+  let env_path = process.which("env")?
+  let assignments = [
+    f"FACTORY_DIR=${factory_dir.display()}",
+    f"FACTORY_PHASE_DIR=${phase_dir.display()}",
+    f"FACTORY_XSH_REPO=${xsh_repo.display()}",
+    f"FACTORY_XSH_COMMIT=${base_commit}",
+    f"FACTORY_TICKET_ID=${ticket_id}",
+    f"FACTORY_TICKET_BRANCH=${branch}",
+    f"XSH_MODULE_PATH=${factory_dir.display()}",
+  ]
+  let status = process.run(process.command_argv(
+    env_path,
+    [env_path.display()].extend(assignments).extend([
+      xsh.display(), fp"${factory_dir}/run-ticket-reuse.xsh", "--",
+    ]),
+    cwd: factory_dir,
+    stdout: fp"${phase_dir}/reuse.stdout",
+    stderr: fp"${phase_dir}/reuse.stderr",
+  ))?
+  return status.ok
+}
+
 proc phase_request(
   template: Path,
   output_path: Path,
@@ -222,10 +253,9 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   } else {
     runtime.open_ticket_branch(xsh_repo, selected_ticket)?
   }
-  if open_branch != "" {
-    eprint f"ticket ${selected_ticket} already has an unmerged implementation branch: ${open_branch}"
-    eprint "replay or review that branch before dispatching another engineer"
-    abort(2)
+  let reuse_existing_branch = open_branch != ""
+  if reuse_existing_branch {
+    eprint f"reusing existing implementation branch for ${selected_ticket}: ${open_branch}"
   }
   let requested_eval = control.request_eval(request_text)
   let ticket_eval = if selected_ticket != "" {
@@ -349,17 +379,22 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
 
   let primary_subject = if selected_ticket == "" { selected_eval } else { selected_ticket }
   var independent_eval_handles: List[ProcessHandle] = []
-  var primary_ok = false
   runtime.emit_event(event_template, run_dir, "10-primary-started", primary_subject, "started", 1, "organization", primary_mode)?
-  let primary_handle = spawn_child(
-    primary_controller,
-    primary_request, primary_phase, factory_dir, xsh_repo, run_dir, xsh_commit.trim(), run_agent,
-    auth_file, pi_command, docker, target, platform,
-    [f"FACTORY_MODE=${primary_mode}", f"FACTORY_EVAL_ID=${selected_eval}",
-      "FACTORY_REEVAL_TICKET=not-reevaluation", "FACTORY_REEVAL_WORKTREE=not-reevaluation",
-      "FACTORY_SKIP_TICKET_RECONCILE=false", "FACTORY_RETAIN_WORKTREE=true"],
-    fp"${run_dir}/primary.stdout", fp"${run_dir}/primary.stderr"
-  )?
+  var primary_ok = false
+  if reuse_existing_branch {
+    primary_ok = run_reuse_phase(primary_phase, factory_dir, xsh_repo, selected_ticket, open_branch, xsh_commit.trim())?
+  } else {
+    let primary_handle = spawn_child(
+      primary_controller,
+      primary_request, primary_phase, factory_dir, xsh_repo, run_dir, xsh_commit.trim(), run_agent,
+      auth_file, pi_command, docker, target, platform,
+      [f"FACTORY_MODE=${primary_mode}", f"FACTORY_EVAL_ID=${selected_eval}",
+        "FACTORY_REEVAL_TICKET=not-reevaluation", "FACTORY_REEVAL_WORKTREE=not-reevaluation",
+        "FACTORY_SKIP_TICKET_RECONCILE=false", "FACTORY_RETAIN_WORKTREE=true"],
+      fp"${run_dir}/primary.stdout", fp"${run_dir}/primary.stderr"
+    )?
+    primary_ok = wait_child(primary_handle)?
+  }
   if selected_ticket != "" {
     runtime.emit_event(event_template, run_dir, "10-independent-eval-started", requested_eval, "started", 1, "organization", "running the requested independent eval in parallel with ticket implementation")?
     let independent_eval_handle = spawn_child(
@@ -372,7 +407,6 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     )?
     independent_eval_handles = independent_eval_handles.push(independent_eval_handle)
   }
-  primary_ok = wait_child(primary_handle)?
   let primary_report_ok = phase_run_pass(primary_phase, "report.json")?
   let primary_pass = primary_ok and primary_report_ok
   let primary_state = if primary_pass { "pass" } else { "fail" }

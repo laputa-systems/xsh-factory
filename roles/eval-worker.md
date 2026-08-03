@@ -29,6 +29,11 @@ failed attempts at the same concept, stop guessing and use one exact API query
 or the local contract; do not spend turns on random discovery. The goal is a
 correct artifact plus evidence that improves the next agent's first attempt.
 
+Keep every exploratory shell command bounded. Use small explicit fixtures and
+finite loop counts; never pair an unbounded producer such as `yes` with a large
+consumer limit or an unbounded write. If a probe grows unexpectedly, stop it and
+replace it with a small case before continuing.
+
 Before stopping, reopen `review.md`. Confirm both required section headings
 remain, replace `None.` only when you have evidence to report, and ensure no
 template marker such as `<title>` remains. A correct artifact with an

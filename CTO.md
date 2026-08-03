@@ -78,6 +78,10 @@ next reconciliation updates the linked `TICKET.md` to `Merged.` when the
 recorded implementation is proven in XSH `HEAD`; the manager replay then
 accepts or rejects the product change.
 
+If the selected ticket already has an unmerged implementation branch, reuse that
+branch for replay and do not dispatch another engineer. The controller captures
+the patch against the common ancestor and owns temporary worktree cleanup.
+
 ### 4. Choose one narrow cycle
 
 Use `cycle-organization.md` when the standard path is appropriate:

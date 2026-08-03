@@ -497,6 +497,12 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     runtime.emit_event(event_template, run_dir, "80-designer-completed", "eval-designer", if designer_ok { "completed" } else { "failed" }, 1, "controller", "designer process returned")?
   }
 
+  let _post_review_report = process.run(process.command_argv(
+    xsh_path,
+    [xsh_path.display(), fp"${factory_dir}/audit-run.xsh", "--", run_dir.display(), "eval"],
+    cwd: factory_dir,
+  ))?
+
   runtime.emit_event(event_template, run_dir, "20-director-started", "director", "started", 1, "controller", "dispatching post-run review")?
   let director_handle = spawn_agent(
     factory_dir, run_dir, xsh_path, run_agent, common_assignments,

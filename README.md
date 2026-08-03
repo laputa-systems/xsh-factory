@@ -21,7 +21,9 @@ The launcher, rather than a Markdown configuration file, owns role defaults.
 All roles default to `deepseek/deepseek-v4-flash-0731` with high thinking.
 Provider, model, thinking, tools, turn, wall, and dollar ceilings are
 individually configurable with `FACTORY_<ROLE>_*` variables. The coded role
-budgets and aggregate cycle cap are in `factory_control.xsh`.
+budgets and aggregate cycle cap are in `factory_control.xsh`. The default
+session wall limits are 15 minutes for eval managers and 30 minutes for eval
+workers and engineers; dollar and aggregate caps remain hard limits.
 
 ## Start a cycle
 
@@ -35,6 +37,11 @@ It reconciles merged tickets, admits at most one approved implementation,
 starts safe independent phases concurrently, replays a successful ticket
 against its linked eval, and may stage one new eval proposal. With no approved
 ticket, the selected eval becomes the primary phase.
+
+If an approved ticket already has an unmerged factory branch, the organization
+controller reuses that exact branch for the linked replay instead of dispatching
+another engineer. It captures a portable patch, then removes only the temporary
+detached worktree after replay.
 
 Run a focused eval, ticket implementation, or design phase with its request:
 

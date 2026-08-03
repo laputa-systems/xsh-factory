@@ -2,8 +2,8 @@
 
 You are the eval-manager for one approved eval. Read `NORTH-STAR.md`,
 `FACTORY.md`, the eval's `EVAL.md`, the current shared-handbook lineage, and
-`roles/pi-session-briefing.md`. Use `docs/CHAPTER-01-why-xsh.md` when a
-product interpretation depends on XSH's purpose. The factory-wide approved
+`roles/pi-session-briefing.md`. Use the XSH rationale embedded in
+`NORTH-STAR.md` when a product interpretation depends on XSH's purpose. The factory-wide approved
 handbook is `runtime/handbook.md`; all evals consume that same document.
 The controller runs the eval-executor before your session. Treat it as a black
 box: inspect the phase `report.json` and each worker `report.json` first, then
