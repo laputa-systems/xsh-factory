@@ -254,6 +254,37 @@ proc test_eval_mode_has_no_paid_director_review() [fs, error] {
   test.contains(auditor, "if mode == \"ticket-implementation\"")?
 }
 
+proc test_eval_gate_diagnostics_are_persisted() [fs, error] {
+  let evaluator = fs.read_text(fp"${fs.cwd()?}/run-eval.xsh")?
+  test.contains(evaluator, "required-outputs.json")?
+  test.contains(evaluator, "manager_evidence_read")?
+  test.contains(evaluator, "designer_handbook_read")?
+}
+
+proc test_eval_dispatch_is_package_owned() [fs, error] {
+  let common = fs.read_text(fp"${fs.cwd()?}/evaluate_common.xsh")?
+  let executor = fs.read_text(fp"${fs.cwd()?}/eval-executor.xsh")?
+  test.ok(! common.contains("task-tags"))?
+  test.ok(! common.contains("task-ecount"))?
+  test.ok(! common.contains("task-envcfg"))?
+  test.contains(common, "FACTORY_EVAL_EVALUATOR")?
+  test.contains(executor, "evaluator.xsh")?
+  for eval_id in ["task-tags", "task-ecount", "task-envcfg"] {
+    test.ok(fs.exists(fp"${fs.cwd()?}/evals/${eval_id}/evaluator.xsh")?)?
+  }
+}
+
+proc test_process_output_is_written_to_event_ledger(ctx: TestContext) [fs, error] {
+  let root = test.temp_dir(ctx, name: "process-events")?
+  let output = fp"${root}/child.stdout"
+  fs.write(output, "hello\n")?
+  runtime.emit_process_output(root, "child-1", "stdout", output, 0)?
+  let events = fs.read_text(fp"${root}/events.jsonl")?
+  test.contains(events, "process-output")?
+  test.contains(events, "child-1:stdout")?
+  test.contains(events, "hello\\n")?
+}
+
 proc test_eval_executor_is_documented_as_controller_not_role() [fs, error] {
   let contract = fs.read_text(fp"${fs.cwd()?}/FACTORY.md")?
   let guide = fs.read_text(fp"${fs.cwd()?}/AGENTS.md")?

@@ -192,6 +192,9 @@ proc run_ticket_cycle(
     stderr: fp"${run_dir}/director.stderr",
   ))?
   runtime.emit_event(event_template, run_dir, "80-director-completed", "director", if director_status.ok { "completed" } else { "failed" }, 1, "director", "director process returned")?
+  let director_exit = if director_status.ok { 0 } else { director_status.exit_code() ?? 1 }
+  runtime.emit_process_output(run_dir, "director", "stdout", fp"${run_dir}/director.stdout", director_exit)?
+  runtime.emit_process_output(run_dir, "director", "stderr", fp"${run_dir}/director.stderr", director_exit)?
 
   var all_tickets_ok = true
   var all_patches_ok = true

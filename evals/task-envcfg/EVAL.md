@@ -133,9 +133,9 @@ request may explicitly raise this to two. Classify repeated friction as
 handbook guidance or a product issue only when it is generalizable; do not
 create a ticket for an ordinary short-task miss or evaluator noise. A handbook
 change must name the concept it teaches and be replayed before it is trusted.
-On approval, stage `evals/task-envcfg/` with this scaffolding and merge the
-`run_task_envcfg` branch into the shared `evaluate_common.xsh` dispatch so the
-normal `run-eval.xsh` build stages it into the image.
+On approval, stage `evals/task-envcfg/` with this scaffolding, including its
+package-owned `evaluator.xsh`. The generic evaluator protocol stages and mounts
+that script; do not add a task branch to `evaluate_common.xsh`.
 
 ## Staged dry run
 

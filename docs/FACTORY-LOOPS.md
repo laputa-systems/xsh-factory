@@ -11,12 +11,12 @@ one assigned eval and handbook snapshot, `eval-executor.xsh`:
 
 1. creates the worker workspace;
 2. launches the eval-worker in Docker;
-3. launches the evaluator against the resulting artifact;
+3. launches the evaluator script supplied by the eval package against the resulting artifact;
 4. preserves the raw Pi session and evaluator `run.json`; and
 5. normalizes the worker session into `workers/.../report.json`.
 
 It does not diagnose failures, edit the shared handbook, create tickets, or
-choose work. The evaluator owns protocol, correctness, restrictions, and
+choose work. The evaluator package owns protocol, correctness, restrictions, and
 candidate-versus-oracle timing. The worker report owns agent effort: turns,
 token buckets, optional provider reasoning/cost fields, wall time, tools,
 stop reasons, and every nonzero Pi tool result.
@@ -106,6 +106,11 @@ runs/run-<id>/
 │   └── REPORT.md
 └── patches/<ticket>.diff
 ```
+
+Each run has one canonical `events.jsonl`. Lifecycle transitions use
+`kind: "event"`; completed controller streams use `kind: "process-output"`
+with a channel and captured content. Sibling stdout/stderr files are optional
+forensic copies.
 
 `report.json` is the machine contract at every controller boundary. The
 schema is implemented in `report_schema.xsh` and described in

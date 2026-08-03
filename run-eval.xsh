@@ -196,6 +196,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   let factory_control_sha = hash.sha256(fp"${factory_dir}/factory_control.xsh")?.hex()
   let factory_runtime_sha = hash.sha256(fp"${factory_dir}/factory_runtime.xsh")?.hex()
   let evaluate_common_sha = hash.sha256(fp"${factory_dir}/evaluate_common.xsh")?.hex()
+  let evaluate_legacy_sha = hash.sha256(fp"${factory_dir}/evaluate_legacy.xsh")?.hex()
   let eval_worker_sha = hash.sha256(fp"${factory_dir}/evals/eval-worker.xsh")?.hex()
   let base_dockerfile_sha = hash.sha256(fp"${factory_dir}/evals/Dockerfile.base")?.hex()
   let eval_dockerfile = fp"${eval_dir}/Dockerfile"
@@ -228,12 +229,14 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   let force_toolchain_rebuild = env.get_or("FACTORY_FORCE_XSH_TOOLCHAIN_REBUILD", "false")? == "true"
   let force_image_rebuild = env.get_or("FACTORY_FORCE_IMAGE_REBUILD", "false")? == "true"
   let base_tag = control.factory_image_tag(
-    xsh_commit.trim(), factory_control_sha, factory_runtime_sha, evaluate_common_sha,
+    xsh_commit.trim(), factory_control_sha, factory_runtime_sha,
+    evaluate_common_sha + evaluate_legacy_sha,
     eval_worker_sha, base_dockerfile_sha, toolchain_dockerfile_sha, toolchain_makefile_sha,
     target, platform, "", base_dockerignore_sha,
   )
   let eval_tag = control.factory_image_tag(
-    xsh_commit.trim(), factory_control_sha, factory_runtime_sha, evaluate_common_sha,
+    xsh_commit.trim(), factory_control_sha, factory_runtime_sha,
+    evaluate_common_sha + evaluate_legacy_sha,
     eval_worker_sha, base_dockerfile_sha, toolchain_dockerfile_sha, toolchain_makefile_sha,
     target, platform,
     if has_eval_dockerfile { hash.sha256(eval_dockerfile)?.hex() } else { "none" },
@@ -307,7 +310,11 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   let stage_common = process.run(process.command_argv(
     "cp", ["cp", "-fL", fp"${factory_dir}/evaluate_common.xsh".display(), fp"${staged_dir}/evaluate_common.xsh".display()],
   ))?
-  if ! stage_xsh.ok or ! stage_xsht.ok or ! stage_control.ok or ! stage_runtime.ok or ! stage_common.ok {
+  let stage_legacy = process.run(process.command_argv(
+    "cp", ["cp", "-fL", fp"${factory_dir}/evaluate_legacy.xsh".display(), fp"${staged_dir}/evaluate_legacy.xsh".display()],
+  ))?
+  if ! stage_xsh.ok or ! stage_xsht.ok or ! stage_control.ok or ! stage_runtime.ok or
+    ! stage_common.ok or ! stage_legacy.ok {
     eprint f"unable to stage local XSH binaries for the ${eval_id} image"
     abort(1)
   }
@@ -445,6 +452,11 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     )?
     trial_statuses = trial_statuses.push(trial_ok)
     runtime.emit_event(event_template, run_dir, f"80-trial-${trial_id}-completed", f"${eval_id}-trial-${trial_id}", if trial_ok { "completed" } else { "failed" }, 1, "controller", "executor process returned")?
+    let trial_exit = if trial_ok { 0 } else { 1 }
+    runtime.emit_process_output(run_dir, f"${eval_id}-trial-${trial_id}", "stdout", fp"${run_dir}/trial-${trial_id}.stdout", trial_exit)?
+    runtime.emit_process_output(run_dir, f"${eval_id}-trial-${trial_id}", "stderr", fp"${run_dir}/trial-${trial_id}.stderr", trial_exit)?
+    runtime.emit_process_output(run_dir, f"${eval_id}-worker-${trial_id}", "stdout", fp"${trial_worker}/container.stdout", trial_exit)?
+    runtime.emit_process_output(run_dir, f"${eval_id}-worker-${trial_id}", "stderr", fp"${trial_worker}/container.stderr", trial_exit)?
   }
 
   let _pre_manager_report = process.run(process.command_argv(
@@ -483,8 +495,14 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     designer_ok = designer_status.ok
   }
   runtime.emit_event(event_template, run_dir, "80-manager-completed", "eval-manager", if manager_ok { "completed" } else { "failed" }, 1, "controller", "manager process returned")?
+  let manager_exit = if manager_ok { 0 } else { manager_status.exit_code() ?? 1 }
+  runtime.emit_process_output(run_dir, f"eval-manager-${eval_id}", "stdout", fp"${run_dir}/manager.stdout", manager_exit)?
+  runtime.emit_process_output(run_dir, f"eval-manager-${eval_id}", "stderr", fp"${run_dir}/manager.stderr", manager_exit)?
   if new_eval_count == 1 {
     runtime.emit_event(event_template, run_dir, "80-designer-completed", "eval-designer", if designer_ok { "completed" } else { "failed" }, 1, "controller", "designer process returned")?
+    let designer_exit = if designer_ok { 0 } else { 1 }
+    runtime.emit_process_output(run_dir, "eval-designer-proposal-1", "stdout", fp"${run_dir}/designer.stdout", designer_exit)?
+    runtime.emit_process_output(run_dir, "eval-designer-proposal-1", "stderr", fp"${run_dir}/designer.stderr", designer_exit)?
   }
 
   let _post_review_report = process.run(process.command_argv(
@@ -578,6 +596,23 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     manager_report_ok and designer_output_ok and audit_pass and
     worker_handbook_read and manager_evidence_read and manager_handbook_read and
     designer_handbook_read
+  json.write(fp"${run_dir}/required-outputs.json", {
+    manager_session: fs.exists(manager_session)?,
+    trial1_process: trial1_process_ok,
+    trial2_process: trial2_process_ok,
+    trial1_report: trial1_report_ok,
+    trial2_report: trial2_report_ok,
+    candidate_handbook: candidate_exists,
+    handbook_lineage: lineage_ok,
+    manager_report: manager_report_ok,
+    designer_output: designer_output_ok,
+    audit: audit_pass,
+    worker_handbook_read: worker_handbook_read,
+    manager_evidence_read: manager_evidence_read,
+    manager_handbook_read: manager_handbook_read,
+    designer_handbook_read: designer_handbook_read,
+    required: required,
+  }, pretty: true)?
   let initial_result = if required { "pass" } else { "fail" }
   let cto_status = runtime.write_cto_report(factory_dir, run_dir, initial_result)?
   let result = if initial_result == "pass" and cto_status { "pass" } else { "fail" }

@@ -184,6 +184,9 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   ))?
   runtime.emit_event(event_template, run_dir, "80-designer-completed", "eval-designer",
     if worker_status.ok { "completed" } else { "failed" }, 1, "eval-designer", "worker process returned")?
+  let designer_exit = if worker_status.ok { 0 } else { worker_status.exit_code() ?? 1 }
+  runtime.emit_process_output(run_dir, "eval-designer-proposal-1", "stdout", fp"${run_dir}/designer.stdout", designer_exit)?
+  runtime.emit_process_output(run_dir, "eval-designer-proposal-1", "stderr", fp"${run_dir}/designer.stderr", designer_exit)?
 
   let session_ok = fs.exists(session)?
   let worker_report_ok = fs.exists(worker_report)? and ! fs.exists(fp"${run_dir}/workers/eval-designer/${worker_id}/REPORT-MISSING")? and

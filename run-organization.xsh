@@ -439,6 +439,9 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     )?
     let reeval_report_ok = phase_run_pass(reeval_phase, "report.json")?
     let reeval_pass = reeval_ok and reeval_report_ok
+    let reeval_exit = if reeval_pass { 0 } else { 1 }
+    runtime.emit_process_output(run_dir, f"reeval-${selected_ticket}", "stdout", fp"${run_dir}/reeval.stdout", reeval_exit)?
+    runtime.emit_process_output(run_dir, f"reeval-${selected_ticket}", "stderr", fp"${run_dir}/reeval.stderr", reeval_exit)?
     reeval_state = if reeval_pass { "pass" } else { "fail" }
     reeval_report_state = if reeval_report_ok { "pass" } else { "missing-or-failed" }
     runtime.emit_event(event_template, run_dir, "80-reeval-completed", f"${selected_ticket}-reevaluation",
@@ -478,6 +481,9 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     }
     let independent_eval_report_ok = phase_run_pass(independent_eval_phase, "report.json")?
     let independent_eval_pass = independent_eval_ok and independent_eval_report_ok
+    let independent_eval_exit = if independent_eval_pass { 0 } else { 1 }
+    runtime.emit_process_output(run_dir, f"independent-eval-${requested_eval}", "stdout", fp"${run_dir}/independent-eval.stdout", independent_eval_exit)?
+    runtime.emit_process_output(run_dir, f"independent-eval-${requested_eval}", "stderr", fp"${run_dir}/independent-eval.stderr", independent_eval_exit)?
     independent_eval_state = if independent_eval_pass { "pass" } else { "fail" }
     independent_eval_report_state = if independent_eval_report_ok { "pass" } else { "missing-or-failed" }
     runtime.emit_event(event_template, run_dir, "80-independent-eval-completed", requested_eval,
@@ -493,6 +499,9 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     let design_ok = wait_child(design_handle)?
     let design_report_ok = phase_run_pass(design_phase, "report.json")?
     let design_pass = design_ok and design_report_ok
+    let design_exit = if design_pass { 0 } else { 1 }
+    runtime.emit_process_output(run_dir, "eval-design", "stdout", fp"${run_dir}/design.stdout", design_exit)?
+    runtime.emit_process_output(run_dir, "eval-design", "stderr", fp"${run_dir}/design.stderr", design_exit)?
     design_state = if design_pass { "pass" } else { "fail" }
     design_report_state = if design_report_ok { "pass" } else { "missing-or-failed" }
     runtime.emit_event(event_template, run_dir, "80-design-completed", "eval-design",

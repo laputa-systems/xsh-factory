@@ -102,11 +102,12 @@ Child phases may overlap only when their inputs and product state are
 independent. Ticket implementation completes before its candidate replay.
 The independent eval and eval-design phase may run concurrently with it.
 Process handles and lifecycle events, not polling agents, advance the state
-machine. Lifecycle events are JSON lines in `events.jsonl`; state files under
-`states/` prevent invalid transitions.
+machine. `events.jsonl` is the canonical cycle ledger: lifecycle transitions
+and normalized controller stdout/stderr are JSON lines there. Per-process log
+files are optional forensic copies, not required to reconstruct the run.
 
 The inner eval executor is pure controller infrastructure: it runs the assigned
-worker and evaluator, then writes the worker report and evaluator manifest. The
+worker and the evaluator script supplied by that eval package, then writes the worker report and evaluator manifest. The
 eval-manager reads
 those outputs, measures effort and qualitative friction, and may propose a
 handbook candidate or standardized ticket. It does not repair the product in

@@ -204,6 +204,34 @@ export proc emit_event(
   return Ok()
 }
 
+## Appends one complete process stream to the canonical cycle ledger. The
+## source file remains as optional forensic storage; event consumers do not
+## need to chase stdout/stderr paths to reconstruct a controller outcome.
+export proc emit_process_output(
+  run_dir: Path,
+  process_id: Str,
+  output_stream: Str,
+  output: Path,
+  exit_code: Int,
+) [fs, error] -> Result[Unit] {
+  let events = fp"${run_dir}/events.jsonl"
+  let content = if fs.exists(output)? { fs.read_text(output)? } else { "" }
+  let event = {
+    schema_version: 1,
+    kind: "process-output",
+    event_id: f"${process_id}:${output_stream}",
+    run_id: run_dir.display(),
+    subject: process_id,
+    state: "completed",
+    channel: output_stream,
+    exit_code: exit_code,
+    content: content,
+  }
+  let existing = if fs.exists(events)? { fs.read_text(events)? } else { "" }
+  fs.write_atomic(events, existing + json.encode(event)? + "\n")?
+  return Ok()
+}
+
 ## Advances an audited started phase to completed before later validation.
 export proc mark_phase_completed(
   template: Path,

@@ -71,7 +71,7 @@ runs/run-<id>/phases/<phase>/report.json          child phase report
 runs/run-<id>/workers/<role>/<worker>/session.jsonl raw Pi session
 runs/run-<id>/workers/<role>/<worker>/report.json  normalized worker metrics
 runs/run-<id>/workers/<role>/<worker>/REPORT.md   employee judgment
-runs/run-<id>/events.jsonl                        append-only lifecycle events
+runs/run-<id>/events.jsonl                        canonical lifecycle and process-output ledger
 runs/run-<id>/CTO-REPORT.md                       human navigation briefing
 runs/run-<id>/CTO-IMPROVEMENT.md                  measurable CTO handoff
 ```
@@ -80,7 +80,9 @@ Read `CTO-REPORT.md` first, then follow the report paths it names. The
 structured schema and field meanings are in
 [docs/REPORT-SCHEMA.md](docs/REPORT-SCHEMA.md). Tool failures are entries in
 the worker `tool_errors` array; there is no separate tool-error Markdown
-file. Pi's raw JSONL remains available for exact inspection.
+file. Pi's raw JSONL remains available for exact inspection. New evals provide
+a package-owned `evaluator.xsh`; adding one must not modify
+`evaluate_common.xsh`.
 
 Every completed cycle must leave one measurable factory-wide improvement in
 `CTO-IMPROVEMENT.md`. The next CTO pass validates or safely reverts that

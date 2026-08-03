@@ -35,6 +35,11 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   let trial_id = env.get_or("FACTORY_TRIAL_ID", "1")?
   let task_file = "task.md"
   let artifact_file = fs.read_text(fp"${eval_dir}/runtime/artifact.md")?.trim()
+  let evaluator_file = fp"${eval_dir}/evaluator.xsh"
+  if ! fs.exists(evaluator_file)? {
+    eprint f"eval ${eval_id} is missing its package evaluator.xsh"
+    abort(2)
+  }
   if artifact_file == "" or artifact_file.contains("/") or artifact_file.contains("\\") {
     eprint f"eval ${eval_id} has invalid runtime/artifact.md"
     abort(2)
@@ -138,6 +143,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     "--mount", f"type=bind,src=${worker_dir.display()},dst=/session",
     "--mount", f"type=bind,src=${worker_dir.display()},dst=/export",
     "--mount", f"type=bind,src=${eval_dir.display()}/evaluate.xsh,dst=/run/evaluate.xsh,readonly",
+    "--mount", f"type=bind,src=${evaluator_file.display()},dst=/run/evaluator.xsh,readonly",
   ]
   let eval_envs = [
     "--env", f"FACTORY_EVAL_ID=${eval_id}",
