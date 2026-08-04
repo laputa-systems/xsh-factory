@@ -722,6 +722,12 @@ proc commit_is_patch_applied(xsh_repo: Path, branch: Str, commit: Str) [process,
   if branch == "" or commit == "" {
     return false
   }
+  let branch_status = process.run(process.command_argv(
+    "git", ["git", "-C", xsh_repo.display(), "rev-parse", "--verify", f"refs/heads/${branch}"],
+  ))?
+  if ! branch_status.ok {
+    return false
+  }
   let cherry = run.text "git" "-C" $xsh_repo.display() "cherry" "-v" "HEAD" $branch ?
   for line in cherry.lines() {
     if line.starts_with(f"- ${commit} ") {
@@ -975,7 +981,9 @@ export proc session_read_path(session: Path, expected: Path) [fs, process, error
   let text = session_text(session)?
   var found = false
   for line in text.lines() {
-    if line.contains("\"name\":\"read\"") and line.contains(expected.display()) {
+    let read_call = line.contains("\"role\":\"assistant\"") and line.contains("\"name\":\"read\"")
+    let read_result = line.contains("\"role\":\"toolResult\"") and line.contains("\"toolName\":\"read\"")
+    if (read_call or read_result) and line.contains(expected.display()) {
       found = true
     }
   }

@@ -2,7 +2,27 @@
 
 ## Status
 
-Open.
+Merged.
+
+## CTO decision — current-HEAD implementation cycle
+
+- Review cycle: `pre-cycle-1785873121313-next`.
+- Decision: Approved for a fresh implementation assignment.
+- Basis: The defect remains evidence-backed, the linked `task-envcfg` eval is
+  active, and current XSH `HEAD` (`434080d`) contains both the runtime
+  `fail(message)` primitive and its canonical `xsht api` registration
+  (`2d423c1`). The prior unmerged branch (`91e0eaa`) was based before the API
+  registration and is not a valid current-HEAD candidate.
+- Branch disposition: the dependency-incomplete branch is not eligible for
+  reuse; its run evidence and commit remain preserved. This cycle must
+  dispatch a fresh engineer from current `HEAD`.
+- Assignment boundary: implement the smallest deliberate-error primitive
+  behavior required by the ticket, preserve validator semantics, and add
+  focused tests and canonical documentation. Do not broaden into boolean
+  operators, module-shadow guidance, or unrelated environment APIs.
+- Acceptance gate: the fresh engineer must produce a clean portable patch;
+  the linked replay must discover `fail` through `xsht api`, adopt
+  `fail(...)?`, and pass all ten evaluator cases.
 
 ## CTO decision — throughput cycle
 
@@ -72,16 +92,21 @@ Open.
 
 ## Merge record
 
+- Implementation branch: `factory/task-envcfg-001/1785876950208`
+- Implementation commit: `754fcba8d1d15fb3d8c0a03f11fbf2708b463a03`
+- Detected at XSH commit: `754fcba8d1d15fb3d8c0a03f11fbf2708b463a03`
+- Implementation run: `/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785876949561/phases/01-ticket`
+
 ## Budget breach
 
 None.
 
 ## Merge record
 
-- Implementation branch: `{{IMPLEMENTATION_BRANCH}}`
-- Implementation commit: `{{IMPLEMENTATION_COMMIT}}`
-- Detected at XSH commit: `{{DETECTED_XSH_COMMIT}}`
-- Implementation run: `{{IMPLEMENTATION_RUN}}`
+- Implementation branch: `factory/task-envcfg-001/1785876950208`
+- Implementation commit: `754fcba8d1d15fb3d8c0a03f11fbf2708b463a03`
+- Detected at XSH commit: `754fcba8d1d15fb3d8c0a03f11fbf2708b463a03`
+- Implementation run: `/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785876949561/phases/01-ticket`
 
 ## Source eval and manager
 

@@ -118,3 +118,10 @@ The `task-envcfg` cycle reproduced the already-tracked `fail` discoverability
 gap on the pre-API-registration build. The candidate warning is superseded by
 the merged API registration at XSH commit `2d423c1`; keep the approved handbook
 unchanged until a post-merge replay shows whether any warning remains useful.
+
+## Explicit CTO disposition — 2026-08-04
+
+| Candidate SHA-256 | Disposition |
+| --- | --- |
+| `b67607ea2dc717d2430ea3a82de6cf2e16a0b54a94ef59595aa00b8a715933e0` | deferred pending a replay that consumes the candidate handbook; not promoted |
+| `a7033f98f53404ae6b368f7310ed3b269ef14628cd3b4eeb3cbbd2b07ea3993a` | deferred pending cross-eval replay; not promoted |

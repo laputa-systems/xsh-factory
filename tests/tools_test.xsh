@@ -198,6 +198,31 @@ proc test_organization_audit_only_admits_direct_phase_children(ctx: TestContext)
   }
 }
 
+proc test_reconciliation_ignores_retired_branch_reference(ctx: TestContext) [fs, process, error] {
+  let root = test.temp_dir(ctx, name: "retired-branch-reconciliation")?
+  let factory = fs.cwd()?
+  let product = fp"${root}/product"
+  fs.mkdir(fp"${root}/tickets")?
+  fs.mkdir(fp"${root}/tickets")?
+  fs.mkdir(fp"${root}/templates")?
+  fs.copy(fp"${factory}/templates/TICKET.md", fp"${root}/templates/TICKET.md", overwrite: true)?
+  fs.mkdir(product)?
+  let git = process.which("git")?
+  test.ok(command_ok(git, ["git", "-C", product.display(), "init", "-q", "-b", "main"])?)?
+  test.ok(command_ok(git, ["git", "-C", product.display(), "config", "user.email", "factory@test"])?)?
+  test.ok(command_ok(git, ["git", "-C", product.display(), "config", "user.name", "Factory Test"])?)?
+  fs.write(fp"${product}/README", "base\n")?
+  test.ok(command_ok(git, ["git", "-C", product.display(), "add", "README"])?)?
+  test.ok(command_ok(git, ["git", "-C", product.display(), "commit", "-qm", "base"])?)?
+  fs.copy(fp"${factory}/templates/TICKET.md", fp"${root}/tickets/task-a.md", overwrite: true)?
+  let ticket = fs.read_text(fp"${root}/tickets/task-a.md")?.replace("- Eval:", "- Eval: task-envcfg")
+  fs.write(fp"${root}/tickets/task-a.md", ticket)?
+  let helper = fp"${root}/helper.xsh"
+  fs.write(helper, "use factory_runtime as runtime\nproc main() [fs, process, env, error, io] { let repo = env.path(\"FACTORY_XSH_REPO\")?; let _ = runtime.reconcile_tickets(fs.cwd()?, repo, run.text \"git\" \"-C\" $repo.display() \"rev-parse\" \"HEAD\" ?)? }\n")?
+  let status = process.run(process.command_argv(process.which("xsh")?, ["xsh", helper.display()], cwd: root, env: {FACTORY_XSH_REPO: product.display(), XSH_MODULE_PATH: factory.display()}))?
+  test.ok(status.ok, "reconciliation must ignore missing historical branches")?
+}
+
 proc test_stale_branch_inventory_is_documented() [fs, error] {
   let runtime = fs.read_text(fp"${fs.cwd()?}/factory_runtime.xsh")?
   let cto = fs.read_text(fp"${fs.cwd()?}/run-cto.xsh")?
