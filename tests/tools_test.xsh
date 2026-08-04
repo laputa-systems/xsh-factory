@@ -406,7 +406,7 @@ proc test_ticket_cycle_bounds_concurrent_engineers() [fs, error] {
   test.contains(ticket, "spawn_engineer")?
   test.contains(ticket, "engineer_handles")?
   test.contains(ticket, "controller-dispatching engineer worker")?
-  test.contains(director, "launch all children")?
+  test.contains(director, "Launch all admitted engineers before you wait.")?
   test.contains(organization, "ticket_worker_pass(primary_phase, ticket_id)")?
   test.contains(organization, "remove_run_worktrees")?
   test.contains(organization, "let reeval_ok = ticket_primary_pass and run_child")?
@@ -530,7 +530,7 @@ proc test_run_agent_clears_pi_harness_env() [fs, error] {
 
 proc test_eval_worker_prompt_matches_task_image() [fs, error] {
   let prompt = fs.read_text(fp"${fs.cwd()?}/roles/eval-worker.md")?
-  test.contains(prompt, "BusyBox `sh`, not `bash`")?
-  test.contains(prompt, "avoid bash-only syntax")?
+  test.contains(prompt, "The Alpine image provides BusyBox `sh`, not `bash`.")?
+  test.contains(prompt, "Use `sh` for shell probes.")?
   test.contains(prompt, "`and` and `or`, not shell `&&` and `||`")?
 }
