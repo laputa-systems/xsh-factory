@@ -31,6 +31,15 @@ ticket only for one strong reproducible observation. Use the fixed headings in
 XSH commit. A new ticket is open for the next cycle, not for same-cycle engineer
 dispatch. Leave the `## Merge record` placeholders untouched; reconciliation
 fills them after the CTO merges the implementation branch.
+fills them after the CTO merges the implementation branch.
+
+Before calling a cycle or worker inefficient, inspect `provider_telemetry` in
+the worker report. Explicit Pi retry events, retry delays, provider errors, and
+elevated response latency are external-health evidence. When telemetry is
+missing, classify latency attribution as `unknown`; judge agent efficiency from
+turns, tokens, tool calls, tool errors, repeated exploration, correctness, and
+artifact quality. Provider switching is out of scope for this cycle and must
+not be recommended as a current action.
 
 The handbook is a hypothesis until replay supports it. Prefer a short,
 general rule that removes repeated agent friction over a large collection of

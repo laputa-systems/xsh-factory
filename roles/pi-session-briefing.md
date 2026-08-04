@@ -64,3 +64,28 @@ with the role's required paths and current controller outputs; when the same
 friction recurs, the manager should name the smallest prompt, handbook, or
 controller change that would remove it and the replay that will test that
 hypothesis.
+
+## Provider health and latency attribution
+
+Provider responsiveness is an external confounder, not automatically an agent
+efficiency signal. The factory captures Pi provider telemetry separately from
+the canonical transcript when available. Use explicit retry events, provider
+errors, retry delays, and response timing before attributing wall-clock growth
+to an agent or prompt regression.
+
+Classify latency evidence as:
+
+- **provider-latency signal:** explicit retry/429/5xx/overload/timeout evidence
+  or elevated provider wait with no corresponding increase in turns, tool
+  errors, repeated exploration, or tokens;
+- **agent-efficiency signal:** increased turns, tool calls, repeated reads,
+  invalid queries, tool errors, or tokens while provider telemetry is normal;
+- **mixed signal:** both provider latency and agent effort are elevated;
+- **unknown:** provider telemetry is absent or incomplete. Do not call a slow
+  session an agent regression from wall time alone.
+
+Pi's `auto_retry_start` and `auto_retry_end` events are the authoritative retry
+evidence. Derived output tokens/second is client-observed diagnostic data, not
+provider-side throughput, unless the provider explicitly reports generation
+timings. Provider switching or fallback based on health is deliberately out of
+scope; record it only as a future TODO.

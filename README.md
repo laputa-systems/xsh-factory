@@ -104,6 +104,11 @@ a package-owned `evaluator.xsh`; adding one must not modify
 `evaluate_common.xsh`.
 
 Every completed cycle must leave one measurable factory-wide improvement in
+Every completed cycle must leave one measurable factory-wide improvement in
+Every organization cycle must also leave `CTO-PRODUCTIVITY-REPORT.md`, and
+provider health must be separated from agent efficiency using the captured Pi
+retry/latency telemetry. Provider switching is intentionally out of scope and
+tracked in `TODO.md`.
 `CTO-IMPROVEMENT.md`. The CTO may implement it immediately and leave it
 `pending-validation`; that status is a verification handoff, not an approval
 gate. The next CTO pass validates or safely reverts it before starting paid

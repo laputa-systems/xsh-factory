@@ -42,6 +42,20 @@ type UsageDelta = {
 
 type ToolError = {turn: Int, tool: Str, text: Str}
 
+type ProviderTelemetry = {
+  events_path: Str,
+  present: Bool,
+  retry_count: Int,
+  retry_delay_ms: Int,
+  retry_errors: List[Str],
+  provider_errors: List[Str],
+  retry_successes: Int,
+  retry_failures: Int,
+  event_turns: Int,
+  response_elapsed_ms: Int,
+  output_tokens_per_second: Float,
+}
+
 type SessionReport = {
   path: Str,
   assistant_turns: Int,
@@ -58,6 +72,7 @@ type SessionReport = {
   cost_seen: Bool,
   session_span_ms: Int,
   tool_error_details: List[ToolError],
+  provider_telemetry: ProviderTelemetry,
 }
 
 pure json_text(value: Any, fallback: Str = "") -> Str {
@@ -413,6 +428,19 @@ proc read_session(session_path: Path) [fs, process, error] -> Result[SessionRepo
     cost_seen: cost_seen,
     session_span_ms: span,
     tool_error_details: tool_error_details,
+    provider_telemetry: {
+      events_path: "",
+      present: false,
+      retry_count: 0,
+      retry_delay_ms: 0,
+      retry_errors: [],
+      provider_errors: [],
+      retry_successes: 0,
+      retry_failures: 0,
+      event_turns: 0,
+      response_elapsed_ms: 0,
+      output_tokens_per_second: 0.0,
+    },
   })
 }
 
@@ -422,6 +450,95 @@ pure count_rows(counts: Map[Int]) -> List[Any] {
     rows = rows.push({name: key, count: counts.get(key, 0)})
   }
   return rows
+}
+
+proc parse_pi_events(events_path: Path) [fs, process, error] -> Result[ProviderTelemetry] {
+  let empty: ProviderTelemetry = {
+    events_path: events_path.display(),
+    present: false,
+    retry_count: 0,
+    retry_delay_ms: 0,
+    retry_errors: [],
+    provider_errors: [],
+    retry_successes: 0,
+    retry_failures: 0,
+    event_turns: 0,
+    response_elapsed_ms: 0,
+    output_tokens_per_second: 0.0,
+  }
+  if ! fs.exists(events_path)? { return empty }
+  var retries = 0
+  var retry_delay = 0
+  var errors: List[Str] = []
+  var provider_errors: List[Str] = []
+  var retry_successes = 0
+  var retry_failures = 0
+  var turns = 0
+  var response_elapsed = 0
+  var output_tokens = 0.0
+  var turn_start = -1
+  let event_text = runtime.session_text(events_path)?
+  for line in event_text.lines() {
+    match json.decode(line) {
+      Err(_) => {}
+      Ok(event) => {
+        let kind = json_text(json.get(event, ["type"], ""))
+        if kind == "auto_retry_start" {
+          retries += 1
+          retry_delay += json_text(json.get(event, ["delayMs"], "0")).parse_int()?
+          let message = json_text(json.get(event, ["errorMessage"], ""))
+          if message != "" { errors = errors.push(message) }
+        } else if kind == "auto_retry_end" {
+          if json_text(json.get(event, ["success"], false)) == "true" {
+            retry_successes += 1
+          } else {
+            retry_failures += 1
+          }
+        } else if kind == "turn_start" {
+          turn_start = json_text(json.get(event, ["timestamp"], "-1")).parse_int()?
+        } else if kind == "turn_end" {
+          turns += 1
+          let message = json.get(event, ["message"], null)
+          match message {
+            message_record is Record => {
+              let end = json_text(json.get(message_record, ["timestamp"], "-1")).parse_int()?
+              if turn_start >= 0 and end >= turn_start {
+                response_elapsed += end - turn_start
+              }
+              output_tokens += json_number(json.get(message_record, ["usage", "output"], null))
+            }
+            _ => {}
+          }
+          turn_start = -1
+        } else if kind == "message_end" {
+          let message = json.get(event, ["message"], null)
+          match message {
+            message_record is Record => {
+              if json_text(json.get(message_record, ["role"], "")) == "assistant" and
+                json_text(json.get(message_record, ["stopReason"], "")) == "error" {
+                let error = json_text(json.get(message_record, ["errorMessage"], ""))
+                if error != "" { provider_errors = provider_errors.push(error) }
+              }
+            }
+            _ => {}
+          }
+        }
+      }
+    }
+  }
+  return {
+    events_path: events_path.display(),
+    present: true,
+    retry_count: retries,
+    retry_delay_ms: retry_delay,
+    retry_errors: errors,
+    provider_errors: provider_errors,
+    retry_successes: retry_successes,
+    retry_failures: retry_failures,
+    event_turns: turns,
+    response_elapsed_ms: response_elapsed,
+    output_tokens_per_second: if response_elapsed > 0 { output_tokens / response_elapsed.float() * 1000.0 } else { 0.0 },
+  }
 }
 
 pure optional_number(value: Float, seen: Bool) -> Any {
@@ -464,6 +581,7 @@ pure session_report_json(report: SessionReport, role: Str, worker_id: Str, budge
     session: report.path,
     models: report.models,
     timing: {session_span_ms: optional_int(report.session_span_ms, report.session_span_ms >= 0)},
+    provider_telemetry: report.provider_telemetry,
     usage: {
       assistant_turns: report.assistant_turns,
       user_messages: report.user_messages,
@@ -510,7 +628,7 @@ proc parse_budget(value: Str) [error] -> Result[Float] {
   return Ok(if whole < 0 { whole.float() - fraction.float() / divisor.float() } else { magnitude })
 }
 
-proc run_worker(argv: List[Str]) [fs, env, error] -> Result[Int] {
+proc run_worker(argv: List[Str]) [fs, process, env, error] -> Result[Int] {
   if argv.len() < 9 {
     eprint "usage: session-report.xsh worker --session PATH --output PATH --role ROLE --worker-id ID --budget-usd USD"
     return Ok(2)
@@ -526,7 +644,27 @@ proc run_worker(argv: List[Str]) [fs, env, error] -> Result[Int] {
     return Ok(1)
   }
   let report = read_session(session)?
-  json.write(output, session_report_json(report, role, worker_id, budget), pretty: true)?
+  let events_path = if argv.len() > 12 { Path(argv[12]) } else { fp"${session.display()}.events.jsonl" }
+  let telemetry = parse_pi_events(events_path)?
+  let enriched = {
+    path: report.path,
+    assistant_turns: report.assistant_turns,
+    user_messages: report.user_messages,
+    tool_calls: report.tool_calls,
+    tool_results: report.tool_results,
+    tool_errors: report.tool_errors,
+    thinking_blocks: report.thinking_blocks,
+    malformed_lines: report.malformed_lines,
+    models: report.models,
+    stop_reasons: report.stop_reasons,
+    tool_names: report.tool_names,
+    usage: report.usage,
+    cost_seen: report.cost_seen,
+    session_span_ms: report.session_span_ms,
+    tool_error_details: report.tool_error_details,
+    provider_telemetry: telemetry,
+  }
+  json.write(output, session_report_json(enriched, role, worker_id, budget), pretty: true)?
   if ! report.cost_seen { return Ok(2) }
   if report.usage.cost_usd > budget { return Ok(3) }
   return Ok(0)

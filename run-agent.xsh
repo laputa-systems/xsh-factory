@@ -25,6 +25,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   let process_registry = fp"${run_dir}/processes"
   let process_registry_file = fp"${process_registry}/${role}-${worker_id}.pids"
   let session = fp"${worker_dir}/session.jsonl"
+  let provider_events = fp"${session.display()}.events.jsonl"
   let report = fp"${worker_dir}/report.json"
   let default_required_report = fp"${worker_dir}/REPORT.md".display()
   let required_report = env.get_or("FACTORY_REQUIRED_REPORT", default_required_report)?
@@ -108,6 +109,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     "--provider", provider,
     "--model", model,
     "--thinking", thinking,
+    "--mode", "json",
     "--approve",
     "--system-prompt", system_prompt.display(),
     "--no-extensions",
@@ -202,7 +204,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     pi_argv,
     cwd: workdir,
     env: child_env,
-    stdout: fp"${worker_dir}/stdout.log",
+    stdout: provider_events,
     stderr: fp"${worker_dir}/stderr.log",
   )?
   let watcher = spawn process.command_argv(
@@ -226,7 +228,8 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     xsh_path,
     [xsh_path.display(), fp"${factory_dir}/tools/session-report.xsh", "--", "worker",
       "--session", session.display(), "--output", report.display(), "--role", role,
-      "--worker-id", worker_id, "--budget-usd", budget],
+      "--worker-id", worker_id, "--budget-usd", budget,
+      "--events", provider_events.display()],
   ))?
   if required_report != "" and ! fs.exists(Path(required_report))? {
     fs.write(fp"${worker_dir}/REPORT-MISSING", f"required report missing: ${required_report}\n")?

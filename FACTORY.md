@@ -43,6 +43,13 @@ engineer never chooses a ticket. There is one process launcher,
 - Controllers contain no inline Markdown report, prompt, assignment, or event
   bodies. Put Markdown inputs and human narratives on disk in `templates/` or
   role files. Structured facts belong in JSON.
+  role files. Structured facts belong in JSON.
+
+- Worker reports preserve Pi provider-health telemetry separately from
+  agent-efficiency metrics. Capture structured retry events and client-observed
+  timing when available; missing provider telemetry is `unknown`, not evidence
+  of normal provider health. Provider switching is not an organization-cycle
+  action.
 - Separate orchestration from judgment. Controllers own admission, exact
   assignment, process boundaries, cancellation, state transitions, and
   validation. Pi roles own interpretation, diagnosis, and recommendations.

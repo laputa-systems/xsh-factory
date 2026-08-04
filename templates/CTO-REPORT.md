@@ -31,6 +31,14 @@ This is the deterministic first-pass briefing for the CTO. The structured
 {{WORKERS}}
 
 ### Nonzero tool results
+### Provider health and latency
+
+Provider retry, latency, and attribution data are in worker `report.json`
+`provider_telemetry` fields. Missing telemetry is `unknown`, not evidence of
+normal provider health. Provider switching is out of scope and tracked in
+`TODO.md`.
+
+### Nonzero tool results
 
 {{TOOL_ERRORS}}
 

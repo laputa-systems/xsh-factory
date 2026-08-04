@@ -20,6 +20,13 @@ implementation commit. If not, classify the cycle as a throughput failure and
 describe the corrective factory change; a passing eval-only cycle does not
 satisfy this requirement when an eligible product ticket existed.
 
+## Provider-health attribution
+
+State whether provider telemetry was captured. Do not treat latency as an agent
+regression when retry, provider-error, or response-timing evidence indicates an
+external provider-health issue; if telemetry is missing, state `unknown`.
+satisfy this requirement when an eligible product ticket existed.
+
 ## Baseline metric
 
 State the prior-cycle measurement and evidence path.

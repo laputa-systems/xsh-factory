@@ -2,6 +2,7 @@
 
 proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   let session = Path(argv[0])
+  let provider_events = fp"${session.display()}.events.jsonl"
   let task_path = Path(argv[1])
   let agent_dir = env.path("PI_CODING_AGENT_DIR", p"/run/pi-agent")?
   fs.mkdir(agent_dir)?
@@ -23,6 +24,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     "--provider", pi_provider,
     "--model", pi_model,
     "--thinking", pi_thinking,
+    "--mode", "json",
     "--approve",
     "--system-prompt", "/work/agents.md",
     "--no-extensions",
@@ -36,7 +38,9 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     f"@${task_path.display()}",
     prompt,
   ]
-  let handle = spawn process.command_argv(pi_command, pi_argv)?
+  let handle = spawn process.command_argv(
+    pi_command, pi_argv, stdout: provider_events, stderr: p"/session/pi.stderr"
+  )?
   let tail = spawn run tail -f ${session.display()} ?
   let status = wait handle?
   time.sleep(200ms)?

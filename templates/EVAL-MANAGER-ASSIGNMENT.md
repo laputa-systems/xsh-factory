@@ -37,6 +37,15 @@ place instead of reconstructing the headings. Your `## Tool-error findings` sect
 for every failed Pi tool result in the structured worker and manager
 `report.json` files, including invalid `xsht api` discovery queries, or say
 `None.` when all current sessions have zero errors.
+`None.` when all current sessions have zero errors.
+
+Before attributing wall-clock growth to agent inefficiency, inspect the worker
+report's `provider_telemetry`. Explicit `auto_retry_*` events, provider errors,
+retry delays, and elevated response latency are external-health evidence. If
+telemetry is absent, say latency attribution is `unknown` and use turns,
+tokens, tool calls, tool errors, repeated exploration, correctness, and artifact
+quality for the efficiency judgment. Do not recommend switching providers in
+this cycle; provider fallback is a future TODO only.
 
 {{TRIAL_INSTRUCTIONS}}
 

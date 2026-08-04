@@ -37,9 +37,34 @@ proc test_session_report_is_structured_and_counts_thinking(ctx: TestContext) [fs
   test.eq(json.get(report, ["usage", "thinking_blocks"], 0), 1)?
   test.eq(schema.value_text(json.get(report, ["usage", "reasoning_tokens"], null)), "7")?
   test.eq(json.get(report, ["usage", "tool_errors"], 0), 0)?
+  test.eq(json.get(report, ["provider_telemetry", "present"], true), false)?
   test.eq(json.get(report, ["result"], "unknown"), "pass")?
   test.ok(! fs.exists(fp"${root}/WORKER-REPORT.md")?)?
   test.ok(! fs.exists(fp"${root}/thinking.md")?)?
+}
+
+proc test_session_report_captures_provider_telemetry(ctx: TestContext) [fs, process, error] {
+  let root = test.temp_dir(ctx, name: "provider-telemetry")?
+  let session = fp"${root}/session.jsonl"
+  let events = fp"${session.display()}.events.jsonl"
+  let output = fp"${root}/report.json"
+  fs.write(session, r"""
+{"type":"message","timestamp":"2026-08-01T12:00:00.000Z","message":{"role":"assistant","provider":"fixture","model":"fixture","content":[],"usage":{"output":20,"cost":{"total":0.001}}}}
+""")?
+  fs.write(events, r"""
+{"type":"turn_start","timestamp":1000}
+{"type":"auto_retry_start","attempt":1,"delayMs":2000,"errorMessage":"503 overloaded"}
+{"type":"auto_retry_end","success":true,"attempt":1}
+{"type":"turn_end","message":{"role":"assistant","timestamp":3000,"usage":{"output":20}}}
+""")?
+  test.ok(run_session_report(root, session, output)?, "telemetry fixture should normalize")?
+  let report = json.read(output)?
+  test.eq(json.get(report, ["provider_telemetry", "present"], false), true)?
+  test.eq(json.get(report, ["provider_telemetry", "retry_count"], 0), 1)?
+  test.eq(json.get(report, ["provider_telemetry", "retry_delay_ms"], 0), 2000)?
+  test.eq(json.get(report, ["provider_telemetry", "retry_successes"], 0), 1)?
+  test.eq(json.get(report, ["provider_telemetry", "event_turns"], 0), 1)?
+  test.eq(schema.value_text(json.get(report, ["provider_telemetry", "output_tokens_per_second"], null)), "10")?
 }
 
 proc test_session_report_retains_every_tool_error_in_json(ctx: TestContext) [fs, process, error] {
@@ -66,6 +91,7 @@ proc test_session_report_retains_every_tool_error_in_json(ctx: TestContext) [fs,
     _ => test.ok(false, "tool_errors must be a JSON list")?
   }
   test.ok(! fs.exists(fp"${root}/TOOL-ERRORS.md")?)?
+  test.eq(json.get(report, ["provider_telemetry", "present"], true), false)?
 }
 
 proc test_session_report_fails_closed_on_unknown_cost(ctx: TestContext) [fs, process, error] {
@@ -546,7 +572,11 @@ proc test_pi_session_persistence_is_jsonl_only() [fs, error] {
   let controller = fs.read_text(fp"${fs.cwd()?}/run-agent.xsh")?
   let eval_worker = fs.read_text(fp"${fs.cwd()?}/evals/eval-worker.xsh")?
   test.contains(controller, "--session")?
+  test.contains(controller, "--mode", "json")?
+  test.contains(controller, ".events.jsonl")?
   test.contains(eval_worker, "--session")?
+  test.contains(eval_worker, "--mode", "json")?
+  test.contains(eval_worker, ".events.jsonl")?
   test.ok(! controller.contains("--export"), "run-agent must not create session.html")?
   test.ok(! eval_worker.contains("--export"), "eval worker must not create session.html")?
 }

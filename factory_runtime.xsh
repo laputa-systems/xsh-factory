@@ -931,7 +931,7 @@ export proc session_text(session: Path) [fs, process, error] -> Result[Str] {
 }
 
 pure session_reference_file(name: Str) -> Bool {
-  return name.ends_with(".json") or name.ends_with(".jsonl") or
+  return name.ends_with(".json") or name.ends_with(".jsonl") or name.ends_with(".events.jsonl.bz2") or
     name.ends_with(".md") or name.ends_with(".txt") or
     name.ends_with(".stdout") or name.ends_with(".stderr") or
     name.ends_with(".state") or name.ends_with(".pids") or
@@ -944,7 +944,9 @@ export proc compress_run_sessions(run_dir: Path) [fs, process, error] -> Result[
   let bzip2 = process.which("bzip2")?
   var sessions: List[Path] = []
   for entry in fs.walk(run_dir, gitignore: false, hidden: true)? |> where .kind == "file" {
-    if entry.name == "session.jsonl" { sessions = sessions.push(entry.path) }
+    if entry.name == "session.jsonl" or entry.name.ends_with(".events.jsonl") {
+      sessions = sessions.push(entry.path)
+    }
   }
   for session in sessions {
     let archive_path = fp"${session.display()}.bz2"
@@ -957,9 +959,12 @@ export proc compress_run_sessions(run_dir: Path) [fs, process, error] -> Result[
   for entry in fs.walk(run_dir, gitignore: false, hidden: true)? |> where .kind == "file" {
     if entry.name.ends_with(".bz2") or ! session_reference_file(entry.name) { continue }
     let text = entry.path.read_text()?
-    let normalized = text.replace("/session/session.jsonl", "/session/__SESSION_JSONL__")
+    let normalized = text
+      .replace("/session/session.jsonl.events.jsonl", "/session/__SESSION_EVENTS_JSONL__")
+      .replace("/session/session.jsonl", "/session/__SESSION_JSONL__")
       .replace("session.jsonl", "session.jsonl.bz2")
       .replace("__SESSION_JSONL__", "session.jsonl")
+      .replace("__SESSION_EVENTS_JSONL__", "session.jsonl.events.jsonl.bz2")
     if normalized != text { fs.write_atomic(entry.path, normalized)? }
   }
   return Ok()

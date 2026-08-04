@@ -77,6 +77,7 @@ proc worker_block(run_dir: Path, report: Path, template: Str) [fs, error] -> Res
     {key: "COST", value: text(json.get(usage, ["cost_usd"], "unknown"))},
     {key: "BUDGET", value: text(json.get(usage, ["budget_usd"], "unknown"))},
     {key: "THINKING", value: text(json.get(usage, ["thinking_blocks"], 0), "0")},
+    {key: "PROVIDER_TELEMETRY", value: f"present=${text(json.get(value, ["provider_telemetry", "present"], "unknown"))}; retries=${text(json.get(value, ["provider_telemetry", "retry_count"], "unknown"))}; retry_delay_ms=${text(json.get(value, ["provider_telemetry", "retry_delay_ms"], "unknown"))}; retry_successes=${text(json.get(value, ["provider_telemetry", "retry_successes"], "unknown"))}; retry_failures=${text(json.get(value, ["provider_telemetry", "retry_failures"], "unknown"))}; provider_errors=${text(json.get(value, ["provider_telemetry", "provider_errors"], "unknown"))}; event_turns=${text(json.get(value, ["provider_telemetry", "event_turns"], "unknown"))}; observed_output_tps=${text(json.get(value, ["provider_telemetry", "output_tokens_per_second"], "unknown"))}"},
   ])
 }
 

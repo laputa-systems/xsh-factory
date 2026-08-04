@@ -40,7 +40,11 @@ boundary. `findings` are structured observations or failures. `artifacts`
 contains typed paths and optional hashes.
 
 Worker reports add `session`, `usage`, `timing`, `models`, `stop_reasons`,
-`tools`, and `tool_errors`. A failed Pi tool invocation is represented directly
+`tools`, `provider_telemetry`, and `tool_errors`. `provider_telemetry` records
+whether Pi's structured event stream was captured, automatic retry count and
+delays, retry error messages, and event-derived turn counts. Client-observed
+throughput is diagnostic and must not be presented as provider-side tok/s unless
+the provider reports generation timing. A failed Pi tool invocation is represented directly
 as an entry in `tool_errors`, with its turn, tool name, short result text, and
 the raw session path. There is no separate `TOOL-ERRORS.md`; the complete
 payload remains in compressed `session.jsonl.bz2`.
