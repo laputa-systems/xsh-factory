@@ -323,9 +323,10 @@ proc run_ticket_cycle(
       let session_sha = hash.sha256(session)?.hex()
       let assignment_hash = hash.sha256(fp"${run_dir}/messages/${ticket_id}.md")?.hex()
       let patch_sha = hash.sha256(patch_path)?.hex()
-      runtime.emit_event(event_template, run_dir, f"75-ticket-${ticket_id}-provenance", ticket_id,
-        "started", 1, "controller",
-        f"amended=${head.trim()}; report_sha256=${report_sha}; session_sha256=${session_sha}; assignment_sha256=${assignment_hash}; patch_sha256=${patch_sha}")?
+      runtime.emit_structured_event(event_template, run_dir, f"75-ticket-${ticket_id}-provenance", ticket_id, {
+        amended_commit: head.trim(), report_sha256: report_sha, session_sha256: session_sha,
+        assignment_sha256: assignment_hash, patch_sha256: patch_sha,
+      })?
     }
     let worktree_action = if ! ticket_ok {
       "retained-after-validation-failure"

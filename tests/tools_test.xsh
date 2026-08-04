@@ -245,6 +245,13 @@ proc test_aggregate_budget_breach_writes_postmortem_and_stops(ctx: TestContext) 
   test.contains(fs.read_text(postmortem)?, "Factory cycle postmortem")?
 }
 
+proc test_structured_provenance_event_exists() [fs, error] {
+  let runtime = fs.read_text(fp"${fs.cwd()?}/factory_runtime.xsh")?
+  let ticket = fs.read_text(fp"${fs.cwd()?}/run-ticket.xsh")?
+  test.contains(runtime, "emit_structured_event")?
+  test.contains(ticket, "amended_commit")?
+}
+
 proc test_engineer_provenance_amend(ctx: TestContext) [fs, process, error] {
   let root = test.temp_dir(ctx, name: "engineer-provenance")?
   let factory = fp"${root}/factory"

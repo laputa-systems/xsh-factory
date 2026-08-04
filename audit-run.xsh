@@ -406,7 +406,10 @@ proc audit_organization(run_dir: Path, factory_dir: Path) [fs, env, process, err
   if phases.len() == 0 { all_pass = false; findings = findings.push({kind: "phases", state: "missing"}) }
   let worker_reports = worker_report_paths(run_dir)?
   let workers = worker_data(run_dir, worker_reports)?
-  let result = if all_pass and workers.usage.budget_failures == 0 and workers.usage.unknown_costs == 0 { "pass" } else { "fail" }
+  let product_ok = phases.len() > 0 and all_pass
+  let evaluator_ok = all_pass
+  let infrastructure_ok = workers.usage.budget_failures == 0 and workers.usage.unknown_costs == 0
+  let result = if product_ok and evaluator_ok and infrastructure_ok { "pass" } else { "fail" }
   let xsh_commit = current_xsh_commit(factory_dir)?.trim()
   let report = {
     schema_version: schema.SCHEMA_VERSION,
@@ -418,6 +421,7 @@ proc audit_organization(run_dir: Path, factory_dir: Path) [fs, env, process, err
       mode: "organization",
       xsh_commit: xsh_commit,
       phases: phases,
+      outcomes: schema.outcome(product_ok, evaluator_ok, infrastructure_ok),
       workers: workers.workers,
       cost: workers.usage,
       tool_errors: workers.tool_errors,

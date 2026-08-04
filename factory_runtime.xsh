@@ -408,6 +408,21 @@ export proc cleanup_run_worktrees(xsh_repo: Path, run_dir: Path) [fs, process, e
 }
 
 ## Writes one event and advances its subject state atomically.
+export proc emit_structured_event(
+  template: Path,
+  run_dir: Path,
+  name: Str,
+  subject: Str,
+  payload: Any,
+) [fs, error] -> Result[Unit] {
+  let events = fp"${run_dir}/events.jsonl"
+  let existing = if fs.exists(events)? { fs.read_text(events)? } else { "" }
+  let event = {schema_version: 1, kind: "event", event_id: name, run_id: run_dir.display(), subject: subject, payload: payload}
+  fs.write_atomic(events, existing + json.encode(event)? + "\n")?
+  return Ok()
+}
+
+## Writes one event and advances its subject state atomically.
 export proc emit_event(
   template: Path,
   run_dir: Path,

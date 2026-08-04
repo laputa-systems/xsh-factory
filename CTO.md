@@ -43,7 +43,7 @@ One cycle may:
   normally one per passing engineer row; product merge is a CTO decision, not
   a separate user-approval gate.
 
-The factory may contain at most 20 eval contracts. A solved, redundant, or
+The factory may contain at most 30 eval contracts. A solved, redundant, or
 stagnant eval is marked `Disabled.` with an explicit reason and evidence link;
 it still counts toward the cap. Never create an eval merely to keep the
 organization busy.

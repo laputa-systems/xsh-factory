@@ -48,8 +48,13 @@ Use the deterministic CTO inventory before an organization request when
 reviewing ticket state:
 
 ```sh
+```
+```sh
 XSH_MODULE_PATH=. xsh run-cto.xsh
 ```
+
+The CTO inventory also reports stale factory branches and their ticket status;
+use that evidence before retiring any branch.
 
 The organization controller also persists the same inventory as
 `CTO-TICKET-INVENTORY.md` and `CTO-TICKET-INVENTORY.json` in every run before
