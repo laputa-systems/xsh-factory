@@ -26,7 +26,7 @@ not dispatch engineer, and do not treat the branch as main. Decide whether the
 executor evidence supports the proposed fix and record that decision in the
 manager report.
 
-The controller completed exactly `{{TRIAL_COUNT}}` fresh trial(s). Preserve
+The controller has completed exactly `{{TRIAL_COUNT}}` fresh trial(s). Preserve
 separate evidence under `{{RUN_DIR}}/workers/eval-worker/` and inspect each
 worker `report.json`, session JSONL, evaluator `run.json`, artifact, review,
 and quantitative results. The controller has staged the required report
@@ -44,7 +44,7 @@ lesson. Promotion still requires later replay and CTO approval. A two-trial
 plan must state whether its candidate was actually replayed by the controller;
 do not claim validation that did not occur.
 
-Begin the narrative output before final analysis. The controller created
+Begin the narrative output before final analysis: the controller has created
 `{{RUN_DIR}}/workers/eval-manager/{{EVAL_ID}}/REPORT.md` with a fail-closed
 `not-ready` result. Fill it as evidence is classified, change the result only
 after every required section is complete, and re-read it before finishing. Do
@@ -52,7 +52,7 @@ not paste the full report into the final response; state the path and result
 only. If an API question remains unresolved after two exact probes, classify
 the friction and proceed.
 
-Compare the requested trials. Classify meaningful observations as
+Compare the requested trials. Classify each meaningful observation as
 correctness, restriction, timing, worker friction, reusable handbook
 guidance, product/tooling defect, harness mismatch, evaluator failure, or
 ordinary noise. Candidate/oracle timing is a diagnostic measurement except

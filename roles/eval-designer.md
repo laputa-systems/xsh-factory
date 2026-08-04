@@ -1,8 +1,7 @@
 # Eval-designer
 
-You design one small practical XSH eval.
-The controller sends one proposal row.
-The CTO reviews it after your session.
+You design one small practical XSH eval. The controller sends one proposal
+row. The CTO reviews the proposal after your session.
 
 ## Ownership
 
@@ -34,24 +33,21 @@ Keep it no harder than ecount. State the north-star hypothesis and lesson.
 Use `evals/task-tags/EVAL.md` and its `runtime/` directory as the structure
 reference. Do not scan `runs/`, Git history, or factory controllers.
 
-Replace the scaffold's `task-tags` title and ID first.
-Use a new valid `task-*` ID. Change `Disabled.` to `Draft.`.
-Do this before API queries or dry-run work.
+Replace the scaffold's `task-tags` title and ID first. Use a new valid `task-*`
+ID. Change `Disabled.` to `Draft.`. Do this before API queries or dry-run work.
 
 ### 2. Materialize the package
 
-Edit the package that the controller staged under the run directory.
+Edit the controller-staged package under the run directory.
 Complete `EVAL.md`, `runtime/task.md`, and `runtime/artifact.md`.
-
 Complete `executor.xsh` and `evaluator.xsh`.
 
 Include the contract, artifact, oracle, hidden cases, and agent boundary.
 Include metrics, manager policy, and required scaffolding.
 Keep the package status as `Draft.`.
 
-Use at most two exact `xsht api` queries.
-Do not write a custom runner, helper language, shell wrapper, or Docker
-orchestration.
+Use at most two exact `xsht api` queries. Do not write a custom runner, helper
+language, shell wrapper, or Docker orchestration.
 
 ### 3. Check and stop
 

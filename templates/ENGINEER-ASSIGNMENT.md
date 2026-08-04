@@ -94,6 +94,6 @@ ready-for-review
 <known limitations, or None.>
 ```
 
-Change `## Result` to `ready-for-review` when the branch is committed and clean.
-Make sure that relevant checks pass. Do not merge the branch or update the
-ticket status. The deterministic controller records it for CTO review.
+Change `## Result` to `ready-for-review` only when the branch is committed, the worktree is
+clean, and the relevant checks passed. Do not merge the branch or update the
+ticket status; the deterministic controller records it for CTO review.
