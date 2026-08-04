@@ -296,25 +296,36 @@ proc run_ticket_cycle(
     let commit_ok = head.trim() != xsh_commit.trim()
     let clean = status.trim() == ""
     let ticket_ok = fs.exists(session)? and report_ok and north_star_read_ok and handbook_read_ok and branch_ok and commit_ok and clean
-    let provenance_head = if ticket_ok {
+    let assignment_sha = hash.sha256(fp"${run_dir}/messages/${ticket_id}.md")?.hex()
+    let patch_path = fp"${patch_root}/${ticket_id}.diff"
+    let patch_stderr = fp"${patch_root}/${ticket_id}.stderr"
+    let patch_ok = if ticket_ok {
+      runtime.write_engineer_patch(worktree, xsh_commit.trim(), head.trim(), patch_path, patch_stderr)?
+    } else {
+      false
+    }
+    let patch_sha = if patch_ok { hash.sha256(patch_path)?.hex() } else { "" }
+    let provenance_head = if ticket_ok and patch_ok {
       runtime.amend_engineer_commit(
         worktree, head.trim(), factory_dir, run_dir, worker_report, session,
-        ticket_id, branch.trim(), xsh_commit.trim()
+        ticket_id, branch.trim(), xsh_commit.trim(), assignment_sha, patch_sha
       )?
     } else {
       ""
     }
-    let provenance_ok = ticket_ok and provenance_head != "" and
-      runtime.update_engineer_report_commit(engineer_report, provenance_head)?
+    let provenance_ok = ticket_ok and patch_ok and provenance_head != ""
     if provenance_ok {
       head = provenance_head
+      runtime.update_engineer_report_commit(engineer_report, head.trim())?
     }
-    let patch_path = fp"${patch_root}/${ticket_id}.diff"
-    let patch_stderr = fp"${patch_root}/${ticket_id}.stderr"
-    let patch_ok = if provenance_ok {
-      runtime.write_engineer_patch(worktree, xsh_commit.trim(), head.trim(), patch_path, patch_stderr)?
-    } else {
-      false
+    if provenance_ok {
+      let report_sha = hash.sha256(worker_report)?.hex()
+      let session_sha = hash.sha256(session)?.hex()
+      let assignment_hash = hash.sha256(fp"${run_dir}/messages/${ticket_id}.md")?.hex()
+      let patch_sha = hash.sha256(patch_path)?.hex()
+      runtime.emit_event(event_template, run_dir, f"75-ticket-${ticket_id}-provenance", ticket_id,
+        "started", 1, "controller",
+        f"amended=${head.trim()}; report_sha256=${report_sha}; session_sha256=${session_sha}; assignment_sha256=${assignment_hash}; patch_sha256=${patch_sha}")?
     }
     let worktree_action = if ! ticket_ok {
       "retained-after-validation-failure"

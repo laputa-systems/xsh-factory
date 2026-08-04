@@ -233,11 +233,14 @@ proc test_engineer_provenance_amend(ctx: TestContext) [fs, process, error] {
   let product = fp"${root}/product"
   let run_dir = fp"${factory}/runs/run-1"
   let worker_dir = fp"${run_dir}/workers/engineer/task-a"
+  let assignment_file = fp"${run_dir}/messages/task-a.md"
+  let patches = fp"${run_dir}/patches"
   let worktree = fp"${root}/worktree"
   fs.mkdir(fp"${worker_dir}")?
+  fs.mkdir(assignment_file.parent())?
+  fs.mkdir(patches)?
   fs.mkdir(product)?
   fs.mkdir(worktree.parent())?
-  fs.write(fp"${factory}/marker", "factory")?
   let git = process.which("git")?
   test.ok(command_ok(git, ["git", "-C", product.display(), "init", "-q", "-b", "main"])?)?
   test.ok(command_ok(git, ["git", "-C", product.display(), "config", "user.email", "factory@test"])?)?
@@ -251,39 +254,48 @@ proc test_engineer_provenance_amend(ctx: TestContext) [fs, process, error] {
   test.ok(command_ok(git, ["git", "-C", worktree.display(), "add", "README"])?)?
   test.ok(command_ok(git, ["git", "-C", worktree.display(), "commit", "-qm", "change"])?)?
   let head = run.text "git" "-C" $worktree.display() "rev-parse" "HEAD" ?
+  fs.write(assignment_file, "controller assignment\n")?
+  let assignment_sha = hash.sha256(assignment_file)?.hex()
+  let report = fp"${worker_dir}/report.json"
+  let session = fp"${worker_dir}/session.jsonl"
+  let missing = runtime.amend_engineer_commit(worktree, head.trim(), factory, run_dir,
+    report, session, "task-a", "factory/task-a/run-1", base.trim(), assignment_sha, "missing")?
+  test.eq(missing, "")?
+  let missing_session = fp"${worker_dir}/missing-session.jsonl"
+  let missing_evidence = runtime.amend_engineer_commit(worktree, head.trim(), factory, run_dir,
+    report, missing_session, "task-a", "factory/task-a/run-1", base.trim(), assignment_sha, "missing")?
+  test.eq(missing_evidence, "")?
   fs.write(fp"${worker_dir}/session.jsonl", "session evidence\n")?
-  fs.write(fp"${worker_dir}/report.json", json.encode({
+  fs.write(report, json.encode({
     models: ["openrouter/openai/gpt-5.6-luna"],
-    session: fp"${worker_dir}/session.jsonl".display(),
-    usage: {
-      assistant_turns: 81, tool_calls: 152, tool_errors: 11,
-      thinking_blocks: 27, reasoning_tokens: 13963,
-      total_bucket_tokens: 7348813, input_tokens: 243, output_tokens: 27898,
-      cache_read_tokens: 7198079, cache_write_tokens: 122593,
-      cost_usd: 0.104068015,
-    },
-    timing: {session_span_ms: 695496},
+    usage: {assistant_turns: 81, tool_calls: 152, tool_errors: 11, thinking_blocks: 27,
+      reasoning_tokens: 13963, total_bucket_tokens: 7348813, input_tokens: 243,
+      output_tokens: 27898, cache_read_tokens: 7198079, cache_write_tokens: 122593,
+      cost_usd: 0.104068015},
+    timing: {session_span_ms: 695496}
   })? + "\n")?
-  let amended = runtime.amend_engineer_commit(
-    worktree, head.trim(), factory, run_dir,
-    fp"${worker_dir}/report.json", fp"${worker_dir}/session.jsonl",
-    "task-a", "factory/task-a/run-1", base.trim()
-  )?
+  let patch_path = fp"${patches}/task-a.diff"
+  test.ok(runtime.write_engineer_patch(worktree, base.trim(), head.trim(), patch_path, fp"${patches}/task-a.stderr")?)?
+  let patch_sha = hash.sha256(patch_path)?.hex()
+  let amended = runtime.amend_engineer_commit(worktree, head.trim(), factory, run_dir,
+    report, session, "task-a", "factory/task-a/run-1", base.trim(), assignment_sha, patch_sha)?
   test.ok(amended != head.trim())?
   let message = run.text "git" "-C" $worktree.display() "log" "-1" "--format=%B" ?
   test.contains(message, "Factory-Provenance-Version: 1")?
   test.contains(message, "Factory-Model: openai/gpt-5.6-luna")?
-  test.contains(message, "Factory-Assistant-Turns: 81")?
-  test.contains(message, "Factory-Cost-USD: 0.104068015")?
+  test.contains(message, "Factory-Report-SHA256:")?
+  test.contains(message, f"Factory-Assignment-SHA256: ${assignment_sha}")?
   test.contains(message, "Factory-Session-SHA256:")?
-  test.contains(message, "Factory-Worker-Report: runs/run-1/workers/engineer/task-a/report.json")?
-  test.ok(! message.contains("Factory-Source-Commit: " + amended))?
+  test.contains(message, f"Factory-Patch-SHA256: ${patch_sha}")?
+  test.contains(message, "Factory-Cost-USD: 0.104068015")?
   test.ok(command_ok(git, ["git", "-C", worktree.display(), "status", "--porcelain"])?)?
-  let second = runtime.amend_engineer_commit(
-    worktree, amended, factory, run_dir,
-    fp"${worker_dir}/report.json", fp"${worker_dir}/session.jsonl",
-    "task-a", "factory/task-a/run-1", base.trim()
-  )?
+  fs.write(fp"${worktree}/DIRTY", "must block amendment\n")?
+  let dirty = runtime.amend_engineer_commit(worktree, amended, factory, run_dir,
+    report, session, "task-a", "factory/task-a/run-1", base.trim(), assignment_sha, patch_sha)?
+  test.eq(dirty, "")?
+  fs.remove(fp"${worktree}/DIRTY")?
+  let second = runtime.amend_engineer_commit(worktree, amended, factory, run_dir,
+    report, session, "task-a", "factory/task-a/run-1", base.trim(), assignment_sha, patch_sha)?
   test.eq(second, amended)?
   test.ok(runtime.remove_clean_worktree(product, worktree)?)?
 }
@@ -309,7 +321,7 @@ proc test_engineer_patch_survives_worktree_cleanup(ctx: TestContext) [fs, proces
   test.ok(command_ok(git, ["git", "-C", worktree.display(), "commit", "-qm", "change"])?)?
   let head = run.text "git" "-C" $worktree.display() "rev-parse" "HEAD" ?
   let diff_path = fp"${patches}/task.diff"
-  test.ok(runtime.write_engineer_patch(worktree, base.trim(), head.trim(), diff_path, fp"${patches}/task.stderr")?)
+  test.ok(runtime.write_engineer_patch(worktree, base.trim(), head.trim(), diff_path, fp"${patches}/task.stderr")?)?
   test.contains(fs.read_text(diff_path)?, "+changed")?
   test.ok(runtime.remove_clean_worktree(product, worktree)?)?
   test.ok(! fs.exists(worktree)?)?

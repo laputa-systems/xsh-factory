@@ -3,6 +3,16 @@
 use factory_control as control
 
 error RuntimeError = InvalidTransition(subject: Str, current: Str, next: Str) : InvalidData
+type EngineerProvenance = {
+  source_commit: Str,
+  amended_commit: Str,
+  report_sha256: Str,
+  session_sha256: Str,
+  assignment_sha256: Str,
+  patch_sha256: Str,
+  provider: Str,
+  model: Str,
+}
 
 type MergeEvidence = {
   merged: Bool,
@@ -223,6 +233,15 @@ export proc update_engineer_report_commit(report_path: Path, commit_hash: Str) [
   return control.engineer_report_contract_ok(updated)
 }
 
+proc provenance_trailers_ok(worktree: Path, commit: Str, expected: List[Str]) [process, error] -> Result[Bool] {
+  let text = run.text "git" "-C" $worktree.display() "show" "-s" "--format=%(trailers)" $commit.trim() ?
+  for value in expected {
+    if ! text.contains(value) {
+      return false
+    }
+  }
+  return true
+}
 ## Amends a validated engineer commit with deterministic factory provenance.
 ## The caller must verify the report, branch, commit, and clean worktree first.
 export proc amend_engineer_commit(
@@ -235,6 +254,8 @@ export proc amend_engineer_commit(
   ticket_id: Str,
   branch: Str,
   base_commit: Str,
+  assignment_sha: Str,
+  patch_sha: Str,
 ) [fs, process, error] -> Result[Str] {
   let current_head = run.text "git" "-C" $worktree.display() "rev-parse" "HEAD" ?
   let worktree_status = run.text "git" "-C" $worktree.display() "status" "--porcelain" ?
@@ -258,6 +279,7 @@ export proc amend_engineer_commit(
   let model_parts = model_ref.split("/", maxsplit: 1)
   let provider = if model_parts.len() > 1 { model_parts[0] } else { "unknown" }
   let model = if model_parts.len() > 1 { model_ref.byte_slice(provider.byte_len() + 1, model_ref.byte_len() - provider.byte_len() - 1) } else { model_ref }
+  let report_sha = hash.sha256(report_path)?.hex()
   let session_sha = hash.sha256(session_path)?.hex()
   let relative_report = control.factory_relative_path(factory_dir.display(), report_path)
   let relative_session = control.factory_relative_path(factory_dir.display(), session_path)
@@ -271,6 +293,8 @@ export proc amend_engineer_commit(
     f"Factory-Base-Commit: ${base_commit.trim()}",
     f"Factory-Source-Commit: ${head_commit.trim()}",
     f"Factory-Provider: ${provider}",
+    f"Factory-Assignment-SHA256: ${assignment_sha}",
+    f"Factory-Patch-SHA256: ${patch_sha}",
     f"Factory-Model: ${model}",
     f"Factory-Assistant-Turns: ${report_value(json.get(usage, ["assistant_turns"], 0))}",
     f"Factory-Tool-Calls: ${report_value(json.get(usage, ["tool_calls"], 0))}",
@@ -284,6 +308,7 @@ export proc amend_engineer_commit(
     f"Factory-Cache-Write-Tokens: ${report_value(json.get(usage, ["cache_write_tokens"], 0))}",
     f"Factory-Cost-USD: ${report_value(json.get(usage, ["cost_usd"], "unknown"))}",
     f"Factory-Session-Wall-Ms: ${report_value(json.get(report, ["timing", "session_span_ms"], 0))}",
+    f"Factory-Report-SHA256: ${report_sha}",
     f"Factory-Session-SHA256: ${session_sha}",
     f"Factory-Worker-Report: ${relative_report}",
     f"Factory-Session: ${relative_session}",
@@ -299,7 +324,21 @@ export proc amend_engineer_commit(
     return Ok("")
   }
   let amended_head = run.text "git" "-C" $worktree.display() "rev-parse" "HEAD" ?
-  return Ok(amended_head.trim())
+  let amended = amended_head.trim()
+  let verified_trailers = run.text "git" "-C" $worktree.display() "show" "-s" "--format=%(trailers)" $amended ?
+  for expected in [
+    "Factory-Provenance-Version: 1",
+    f"Factory-Source-Commit: ${head_commit.trim()}",
+    f"Factory-Report-SHA256: ${report_sha}",
+    f"Factory-Assignment-SHA256: ${assignment_sha}",
+    f"Factory-Patch-SHA256: ${patch_sha}",
+    f"Factory-Session-SHA256: ${session_sha}",
+  ] {
+    if ! verified_trailers.contains(expected) {
+      return Ok("")
+    }
+  }
+  return Ok(amended)
 }
 
 pure report_value(value: Any) -> Str {
