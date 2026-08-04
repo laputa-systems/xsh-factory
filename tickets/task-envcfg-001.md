@@ -2,7 +2,41 @@
 
 ## Status
 
-Merged.
+Open.
+
+## CTO decision — rejected API addition
+
+- Review cycle: `post-cycle-1785876949561`.
+- Decision: Reopened and rejected for implementation in its current form.
+- Basis: `754fcba` added `fail(message)` as a second spelling for constructing
+  `Err(Error)`, with no semantic capability beyond existing Result/error
+  machinery. The implementation added separate checker, lowering, indexed-IR,
+  runtime, specification, and test surface for a convenience constructor.
+  Passing the linked eval proved only that the feature worked—not that the API
+  addition was justified.
+- Product disposition: the XSH checkout reverted `754fcba` and its prerequisite
+  API-registration commit `2d423c1`; current product `HEAD` is `a67599b`. The
+  original commits and run evidence remain preserved for audit, but are not an
+  accepted product change.
+- Next evidence required: compare `Err` construction, declared error families,
+- API-surface justification
+
+The rejected proposal is a convenience constructor, so it fails the current
+quality gate. Existing `Err` already represents the required Result branch;
+the only observed gap is that `Err("message")` does not infer the declared
+`Error` payload. A smaller alternative is to improve type-directed error
+construction or define a declared validation error family, rather than add a
+parallel builtin and IR tag. The proposed `fail` implementation would touch
+the checker, lowering, indexed runtime, specification, API registry, and
+tests, while adding no semantic behavior beyond `Err(Error)`. Approval would
+require a concrete semantic difference, an alternatives comparison, and a
+replay proving the simpler design cannot satisfy the validation contract.
+
+- Next evidence required: compare `Err` construction, declared error families,
+  and any desugaring or type-directed alternative. A future proposal must
+  demonstrate semantic novelty or a materially simpler existing mechanism
+  before approval. No engineer dispatch is authorized from this ticket until
+  that design review is complete.
 
 ## CTO decision — current-HEAD implementation cycle
 
@@ -92,10 +126,10 @@ Merged.
 
 ## Merge record
 
-- Implementation branch: `factory/task-envcfg-001/1785876950208`
-- Implementation commit: `754fcba8d1d15fb3d8c0a03f11fbf2708b463a03`
-- Detected at XSH commit: `754fcba8d1d15fb3d8c0a03f11fbf2708b463a03`
-- Implementation run: `/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785876949561/phases/01-ticket`
+- Implementation branch: `{{IMPLEMENTATION_BRANCH}}`
+- Implementation commit: `{{IMPLEMENTATION_COMMIT}}`
+- Detected at XSH commit: `{{DETECTED_XSH_COMMIT}}`
+- Implementation run: `{{IMPLEMENTATION_RUN}}`
 
 ## Budget breach
 
@@ -103,10 +137,10 @@ None.
 
 ## Merge record
 
-- Implementation branch: `factory/task-envcfg-001/1785876950208`
-- Implementation commit: `754fcba8d1d15fb3d8c0a03f11fbf2708b463a03`
-- Detected at XSH commit: `754fcba8d1d15fb3d8c0a03f11fbf2708b463a03`
-- Implementation run: `/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785876949561/phases/01-ticket`
+- Implementation branch: `{{IMPLEMENTATION_BRANCH}}`
+- Implementation commit: `{{IMPLEMENTATION_COMMIT}}`
+- Detected at XSH commit: `{{DETECTED_XSH_COMMIT}}`
+- Implementation run: `{{IMPLEMENTATION_RUN}}`
 
 ## Source eval and manager
 

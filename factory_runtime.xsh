@@ -514,7 +514,8 @@ export proc accepted_ticket(ticket_path: Path) [fs, error] -> Result[Bool] {
   if ! fs.exists(ticket_path)? {
     return false
   }
-  return control.ticket_is_accepted(fs.read_text(ticket_path)?)
+  let text = fs.read_text(ticket_path)?
+  return control.ticket_is_accepted(text) and control.ticket_api_surface_gate_ok(text)
 }
 
 proc budget_breach_section(

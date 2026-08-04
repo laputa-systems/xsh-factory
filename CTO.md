@@ -118,12 +118,23 @@ may be admitted. Dispatch both when two evidence-backed Approved tickets are
 available. Record decisions in the ticket and request; do not use a worker to
 discover which ticket to implement.
 
-Throughput invariant: if at least one Open ticket passes the gate above, the
-organization request must contain an admitted Approved ticket and must not
-fall back to an eval-only primary phase. A cycle with zero engineer rows is
+Throughput invariant: if at least one Open ticket passes both the evidence and
+quality gates above, the organization request must contain an admitted
+Approved ticket and must not fall back to an eval-only primary phase. A cycle
+with zero engineer rows is
 intentional only when every Open ticket has a recorded blocking reason or no
 approved ticket is available after the review pass.
 
+Quality gate: before approving a ticket that adds a builtin, keyword,
+constructor, type, method, or syntax form, the CTO must require the ticket's
+`## API-surface justification` section. The review must compare existing
+`Err`/`Result`/declared-error-family mechanisms, desugaring, and library APIs;
+identify semantic novelty; and account for checker, runtime, registry, docs,
+and test surface. A convenience spelling with no semantic advantage is
+rejected or deferred. A quality rejection is durable factory progress and does
+not count as an admission failure.
+
+Factory-efficiency gate: the CTO must be actively critical of throughput,
 Factory-efficiency gate: the CTO must be actively critical of throughput,
 cycle latency, paid spend, engineer utilization, and evidence produced per
 cycle. A completed organization cycle is not good enough merely because its

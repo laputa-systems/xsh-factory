@@ -38,7 +38,13 @@ one small practical eval proposal for immediate CTO review and promotion.
 - Review all open tickets before selection: `yes`
 - Select the first two approved tickets after review: `yes`
 - Admission invariant: approve eligible Open tickets before invoking `run.xsh`; do not silently fall back to eval-only work
-- Throughput gate: the cycle must produce at least one reviewable engineer implementation commit; otherwise classify the cycle as a throughput failure and record corrective action
+- Quality gate: do not dispatch a ticket whose proposed API addition lacks the
+  `## API-surface justification` section and CTO approval. A design rejection
+  or deliberate no-dispatch decision is valid quality progress and must not be
+  overridden by throughput pressure.
+- Throughput gate: when a quality-approved ticket is admitted, the cycle must
+  produce at least one reviewable engineer implementation commit; otherwise
+  classify it as a throughput failure and record corrective action.
 
 ## Role overrides
 
@@ -48,7 +54,9 @@ deliberate override in the invocation with a role-specific setting.
 ## Required outputs
 
 - one primary eval or ticket phase;
-- at least one engineer implementation whenever an evidence-backed eligible Open ticket exists;
+- at least one engineer implementation whenever an evidence-backed eligible
+  Open ticket exists and the ticket has passed the API-surface quality gate;
+  quality-deferred tickets must not be dispatched merely to satisfy throughput;
 - one linked candidate re-evaluation per admitted ticket;
 - one independent `task-envcfg` eval when a ticket is admitted, distinct from
   the linked ticket replay;

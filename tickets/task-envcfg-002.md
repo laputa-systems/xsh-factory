@@ -2,12 +2,16 @@
 
 ## Status
 
-Merged.
+Closed.
 
 ## CTO review
 
 - Review cycle: `runs/run-1785821597944`.
 - Decision: Approved for the next organization cycle.
+- Supersession note: This ticket is now Closed. The registered `fail` API was
+  reverted with XSH commits `38adfb0` and `a67599b` after CTO review found no
+  semantic justification for the underlying new primitive. See
+  `runs/run-1785876949561/` and `tickets/task-envcfg-001.md`.
 - Basis: The linked replay reproduced a general discoverability defect: the
   newly implemented `fail(message)` primitive is absent from the authoritative
   `xsht api` registry, causing an eval agent to fall back to the sentinel
@@ -22,10 +26,10 @@ None.
 
 ## Merge record
 
-- Implementation branch: `factory/task-envcfg-002/1785826089064`
-- Implementation commit: `2d423c166b9c06aee44b9f4e720554ebeee1216b`
-- Detected at XSH commit: `2d423c166b9c06aee44b9f4e720554ebeee1216b`
-- Implementation run: `/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785826088406/phases/01-ticket`
+- Implementation branch: `{{IMPLEMENTATION_BRANCH}}`
+- Implementation commit: `{{IMPLEMENTATION_COMMIT}}`
+- Detected at XSH commit: `{{DETECTED_XSH_COMMIT}}`
+- Implementation run: `{{IMPLEMENTATION_RUN}}`
 
 ## Source eval and manager
 

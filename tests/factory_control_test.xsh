@@ -126,6 +126,20 @@ proc test_north_star_contains_rationale_without_factory_symlink() [fs, error] {
   test.ok(! fs.exists(fp"${root}/docs/CHAPTER-01-why-xsh.md")?)?
 }
 
+proc test_ticket_api_surface_gate_rejects_unjustified_new_surface() [fs, error] {
+  let ticket = "# Ticket\n\n## Status\n\nApproved.\n\n## Proposed XSH change\n\nAdd a new builtin primitive.\n"
+  test.ok(! control.ticket_api_surface_gate_ok(ticket))?
+  test.ok(control.ticket_api_surface_gate_ok(ticket.replace("## Proposed XSH change", "## API-surface justification\n\nThe existing operation is insufficient; semantic evidence is required.\n\n## Proposed XSH change")))?
+}
+
+proc test_ticket_api_surface_gate_is_documented() [fs, error] {
+  let ticket = fs.read_text(fp"${fs.cwd()?}/templates/TICKET.md")?
+  test.contains(ticket, "## API-surface justification")?
+  test.contains(ticket, "semantic capability")?
+  test.contains(ticket, "desugaring")?
+  test.contains(ticket, "ergonomic shortcut")?
+}
+
 proc test_admission_and_report_contracts() [error] {
   test.ok(control.valid_eval_id("task-tags"))?
   test.eq(control.eval_id_from_contract("# Eval task-probe\n\n## Status\n\nDraft.\n"), "task-probe")?
@@ -242,7 +256,7 @@ proc test_standard_cycle_uses_diverse_active_eval() [fs, error] {
   test.contains(cto, "Factory-efficiency gate")?
   test.contains(cto, "CTO-PRODUCTIVITY-REPORT.md")?
   test.contains(improvement, "## Throughput requirement")?
-  test.contains(request, "Throughput gate: the cycle must produce at least one reviewable engineer implementation commit")?
+  test.contains(request, "Throughput gate: when a quality-approved ticket is admitted")?
   test.contains(request, "Admission invariant: approve eligible Open tickets before invoking `run.xsh`")?
   let cycle_template = fs.read_text(fp"${fs.cwd()?}/templates/cycle-request.md")?
   test.contains(cycle_template, "Require at least one engineer implementation commit")?

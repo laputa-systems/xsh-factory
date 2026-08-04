@@ -44,6 +44,22 @@ learnability, practical systems-glue capability, or efficient agent use. State
 what evidence would show that it generalized beyond the source eval.
 
 ## Proposed XSH change
+## API-surface justification
+
+For any new builtin, keyword, constructor, type, method, or syntax form, state:
+
+- the semantic capability that existing XSH cannot express;
+- the closest existing spelling and why it is insufficient;
+- whether a desugaring, type-directed rule, declared error family, or library
+  API would solve the problem with less surface area;
+- the implementation and maintenance cost, including checker, runtime, API
+  registry, documentation, and test changes; and
+- the evidence and falsification replay required before approval.
+
+An ergonomic shortcut that merely gives a second spelling to an existing
+operation is not sufficient justification for product admission.
+
+## Proposed XSH change
 
 Describe the smallest candidate implementation or bug fix. Do not claim that
 the change is already implemented.

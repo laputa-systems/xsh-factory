@@ -40,7 +40,10 @@ eval-design phase runs alongside the primary phase.
 - Review all open tickets before selection: `yes`
 - Select the first two approved tickets after review: `yes`
 - Approve eligible Open tickets before controller invocation: `required`
-- Require at least one engineer implementation commit: `yes`
+- Require at least one engineer implementation commit when a quality-approved
+  ticket is admitted: `yes`
+- Require API-surface justification and semantic-novelty review for new XSH
+  API proposals: `yes`
 
 ## Role overrides
 

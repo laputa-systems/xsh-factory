@@ -496,6 +496,33 @@ export pure ticket_is_closed(text: Str) -> Bool {
   return ticket_status(text) == "Closed."
 }
 
+## Requires an explicit alternatives and semantic-novelty review for new API surface.
+export pure ticket_api_surface_review_required(text: Str) -> Bool {
+  let proposal = section_text(text, "Proposed XSH change")
+  return proposal.contains("builtin") or proposal.contains("keyword") or
+    proposal.contains("constructor") or proposal.contains("primitive") or
+    proposal.contains("syntax") or proposal.contains("new type") or
+    proposal.contains("new method")
+}
+
+## Requires an explicit alternatives and semantic-novelty review for new API surface.
+export pure ticket_api_surface_gate_ok(text: Str) -> Bool {
+  if ! ticket_api_surface_review_required(text) {
+    return true
+  }
+  let justification = section_text(text, "API-surface justification")
+  if justification == "" {
+    return false
+  }
+  for placeholder in ["Describe", "State the", "{{"] {
+    if justification.contains(placeholder) {
+      return false
+    }
+  }
+  return justification.contains("semantic") and justification.contains("existing") and
+    justification.contains("evidence")
+}
+
 ## Requires the checked-in approval state used for cycle admission.
 export pure ticket_is_accepted(text: Str) -> Bool {
   return ticket_status(text) == "Accepted." or ticket_status(text) == "Approved."
