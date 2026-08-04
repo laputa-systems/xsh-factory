@@ -5,7 +5,10 @@
 Run the smallest complete organization cycle that proves the requested
 factory path and produces evidence toward `NORTH-STAR.md`. Keep the cycle
 cheap and preserve all worker evidence; do not create activity or tickets
-without a corresponding product hypothesis. When a ticket is admitted, run
+without a corresponding product hypothesis. Before invoking `run.xsh`, the CTO
+must review every `Open.` ticket, change each eligible ticket to `Approved.`,
+and record the evidence and any deferral reason in the ticket. Never leave an
+eligible ticket Open and silently substitute an eval-only cycle. When a ticket is admitted, run
 its linked re-evaluation and independent active eval, while the independent
 eval-design phase runs alongside the primary phase.
 
@@ -36,6 +39,7 @@ eval-design phase runs alongside the primary phase.
 
 - Review all open tickets before selection: `yes`
 - Select the first two approved tickets after review: `yes`
+- Approve eligible Open tickets before controller invocation: `required`
 
 ## Role overrides
 

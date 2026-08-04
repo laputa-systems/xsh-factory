@@ -87,6 +87,16 @@ scope, acceptance criteria, and branch state. A ticket may remain Open after
 review; record why it is deferred, rejected, or eligible for approval in the
 cycle decision record. Never infer work from an employee transcript.
 
+Admission is an explicit CTO decision, not a report-only activity. When an
+Open ticket is evidence-backed, scoped, has a live linked eval, and any prior
+deferral condition is now satisfied, update its checked-in status to
+`Approved.` and record the decision and evidence in the ticket before invoking
+`run.xsh`. Do not leave an eligible ticket `Open.` and then run an eval-only
+cycle. The controller can dispatch only `Approved.` tickets; it cannot infer
+approval from prose, a stale branch, or a previous review. If no Open ticket
+meets the gate, record a concrete deferral reason for every Open ticket and
+explicitly choose the eval-only path.
+
 ### 2. Run deterministic preflight
 
 Run the native xsht tests and the narrowest relevant checks before paying for
@@ -107,6 +117,12 @@ ticket statuses may change in one cycle and no more than two engineer tickets
 may be admitted. Dispatch both when two evidence-backed Approved tickets are
 available. Record decisions in the ticket and request; do not use a worker to
 discover which ticket to implement.
+
+Throughput invariant: if at least one Open ticket passes the gate above, the
+organization request must contain an admitted Approved ticket and must not
+fall back to an eval-only primary phase. A cycle with zero engineer rows is
+intentional only when every Open ticket has a recorded blocking reason or no
+approved ticket is available after the review pass.
 
 For a completed engineer patch, inspect scope, tests, exact assignment,
 portable diff, and linked replay. Each passing engineer row receives its own
