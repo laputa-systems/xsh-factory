@@ -96,3 +96,14 @@ The candidate adds a reusable warning about binding names that shadow standard
 modules. The source trial passed, but the candidate was observed in one
 `task-envcfg` session. Keep the approved handbook unchanged during the prompt
 efficiency comparison and revisit this candidate after cross-run evidence.
+
+## Explicit CTO disposition — 2026-08-04
+
+| Candidate SHA-256 | Disposition |
+| --- | --- |
+| `b9fcbfcc26179af38457947e54c306b31c469ba2e25ac01a597aa3083af9133a` | deferred pending matched cross-run replay; not promoted |
+
+The candidate combines the already-deferred boolean word-form lesson with an
+`in` membership lint preference. The current trial passed, but the worker had
+one sample and the candidate is not needed to compare prompt revisions. Keep
+the approved handbook unchanged and require replay before promotion.
