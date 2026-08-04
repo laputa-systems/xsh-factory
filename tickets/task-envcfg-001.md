@@ -2,7 +2,7 @@
 
 ## Status
 
-Closed.
+Approved.
 
 ## CTO closeout
 
@@ -13,9 +13,21 @@ Closed.
 - Evidence: `runs/run-1785818570933/phases/01-ticket/workers/engineer/task-envcfg-001/report.json`;
   the controller recorded `SESSION-LIMIT` and the linked replay was not
   admitted because no reviewable implementation existed.
-- Reopen condition: a future CTO review may re-materialize this diagnosis as
-  an approved ticket after the engineer allowance is validated and the
-  implementation scope is still current.
+- Reopened for a fresh implementation assignment after changing the engineer
+- model to `openai/gpt-5.6-luna` and raising the bounded engineer allowance.
+
+## CTO review
+
+- Review cycle: `pre-cycle-1785821294691`
+- Decision: Approved for the next organization cycle and assigned to a new
+- engineer session.
+- Basis: The prior engineer exhausted the old 160-turn ceiling without a
+- reviewable artifact; the underlying product defect remains evidence-backed
+- and unimplemented.
+- Assignment boundary: Keep the smallest deliberate-error primitive that
+- propagates through `?`; preserve validator semantics and add focused tests
+- and canonical documentation. Do not broaden into boolean operators,
+- module-shadow guidance, or unrelated environment APIs.
 
 ## CTO review
 

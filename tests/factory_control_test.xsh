@@ -89,7 +89,11 @@ proc test_role_defaults_are_coded_and_capped() [env, error] {
   test.eq(control.max_concurrent_engineers(), 2)?
   for role in ["director", "eval-designer", "eval-manager", "eval-worker", "engineer"] {
     test.eq(control.default_provider(role), "openrouter")?
-    test.eq(control.default_model(role), "deepseek/deepseek-v4-flash-0731")?
+    if role == "engineer" {
+      test.eq(control.default_model(role), "openai/gpt-5.6-luna")?
+    } else {
+      test.eq(control.default_model(role), "deepseek/deepseek-v4-flash-0731")?
+    }
     test.eq(control.default_thinking(role), "high")?
     test.ok(control.default_budget(role) != "")?
     test.ok(control.default_max_turns(role) != "")?

@@ -18,7 +18,8 @@ Run commands from this directory with:
 - a clean `../xsh` checkout.
 
 The launcher, rather than a Markdown configuration file, owns role defaults.
-All roles default to `deepseek/deepseek-v4-flash-0731` with high thinking.
+Engineers default to `openai/gpt-5.6-luna`; the other roles default to
+`deepseek/deepseek-v4-flash-0731`, all with high thinking.
 Provider, model, thinking, tools, turn, wall, and dollar ceilings are
 individually configurable with `FACTORY_<ROLE>_*` variables. The coded role
 budgets and aggregate cycle cap are in `factory_control.xsh`. The default

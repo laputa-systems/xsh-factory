@@ -74,6 +74,7 @@ export pure default_provider(role: Str) -> Str {
 
 ## Selects the default model for a known factory role.
 export pure default_model(role: Str) -> Str {
+  if role == "engineer" { return "openai/gpt-5.6-luna" }
   if role_prefix(role) != "" { return "deepseek/deepseek-v4-flash-0731" }
   return ""
 }
