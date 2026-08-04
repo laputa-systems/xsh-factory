@@ -126,9 +126,13 @@ The CTO reviews the patch and decides whether to merge or apply the product
 change. The next reconciliation updates the linked `TICKET.md` to `Merged.`
 when the recorded implementation is proven in XSH `HEAD`.
 
-The CTO closes each paid cycle by committing the scoped factory changes with a
-`cto: close <run-id>` commit. Generated `runs/` evidence and unrelated local
-work stay out of that commit.
+The CTO closes each paid cycle by committing the scoped factory changes and the
+durable evidence for that cycle with a `cto: close <run-id>` commit. The
+`runs/.gitignore` allowlist keeps transient controller plumbing (locks, PIDs,
+stdout/stderr copies, worktrees, and active markers) out while retaining the
+reports, narratives, manifests, compressed sessions, events, patches, and
+other evidence needed to reproduce the decision. Unrelated local work stays
+out of the commit.
 
 ## Reset and test
 

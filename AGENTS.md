@@ -99,8 +99,10 @@ grepping broadly.
   `runtime/handbook-ledger.md` records candidate dispositions. `tickets/*.md`
   are the checked-in product observations and lifecycle records. `evals/*/`
   are package-owned eval contracts, tasks, artifacts, executors, and
-  evaluators. `runs/run-*/` is generated evidence and must not be included in
-  factory close commits.
+  evaluators. `runs/run-*/` is durable checked-in evidence. Close commits
+  include the reports, narratives, manifests, compressed sessions, lifecycle
+  ledger, patches, and other files allowed by `runs/.gitignore`; transient
+  controller plumbing remains ignored.
 
 ### Top-level dispatch and cycle controllers
 

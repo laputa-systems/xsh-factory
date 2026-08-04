@@ -1,0 +1,126 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785876949561/phases/03-eval/workers/eval-worker/task-envcfg-1/session.jsonl.bz2.bz2"
+    }
+  ],
+  "execution": {
+    "agent_state": "pass",
+    "agent_wall_ms": 329381,
+    "artifact": {
+      "name": "envcfg.xsh",
+      "state": "present"
+    },
+    "budget_state": "pass",
+    "classification": "pass",
+    "evaluator_manifest": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785876949561/phases/03-eval/workers/eval-worker/task-envcfg-1/run.json",
+    "evaluator_state": "pass",
+    "reporting_state": "pass",
+    "result": "pass",
+    "review": {
+      "state": "present"
+    }
+  },
+  "findings": [
+    {
+      "count": 3,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "role": "eval-worker",
+    "worker_id": "task-envcfg-1"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "provider_telemetry": {
+    "event_turns": 39,
+    "events_path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785876949561/phases/03-eval/workers/eval-worker/task-envcfg-1/session.jsonl.bz2.bz2.events.jsonl",
+    "output_tokens_per_second": 0,
+    "present": true,
+    "provider_errors": [],
+    "response_elapsed_ms": 0,
+    "retry_count": 0,
+    "retry_delay_ms": 0,
+    "retry_errors": [],
+    "retry_failures": 0,
+    "retry_successes": 0
+  },
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785876949561/phases/03-eval/workers/eval-worker/task-envcfg-1/session.jsonl.bz2.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 38,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 328009
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785876949561/phases/03-eval/workers/eval-worker/task-envcfg-1/session.jsonl.bz2.bz2",
+      "summary": "err[parse.unsupported-boolean-operator]: unsupported operator '||': XSH boolean operators are the word forms 'or'\n  /tmp/t6.xsh:7:17\n    if port == \"\" || rest.byte_len() > 0 {\n                  ^^ use 'or' instead of '||'\n\nerr[parse.expected-token]: expected `{` to start block\n  /tmp/t6.xsh:7:17\n    if port == \"\" || rest.byte_len() > 0 {\n                  ^ expected `{` to start block\n\nerr[parse.expected-expression]: expected expression\n  /tmp/t6.xsh:12:1\n  }\n  ^ expected expression\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 26
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785876949561/phases/03-eval/workers/eval-worker/task-envcfg-1/session.jsonl.bz2.bz2",
+      "summary": "err[check.standard-module-shadow]: name `path` shadows the standard module `path`\n  /tmp/t6.xsh:2:3\n    let path = Path(argv[0])\n    ^^^^^^^^^^^^^^^^^^^^^^^^ name `path` shadows the standard module `path`\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 27
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785876949561/phases/03-eval/workers/eval-worker/task-envcfg-1/session.jsonl.bz2.bz2",
+      "summary": "stdout=[]\nfile exists?\nls: /tmp/o: No such file or directory\n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 35
+    }
+  ],
+  "tools": [
+    {
+      "count": 36,
+      "name": "bash"
+    },
+    {
+      "count": 1,
+      "name": "edit"
+    },
+    {
+      "count": 3,
+      "name": "read"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 39,
+    "budget_usd": 0.5,
+    "cache_read_cost_usd": 0.011570688000000004,
+    "cache_read_tokens": 642816,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.017033058000000004,
+    "input_cost_usd": 0.0027699300000000003,
+    "input_tokens": 30777,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.0026924399999999995,
+    "output_tokens": 14958,
+    "provider_total_tokens": 688551,
+    "reasoning_tokens": 9824,
+    "thinking_blocks": 28,
+    "tool_calls": 40,
+    "tool_errors": 3,
+    "tool_results": 40,
+    "total_bucket_tokens": 688551,
+    "user_messages": 1
+  }
+}

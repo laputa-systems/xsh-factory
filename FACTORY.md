@@ -168,6 +168,8 @@ XSH_MODULE_PATH=. xsht test
 ```
 
 Then run a minimum user-facing cycle through `run.xsh`, inspect its
-`report.json` and `CTO-REPORT.md`, and verify that the persisted tree contains
-only the declared outputs. Never run formatters, autofixers, pre-commit hooks,
-or direct Pi commands as part of this contract.
+`report.json` and `CTO-REPORT.md`, verify that the persisted tree contains only
+the declared outputs, and commit the durable run evidence selected by
+`runs/.gitignore`. Transient controller plumbing is intentionally ignored;
+durable reports and raw evidence are not. Never run formatters, autofixers,
+pre-commit hooks, or direct Pi commands as part of this contract.

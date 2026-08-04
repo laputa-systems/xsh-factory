@@ -215,12 +215,15 @@ leave the record `pending-validation`; the handoff is complete when the record
 exists, identifies the exact next-cycle verification or safe inverse, and is
 linked from the CTO briefing.
 
-Before declaring the cycle complete, the CTO commits the reviewed changes in
-the factory checkout. Stage only the scoped controller, test, policy, ticket,
-eval, handbook-ledger, and documentation changes; do not stage generated
-`runs/` evidence or unrelated user work. Verify `git diff --check`, commit with
+Before declaring the cycle complete, the CTO commits the reviewed changes and
+the durable evidence in the factory checkout. Stage the scoped controller,
+test, policy, ticket, eval, handbook-ledger, documentation, and run-evidence
+changes. `runs/.gitignore` excludes transient controller plumbing; it does not
+exclude the reports, narratives, manifests, compressed sessions, events,
+patches, or other durable evidence needed for later review. Keep unrelated
+user work out of the commit. Verify `git diff --check`, commit with
 `cto: close <run-id>`, and record the commit hash in the cycle handoff. A cycle
-without this factory commit is not closed.
+without this factory-and-evidence commit is not closed.
 
 Retire an eval when the evidence shows it is solved, redundant, or stagnant,
 no ticket or handbook replay depends on it, and a replacement scenario keeps
