@@ -321,6 +321,7 @@ proc test_eval_gate_diagnostics_are_persisted() [fs, error] {
   test.contains(evaluator, "preflight-failure")?
   test.contains(evaluator, "manager_evidence_read")?
   test.contains(evaluator, "designer_handbook_read")?
+  test.contains(evaluator, "_post_required_outputs_audit")?
 }
 
 proc test_eval_dispatch_is_package_owned() [fs, error] {
@@ -393,6 +394,15 @@ proc test_controllers_have_no_legacy_projection_outputs() [fs, error] {
     test.ok(! source.contains("TOOL-ERRORS.md"), f"${file} must use structured tool_errors")?
     test.ok(! source.contains("CURRENT-EVIDENCE.md"), f"${file} must not emit evidence projection")?
   }
+}
+
+proc test_pi_session_persistence_is_jsonl_only() [fs, error] {
+  let controller = fs.read_text(fp"${fs.cwd()?}/run-agent.xsh")?
+  let eval_worker = fs.read_text(fp"${fs.cwd()?}/evals/eval-worker.xsh")?
+  test.contains(controller, "--session")?
+  test.contains(eval_worker, "--session")?
+  test.ok(! controller.contains("--export"), "run-agent must not create session.html")?
+  test.ok(! eval_worker.contains("--export"), "eval worker must not create session.html")?
 }
 
 proc test_eval_worker_prompt_matches_task_image() [fs, error] {

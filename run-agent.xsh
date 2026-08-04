@@ -210,12 +210,6 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   let status = wait handle?
   let watcher_status = wait watcher?
   let limit_status = wait limit_watcher?
-  if fs.exists(session)? {
-    let _ = process.run(process.command_argv(
-      pi_command,
-      [pi_command, "--export", session.display(), session.with_ext("html").display()],
-    ))?
-  }
   let report_status = process.run(process.command_argv(
     xsh_path,
     [xsh_path.display(), fp"${factory_dir}/tools/session-report.xsh", "--", "worker",

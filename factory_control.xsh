@@ -768,6 +768,20 @@ export pure manager_tool_error_findings_contract_ok(report: Str) -> Bool {
       findings.contains("nonzero") or findings.contains("tool error"))
 }
 
+## A valid manager report remains admissible when worker tool errors were
+## classified with the report's supported evidence wording. The controller
+## must not require one particular phrase after this contract has passed.
+export pure manager_report_gate_ok(
+  report: Str,
+  worker_tool_errors: Bool,
+  manager_tool_errors: Bool,
+) -> Bool {
+  return manager_report_contract_ok(report) and
+    manager_tool_error_findings_contract_ok(report) and
+    (! worker_tool_errors and ! manager_tool_errors or
+      manager_tool_error_findings_contract_ok(report))
+}
+
 ## A Pi process may return nonzero after producing a valid report because of
 ## an agent-level tool failure. Watchers and report production remain hard
 ## completion gates; the process result is retained as structured evidence.

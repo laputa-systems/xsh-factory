@@ -2,7 +2,7 @@
 
 ## Status
 
-Open.
+Closed.
 
 ## CTO review
 
@@ -12,6 +12,13 @@ Open.
   was fixed and merged as `task-envcfg-007` at XSH commit `7c939db`.
 - Next evidence: Reconcile the duplicate against the merged regression and
   close this ticket once the linked replay confirms the fix.
+
+## CTO closeout
+
+- Close cycle: `runs/run-1785809029885`.
+- Decision: Closed as a duplicate of the merged `task-envcfg-007` fix.
+- Evidence: the independent `task-envcfg` phase passed on XSH commit
+  `e8f64a2`; no separate implementation remains warranted.
 
 ## Budget breach
 

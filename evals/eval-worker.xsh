@@ -42,11 +42,5 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   time.sleep(200ms)?
   tail.cancel(signal: "TERM", kill_after: 100ms)?
 
-  if fs.exists(session)? {
-    let _ = process.run(process.command_argv(
-      pi_command,
-      [pi_command, "--export", session.display(), session.with_ext("html").display()],
-    ))?
-  }
   abort(if status.ok { 0 } else { status.exit_code() ?? 1 })
 }

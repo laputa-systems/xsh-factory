@@ -2,17 +2,18 @@
 
 ## Status
 
-Open.
+Merged.
 
 ## CTO review
 
-- Review cycle: `pre-cycle-1785801503` (2026-08-03)
-- Decision: Deferred; retain `Open.` for a later implementation cycle.
-- Basis: `fold` has a serious discoverability and compiler-diagnostic gap, but
-  its intended accumulator contract is not yet precise enough to assign a
-  bounded product change safely.
-- Next evidence: Establish the intended fold arity/result contract and a
-  minimal executable regression before approval.
+- Review cycle: `pre-cycle-1785805851` (2026-08-03)
+- Decision: Approved for the next two-engineer ticket cycle.
+- Basis: `fold` has a reproducible parser/checker/runtime failure on the active
+  build and a bounded contract can be established from the existing reference
+  and minimal regression cases.
+- Assignment boundary: Make one documented accumulator-plus-item form compile
+  and run with a precise signature, or replace the internal IR blocker with a
+  source-local diagnostic; preserve non-fold stream stages.
 
 ## Budget breach
 
@@ -20,10 +21,18 @@ None.
 
 ## Merge record
 
-- Implementation branch: `{{IMPLEMENTATION_BRANCH}}`
-- Implementation commit: `{{IMPLEMENTATION_COMMIT}}`
-- Detected at XSH commit: `{{DETECTED_XSH_COMMIT}}`
-- Implementation run: `{{IMPLEMENTATION_RUN}}`
+- Implementation branch: `factory/task-ecount-007/1785805967997`
+- Implementation commit: `26c9922b41d21939d1740fa48347283326f76a86`
+- Detected at XSH commit: `e8f64a244af1727f64b4ee368441d04ca820d774`
+- Implementation run: `runs/run-1785805967215`
+
+## CTO merge decision
+
+- Decision: Merged after engineer validation and linked `task-ecount` replay.
+- Merge commit: `e8f64a2`.
+- Evidence: `runs/run-1785805967215/phases/02-reeval-task-ecount-007/report.json`;
+  the worker and manager reports passed, while the organization report exposed
+  a factory manager-evidence gate bug fixed in the next controller change.
 
 ## Source eval and manager
 

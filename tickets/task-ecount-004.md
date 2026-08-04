@@ -2,17 +2,18 @@
 
 ## Status
 
-Open.
+Merged.
 
 ## CTO review
 
-- Review cycle: `pre-cycle-1785801503` (2026-08-03)
-- Decision: Deferred; retain `Open.` for a later implementation cycle.
-- Basis: The checker/runtime disagreement is reproducible and general, but the
-  proposed `Any` acceptance changes a type-safety boundary and needs a tighter
-  sema design than the two tickets selected this cycle.
-- Next evidence: Reconcile the intended static contract with the runtime
-  ordering behavior and add focused checker cases before approval.
+- Review cycle: `pre-cycle-1785805851` (2026-08-03)
+- Decision: Approved for the next two-engineer ticket cycle.
+- Basis: The checker/runtime disagreement remains reproducible on active XSH
+  HEAD and has a focused type-boundary contract distinct from merged stream
+  fixes.
+- Assignment boundary: Align `Any`-backed record sort checking with runtime
+  behavior or reject it with a precise key-type diagnostic; preserve supported
+  literal-record sorting and unrelated type checking.
 
 ## Budget breach
 
@@ -20,10 +21,19 @@ None.
 
 ## Merge record
 
-- Implementation branch: `{{IMPLEMENTATION_BRANCH}}`
-- Implementation commit: `{{IMPLEMENTATION_COMMIT}}`
-- Detected at XSH commit: `{{DETECTED_XSH_COMMIT}}`
-- Implementation run: `{{IMPLEMENTATION_RUN}}`
+- Implementation branch: `factory/task-ecount-004/1785805967997`
+- Implementation commit: `c4f5fa1c56d6e302f6d392c4d19aed0f24faacf7`
+- Detected at XSH commit: `e8f64a244af1727f64b4ee368441d04ca820d774`
+- Implementation run: `runs/run-1785805967215`
+
+## CTO merge decision
+
+- Decision: Merged after engineer validation and linked `task-ecount` replay.
+- Merge commit: `9b090cf`.
+- Evidence: `runs/run-1785805967215/phases/02-reeval-task-ecount-004/report.json`.
+- Note: the controller's final organization report was affected by a factory
+  manager-evidence gate bug; the phase report and manager report both passed,
+  and the gate fix is covered by a native regression test.
 
 ## Source eval and manager
 

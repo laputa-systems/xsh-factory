@@ -2,21 +2,31 @@
 
 ## Status
 
-Open.
+Approved.
 
 ## CTO review
 
-- Review cycle: `pre-cycle-1785801503` (2026-08-03)
-- Decision: Deferred; retain `Open.` for a later implementation cycle.
-- Basis: The missing `var` guidance is a valid handbook/reference gap, but it
-  is documentation-led and lower urgency than the selected runtime failure
-  and API discovery improvements.
-- Next evidence: Revisit after the current handbook lineage is reconciled and
-  determine whether the reference, handbook, or diagnostics should own the fix.
+- Review cycle: `post-cycle-1785805967215` (2026-08-03)
+- Decision: Approved for the next two-engineer ticket cycle.
+- Basis: The missing `var` guidance remains a reproducible discoverability gap
+  in an active `task-ecount` eval, and the current cycle closed the higher-
+  urgency runtime fixes that previously took priority.
+- Assignment boundary: Add the smallest accurate handbook/reference or
+  diagnostic improvement that makes mutable binding syntax discoverable;
+  preserve `let` immutability and existing `var` behavior.
 
 ## Budget breach
 
 None.
+
+## CTO cycle closeout
+
+- Cycle: `runs/run-1785809029885`.
+- Decision: Retain `Approved.` pending a stable multi-trial replay.
+- Evidence: the candidate matched the oracle and restrictions, but the single
+  timing sample was `1.221`, outside the `0.90..1.10` gate; the manager
+  classified this as likely noise for a documentation-only change and did not
+  recommend merging on one sample.
 
 ## Merge record
 

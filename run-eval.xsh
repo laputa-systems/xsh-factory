@@ -585,10 +585,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   }
   let manager_tool_errors = report_has_tool_errors(manager_worker_report)?
   let manager_report_ok = fs.exists(manager_report)? and ! fs.exists(manager_report_marker)? and
-    control.manager_report_contract_ok(fs.read_text(manager_report)?) and
-    control.manager_tool_error_findings_contract_ok(fs.read_text(manager_report)?) and
-    (! worker_tool_errors and ! manager_tool_errors or
-      fs.read_text(manager_report)?.contains("report.json"))
+    control.manager_report_gate_ok(fs.read_text(manager_report)?, worker_tool_errors, manager_tool_errors)
   let designer_session = fp"${run_dir}/workers/eval-designer/${designer_worker}/session.jsonl"
   let designer_worker_report = fp"${run_dir}/workers/eval-designer/${designer_worker}/report.json"
   let designer_report = fp"${run_dir}/workers/eval-designer/proposal-1/REPORT.md"
@@ -650,6 +647,11 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     designer_handbook_read: designer_handbook_read,
     required: required,
   }, pretty: true)?
+  let _post_required_outputs_audit = process.run(process.command_argv(
+    xsh_path,
+    [xsh_path.display(), fp"${factory_dir}/audit-run.xsh", "--", run_dir.display(), "eval"],
+    cwd: factory_dir,
+  ))?
   let initial_result = if required { "pass" } else { "fail" }
   let cto_status = runtime.write_cto_report(factory_dir, run_dir, initial_result)?
   let result = if initial_result == "pass" and cto_status { "pass" } else { "fail" }

@@ -132,6 +132,8 @@ proc test_admission_and_report_contracts() [error] {
   test.ok(control.manager_tool_error_findings_contract_ok("## Tool-error findings\n\nreport.json\n"))?
   test.ok(control.manager_tool_error_findings_contract_ok("## Tool-error findings\n\nFour nonzero Pi tool results were accounted for.\n"))?
   test.ok(! control.manager_tool_error_findings_contract_ok("## Tool-error findings\n\nFill every current tool error.\n"))?
+  let manager_report = "## Result\n\npass\n\n## Effort metrics\n\nfixture\n\n## Usage and cost\n\nfixture\n\n## Thinking evidence\n\nfixture\n\n## Tool-error findings\n\nFive nonzero Pi tool results were accounted for in `tool_errors`.\n\n## Timing evidence\n\nfixture\n\n## Observation classification\n\nfixture\n\n## Handbook decision\n\nunchanged\n\n## Tickets created\n\nNone.\n\n## Post-merge decisions\n\nNone.\n\n## Next replay\n\nNone.\n\n## North-star impact\n\nfixture\n"
+  test.ok(control.manager_report_gate_ok(manager_report, true, false))?
   test.eq(control.report_section("# Report\n\n## Result\n\npass\n\nDetails.\n\n## Evidence\n\nready\n", "Result"), "pass\n\nDetails.")?
   test.eq(control.report_field("# Report\n\n## Result\n\npass\n\nDetails.\n\n## Evidence\n\nready\n", "Result"), "pass")?
 }
@@ -237,6 +239,8 @@ proc test_standard_cycle_uses_diverse_active_eval() [fs, error] {
   test.contains(organization, "write_cto_inventory")?
   test.contains(cto_runner, "cto_ticket_inventory")?
   test.contains(organization, "for ticket_id in selected_tickets")?
+  test.contains(organization, "ticket_eval_available")?
+  test.contains(organization, "eval_is_disabled")?
   test.contains(organization, "max_concurrent_engineers()")?
   test.ok(! organization.contains("admit at most one ticket"))?
   test.contains(runtime_source, "passing engineer report")?

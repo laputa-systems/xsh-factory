@@ -2,7 +2,7 @@
 
 ## Status
 
-Open.
+Closed.
 
 ## CTO review
 
@@ -14,6 +14,14 @@ Open.
 - Next evidence: The next `task-envcfg` replay must confirm the positive
   comment case and the genuine subprocess negative control, then reconcile
   this ticket to its terminal status.
+
+## CTO closeout
+
+- Close cycle: `runs/run-1785809029885`.
+- Decision: Closed after the independent `task-envcfg` replay passed both
+  correct-candidate restriction handling and the genuine subprocess controls.
+- Evidence: `runs/run-1785809029885/phases/03-eval/report.json` and its manager
+  report; the shared scanner regression remains covered by native tests.
 
 ## Budget breach
 

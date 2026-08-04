@@ -47,6 +47,10 @@ auto-promoted merely because a lineage file exists.
 
 | `d9a2e262a449a28552b523f7a0d34c3542e7932f6c60a0761de28798229e8d35` | deferred pending strict-decimal replay; not promoted |
 | `5ccd1f5e396aea7304bedf2f00a1dca82cdac847858eb0ec886d4dd416045e70` | deferred pending strict-decimal replay; not promoted |
+| `315d310efe3e48088d0a1325a66b8f11a484c5ec835cdff68e795ca1081e359a` | deferred pending cross-eval text-split replay; not promoted |
+| `c9b0e03d8c6b050ebf605b2383f3f6dd02a5eae00f74e9094ec17e6efc90130c` | deferred pending cross-eval path-shadow replay; not promoted |
+| `52ffa03dfce9c88479993f3121347d1175f088d4dfc925f116f789d15da037f5` | deferred pending cross-eval dynamic-path replay; not promoted |
+| `7859f910afad43d0933889e31bcb47aa695af008d7a1ddba91a51b64c8972c6a` | deferred pending strict-validation replay; not promoted |
 
 The `d9a2e262…` candidate records a concrete regex-plus-expected-error idiom
 for byte-exact decimal validation. The source eval passed all ten cases, but

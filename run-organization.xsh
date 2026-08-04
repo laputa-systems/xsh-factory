@@ -281,6 +281,14 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
       eprint f"selected ticket is missing or not Approved: ${ticket_id}"
       abort(2)
     }
+    let ticket_eval_id = control.ticket_eval(ticket_path.read_text()?)
+    let ticket_eval_path = fp"${factory_dir}/evals/${ticket_eval_id}/EVAL.md"
+    let ticket_eval_available = ticket_eval_id != "" and fs.exists(ticket_eval_path)? and
+      ! control.eval_is_disabled(ticket_eval_path.read_text()?)
+    if ! ticket_eval_available {
+      eprint f"selected ticket ${ticket_id} links unsupported or disabled eval: ${ticket_eval_id}"
+      abort(2)
+    }
     let open_branch = runtime.open_ticket_branch(xsh_repo, ticket_id)?
     if open_branch != "" and ! (reuse_existing_branch and ticket_id == selected_ticket) {
       eprint f"ticket ${ticket_id} already has an unmerged implementation branch: ${open_branch}"

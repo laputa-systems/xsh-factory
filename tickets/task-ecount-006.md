@@ -2,17 +2,18 @@
 
 ## Status
 
-Open.
+Merged.
 
 ## CTO review
 
-- Review cycle: `pre-cycle-1785801503` (2026-08-03)
-- Decision: Deferred; retain `Open.` for a later implementation cycle.
-- Basis: The direct module-stream `collect()` failure is reproducible and
-  handbook-visible, but it may share the indexed-IR boundary with the already
-  merged positional-optional-argument fix in `task-ecount-002`.
-- Next evidence: Run a focused probe on current XSH HEAD and determine whether
-  the remaining trigger is distinct before assigning another engineer.
+- Review cycle: `pre-cycle-1785803972` (2026-08-03)
+- Decision: Approved for the next two-engineer ticket cycle.
+- Basis: The direct module-stream `collect()` failure remains a reproducible
+  checker/runtime compiler boundary on current XSH HEAD and is independently
+  actionable even if it shares code with `task-ecount-002`.
+- Assignment boundary: Make `fs.files(...) |> collect()` compile and run, or
+  replace the internal IR blocker with a source-local diagnostic; preserve
+  transformed-stream behavior and do not broaden into unrelated stream work.
 
 ## Budget breach
 
@@ -20,10 +21,11 @@ None.
 
 ## Merge record
 
-- Implementation branch: `{{IMPLEMENTATION_BRANCH}}`
-- Implementation commit: `{{IMPLEMENTATION_COMMIT}}`
-- Detected at XSH commit: `{{DETECTED_XSH_COMMIT}}`
-- Implementation run: `{{IMPLEMENTATION_RUN}}`
+- Implementation branch: `factory/task-ecount-006/1785804031017`
+- Implementation commit: `eead8f790a5a501bc971614625cec8897c55f279`
+- Detected at XSH commit: `d6b6b1c` (merge commit)
+- Implementation run: `runs/run-1785804030340`
+- CTO decision: merged after engineer tests and linked replay passed.
 
 ## Source eval and manager
 
