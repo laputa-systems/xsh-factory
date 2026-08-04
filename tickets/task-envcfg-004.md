@@ -2,7 +2,19 @@
 
 ## Status
 
-Open.
+Merged.
+
+## CTO review
+
+- Review cycle: `pre-cycle-1785801503` (2026-08-03)
+- Decision: Approved for the next two-engineer ticket cycle.
+- Basis: The API reference forces repeated invalid queries and a full-index
+  grep to answer a basic type-surface question; the evidence is reproduced
+  across `Str`, `Path`, and `Regex`, with a small compatibility-preserving
+  acceptance contract.
+- Assignment boundary: Add a receiver-scoped member listing or an equally
+  discoverable documented query while preserving exact lookups, `search:`, and
+  `summary`; do not broaden into unrelated API or handbook changes.
 
 ## Budget breach
 
@@ -10,10 +22,13 @@ None.
 
 ## Merge record
 
-- Implementation branch: `{{IMPLEMENTATION_BRANCH}}`
-- Implementation commit: `{{IMPLEMENTATION_COMMIT}}`
-- Detected at XSH commit: `{{DETECTED_XSH_COMMIT}}`
-- Implementation run: `{{IMPLEMENTATION_RUN}}`
+- Implementation branch: `factory/task-envcfg-004/1785801610686`
+- Implementation commit: `6ad50260d97184a66f514929fa6e8e2a45cd9989`
+- Detected at XSH commit: `5cee793` (merge commit)
+- Implementation run: `runs/run-1785801609594`
+- CTO decision: merged after engineer tests and linked replay passed.
+- Follow-up: update the handbook to teach `method:NAME` and run the planned
+  post-merge replay to verify the worker uses the receiver index query.
 
 ## Source eval and manager
 

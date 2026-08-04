@@ -239,6 +239,28 @@ proc test_engineer_patch_survives_worktree_cleanup(ctx: TestContext) [fs, proces
   test.contains(run.text "git" "-C" $product.display() "branch" "--list" "factory/test" ?, "factory/test")?
 }
 
+proc test_run_worktree_cleanup_removes_dirty_worktrees_preserves_branch(ctx: TestContext) [fs, process, error] {
+  let root = test.temp_dir(ctx, name: "run-worktree-cleanup")?
+  let product = fp"${root}/product"
+  let run_dir = fp"${root}/runs/run-1"
+  let worktree = fp"${run_dir}/phases/01-ticket/worktrees/task-a"
+  fs.mkdir(worktree.parent())?
+  fs.mkdir(product)?
+  let git = process.which("git")?
+  test.ok(command_ok(git, ["git", "-C", product.display(), "init", "-q", "-b", "main"])?)?
+  test.ok(command_ok(git, ["git", "-C", product.display(), "config", "user.email", "factory@test"])?)?
+  test.ok(command_ok(git, ["git", "-C", product.display(), "config", "user.name", "Factory Test"])?)?
+  fs.write(fp"${product}/README", "base\n")?
+  test.ok(command_ok(git, ["git", "-C", product.display(), "add", "README"])?)?
+  test.ok(command_ok(git, ["git", "-C", product.display(), "commit", "-qm", "base"])?)?
+  let base = run.text "git" "-C" $product.display() "rev-parse" "HEAD" ?
+  test.ok(command_ok(git, ["git", "-C", product.display(), "worktree", "add", "-q", "-b", "factory/task-a/run-1", worktree.display(), base.trim()])?)?
+  fs.write(fp"${worktree}/DIRTY", "preserve branch evidence\n")?
+  test.ok(runtime.remove_run_worktrees(product, run_dir)?)?
+  test.ok(! fs.exists(worktree)?)?
+  test.contains(run.text "git" "-C" $product.display() "branch" "--list" "factory/task-a/run-1" ?, "factory/task-a/run-1")?
+}
+
 proc test_organization_reuses_existing_branch_without_duplicate_dispatch() [fs, error] {
   let organization = fs.read_text(fp"${fs.cwd()?}/run-organization.xsh")?
   let reuse = fs.read_text(fp"${fs.cwd()?}/run-ticket-reuse.xsh")?
@@ -255,6 +277,7 @@ proc test_ticket_cycle_bounds_concurrent_engineers() [fs, error] {
   let organization = fs.read_text(fp"${fs.cwd()?}/run-organization.xsh")?
   test.contains(ticket, "max_concurrent_engineers()")?
   test.contains(ticket, r"""at most ${control.max_concurrent_engineers()} engineer tickets""")?
+  test.contains(ticket, "remove_run_worktrees")?
   test.contains(ticket, "if ! director_status.ok")?
   test.contains(ticket, "runtime.cleanup_active_run()")?
   test.contains(ticket, "spawn_engineer")?
@@ -262,6 +285,7 @@ proc test_ticket_cycle_bounds_concurrent_engineers() [fs, error] {
   test.contains(ticket, "controller-dispatching engineer worker")?
   test.contains(director, "launch all children")?
   test.contains(organization, "ticket_worker_pass(primary_phase, ticket_id)")?
+  test.contains(organization, "remove_run_worktrees")?
   test.contains(organization, "let reeval_ok = ticket_primary_pass and run_child")?
 }
 

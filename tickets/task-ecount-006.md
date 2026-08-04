@@ -4,6 +4,16 @@
 
 Open.
 
+## CTO review
+
+- Review cycle: `pre-cycle-1785801503` (2026-08-03)
+- Decision: Deferred; retain `Open.` for a later implementation cycle.
+- Basis: The direct module-stream `collect()` failure is reproducible and
+  handbook-visible, but it may share the indexed-IR boundary with the already
+  merged positional-optional-argument fix in `task-ecount-002`.
+- Next evidence: Run a focused probe on current XSH HEAD and determine whether
+  the remaining trigger is distinct before assigning another engineer.
+
 ## Budget breach
 
 None.

@@ -4,6 +4,17 @@
 
 Open.
 
+## CTO review
+
+- Review cycle: `pre-cycle-1785801503` (2026-08-03)
+- Decision: Deferred; retain `Open.` pending the already-recorded replay.
+- Basis: The CTO has already applied the shared comment-aware restriction
+  scanner fix and native regression; dispatching an engineer would duplicate
+  factory work before the containerized evaluator replay validates it.
+- Next evidence: The next `task-envcfg` replay must confirm the positive
+  comment case and the genuine subprocess negative control, then reconcile
+  this ticket to its terminal status.
+
 ## Budget breach
 
 None.

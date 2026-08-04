@@ -72,6 +72,15 @@ proc preflight(
     return false
   }
 
+  if mode == "organization" {
+    let ticket_inventory = runtime.cto_ticket_inventory(factory_dir, xsh_repo)?
+    let unreviewed_tickets = runtime.cto_unreviewed_open_tickets(ticket_inventory)
+    if unreviewed_tickets.len() > 0 {
+      eprint f"CTO review required for Open tickets before organization admission: ${unreviewed_tickets.join(", ")}"
+      return false
+    }
+  }
+
   let requested_tickets = control.request_tickets(request_text)
   let candidate_tickets = if requested_tickets.len() > 0 {
     requested_tickets

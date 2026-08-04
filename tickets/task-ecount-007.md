@@ -4,6 +4,16 @@
 
 Open.
 
+## CTO review
+
+- Review cycle: `pre-cycle-1785801503` (2026-08-03)
+- Decision: Deferred; retain `Open.` for a later implementation cycle.
+- Basis: `fold` has a serious discoverability and compiler-diagnostic gap, but
+  its intended accumulator contract is not yet precise enough to assign a
+  bounded product change safely.
+- Next evidence: Establish the intended fold arity/result contract and a
+  minimal executable regression before approval.
+
 ## Budget breach
 
 None.

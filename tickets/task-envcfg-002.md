@@ -4,6 +4,15 @@
 
 Open.
 
+## CTO review
+
+- Review cycle: `pre-cycle-1785801503` (2026-08-03)
+- Decision: Deferred; retain `Open.` pending closure as a duplicate.
+- Basis: This reproduces the same plain-`main` compact-runtime mismatch that
+  was fixed and merged as `task-envcfg-007` at XSH commit `7c939db`.
+- Next evidence: Reconcile the duplicate against the merged regression and
+  close this ticket once the linked replay confirms the fix.
+
 ## Budget breach
 
 None.

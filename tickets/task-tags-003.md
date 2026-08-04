@@ -4,6 +4,16 @@
 
 Open.
 
+## CTO review
+
+- Review cycle: `pre-cycle-1785801503` (2026-08-03)
+- Decision: Deferred; retain `Open.` for a later implementation cycle.
+- Basis: The f-string diagnostic-span defect is real and general, but it is a
+  deeper parser/source-span change than the two selected tickets and lacks a
+  current implementation branch.
+- Next evidence: Add a minimal parser regression that isolates interpolation
+  spans, then reassess implementation scope and expected replay cost.
+
 ## Budget breach
 
 None.

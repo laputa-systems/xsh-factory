@@ -2,7 +2,18 @@
 
 ## Status
 
-Open.
+Merged.
+
+## CTO review
+
+- Review cycle: `pre-cycle-1785801503` (2026-08-03)
+- Decision: Approved for the next two-engineer ticket cycle.
+- Basis: A checker-valid program emits its complete output and then exits with
+  `lowered return type mismatch`; the failure is deterministic, general to
+  terminal stream stages, and has a narrow checker/runtime acceptance contract.
+- Assignment boundary: Align final terminal-stage lowering with the declared
+  `proc` return, or reject it at check time with an actionable diagnostic; do
+  not change non-final terminal-stage behavior or unrelated stream semantics.
 
 ## Budget breach
 
@@ -10,10 +21,13 @@ None.
 
 ## Merge record
 
-- Implementation branch: `{{IMPLEMENTATION_BRANCH}}`
-- Implementation commit: `{{IMPLEMENTATION_COMMIT}}`
-- Detected at XSH commit: `{{DETECTED_XSH_COMMIT}}`
-- Implementation run: `{{IMPLEMENTATION_RUN}}`
+- Implementation branch: `factory/task-ecount-005/1785801610686`
+- Implementation commit: `acd2d5dc1a3b7d33c09441c99af484bb1504d8f7`
+- Detected at XSH commit: `5cee793` (merge commit)
+- Implementation run: `runs/run-1785801609594`
+- CTO decision: merged after engineer tests and linked replay passed.
+- Follow-up: the replay passed the eval but used the handbook workaround; a
+  post-merge probe must exercise a bare final `each` statement explicitly.
 
 ## Source eval and manager
 

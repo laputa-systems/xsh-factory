@@ -4,6 +4,16 @@
 
 Open.
 
+## CTO review
+
+- Review cycle: `pre-cycle-1785801503` (2026-08-03)
+- Decision: Deferred; retain `Open.` for a later implementation cycle.
+- Basis: The missing `var` guidance is a valid handbook/reference gap, but it
+  is documentation-led and lower urgency than the selected runtime failure
+  and API discovery improvements.
+- Next evidence: Revisit after the current handbook lineage is reconciled and
+  determine whether the reference, handbook, or diagnostics should own the fix.
+
 ## Budget breach
 
 None.

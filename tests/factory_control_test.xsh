@@ -45,6 +45,15 @@ proc test_cto_inventory_surfaces_ticket_state() [error] {
   test.contains(markdown, "| present |")?
 }
 
+proc test_cto_gate_surfaces_unreviewed_open_tickets() [error] {
+  let tickets = [
+    {id: "task-open", status: "Open.", eval_id: "task-envcfg", cto_review: false, open_branch: "", path: "tickets/task-open.md"},
+    {id: "task-reviewed", status: "Open.", eval_id: "task-ecount", cto_review: true, open_branch: "", path: "tickets/task-reviewed.md"},
+    {id: "task-approved", status: "Approved.", eval_id: "task-tags", cto_review: false, open_branch: "", path: "tickets/task-approved.md"},
+  ]
+  test.eq(runtime.cto_unreviewed_open_tickets(tickets), ["task-open"])?
+}
+
 proc test_handbook_candidate_gate_requires_ledger_disposition(ctx: TestContext) [fs, error] {
   let root = test.temp_dir(ctx, name: "handbook-gate")?
   fs.mkdir(fp"${root}/runtime")?
@@ -220,9 +229,11 @@ proc test_standard_cycle_uses_diverse_active_eval() [fs, error] {
   test.contains(launcher, "templates/CTO-IMPROVEMENT.md")?
   test.contains(launcher, "candidate_tickets")?
   test.contains(launcher, "first_approved_tickets")?
+  test.contains(launcher, "cto_unreviewed_open_tickets")?
   test.contains(launcher, "unresolved_handbook_candidates")?
   test.contains(launcher, "run-cto.xsh")?
   test.contains(organization, "first_approved_tickets")?
+  test.contains(organization, "cto_unreviewed_open_tickets")?
   test.contains(organization, "write_cto_inventory")?
   test.contains(cto_runner, "cto_ticket_inventory")?
   test.contains(organization, "for ticket_id in selected_tickets")?

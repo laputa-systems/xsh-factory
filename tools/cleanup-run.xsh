@@ -1,5 +1,7 @@
 ##! Drain the process and container registry for an interrupted factory run.
 
+use factory_runtime as runtime
+
 proc signal_registry(run_dir: Path, signal: Str, excluded_pid: Int) [fs, process, error] -> Result[Unit] {
   if ! fs.exists(run_dir)? {
     return Ok()
@@ -65,6 +67,9 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   time.sleep(250ms)?
   signal_registry(run_dir, "KILL", excluded_pid)?
   stop_containers(run_dir)?
+  let factory_dir = env.path("FACTORY_DIR", fs.cwd()?)?
+  let xsh_repo = env.path("FACTORY_XSH_REPO", fp"${factory_dir}/../xsh")?
+  let _ = runtime.remove_run_worktrees(xsh_repo, run_dir)?
   if fs.exists(run_dir)? {
     for entry in fs.walk(run_dir, gitignore: false, hidden: true)? |> where .kind == "file" and .name == "ACTIVE" {
       fs.remove(entry.path, missing_ok: true)?

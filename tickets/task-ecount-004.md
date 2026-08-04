@@ -4,6 +4,16 @@
 
 Open.
 
+## CTO review
+
+- Review cycle: `pre-cycle-1785801503` (2026-08-03)
+- Decision: Deferred; retain `Open.` for a later implementation cycle.
+- Basis: The checker/runtime disagreement is reproducible and general, but the
+  proposed `Any` acceptance changes a type-safety boundary and needs a tighter
+  sema design than the two tickets selected this cycle.
+- Next evidence: Reconcile the intended static contract with the runtime
+  ordering behavior and add focused checker cases before approval.
+
 ## Budget breach
 
 None.

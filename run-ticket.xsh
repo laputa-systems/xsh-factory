@@ -108,6 +108,9 @@ proc run_ticket_cycle(
   runtime.register_cycle_controller(run_dir)?
   let skip_cycle_budget = env.get_or("FACTORY_SKIP_CYCLE_BUDGET", "false")? == "true"
   let retain_worktree = env.get_or("FACTORY_RETAIN_WORKTREE", "false")? == "true"
+  if ! retain_worktree {
+    defer runtime.cleanup_run_worktrees(xsh_repo, run_dir)?
+  }
   if ! skip_cycle_budget {
     let _cycle_budget_watch = runtime.start_cycle_budget_watch(factory_dir, run_dir)?
   }
@@ -323,6 +326,11 @@ proc run_ticket_cycle(
       runtime.emit_event(event_template, run_dir, f"80-ticket-${ticket_id}-failed", ticket_id, "failed", 1, "controller", f"worker output, patch, or worktree validation failed for ${ticket_id}")?
     }
   }
+  let final_worktree_cleanup_ok = if retain_worktree {
+    true
+  } else {
+    runtime.remove_run_worktrees(xsh_repo, run_dir)?
+  }
   let director_report = fp"${run_dir}/workers/director/director/REPORT.md"
   let director_report_ok = fs.exists(director_report)? and
     ! fs.exists(fp"${run_dir}/workers/director/director/REPORT-MISSING")? and
@@ -343,7 +351,7 @@ proc run_ticket_cycle(
     runtime.emit_event(event_template, run_dir, "85-cycle-audited", "ticket-implementation",
       "failed", 1, "controller", "deterministic audit artifact written")?
   }
-  let initial_result = if engineer_dispatch_ok and director_status.ok and all_tickets_ok and all_patches_ok and director_report_ok and audit_pass { "pass" } else { "fail" }
+  let initial_result = if engineer_dispatch_ok and director_status.ok and all_tickets_ok and all_patches_ok and final_worktree_cleanup_ok and director_report_ok and audit_pass { "pass" } else { "fail" }
   let cto_status = runtime.write_cto_report(factory_dir, run_dir, initial_result)?
   let result = if initial_result == "pass" and cto_status { "pass" } else { "fail" }
   if result == "pass" {

@@ -227,7 +227,14 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   }
   let _organization_lock = fs.lock(fp"${factory_dir}/runs/organization.lock", nonblocking: true)?
   fs.mkdir(run_dir)?
+  defer runtime.cleanup_run_worktrees(xsh_repo, run_dir)?
   runtime.write_cto_inventory(factory_dir, run_dir, xsh_repo)?
+  let ticket_inventory = runtime.cto_ticket_inventory(factory_dir, xsh_repo)?
+  let unreviewed_tickets = runtime.cto_unreviewed_open_tickets(ticket_inventory)
+  if unreviewed_tickets.len() > 0 {
+    eprint f"CTO review required for Open tickets before organization admission: ${unreviewed_tickets.join(", ")}"
+    abort(1)
+  }
   runtime.stage_cto_improvement(factory_dir, run_dir)?
   runtime.register_cycle_controller(run_dir)?
   let skip_cycle_budget = env.get_or("FACTORY_SKIP_CYCLE_BUDGET", "false")? == "true"
@@ -486,6 +493,9 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
       worktree_cleanup_ok = worktree_cleanup_ok and cleaned
     }
   }
+
+  let final_worktree_cleanup_ok = runtime.remove_run_worktrees(xsh_repo, run_dir)?
+  worktree_cleanup_ok = worktree_cleanup_ok and final_worktree_cleanup_ok
 
   var independent_eval_state = if selected_ticket == "" { "not-applicable" } else { "not-run" }
   var independent_eval_report_state = if selected_ticket == "" { "not-applicable" } else { "not-run" }

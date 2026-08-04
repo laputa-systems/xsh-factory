@@ -240,6 +240,40 @@ export proc remove_clean_worktree(xsh_repo: Path, worktree: Path) [fs, process, 
   return status.ok and ! fs.exists(worktree)?
 }
 
+## Force-removes only worktrees owned by one completed or interrupted run.
+## Branches, patches, reports, and other run evidence remain intact.
+export proc remove_run_worktrees(xsh_repo: Path, run_dir: Path) [fs, process, error] -> Result[Bool] {
+  if ! fs.exists(run_dir)? {
+    return true
+  }
+  var removed = true
+  for entry in fs.walk(run_dir, gitignore: false, hidden: true)? |> where .kind == "dir" and .name == "worktrees" {
+    for child in fs.children(entry.path, stat: false, ordered: true)? {
+      if child.kind != "dir" {
+        continue
+      }
+      let status = process.run(process.command_argv(
+        "git",
+        ["git", "-C", xsh_repo.display(), "worktree", "remove", "--force", child.path.display()],
+      ))?
+      if ! status.ok and fs.exists(child.path)? {
+        removed = false
+        eprint f"unable to remove run worktree: ${child.path.display()}"
+      }
+    }
+  }
+  let prune = process.run(process.command_argv(
+    "git", ["git", "-C", xsh_repo.display(), "worktree", "prune"],
+  ))?
+  return removed and prune.ok
+}
+
+## Deferred-cleanup adapter for controller shutdown paths.
+export proc cleanup_run_worktrees(xsh_repo: Path, run_dir: Path) [fs, process, error] -> Result[Unit] {
+  let _ = remove_run_worktrees(xsh_repo, run_dir)?
+  return Ok()
+}
+
 ## Writes one event and advances its subject state atomically.
 export proc emit_event(
   template: Path,
@@ -462,6 +496,17 @@ export proc cto_ticket_inventory(
     })
   }
   return tickets
+}
+
+## Returns Open tickets that have no durable CTO review marker.
+export pure cto_unreviewed_open_tickets(tickets: List[Any]) -> List[Str] {
+  var unreviewed: List[Str] = []
+  for ticket in tickets {
+    if ticket.status == "Open." and ! ticket.cto_review {
+      unreviewed = unreviewed.push(ticket.id)
+    }
+  }
+  return unreviewed
 }
 
 ## Renders the programmatic ticket inventory for a human CTO handoff.
