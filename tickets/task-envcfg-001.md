@@ -2,7 +2,20 @@
 
 ## Status
 
-Approved.
+Open.
+
+## CTO decision
+
+- Review cycle: `runs/run-1785821597944`.
+- Decision: Deferred pending the linked API-discovery fix; do not merge
+  `91e0eaa` yet.
+- Basis: The `fail(message)` runtime implementation is correct in isolation,
+  but the linked replay's manager found that `xsht api` cannot discover it, so
+  the eval agent still used the sentinel `parse_int` workaround. The branch is
+  retained for reuse after `task-envcfg-002` is implemented.
+- Next evidence: replay `task-envcfg` against the repaired branch and require
+  `xsht api search:fail` discovery plus adoption of `fail(...)?` and all ten
+  evaluator cases passing.
 
 ## CTO closeout
 

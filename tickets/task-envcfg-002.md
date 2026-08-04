@@ -2,23 +2,19 @@
 
 ## Status
 
-Closed.
+Approved.
 
 ## CTO review
 
-- Review cycle: `pre-cycle-1785801503` (2026-08-03)
-- Decision: Deferred; retain `Open.` pending closure as a duplicate.
-- Basis: This reproduces the same plain-`main` compact-runtime mismatch that
-  was fixed and merged as `task-envcfg-007` at XSH commit `7c939db`.
-- Next evidence: Reconcile the duplicate against the merged regression and
-  close this ticket once the linked replay confirms the fix.
-
-## CTO closeout
-
-- Close cycle: `runs/run-1785809029885`.
-- Decision: Closed as a duplicate of the merged `task-envcfg-007` fix.
-- Evidence: the independent `task-envcfg` phase passed on XSH commit
-  `e8f64a2`; no separate implementation remains warranted.
+- Review cycle: `runs/run-1785821597944`.
+- Decision: Approved for the next organization cycle.
+- Basis: The linked replay reproduced a general discoverability defect: the
+  newly implemented `fail(message)` primitive is absent from the authoritative
+  `xsht api` registry, causing an eval agent to fall back to the sentinel
+  conversion the parent ticket was meant to remove.
+- Assignment boundary: Register `fail(message)` in the canonical API reference
+  and add focused registry/API coverage. Do not change fail semantics,
+  validator strictness, or unrelated handbook/operator guidance.
 
 ## Budget breach
 
@@ -33,137 +29,102 @@ None.
 
 ## Source eval and manager
 
-- Eval: `task-envcfg` (`evals/task-envcfg/EVAL.md`)
-- Shared handbook lineage: `runs/run-1785728831509/phases/03-eval/lineage/handbook-approved.md` (approved `c7c9dd9a…`; candidate `c7c9dd9a…` with one added sentence)
-- Manager run: `runs/run-1785728831509/phases/03-eval/workers/eval-manager/task-envcfg/REPORT.md`
-- Executor run: `runs/run-1785728831509/phases/03-eval/workers/eval-worker/task-envcfg-1` (trial 1)
-- XSH baseline commit: `ea7dea2f2b436cce34262d7a02105cbb029243dd`
+- Eval: `task-envcfg`
+- Shared handbook lineage: `runs/run-1785821597944/phases/02-reeval-task-envcfg-001/lineage/handbook-approved.md` (snapshot `97c5d804c42c7742c9edfea4480163828d864279391d391df77aa60ee4a40e83`); candidate `handbook-candidate.md`
+- Manager run: `runs/run-1785821597944/phases/02-reeval-task-envcfg-001/workers/eval-manager/task-envcfg/REPORT.md`
+- Executor run: `runs/run-1785821597944/phases/02-reeval-task-envcfg-001/workers/eval-worker/task-envcfg-1/`
+- XSH baseline (candidate under test) commit: `91e0eaa46014ea1dba60a5faebdead98db38cc9f`
 
 ## Observation
 
-The `xsh SCRIPT` entry point (the "compact runtime" the gym uses for a
-script) refuses to run a `main` declared with a plain argument parameter,
-while `xsht check` accepts the same signature. Reproduced twice in one
-worker session:
+Candidate commit `91e0eaa` ("Add deliberate validation failure primitive")
+implements a `fail(message)` keyword that constructs an `Err(Error)` validation
+failure propagated by postfix `?` and exiting nonzero. In a live `task-envcfg`
+eval run against that exact candidate build, the worker searched
+`assert`/`expect`/`ensure`/`require`/`panic`/`invalidate`/`fail`/`Error`/`Err`/
+`module:result` across turns 53-81 and could not discover any deliberate-error
+primitive, then reverted to the sentinel workaround ticket `task-envcfg-001` was
+created to remove:
 
-```text
-$ cat /work/envcfg.xsh        # initial worker version
-proc main(argv: List[Str]) [env, fs, error] -> Result[Unit] {
-  ...
+```
+if ! valid {
+  let _ = "".parse_int()?
 }
-$ xsht check envcfg.xsh       # passes
-$ xsh envcfg.xsh /tmp/ours
-err[runtime.compact-unsupported-main]: proc main could not run in the compact runtime
-  /work/envcfg.xsh:1:1
-  proc main(argv: List[Str]) [env, fs, error] -> Result[Unit] {
-  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-runtime traceback
-executable: /usr/local/bin/xsh
-operation: main
-error: compact-unsupported-main: proc main could not run in the compact runtime
-rc=3
 ```
 
-Second reproduction with a minimal case:
-
-```text
-$ cat /tmp/m2.xsh
-proc main(argv: List[Str]) [fs, error] -> Result[Unit] {
-  let dst = Path(argv.get(0)?)
-  fs.write(dst, "hi")?
-}
-$ xsh /tmp/m2.xsh /tmp/out2
-err[runtime.compact-unsupported-main]: proc main could not run in the compact runtime
-rc=3
-```
-
-Positive controls in the same session:
-
-- `proc main() [env, error] -> Result[Unit]` runs (parameterless main is fine);
-- `proc main(...argv: List[Str]) [fs, error] -> Result[Unit]` runs and writes the
-  file (rc=0, `/tmp/out4` created).
-
-So the compact runtime dispatches a parameterless or rest/spread `main`, but
-rejects a plain `argv: List[Str]` parameter at run time after `xsht check`
-approved the program. The runtime error does not name the fix (use `...argv`),
-and `xsh --help` (`xsh SCRIPT [ARGS...]`) documents no alternative runtime
-selection.
+Concretely, `xsht api search:fail` (turn 54) returned only
+`language.core.fallback`/`core.results`/`core.streams` (textual "fail/failure"
+word matches), and `xsht api summary | grep -iE "Error|Fail|Invalid"` (turns 62,
+64) surfaced no `fail` entry. The new primitive is mechanically correct but
+invisible to the canonical discovery surface the handbook directs agents to use.
 
 ## Evidence
 
-- Worker session: `runs/run-1785728831509/phases/03-eval/workers/eval-worker/task-envcfg-1/session.jsonl` — session lines 98 and 104 are the two `isError: true` tool results quoted above (structured report turn numbers 47 and 50); line 93 is the check-accepted initial source; line 114 is the `...argv` positive control (`rc=0`, file written); line 115 is the one-line fix to `/work/envcfg.xsh` (`(argv:` → `(...argv:`); `xsh --help` probe at session line ~110 and `xsht api search:compact` / `language:cli.xsh-SCRIPT` probes show no documented plain-parameter restriction.
-- Worker review: `runs/run-1785728831509/phases/03-eval/workers/eval-worker/task-envcfg-1/review.md`, section `## xsht friction` — "The runtime selects a 'compact' runtime for `proc main`, and it rejects a plain argument parameter: `proc main(argv: List[Str])` fails to run with `error: compact-unsupported-main`, while `proc main(...argv: List[Str])` (rest/spread parameter) runs fine. This asymmetry is undocumented in the handbook's main-procedure example and costs a failed-run cycle to discover."
-- Structured tool errors: `runs/run-1785728831509/phases/03-eval/report.json` `data.tool_errors` and worker `report.json` `tool_errors` — both entries are `runtime.compact-unsupported-main`; no other failed Pi tool results in the session.
-- Quantitative: trial passed 10/10 (`run.json` `correctness.all_exact: true`, `restrictions.passed: true`), so the defect did not block this eval; it cost the worker two failed runs and roughly turns 47–56 (~10 tool calls) to diagnose, ending with the `...argv` fix and the review.md friction note.
+- Worker session: `runs/run-1785821597944/phases/02-reeval-task-envcfg-001/workers/eval-worker/task-envcfg-1/session.jsonl` (turns 53-81; especially turn 54 `search:fail` and turns 62/64 `summary` grep; final artifact uses the sentinel `parse_int` idiom).
+- Artifact: `task-envcfg-1/envcfg.xsh` (line 7 `let _ = "".parse_int()?`).
+- Evaluator: `task-envcfg-1/run.json` — `xsh_commit: 91e0eaa...`, all 10 cases pass.
+- Source-level: candidate diff touches `src/runtime/eval{,/indexed/full,lower,lowered_run/indexed_run}.rs`, `src/sema/check/call.rs`, `docs/SPEC.md`, `tests/xsh/run.xsh`; it does NOT touch `crates/xsh-registry/src/reference.rs` (`CORE_LANGUAGE_ITEMS` / `core_doc`) or `XSHT-API.md`. So `fail` has no API-reference entry.
 
 ## Diagnosis or hypothesis
 
-`xsh SCRIPT` dispatches `main` through a compact runtime whose entry-point
-contract accepts only a parameterless `main` or the rest/spread form
-(`...argv`). `xsht check` type-checks the plain-parameter form and reports
-success, so the first signal an agent sees is a runtime failure whose message
-("proc main could not run in the compact runtime") does not explain the
-required signature. This is a general ergonomics/correctness problem, not an
-envcfg recipe: any eval or script whose `main` reads arguments is one
-wrong-form edit away from a confusing rc=3, and the checker gives false
-confidence. The fix is either to make the compact runtime accept the plain
-parameter form (semantically equivalent to `...argv` for a single list
-argument) or to make both `xsht check` and the runtime error state the
-requirement explicitly.
+`xsht api` is advertised in the handbook and the `xsht api` onboarding as the
+live reference for discovering exact functions, methods, and language rules. A
+new runtime/sema primitive that is not registered in that reference is
+indistinguishable from "not implemented" from an agent's perspective. This is a
+general ergonomics defect, not a task-specific miss: any keyword/constructor
+added to the language must be discoverable through the same reference or agents
+will continue to route around it with opaque workarounds. It generalizes beyond
+`task-envcfg` to any eval that needs a deliberate error boundary (repeat of the
+original two-worker finding, which is why the primitive was created in the first
+place).
 
 ## North-star impact
 
-The north star asks for clear, explicit boundaries and fewer repeated
-discoveries. A checker/runtime contract mismatch with a non-actionable error
-is exactly the opaque friction that costs agents turns and erodes trust in the
-tooling. Making the documented `xsh SCRIPT` entry point predictable (support
-the plain form, or reject it with a diagnostic that names `...argv`) would
-remove ~10 turns of diagnostic work from the task-envcfg path and protect every
-future argv-taking task. Evidence of generalization: after the change, a replay
-of any argv-taking eval (task-envcfg, task-tags, task-ecount, task-logroll)
-should show the worker writing `proc main(...argv: List[Str])` — or the
-runtime accepting the plain form — with no `compact-unsupported-main` failed
-run.
+XSH's north star calls for structured errors and "expected failures visible."
+A deliberate-failure primitive is genuinely useful, but a language feature
+agents cannot discover is not learnable or ergonomic; it simply adds another
+silent treadmill of turns (this run: a large fraction of a 51-turn budget) that
+ends at the same hack. Registering the primitive in the API reference makes the
+feature actually usable and would let an eval agent adopt `fail("...")?` directly,
+which is the acceptance behavior ticket `task-envcfg-001` asked for. Evidence it
+generalized: `xsht api search:fail` and `summary` then resolve, and a replay of
+`task-envcfg` (plus `task-ecount`/`task-tags` style loud-exit boundaries) shows the
+agent choosing `fail` over the sentinel.
 
 ## Proposed XSH change
 
-Smallest candidate, one of:
-
-1. Make the compact runtime accept `proc main(argv: List[Str])` as equivalent
-   to the rest form (dispatch the script arguments as that list), or
-2. Make `xsht check` reject the plain-parameter `main` with a constructive
-   diagnostic naming the rest form, or
-3. Improve the runtime error to name the requirement, e.g. `proc main could
-   not run in the compact runtime: main must declare its arguments as a rest
-   parameter, e.g. proc main(...argv: List[Str])`.
-
-Prefer (1) if the compact runtime can pass argv trivially; otherwise (2) and
-(3) for an actionable message. Keep the parameterless-main behavior unchanged.
+Register the `fail` deliberate-validation primitive in the `xsht api` reference so
+`xsht api search:fail` and an exact query (e.g. `api:fail` / a `core.fail`
+language rule) resolve with purpose/contract/signature ("constructs a validation
+`Err(Error)` propagated by `?`; exits nonzero at top level"). This is the smallest
+change: one add to `crates/xsh-registry/src/reference.rs` (a `CORE_LANGUAGE_ITEMS`
+entry plus `core_doc` text, mirroring `Ok`/`Err`/`results`/`postfix-question`), and
+optionally a matching line in `XSHT-API.md`. Do not change the runtime or the
+semantics of `fail`.
 
 ## Acceptance criteria
 
-- `xsht check` accepts `proc main(argv: List[Str]) [fs] { ... }` and
-  `xsh SCRIPT ARG` runs it, passing argv as the list; OR `xsht check` rejects
-  the plain form with a diagnostic that names `...argv`; OR the runtime error
-  names the rest-parameter requirement.
-- `xsh SCRIPT ARG` on `proc main(...argv: List[Str])` continues to work
-  (regression).
-- A replay of `task-envcfg` on the merged change passes all 10 correctness
-  cases with no `compact-unsupported-main` failed run.
+- `xsht api search:fail` returns an exact entry describing the `fail(message)`
+  deliberate-validation primitive (not merely "fallback"/"results" word matches).
+- An agent can discover `fail` from the reference alone and write
+  `fail("message")?` in an `if`/guard that passes `xsht check`/`lint` and exits
+  nonzero with no output file.
+- The `task-envcfg` malformed and empty-port failure controls still pass.
+- The existing native test `test_fail_constructor_propagates_validation_error`
+  still passes.
 
 ## Scope and non-goals
 
-- No change to `main`'s effects, return type, or `?` propagation semantics.
-- Not an envcfg shortcut; the fix must apply to any script `main`, not just
-  this eval.
-- Does not cover the related but distinct compact-runtime issues tracked in
-  `task-ecount-002` and `task-ecount-006` (compact indexed-IR compilation
-  failures); those are separate triggers.
+- Out of scope: changing `fail` semantics, the `env.int`/`parse_int` validator
+  strictness, or boolean/`&&`/`||` operator friction (separate handbook/override
+  concerns).
+- Out of scope: retrofitting every existing keyword into the reference in this
+  ticket; the fix is scoped to making newly shipped primitives discoverable,
+  demonstrated by `fail`.
 
 ## Post-merge evaluation
 
-The `task-envcfg` eval-manager will run a controlled replay against the merged
-XSH commit using the current approved handbook lineage, verify no
-`compact-unsupported-main` failure occurs regardless of which main form the
-worker writes, confirm all 10 oracle cases still pass, and record acceptance
-or rejection in that run's manager report.
+Replay `task-envcfg` against the merged commit and verify the eval agent adopts
+`fail(...)?` (no sentinel `parse_int`) with all 10 cases and both failure
+controls passing. Optionally replay `task-ecount`/`task-tags` loud-exit cases to
+confirm the discoverable primitive generalizes.
