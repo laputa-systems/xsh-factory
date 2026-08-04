@@ -459,6 +459,9 @@ proc test_eval_design_stages_and_promotes_complete_package() [fs, error] {
   test.contains(assignment, "before any further exploration")?
   test.contains(role, "new valid `task-*` ID")?
   test.contains(role, "promotion to fail closed")?
+  test.contains(role, "promotion to fail closed")?
+  test.contains(role, "Do not build a localized evaluator")?
+  test.contains(assignment, "Do not build a localized evaluator")?
   test.contains(review, "may set `Approved.`")?
   test.contains(review, "MISSING_PACKAGE_FILES")?
   test.contains(review, "Checked-in status")?

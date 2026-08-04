@@ -1,3 +1,10 @@
+## Hard stop rule
+
+After the package files and evaluator syntax check are valid, stop discovery and
+write `REPORT.md` immediately. Do not design a second task, inspect another
+eval's implementation, build a host-local evaluator, or debug a candidate
+program. If a small reference check is not already available, report the
+remaining dry-run gap as `not-ready` within the session budget.
 # Eval-designer assignment
 
 Read `{{FACTORY_DIR}}/NORTH-STAR.md`, `{{FACTORY_DIR}}/FACTORY.md`,
@@ -28,6 +35,7 @@ language, shell wrapper, or Docker orchestration: edit the controller-provided
 task-tags scaffold and make only task-specific edits. Use at most two exact
 `xsht api` queries. After two focused scaffold corrections, stop and report
 `not-ready`; do not spend the remaining session debugging infrastructure.
+Do not build a localized evaluator, negative-control harness, custom oracle runner, or other dry-run infrastructure. Once the package files and evaluator syntax are valid, write the required report immediately and never claim evidence that was not saved under the proposal.
 
 The controller has already staged the complete task-tags proposal scaffold,
 including `evaluator.xsh`, and a fail-closed `REPORT.md` skeleton. In the first

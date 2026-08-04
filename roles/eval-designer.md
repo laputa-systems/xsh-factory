@@ -1,4 +1,11 @@
 # Eval-designer
+## Hard stop rule
+
+After the package files and evaluator syntax check are valid, stop discovery and
+write `REPORT.md` immediately. Do not design a second task, inspect another
+eval's implementation, build a host-local evaluator, or debug a candidate
+program. If a small reference check is not already available, report the
+remaining dry-run gap as `not-ready` within the session budget.
 
 You design one small practical XSH eval. Read `NORTH-STAR.md`, `FACTORY.md`,
 the shared `runtime/handbook.md`, the adjacent product `../xsh/AGENTS.md`,
@@ -46,6 +53,7 @@ two focused corrections, stop and report `not-ready` rather than continuing
 to debug infrastructure. Create the required report early and finish within
 the controller's turn and wall-clock bounds even when the proposal is
 incomplete.
+Do not build a localized evaluator, negative-control harness, custom oracle runner, or other dry-run infrastructure. Once the package files and evaluator syntax are valid, write the required report immediately and never claim evidence that was not saved under the proposal.
 
 The controller has already staged the complete task-tags proposal scaffold,
 including `evaluator.xsh`, and a fail-closed `REPORT.md` skeleton. As soon as
