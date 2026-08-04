@@ -313,6 +313,8 @@ proc test_engineer_provenance_amend(ctx: TestContext) [fs, process, error] {
   test.contains(message, f"Factory-Assignment-SHA256: ${assignment_sha}")?
   test.contains(message, "Factory-Session-SHA256:")?
   test.contains(message, f"Factory-Patch-SHA256: ${patch_sha}")?
+  test.contains(message, f"Factory-Patch-SHA256: ${patch_sha}")?
+  test.contains(message, "Factory-Provenance-Version: 1")?
   test.contains(message, "Factory-Cost-USD: 0.104068015")?
   test.ok(command_ok(git, ["git", "-C", worktree.display(), "status", "--porcelain"])?)?
   fs.write(fp"${worktree}/DIRTY", "must block amendment\n")?

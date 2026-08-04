@@ -318,7 +318,12 @@ proc run_ticket_cycle(
       head = provenance_head
       runtime.update_engineer_report_commit(engineer_report, head.trim())?
     }
-    if provenance_ok {
+    let patch_after_ok = provenance_ok and runtime.write_engineer_patch(
+      worktree, xsh_commit.trim(), head.trim(), patch_path, patch_stderr
+    )?
+    let patch_after_sha = if patch_after_ok { hash.sha256(patch_path)?.hex() } else { "" }
+    let patch_chain_ok = provenance_ok and patch_after_ok and patch_after_sha == patch_sha
+    if patch_chain_ok {
       let report_sha = hash.sha256(worker_report)?.hex()
       let session_sha = hash.sha256(session)?.hex()
       let assignment_hash = hash.sha256(fp"${run_dir}/messages/${ticket_id}.md")?.hex()
@@ -339,7 +344,7 @@ proc run_ticket_cycle(
     } else {
       "cleanup-failed"
     }
-    let final_ticket_ok = provenance_ok and patch_ok and
+    let final_ticket_ok = patch_chain_ok and
       (retain_worktree or worktree_action == "removed-after-patch")
     if ! final_ticket_ok { all_tickets_ok = false }
     if ! patch_ok { all_patches_ok = false }
