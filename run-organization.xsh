@@ -474,7 +474,16 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
         f"`${ticket_id}`", f"Validate the ${ticket_id} implementation against the linked ${ticket_eval_id} eval before merge.")?
       let ticket_candidate = ticket_worktree.display()
       runtime.emit_event(event_template, run_dir, "10-reeval-started", f"${ticket_id}-reevaluation", "started", 1, "organization", "validated engineer worktree is available")?
-      let ticket_primary_pass = ticket_worker_pass(primary_phase, ticket_id)?
+      # In reuse mode no engineer worker report exists (the branch is reused,
+      # not re-implemented), so the validated phase report is the precondition
+      # for the linked candidate replay; otherwise require the engineer worker
+      # report. Without this, reuse mode short-circuited the replay child and
+      # the linked re-evaluation was never dispatched.
+      let ticket_primary_pass = if reuse_existing_branch {
+        phase_run_pass(primary_phase, "report.json")?
+      } else {
+        ticket_worker_pass(primary_phase, ticket_id)?
+      }
       let reeval_ok = ticket_primary_pass and run_child(
         reeval_controller, ticket_reeval_request, ticket_reeval_phase, factory_dir,
         ticket_worktree, run_dir, xsh_commit.trim(), run_agent,

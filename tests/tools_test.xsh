@@ -282,6 +282,10 @@ proc test_organization_reuses_existing_branch_without_duplicate_dispatch() [fs, 
   let reuse = fs.read_text(fp"${fs.cwd()?}/run-ticket-reuse.xsh")?
   let launcher = fs.read_text(fp"${fs.cwd()?}/run.xsh")?
   test.contains(organization, "run_reuse_phase")?
+  # Reuse mode must not gate the linked replay on a non-existent engineer
+  # worker report; it uses the reuse phase report as the precondition.
+  test.contains(organization, "if reuse_existing_branch {")?
+  test.contains(organization, "phase_run_pass(primary_phase, \"report.json\")")?
   test.contains(reuse, "mode: \"ticket-reuse\"")?
   test.contains(reuse, "worktree", "existing branch must use a detached worktree")?
   test.contains(launcher, "open_branch != \"\" and mode != \"organization\"")?
@@ -403,6 +407,19 @@ proc test_pi_session_persistence_is_jsonl_only() [fs, error] {
   test.contains(eval_worker, "--session")?
   test.ok(! controller.contains("--export"), "run-agent must not create session.html")?
   test.ok(! eval_worker.contains("--export"), "eval worker must not create session.html")?
+}
+
+proc test_run_agent_clears_pi_harness_env() [fs, error] {
+  # The factory may be launched from inside a standalone-embedded Pi session
+  # whose PI_PACKAGE_DIR/PI_STANDALONE_BINARY leak (XSH merges spawn `env`)
+  # into every host-side agent launch. run-agent.xsh must clear them so host
+  # `pi` resolves its own installed package instead of a partial embedded one
+  # lacking dist/modes/interactive/theme/dark.json, which crashed agent startup.
+  let controller = fs.read_text(fp"${fs.cwd()?}/run-agent.xsh")?
+  test.contains(controller, "PI_PACKAGE_DIR: \"\"")?
+  test.contains(controller, "PI_STANDALONE_BINARY: \"\"")?
+  let worker = fs.read_text(fp"${fs.cwd()?}/evals/eval-worker.xsh")?
+  test.ok(! worker.contains("PI_STANDALONE_BINARY"), "Docker worker stays harness-free")?
 }
 
 proc test_eval_worker_prompt_matches_task_image() [fs, error] {

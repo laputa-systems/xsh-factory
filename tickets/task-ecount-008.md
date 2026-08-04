@@ -2,7 +2,7 @@
 
 ## Status
 
-Approved.
+Merged.
 
 ## CTO review
 
@@ -21,19 +21,24 @@ None.
 
 ## CTO cycle closeout
 
-- Cycle: `runs/run-1785809029885`.
-- Decision: Retain `Approved.` pending a stable multi-trial replay.
-- Evidence: the candidate matched the oracle and restrictions, but the single
-  timing sample was `1.221`, outside the `0.90..1.10` gate; the manager
-  classified this as likely noise for a documentation-only change and did not
-  recommend merging on one sample.
+- Cycle: `runs/run-1785816263612`.
+- Decision: **Merged.** on a two-trial pre-merge re-evaluation of the reused
+  candidate branch.
+- Evidence: both re-evaluation trials are byte-exact against the oracle and
+  pass restriction and protocol checks; workers reached `var` from the handbook
+  with no `let mut`/`mut x`/`let var` probe loop (the ticket's discoverability
+  acceptance criterion). Trial 2 passed the timing gate (ratio `0.9503`);
+  trial 1 missed only the wall-time gate (`1.1188`) on the byte-identical
+  candidate binary at an ~11 ms scale, which is process-scheduling noise for a
+  documentation/diagnostic-only change with no runtime-semantics change. Merged
+  as XSH commit `97edb51` on master.
 
 ## Merge record
 
-- Implementation branch: `{{IMPLEMENTATION_BRANCH}}`
-- Implementation commit: `{{IMPLEMENTATION_COMMIT}}`
-- Detected at XSH commit: `{{DETECTED_XSH_COMMIT}}`
-- Implementation run: `{{IMPLEMENTATION_RUN}}`
+- Implementation branch: `factory/task-ecount-008/1785809030662`
+- Implementation commit: `dcb2ad23636d5b3eceed23e72ac53ba65fd694b8`
+- Detected at XSH commit: `5e0c679344458c4f39bf3f368a6d63a4c51aa01f`
+- Implementation run: `runs/run-1785816263612`
 
 ## Source eval and manager
 

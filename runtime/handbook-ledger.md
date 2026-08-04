@@ -51,6 +51,24 @@ auto-promoted merely because a lineage file exists.
 | `c9b0e03d8c6b050ebf605b2383f3f6dd02a5eae00f74e9094ec17e6efc90130c` | deferred pending cross-eval path-shadow replay; not promoted |
 | `52ffa03dfce9c88479993f3121347d1175f088d4dfc925f116f789d15da037f5` | deferred pending cross-eval dynamic-path replay; not promoted |
 | `7859f910afad43d0933889e31bcb47aa695af008d7a1ddba91a51b64c8972c6a` | deferred pending strict-validation replay; not promoted |
+| `36c2f9f168239719b87f05204cd580568d70a30565f557d973f812c7d621b6d3` | deferred pending cross-eval replay; not promoted |
+| `68103e5a56564d6af075c8a99311f3e38fe3bbbc5260eec73ba6e596579b6a40` | deferred pending cross-eval replay; not promoted |
+| `dbb77ccc4b1e335af741f29e875ee4b42d1e49cb2a02a1093d841ae994f86886` | deferred pending cross-eval replay; not promoted |
+
+The `68103e5a…` candidate (task-ecount reeval) adds a concise stream-block-tail
+rule (an `if/else` alone is not a block tail; bind it to a `let`). Recurring in
+both trials, but single-run evidence; recorded as deferred, not promoted.
+
+The `dbb77ccc…` candidate (envcfg) repeats the word-form boolean-operator rule
+(consistent with the deferred boolean-operator sentence above) and adds a
+do-not-shadow-standard-module-name note. Single-run hypothesis; recorded as
+deferred, not promoted.
+
+The `36c2f9f1…` candidate adds word-form boolean-operator guidance (`or`/`and`,
+rejecting shell `||`/`&&`). It is valid and reproducible (envcfg trial 2 hit the
+`||` rejection), but it is a single-eval hypothesis and the ledger already treats
+the analogous boolean-operator sentence as deferred pending a second
+conditional-writing eval replay. Recorded as deferred, not promoted.
 
 The `d9a2e262…` candidate records a concrete regex-plus-expected-error idiom
 for byte-exact decimal validation. The source eval passed all ten cases, but

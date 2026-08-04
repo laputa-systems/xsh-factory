@@ -120,6 +120,16 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     "--print",
     f"@${message_file.display()}",
   ]
+  # A factory run may be launched from inside a Pi session whose
+  # standalone-embedded package dir is set via PI_PACKAGE_DIR and
+  # PI_STANDALONE_BINARY (e.g. `pi` itself driving the factory). XSH merges
+  # this env over the inherited environment, so those harness variables would
+  # otherwise leak into every host-side agent (manager, designer, director,
+  # engineer) and make `pi` resolve a partial embedded package that lacks
+  # `dist/modes/interactive/theme/dark.json`, crashing interactive theme init
+  # (ENOENT) before the agent starts. Clear them so each child `pi` resolves
+  # its own installed package. Eval-workers are unaffected because they run a
+  # self-contained Pi inside Docker.
   let child_env = {
     PATH: env.get("PATH")?,
     HOME: env.get("HOME")?,
@@ -184,6 +194,8 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     FACTORY_ENGINEER_MAX_WALL_SECONDS: control.configured_role_setting("engineer", "MAX_WALL_SECONDS")?,
     PI_AUTH_FILE: env.get("PI_AUTH_FILE")?,
     PI_COMMAND: pi_command,
+    PI_PACKAGE_DIR: "",
+    PI_STANDALONE_BINARY: "",
   }
   let handle = spawn process.command_argv(
     pi_command,
