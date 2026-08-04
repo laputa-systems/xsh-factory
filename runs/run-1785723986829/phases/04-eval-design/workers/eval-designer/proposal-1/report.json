@@ -1,0 +1,109 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785723986829/phases/04-eval-design/workers/eval-designer/proposal-1/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_process": "nonzero-exit",
+    "reporting": "pass",
+    "required_report": "missing",
+    "session_limit_watcher": "failed",
+    "watcher": "pass"
+  },
+  "findings": [
+    {
+      "count": 2,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "role": "eval-designer",
+    "worker_id": "proposal-1"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785723986829/phases/04-eval-design/workers/eval-designer/proposal-1/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 64,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 653690
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785723986829/phases/04-eval-design/workers/eval-designer/proposal-1/session.jsonl.bz2",
+      "summary": "Path not found: /Users/josh/d/laputa-systems/xsh-factory/.dist",
+      "tool": "ls",
+      "turn": 8
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785723986829/phases/04-eval-design/workers/eval-designer/proposal-1/session.jsonl.bz2",
+      "summary": "Darwin arm64\n/Users/josh/usr/bin/xsh: Mach-O 64-bit executable arm64\n---\n---\ndebug\nmodules-basic-fixture\nruntime-sugar\ntmp\n---\nxsh\nxsht\n---\n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 12
+    }
+  ],
+  "tools": [
+    {
+      "count": 51,
+      "name": "bash"
+    },
+    {
+      "count": 7,
+      "name": "edit"
+    },
+    {
+      "count": 2,
+      "name": "find"
+    },
+    {
+      "count": 2,
+      "name": "grep"
+    },
+    {
+      "count": 9,
+      "name": "ls"
+    },
+    {
+      "count": 32,
+      "name": "read"
+    },
+    {
+      "count": 7,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 64,
+    "budget_usd": 0.3,
+    "cache_read_cost_usd": 0.016206131199999998,
+    "cache_read_tokens": 5787904,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.04598483119999999,
+    "input_cost_usd": 0.012143739999999998,
+    "input_tokens": 86741,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.017634959999999998,
+    "output_tokens": 62982,
+    "provider_total_tokens": 5937627,
+    "reasoning_tokens": 41724,
+    "thinking_blocks": 50,
+    "tool_calls": 110,
+    "tool_errors": 2,
+    "tool_results": 110,
+    "total_bucket_tokens": 5937627,
+    "user_messages": 1
+  }
+}

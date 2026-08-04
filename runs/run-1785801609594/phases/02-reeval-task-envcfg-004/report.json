@@ -1,0 +1,217 @@
+{
+  "artifacts": [
+    {
+      "kind": "session-directory",
+      "path": "workers/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 47,
+      "budget_failures": 0,
+      "cost_usd": 0.040634478,
+      "tool_errors": 0,
+      "total_bucket_tokens": 1127738.0,
+      "unknown_costs": 0,
+      "workers": 2
+    },
+    "designer": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785801609594/phases/02-reeval-task-envcfg-004/workers/eval-designer/proposal-1/REPORT.md",
+      "present": false,
+      "result": "not-requested",
+      "role": "eval-designer",
+      "valid": true
+    },
+    "director": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785801609594/phases/02-reeval-task-envcfg-004/workers/director/director/REPORT.md",
+      "present": false,
+      "result": "not-requested",
+      "role": "director",
+      "valid": true
+    },
+    "engineer": [],
+    "handbook_lineage": {
+      "approved": "lineage/handbook-approved.md",
+      "candidate": "lineage/handbook-candidate.md"
+    },
+    "manager": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785801609594/phases/02-reeval-task-envcfg-004/workers/eval-manager/task-envcfg/REPORT.md",
+      "present": true,
+      "result": "pass",
+      "role": "eval-manager",
+      "valid": true
+    },
+    "mode": "eval",
+    "narratives": [
+      {
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785801609594/phases/02-reeval-task-envcfg-004/workers/eval-manager/task-envcfg/REPORT.md",
+        "present": true,
+        "result": "pass",
+        "role": "eval-manager",
+        "valid": true
+      }
+    ],
+    "open_tickets": [
+      {
+        "eval_id": "task-ecount",
+        "id": "task-ecount-004",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-ecount-004.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-ecount",
+        "id": "task-ecount-005",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-ecount-005.md",
+        "status": "Approved."
+      },
+      {
+        "eval_id": "task-ecount",
+        "id": "task-ecount-006",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-ecount-006.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-ecount",
+        "id": "task-ecount-007",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-ecount-007.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-ecount",
+        "id": "task-ecount-008",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-ecount-008.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-envcfg",
+        "id": "task-envcfg-002",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-envcfg-002.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-envcfg",
+        "id": "task-envcfg-004",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-envcfg-004.md",
+        "status": "Approved."
+      },
+      {
+        "eval_id": "task-envcfg",
+        "id": "task-envcfg-006",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-envcfg-006.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-tags",
+        "id": "task-tags-003",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-tags-003.md",
+        "status": "Open."
+      }
+    ],
+    "sessions": [
+      "workers/eval-manager/task-envcfg/session.jsonl.bz2",
+      "workers/eval-worker/task-envcfg-1/session.jsonl.bz2"
+    ],
+    "tool_errors": [],
+    "trials": [
+      {
+        "evidence": {
+          "candidate_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "classification": "pass",
+          "correctness": "pass",
+          "eval_id": "task-envcfg",
+          "handbook_sha256": "97c5d804c42c7742c9edfea4480163828d864279391d391df77aa60ee4a40e83",
+          "oracle_sha256": "594a1118ea571bcfe5b2a8b7239b28924bd32ced928ba9ea5377a2c1b0bd71f6",
+          "passed": true,
+          "protocol": "pass",
+          "restrictions": "pass",
+          "result": "pass",
+          "timing": "pass",
+          "trial_id": "1",
+          "valid": true
+        },
+        "path": "workers/eval-worker/task-envcfg-1/run.json"
+      }
+    ],
+    "workers": [
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-envcfg"
+        },
+        "path": "workers/eval-manager/task-envcfg/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 12,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.00491328,
+          "cache_read_tokens": 272960,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.02164032,
+          "input_cost_usd": 0.01339776,
+          "input_tokens": 148864,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00332928,
+          "output_tokens": 18496,
+          "provider_total_tokens": 440320,
+          "reasoning_tokens": 13794,
+          "thinking_blocks": 11,
+          "tool_calls": 22,
+          "tool_errors": 0,
+          "tool_results": 22,
+          "total_bucket_tokens": 440320,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-envcfg-1"
+        },
+        "path": "workers/eval-worker/task-envcfg-1/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 35,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.011069568,
+          "cache_read_tokens": 614976,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.018994157999999997,
+          "input_cost_usd": 0.005114969999999999,
+          "input_tokens": 56833,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0028096199999999992,
+          "output_tokens": 15609,
+          "provider_total_tokens": 687418,
+          "reasoning_tokens": 9966,
+          "thinking_blocks": 31,
+          "tool_calls": 46,
+          "tool_errors": 0,
+          "tool_results": 46,
+          "total_bucket_tokens": 687418,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "7c939dbedcd680e812aadfef2cb248da8e824360"
+  },
+  "findings": [],
+  "identity": {
+    "eval_id": "task-envcfg",
+    "mode": "eval",
+    "run_id": "02-reeval-task-envcfg-004"
+  },
+  "kind": "phase",
+  "result": "pass",
+  "schema_version": 1,
+  "state": "completed"
+}

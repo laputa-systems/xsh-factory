@@ -1,0 +1,123 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785789595047/phases/03-eval/workers/eval-worker/task-envcfg-1/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_state": "pass",
+    "agent_wall_ms": 363804,
+    "artifact": {
+      "name": "envcfg.xsh",
+      "state": "present"
+    },
+    "budget_state": "pass",
+    "classification": "pass",
+    "evaluator_manifest": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785789595047/phases/03-eval/workers/eval-worker/task-envcfg-1/run.json",
+    "evaluator_state": "pass",
+    "reporting_state": "pass",
+    "result": "pass",
+    "review": {
+      "state": "present"
+    }
+  },
+  "findings": [
+    {
+      "count": 4,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "role": "eval-worker",
+    "worker_id": "task-envcfg-1"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785789595047/phases/03-eval/workers/eval-worker/task-envcfg-1/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 43,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 362036
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785789595047/phases/03-eval/workers/eval-worker/task-envcfg-1/session.jsonl.bz2",
+      "summary": "err[check.display-conversion]: value cannot be displayed by print\n  /tmp/t.xsh:4:9\n    print $r\n          ^^ value cannot be displayed by print\n---run---\nerr[check.display-conversion]: value cannot be displayed by print\n  /tmp/t.xsh:4:9\n    print $r\n          ^^ value cannot be displayed by print\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 9
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785789595047/phases/03-eval/workers/eval-worker/task-envcfg-1/session.jsonl.bz2",
+      "summary": "err[check.unknown-method]: unknown method `len` on Str\n  envcfg.xsh:8:6\n    if leftover.len() == 0 and port.len() > 0 {\n       ^^^^^^^^^^^^^^ `len` is not defined for Str\nnote: available methods include: `byte_len()`, `count_bytes()`, `count_chars()`\n\nerr[check.unknown-method]: unknown method `len` on Str\n  envcfg.xsh:8:30\n    if leftover.len() == 0 and port.len() > 0 {\n                               ^^^^^^^^^^ `len` is not defined for Str\nnote: available methods include: `byte_len()`, `count_bytes()`, `count_chars()`\n=== run valid ===\nerr[check.unknown-method]: unknown method `len` on Str\n  envcfg.xsh:8:6\n    if leftover.len() == 0 and port.len() > 0 {\n       ^^^^^^^^^^^^^^ `len` is not defined for Str\nnote: available methods include: `byte_len()`, `count_bytes()`, `count_chars()`\n\nerr[check.unknown-method]: unknown method `len` on Str\n  envcfg.xsh:8:30\n    if leftover.len() == 0 and port.len() > 0 {\n                               ^^^^^^^^^^ `len` is not defined for Str\nnote: available methods include: `byte_len()`, `count_bytes()`, `count_chars()`\nrc=2\n--- file ---\ncat: can't open '/tmp/out.cfg': No such file or directory\n=== oracle compare ===\ndiff: can't stat '/tmp/out.cfg': No such file or directory\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 32
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785789595047/phases/03-eval/workers/eval-worker/task-envcfg-1/session.jsonl.bz2",
+      "summary": "sh: bash: not found\n\n\nCommand exited with code 127",
+      "tool": "bash",
+      "turn": 35
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785789595047/phases/03-eval/workers/eval-worker/task-envcfg-1/session.jsonl.bz2",
+      "summary": "check rc=0\n=== valid ===\nrc=0\n00000000: 686f 7374 3d6e 6f64 652d 610a 706f 7274  host=node-a.port\n00000010: 3d39 3030 310a 6465 6275 673d 7472 7565  =9001.debug=true\n00000020: 0a                                       .\n=== invalid port 5x ===\nruntime traceback\nexecutable: /usr/local/bin/xsh\noperation: result.propagate\nerror: parse-int: invalid integer `x`\ncall path:\n  1. proc main at envcfg.xsh:1:1-1:1\nrc=3\nls: /tmp/o.cfg: No such file or directory\n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 39
+    }
+  ],
+  "tools": [
+    {
+      "count": 49,
+      "name": "bash"
+    },
+    {
+      "count": 2,
+      "name": "edit"
+    },
+    {
+      "count": 4,
+      "name": "read"
+    },
+    {
+      "count": 2,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 44,
+    "budget_usd": 0.5,
+    "cache_read_cost_usd": 0.016322688000000002,
+    "cache_read_tokens": 906816,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.023868198000000004,
+    "input_cost_usd": 0.004504589999999999,
+    "input_tokens": 50051,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.0030409200000000008,
+    "output_tokens": 16894,
+    "provider_total_tokens": 973761,
+    "reasoning_tokens": 9218,
+    "thinking_blocks": 35,
+    "tool_calls": 57,
+    "tool_errors": 4,
+    "tool_results": 57,
+    "total_bucket_tokens": 973761,
+    "user_messages": 1
+  }
+}

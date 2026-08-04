@@ -1,0 +1,47 @@
+{
+  "classification": "pass",
+  "correctness": {
+    "exact_output": true,
+    "oracle_ok": true,
+    "passed": true
+  },
+  "eval_id": "task-ecount",
+  "image_id": "sha256:f880156e9f3e4a655e3e04012403420070a46e80ddcb8b2f68f439eb4cbbdd52",
+  "inputs": {
+    "agents_sha256": "1df8bf2bf3b49e3488a60b8c7086d4366bf730e1c05e6b2a0d32266f18b12bd3",
+    "handbook_sha256": "c7c9dd9abb6d50dac60562757a1824900f24d4bc2d38014d5cbf869f56bb0723",
+    "task_sha256": "a9221f8fa089da6f13e29379668fe061d15b1ff640b66912521b9932a803f6c5"
+  },
+  "model": "deepseek/deepseek-v4-flash-0731",
+  "offline": "unknown",
+  "outputs": {
+    "candidate_sha256": "c7c356092b7731520891c6ec695ba9de9f5faa40967a7f9689a1f6d199a2fbb1",
+    "oracle_sha256": "c7c356092b7731520891c6ec695ba9de9f5faa40967a7f9689a1f6d199a2fbb1"
+  },
+  "platform": "linux/arm64",
+  "protocol": {
+    "artifact_present": true,
+    "review_ok": true
+  },
+  "provider": "openrouter",
+  "restrictions": {
+    "forbidden_operations": true,
+    "passed": true
+  },
+  "result": "pass",
+  "session": "/session/session.jsonl",
+  "telemetry": "unknown",
+  "thinking": "high",
+  "timings": {
+    "candidate_system_ns": 3211000,
+    "candidate_user_ns": 1070000,
+    "candidate_wall_ns": 10950171,
+    "oracle_system_ns": 1762000,
+    "oracle_user_ns": 4058000,
+    "oracle_wall_ns": 10989088,
+    "passed": true,
+    "ratio": 0.9964585778182866
+  },
+  "trial_id": "1",
+  "xsh_commit": "c2e1039d8856c04ad8466504d445dc93a341f720"
+}

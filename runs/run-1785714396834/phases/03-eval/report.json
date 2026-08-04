@@ -1,0 +1,296 @@
+{
+  "artifacts": [
+    {
+      "kind": "session-directory",
+      "path": "workers/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 126,
+      "budget_failures": 0,
+      "cost_usd": 0.09381695439999999,
+      "tool_errors": 5,
+      "total_bucket_tokens": 3487984.0,
+      "unknown_costs": 0,
+      "workers": 3
+    },
+    "designer": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785714396834/phases/03-eval/workers/eval-designer/proposal-1/REPORT.md",
+      "present": false,
+      "result": "not-requested",
+      "role": "eval-designer",
+      "valid": true
+    },
+    "director": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785714396834/phases/03-eval/workers/director/director/REPORT.md",
+      "present": true,
+      "result": "pass. The controller ran one independent task-envcfg trial against XSH main",
+      "role": "director",
+      "valid": true
+    },
+    "engineer": [],
+    "handbook_lineage": {
+      "approved": "lineage/handbook-approved.md",
+      "candidate": "lineage/handbook-candidate.md"
+    },
+    "manager": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785714396834/phases/03-eval/workers/eval-manager/task-envcfg/REPORT.md",
+      "present": true,
+      "result": "pass. The single completed trial passed correctness (10/10 cases byte-exact",
+      "role": "eval-manager",
+      "valid": true
+    },
+    "mode": "eval",
+    "narratives": [
+      {
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785714396834/phases/03-eval/workers/director/director/REPORT.md",
+        "present": true,
+        "result": "pass. The controller ran one independent task-envcfg trial against XSH main",
+        "role": "director",
+        "valid": true
+      },
+      {
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785714396834/phases/03-eval/workers/eval-manager/task-envcfg/REPORT.md",
+        "present": true,
+        "result": "pass. The single completed trial passed correctness (10/10 cases byte-exact",
+        "role": "eval-manager",
+        "valid": true
+      }
+    ],
+    "open_tickets": [
+      {
+        "eval_id": "task-ecount",
+        "id": "task-ecount-001",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-ecount-001.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-ecount",
+        "id": "task-ecount-002",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-ecount-002.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-ecount",
+        "id": "task-ecount-003",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-ecount-003.md",
+        "status": "Approved."
+      },
+      {
+        "eval_id": "task-ecount",
+        "id": "task-ecount-004",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-ecount-004.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-ecount",
+        "id": "task-ecount-005",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-ecount-005.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-envcfg",
+        "id": "task-envcfg-001",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-envcfg-001.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-tags",
+        "id": "task-tags-003",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-tags-003.md",
+        "status": "Open."
+      }
+    ],
+    "sessions": [
+      "workers/director/director/session.jsonl.bz2",
+      "workers/eval-manager/task-envcfg/session.jsonl.bz2",
+      "workers/eval-worker/task-envcfg-1/session.jsonl.bz2"
+    ],
+    "tool_errors": [
+      {
+        "report": "workers/eval-manager/task-envcfg/report.json",
+        "summary": "10:## Result\n23:## Effort metrics\n42:## Usage and cost\n59:## Thinking evidence\n73:## Tool-error findings\n98:## Timing evidence\n112:## Observation classification\n147:## Handbook decision\n168:## Tickets created\n178:## Post-merge decisions\n185:## Next replay\n204:## North-star impact\n---- candidate diff ----\n78a79,84\n> Path literals do not interpolate. To build a path from data, convert a string\n> explicitly:\n> \n>     let arg = argv.get(0)?\n>     let out = Path.parse_bytes(bytes.from_text(arg))?\n> \n136a143,151\n> Compose exact multi-line text with display strings. Only a display string\n> interpolates, using `${expr}`:\n> \n>     let text = f\"host=${host}\\nport=${port}\\ndebug=${debug}\\n\"\n> \n> Ordinary string literals (\"...\") and path literals (p\"...\") never\n> interpolate; the braces are literal characters. To write a file deliverable,\n> build the text value with a display string and write it with fs.write.\n> \n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 22,
+        "worker": {
+          "role": "eval-manager",
+          "worker_id": "task-envcfg"
+        }
+      },
+      {
+        "report": "workers/eval-worker/task-envcfg-1/report.json",
+        "summary": "query: api:fs.write\nstatus: exact\n\napi: module.fs.write\nkind: module-function\npurpose: Writes text or bytes to a path.\ncontract: The input type selects the boundary explicitly and the write replaces the destination according to host filesystem policy.\neffects: fs\nsignature: fs.write(path: Path, data: Bytes) -> Result[Unit, Error]\nsignature: fs.write(path: Path, data: Str) -> Result[Unit, Error]\ntags: fs, write, filesystem\nexample:\n  fs.write(p\"output.txt\", \"done\\n\")?\n===\nquery: api:fs.write_atomic\nstatus: exact\n\napi: module.fs.write_atomic\nkind: module-function\npurpose: Replaces a file through an atomic write path.\ncontract: Use when readers must not observe a partially written replacement.\neffects: fs\nsignature: fs.write_atomic(path: Path, data: Bytes) -> Result[Unit, Error]\nsignature: fs.write_atomic(path: Path, data: Str) -> Result[Unit, Error]\ntags: fs, write_atomic, filesystem, atomic, write\n===\nxsht api: invalid API query 'api:fs.path.write'; expected NAME.MEMBER\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 18,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-envcfg-1"
+        }
+      },
+      {
+        "report": "workers/eval-worker/task-envcfg-1/report.json",
+        "summary": "==run==\nexit=0\ncat: can't open '/tmp/px1.out': No such file or directory\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 44,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-envcfg-1"
+        }
+      },
+      {
+        "report": "workers/eval-worker/task-envcfg-1/report.json",
+        "summary": "sh: python3: not found\n\n\nCommand exited with code 127",
+        "tool": "bash",
+        "turn": 59,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-envcfg-1"
+        }
+      },
+      {
+        "report": "workers/eval-worker/task-envcfg-1/report.json",
+        "summary": "err[parse.expected-expression]: expected expression\n  /tmp/concat.xsh:4:13\n    print (a ++ \"\\n\" ++ b)\n              ^ expected expression\n\nerr[parse.expected-terminator]: expected statement terminator\n  /tmp/concat.xsh:4:13\n    print (a ++ \"\\n\" ++ b)\n              ^ expected statement terminator\n==\nerr[parse.expected-expression]: expected expression\n  /tmp/concat.xsh:4:13\n    print (a ++ \"\\n\" ++ b)\n              ^ expected expression\n\nerr[parse.expected-terminator]: expected statement terminator\n  /tmp/concat.xsh:4:13\n    print (a ++ \"\\n\" ++ b)\n              ^ expected statement terminator\n\nerr[parse.expected-expression]: expected expression\n  /tmp/concat.xsh:4:13\n    print (a ++ \"\\n\" ++ b)\n              ^ expected expression\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 71,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-envcfg-1"
+        }
+      }
+    ],
+    "trials": [
+      {
+        "evidence": {
+          "candidate_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "classification": "pass",
+          "correctness": "pass",
+          "eval_id": "task-envcfg",
+          "handbook_sha256": "c7c9dd9abb6d50dac60562757a1824900f24d4bc2d38014d5cbf869f56bb0723",
+          "oracle_sha256": "594a1118ea571bcfe5b2a8b7239b28924bd32ced928ba9ea5377a2c1b0bd71f6",
+          "passed": true,
+          "protocol": "pass",
+          "restrictions": "pass",
+          "result": "pass",
+          "timing": "pass",
+          "trial_id": "1",
+          "valid": true
+        },
+        "path": "workers/eval-worker/task-envcfg-1/run.json"
+      }
+    ],
+    "workers": [
+      {
+        "identity": {
+          "role": "director",
+          "worker_id": "director"
+        },
+        "path": "workers/director/director/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 11,
+          "budget_usd": 0.06,
+          "cache_read_cost_usd": 0.0004198824,
+          "cache_read_tokens": 149958,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.0054526024,
+          "input_cost_usd": 0.003498600000000001,
+          "input_tokens": 24990,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00153412,
+          "output_tokens": 5479,
+          "provider_total_tokens": 180427,
+          "reasoning_tokens": 2123,
+          "thinking_blocks": 11,
+          "tool_calls": 21,
+          "tool_errors": 0,
+          "tool_results": 21,
+          "total_bucket_tokens": 180427,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-envcfg"
+        },
+        "path": "workers/eval-manager/task-envcfg/report.json",
+        "result": "pass",
+        "tool_errors": 1,
+        "usage": {
+          "assistant_turns": 24,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.00217875,
+          "cache_read_tokens": 778125,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.02550891,
+          "input_cost_usd": 0.01544676,
+          "input_tokens": 110334,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0078834,
+          "output_tokens": 28155,
+          "provider_total_tokens": 916614,
+          "reasoning_tokens": 21286,
+          "thinking_blocks": 20,
+          "tool_calls": 35,
+          "tool_errors": 1,
+          "tool_results": 35,
+          "total_bucket_tokens": 916614,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-envcfg-1"
+        },
+        "path": "workers/eval-worker/task-envcfg-1/report.json",
+        "result": "pass",
+        "tool_errors": 4,
+        "usage": {
+          "assistant_turns": 91,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.03880051199999999,
+          "cache_read_tokens": 2155584,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.06285544199999998,
+          "input_cost_usd": 0.01830969,
+          "input_tokens": 203441,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.005745240000000003,
+          "output_tokens": 31918,
+          "provider_total_tokens": 2390943,
+          "reasoning_tokens": 22522,
+          "thinking_blocks": 73,
+          "tool_calls": 91,
+          "tool_errors": 4,
+          "tool_results": 91,
+          "total_bucket_tokens": 2390943,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "de9880ce9cd13c4ef63acc212554d786358ed869"
+  },
+  "findings": [],
+  "identity": {
+    "eval_id": "task-envcfg",
+    "mode": "eval",
+    "run_id": "03-eval"
+  },
+  "kind": "phase",
+  "result": "pass",
+  "schema_version": 1,
+  "state": "completed"
+}

@@ -1,0 +1,282 @@
+{
+  "artifacts": [
+    {
+      "kind": "session-directory",
+      "path": "workers/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 55,
+      "budget_failures": 0,
+      "cost_usd": 0.037127304,
+      "tool_errors": 4,
+      "total_bucket_tokens": 1340419.0,
+      "unknown_costs": 0,
+      "workers": 2
+    },
+    "designer": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785789595047/phases/03-eval/workers/eval-designer/proposal-1/REPORT.md",
+      "present": false,
+      "result": "not-requested",
+      "role": "eval-designer",
+      "valid": true
+    },
+    "director": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785789595047/phases/03-eval/workers/director/director/REPORT.md",
+      "present": false,
+      "result": "not-requested",
+      "role": "director",
+      "valid": true
+    },
+    "engineer": [],
+    "handbook_lineage": {
+      "approved": "lineage/handbook-approved.md",
+      "candidate": "lineage/handbook-candidate.md"
+    },
+    "manager": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785789595047/phases/03-eval/workers/eval-manager/task-envcfg/REPORT.md",
+      "present": true,
+      "result": "pass",
+      "role": "eval-manager",
+      "valid": true
+    },
+    "mode": "eval",
+    "narratives": [
+      {
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785789595047/phases/03-eval/workers/eval-manager/task-envcfg/REPORT.md",
+        "present": true,
+        "result": "pass",
+        "role": "eval-manager",
+        "valid": true
+      }
+    ],
+    "open_tickets": [
+      {
+        "eval_id": "task-ecount",
+        "id": "task-ecount-001",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-ecount-001.md",
+        "status": "Approved."
+      },
+      {
+        "eval_id": "task-ecount",
+        "id": "task-ecount-002",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-ecount-002.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-ecount",
+        "id": "task-ecount-004",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-ecount-004.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-ecount",
+        "id": "task-ecount-005",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-ecount-005.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-ecount",
+        "id": "task-ecount-006",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-ecount-006.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-ecount",
+        "id": "task-ecount-007",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-ecount-007.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-ecount",
+        "id": "task-ecount-008",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-ecount-008.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-envcfg",
+        "id": "task-envcfg-002",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-envcfg-002.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-envcfg",
+        "id": "task-envcfg-003",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-envcfg-003.md",
+        "status": "Approved."
+      },
+      {
+        "eval_id": "task-envcfg",
+        "id": "task-envcfg-004",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-envcfg-004.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-envcfg",
+        "id": "task-envcfg-006",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-envcfg-006.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-envcfg",
+        "id": "task-envcfg-007",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-envcfg-007.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-tags",
+        "id": "task-tags-003",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-tags-003.md",
+        "status": "Open."
+      }
+    ],
+    "sessions": [
+      "workers/eval-manager/task-envcfg/session.jsonl.bz2",
+      "workers/eval-worker/task-envcfg-1/session.jsonl.bz2"
+    ],
+    "tool_errors": [
+      {
+        "report": "workers/eval-worker/task-envcfg-1/report.json",
+        "summary": "err[check.display-conversion]: value cannot be displayed by print\n  /tmp/t.xsh:4:9\n    print $r\n          ^^ value cannot be displayed by print\n---run---\nerr[check.display-conversion]: value cannot be displayed by print\n  /tmp/t.xsh:4:9\n    print $r\n          ^^ value cannot be displayed by print\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 9,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-envcfg-1"
+        }
+      },
+      {
+        "report": "workers/eval-worker/task-envcfg-1/report.json",
+        "summary": "err[check.unknown-method]: unknown method `len` on Str\n  envcfg.xsh:8:6\n    if leftover.len() == 0 and port.len() > 0 {\n       ^^^^^^^^^^^^^^ `len` is not defined for Str\nnote: available methods include: `byte_len()`, `count_bytes()`, `count_chars()`\n\nerr[check.unknown-method]: unknown method `len` on Str\n  envcfg.xsh:8:30\n    if leftover.len() == 0 and port.len() > 0 {\n                               ^^^^^^^^^^ `len` is not defined for Str\nnote: available methods include: `byte_len()`, `count_bytes()`, `count_chars()`\n=== run valid ===\nerr[check.unknown-method]: unknown method `len` on Str\n  envcfg.xsh:8:6\n    if leftover.len() == 0 and port.len() > 0 {\n       ^^^^^^^^^^^^^^ `len` is not defined for Str\nnote: available methods include: `byte_len()`, `count_bytes()`, `count_chars()`\n\nerr[check.unknown-method]: unknown method `len` on Str\n  envcfg.xsh:8:30\n    if leftover.len() == 0 and port.len() > 0 {\n                               ^^^^^^^^^^ `len` is not defined for Str\nnote: available methods include: `byte_len()`, `count_bytes()`, `count_chars()`\nrc=2\n--- file ---\ncat: can't open '/tmp/out.cfg': No such file or directory\n=== oracle compare ===\ndiff: can't stat '/tmp/out.cfg': No such file or directory\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 32,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-envcfg-1"
+        }
+      },
+      {
+        "report": "workers/eval-worker/task-envcfg-1/report.json",
+        "summary": "sh: bash: not found\n\n\nCommand exited with code 127",
+        "tool": "bash",
+        "turn": 35,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-envcfg-1"
+        }
+      },
+      {
+        "report": "workers/eval-worker/task-envcfg-1/report.json",
+        "summary": "check rc=0\n=== valid ===\nrc=0\n00000000: 686f 7374 3d6e 6f64 652d 610a 706f 7274  host=node-a.port\n00000010: 3d39 3030 310a 6465 6275 673d 7472 7565  =9001.debug=true\n00000020: 0a                                       .\n=== invalid port 5x ===\nruntime traceback\nexecutable: /usr/local/bin/xsh\noperation: result.propagate\nerror: parse-int: invalid integer `x`\ncall path:\n  1. proc main at envcfg.xsh:1:1-1:1\nrc=3\nls: /tmp/o.cfg: No such file or directory\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 39,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-envcfg-1"
+        }
+      }
+    ],
+    "trials": [
+      {
+        "evidence": {
+          "candidate_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "classification": "pass",
+          "correctness": "pass",
+          "eval_id": "task-envcfg",
+          "handbook_sha256": "97c5d804c42c7742c9edfea4480163828d864279391d391df77aa60ee4a40e83",
+          "oracle_sha256": "594a1118ea571bcfe5b2a8b7239b28924bd32ced928ba9ea5377a2c1b0bd71f6",
+          "passed": true,
+          "protocol": "pass",
+          "restrictions": "pass",
+          "result": "pass",
+          "timing": "pass",
+          "trial_id": "1",
+          "valid": true
+        },
+        "path": "workers/eval-worker/task-envcfg-1/run.json"
+      }
+    ],
+    "workers": [
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-envcfg"
+        },
+        "path": "workers/eval-manager/task-envcfg/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 11,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.0053141759999999994,
+          "cache_read_tokens": 295232,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.013259106,
+          "input_cost_usd": 0.004911750000000001,
+          "input_tokens": 54575,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00303318,
+          "output_tokens": 16851,
+          "provider_total_tokens": 366658,
+          "reasoning_tokens": 9019,
+          "thinking_blocks": 10,
+          "tool_calls": 20,
+          "tool_errors": 0,
+          "tool_results": 20,
+          "total_bucket_tokens": 366658,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-envcfg-1"
+        },
+        "path": "workers/eval-worker/task-envcfg-1/report.json",
+        "result": "pass",
+        "tool_errors": 4,
+        "usage": {
+          "assistant_turns": 44,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.016322688000000002,
+          "cache_read_tokens": 906816,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.023868198000000004,
+          "input_cost_usd": 0.004504589999999999,
+          "input_tokens": 50051,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0030409200000000008,
+          "output_tokens": 16894,
+          "provider_total_tokens": 973761,
+          "reasoning_tokens": 9218,
+          "thinking_blocks": 35,
+          "tool_calls": 57,
+          "tool_errors": 4,
+          "tool_results": 57,
+          "total_bucket_tokens": 973761,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "d2d87d2575c45343abfbcfe378f6ade4065043cf"
+  },
+  "findings": [],
+  "identity": {
+    "eval_id": "task-envcfg",
+    "mode": "eval",
+    "run_id": "03-eval"
+  },
+  "kind": "phase",
+  "result": "pass",
+  "schema_version": 1,
+  "state": "completed"
+}

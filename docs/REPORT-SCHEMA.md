@@ -14,8 +14,9 @@ runs/run-<id>/phases/<phase>/report.json
 runs/run-<id>/workers/<role>/<worker>/report.json
 ```
 
-The Pi `session.jsonl` beside a worker report is raw evidence and remains
-canonical for session details. The top-level `CTO-REPORT.md` is a generated
+The compressed `session.jsonl.bz2` beside a worker report is raw evidence and
+remains canonical for session details. The runtime transparently reads it when
+needed. The top-level `CTO-REPORT.md` is a generated
 human briefing, not a source of facts.
 
 ## Envelope
@@ -42,7 +43,7 @@ Worker reports add `session`, `usage`, `timing`, `models`, `stop_reasons`,
 `tools`, and `tool_errors`. A failed Pi tool invocation is represented directly
 as an entry in `tool_errors`, with its turn, tool name, short result text, and
 the raw session path. There is no separate `TOOL-ERRORS.md`; the complete
-payload remains in `session.jsonl`.
+payload remains in compressed `session.jsonl.bz2`.
 
 Phase reports add the mode, admission commit, session paths, normalized worker
 rows, evaluator manifest evidence, employee narrative states, open-ticket

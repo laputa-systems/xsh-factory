@@ -111,7 +111,7 @@ runs/run-<id>/
 ├── events.jsonl
 ├── phases/<phase>/report.json
 ├── workers/<role>/<worker>/
-│   ├── session.jsonl
+│   ├── session.jsonl.bz2
 │   ├── report.json
 │   └── REPORT.md
 └── patches/<ticket>.diff
@@ -124,8 +124,9 @@ forensic copies.
 
 `report.json` is the machine contract at every controller boundary. The
 schema is implemented in `report_schema.xsh` and described in
-[`REPORT-SCHEMA.md`](REPORT-SCHEMA.md). `session.jsonl` is canonical raw Pi
-evidence. `REPORT.md` is one qualitative employee judgment. `CTO-REPORT.md`
+[`REPORT-SCHEMA.md`](REPORT-SCHEMA.md). Compressed `session.jsonl.bz2` files
+retain canonical raw Pi evidence. The runtime transparently reads them.
+`REPORT.md` is one qualitative employee judgment. `CTO-REPORT.md`
 is a human navigation view generated from those sources. There are no
 generated Markdown cost, audit, dispatch, provenance, current-evidence, or
 tool-error projections.

@@ -143,7 +143,7 @@ grepping broadly.
   `factory_report.xsh` and `tools/cto-report.xsh` render human navigation
   views from structured evidence; the views are not state.
 - `run-agent.xsh` is the one Pi process boundary. It creates the worker
-  directory, invokes Pi with role settings, persists `session.jsonl`, runs
+  directory, invokes Pi with role settings, persists compressed `session.jsonl.bz2`, runs
   session/budget watchers, and normalizes the worker report. Never launch Pi
   directly.
 - `tools/session-report.xsh` parses Pi JSONL into worker metrics: assistant
@@ -185,8 +185,8 @@ grepping broadly.
   must not accumulate task-specific dispatch logic.
 - `eval-executor.xsh` is controller infrastructure, not a Pi role. It launches
   the isolated worker, runs the selected package evaluator, and preserves
-  `session.jsonl`, worker `report.json`, evaluator `run.json`, and artifacts.
-- The evidence hierarchy is raw `session.jsonl` -> normalized worker
+  compressed `session.jsonl.bz2`, worker `report.json`, evaluator `run.json`, and artifacts.
+- The evidence hierarchy is compressed raw `session.jsonl.bz2` -> normalized worker
   `report.json` -> phase `report.json` -> run `report.json`, with employee
   `REPORT.md` and `CTO-REPORT.md` as qualitative/navigation layers.
   `events.jsonl` is the canonical lifecycle/process-output ledger.
@@ -196,7 +196,7 @@ grepping broadly.
 `run-ticket.xsh` first verifies `report.json`, required reads, expected branch,
 new `HEAD`, and an empty product worktree. It captures the portable patch and
 its SHA-256, then calls `factory_runtime.amend_engineer_commit`. That helper
-reads the normalized worker report, hashes the report and raw `session.jsonl`,
+reads the normalized worker report, hashes the report and raw session archive,
 receives the assignment and patch hashes, invokes Git's
 `commit --amend --no-edit --trailer` once, and independently verifies the
 expected trailers by reading them back from Git. The controller updates the

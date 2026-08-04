@@ -1,0 +1,169 @@
+{
+  "artifacts": [
+    {
+      "kind": "session-directory",
+      "path": "workers/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 0,
+      "budget_failures": 0,
+      "cost_usd": 0.0,
+      "tool_errors": 0,
+      "total_bucket_tokens": 0.0,
+      "unknown_costs": 0,
+      "workers": 0
+    },
+    "designer": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785782958350/phases/04-eval-design/workers/eval-designer/proposal-1/REPORT.md",
+      "present": true,
+      "result": "not-ready",
+      "role": "eval-designer",
+      "valid": false
+    },
+    "director": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785782958350/phases/04-eval-design/workers/director/director/REPORT.md",
+      "present": false,
+      "result": "missing",
+      "role": "director",
+      "valid": false
+    },
+    "engineer": [],
+    "handbook_lineage": {
+      "approved": "missing",
+      "candidate": "missing"
+    },
+    "manager": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785782958350/phases/04-eval-design/workers/eval-manager/task-envcfg/REPORT.md",
+      "present": false,
+      "result": "missing",
+      "role": "eval-manager",
+      "valid": false
+    },
+    "mode": "eval-design",
+    "narratives": [
+      {
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785782958350/phases/04-eval-design/workers/eval-designer/proposal-1/REPORT.md",
+        "present": true,
+        "result": "not-ready",
+        "role": "eval-designer",
+        "valid": false
+      }
+    ],
+    "open_tickets": [
+      {
+        "eval_id": "task-ecount",
+        "id": "task-ecount-001",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-ecount-001.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-ecount",
+        "id": "task-ecount-002",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-ecount-002.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-ecount",
+        "id": "task-ecount-004",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-ecount-004.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-ecount",
+        "id": "task-ecount-005",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-ecount-005.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-ecount",
+        "id": "task-ecount-006",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-ecount-006.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-ecount",
+        "id": "task-ecount-007",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-ecount-007.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-ecount",
+        "id": "task-ecount-008",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-ecount-008.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-envcfg",
+        "id": "task-envcfg-001",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-envcfg-001.md",
+        "status": "Approved."
+      },
+      {
+        "eval_id": "task-envcfg",
+        "id": "task-envcfg-002",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-envcfg-002.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-envcfg",
+        "id": "task-envcfg-003",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-envcfg-003.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-envcfg",
+        "id": "task-envcfg-004",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-envcfg-004.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-envcfg",
+        "id": "task-envcfg-005",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-envcfg-005.md",
+        "status": "Approved."
+      },
+      {
+        "eval_id": "task-tags",
+        "id": "task-tags-003",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-tags-003.md",
+        "status": "Open."
+      }
+    ],
+    "sessions": [],
+    "tool_errors": [],
+    "trials": [],
+    "workers": [],
+    "xsh_commit": "51b035a705f856d0bd3ead3cddf1557523d1d30e"
+  },
+  "findings": [
+    {
+      "kind": "designer-report",
+      "state": {
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785782958350/phases/04-eval-design/workers/eval-designer/proposal-1/REPORT.md",
+        "present": true,
+        "result": "not-ready",
+        "role": "eval-designer",
+        "valid": false
+      }
+    },
+    {
+      "kind": "worker-reports",
+      "state": "missing"
+    }
+  ],
+  "identity": {
+    "eval_id": "task-envcfg",
+    "mode": "eval-design",
+    "run_id": "04-eval-design"
+  },
+  "kind": "phase",
+  "result": "fail",
+  "schema_version": 1,
+  "state": "completed"
+}

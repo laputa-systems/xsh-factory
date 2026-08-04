@@ -1,0 +1,78 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/private/tmp/xsh-factory-ab2-baseline/runs/run-1785864457727/workers/eval-manager/task-envcfg/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_process": "pass",
+    "reporting": "pass",
+    "required_report": "present",
+    "session_limit_watcher": "pass",
+    "watcher": "pass"
+  },
+  "findings": [],
+  "identity": {
+    "role": "eval-manager",
+    "worker_id": "task-envcfg"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/private/tmp/xsh-factory-ab2-baseline/runs/run-1785864457727/workers/eval-manager/task-envcfg/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 14,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 207108
+  },
+  "tool_errors": [],
+  "tools": [
+    {
+      "count": 9,
+      "name": "bash"
+    },
+    {
+      "count": 12,
+      "name": "read"
+    },
+    {
+      "count": 1,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 15,
+    "budget_usd": 0.15,
+    "cache_read_cost_usd": 0.0054708479999999995,
+    "cache_read_tokens": 303936,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.011337048,
+    "input_cost_usd": 0.0038133,
+    "input_tokens": 42370,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.0020529,
+    "output_tokens": 11405,
+    "provider_total_tokens": 357711,
+    "reasoning_tokens": 7332,
+    "thinking_blocks": 13,
+    "tool_calls": 22,
+    "tool_errors": 0,
+    "tool_results": 22,
+    "total_bucket_tokens": 357711,
+    "user_messages": 1
+  }
+}

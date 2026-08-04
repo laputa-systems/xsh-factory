@@ -1,0 +1,210 @@
+{
+  "artifacts": [
+    {
+      "kind": "session-directory",
+      "path": "workers/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 35,
+      "budget_failures": 0,
+      "cost_usd": 0.032379264,
+      "tool_errors": 2,
+      "total_bucket_tokens": 1167289.0,
+      "unknown_costs": 0,
+      "workers": 1
+    },
+    "designer": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785784385782/phases/04-eval-design/workers/eval-designer/proposal-1/REPORT.md",
+      "present": true,
+      "result": "ready-for-review",
+      "role": "eval-designer",
+      "valid": true
+    },
+    "director": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785784385782/phases/04-eval-design/workers/director/director/REPORT.md",
+      "present": false,
+      "result": "missing",
+      "role": "director",
+      "valid": false
+    },
+    "engineer": [],
+    "handbook_lineage": {
+      "approved": "missing",
+      "candidate": "missing"
+    },
+    "manager": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785784385782/phases/04-eval-design/workers/eval-manager/task-envcfg/REPORT.md",
+      "present": false,
+      "result": "missing",
+      "role": "eval-manager",
+      "valid": false
+    },
+    "mode": "eval-design",
+    "narratives": [
+      {
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785784385782/phases/04-eval-design/workers/eval-designer/proposal-1/REPORT.md",
+        "present": true,
+        "result": "ready-for-review",
+        "role": "eval-designer",
+        "valid": true
+      }
+    ],
+    "open_tickets": [
+      {
+        "eval_id": "task-ecount",
+        "id": "task-ecount-001",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-ecount-001.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-ecount",
+        "id": "task-ecount-002",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-ecount-002.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-ecount",
+        "id": "task-ecount-004",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-ecount-004.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-ecount",
+        "id": "task-ecount-005",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-ecount-005.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-ecount",
+        "id": "task-ecount-006",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-ecount-006.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-ecount",
+        "id": "task-ecount-007",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-ecount-007.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-ecount",
+        "id": "task-ecount-008",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-ecount-008.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-envcfg",
+        "id": "task-envcfg-001",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-envcfg-001.md",
+        "status": "Approved."
+      },
+      {
+        "eval_id": "task-envcfg",
+        "id": "task-envcfg-002",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-envcfg-002.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-envcfg",
+        "id": "task-envcfg-003",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-envcfg-003.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-envcfg",
+        "id": "task-envcfg-004",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-envcfg-004.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-envcfg",
+        "id": "task-envcfg-005",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-envcfg-005.md",
+        "status": "Approved."
+      },
+      {
+        "eval_id": "task-tags",
+        "id": "task-tags-003",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-tags-003.md",
+        "status": "Open."
+      }
+    ],
+    "sessions": [
+      "workers/eval-designer/proposal-1/session.jsonl.bz2"
+    ],
+    "tool_errors": [
+      {
+        "report": "workers/eval-designer/proposal-1/report.json",
+        "summary": "=== parse_int n=2 ===\nerr[check.unresolved-call]: unresolved pure function call\n  t2.xsh:2:11\n    let n = parse_int(argv[1])?\n            ^^^^^^^^^^^^^^^^^^ unresolved pure function call\n=== parse_int n=99 ===\nerr[check.unresolved-call]: unresolved pure function call\n  t2.xsh:2:11\n    let n = parse_int(argv[1])?\n            ^^^^^^^^^^^^^^^^^^ unresolved pure function call\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 18,
+        "worker": {
+          "role": "eval-designer",
+          "worker_id": "proposal-1"
+        }
+      },
+      {
+        "report": "workers/eval-designer/proposal-1/report.json",
+        "summary": "=== default ===\n50 /tmp/probe_tree/sub/big.bin\n20 /tmp/probe_tree/sub/b.log\n5 /tmp/probe_tree/a.txt\n3 /tmp/probe_tree/empty/zzz.txt\n=== n=2 ===\n50 /tmp/probe_tree/sub/big.bin\n20 /tmp/probe_tree/sub/b.log\n=== n=0 ===\nexit=0\n=== bad n ===\nruntime traceback\nexecutable: /Users/josh/usr/bin/xsh\noperation: result.propagate\nerror: parse-int: invalid integer `abc`\ncall path:\n  1. proc main at big.xsh:1:1-1:1\nexit=3\n=== oracle n=2 ===\n50 /tmp/probe_tree/sub/big.bin\n20 /tmp/probe_tree/sub/b.log\n=== check/fmt/lint ===\nwarn[lint.path-constructor]: prefer p-string interpolation over `Path(...)`\n  big.xsh:2:14\n    let root = Path(argv[0])\n               ------------- use path string syntax instead\nnote: `Path(...)` remains a cast, but p-strings are the preferred path syntax\nhelp: replace with path string -> fp\"${argv[0]}\"\nwarn[lint.redundant-command-interpolation]: command args can use expression syntax directly\n  big.xsh:12:19\n      print $e.size $e.path.display()\n                    ----------------- this interpolation is unnecessary\nhelp: use the expression directly -> e.path.display()\nwarn[lint.redundant-path-display]: redundant `.display()` on a Path value\n  big.xsh:12:19\n      print $e.size $e.path.display()\n                    ----------------- Path values display automatically in command arguments\nhelp: remove `.display()` -> $e.path\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 20,
+        "worker": {
+          "role": "eval-designer",
+          "worker_id": "proposal-1"
+        }
+      }
+    ],
+    "trials": [],
+    "workers": [
+      {
+        "identity": {
+          "role": "eval-designer",
+          "worker_id": "proposal-1"
+        },
+        "path": "workers/eval-designer/proposal-1/report.json",
+        "result": "pass",
+        "tool_errors": 2,
+        "usage": {
+          "assistant_turns": 35,
+          "budget_usd": 0.3,
+          "cache_read_cost_usd": 0.018895104,
+          "cache_read_tokens": 1049728,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.032379264,
+          "input_cost_usd": 0.007676820000000001,
+          "input_tokens": 85298,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0058073399999999985,
+          "output_tokens": 32263,
+          "provider_total_tokens": 1167289,
+          "reasoning_tokens": 19798,
+          "thinking_blocks": 28,
+          "tool_calls": 57,
+          "tool_errors": 2,
+          "tool_results": 57,
+          "total_bucket_tokens": 1167289,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "51b035a705f856d0bd3ead3cddf1557523d1d30e"
+  },
+  "findings": [],
+  "identity": {
+    "eval_id": "task-envcfg",
+    "mode": "eval-design",
+    "run_id": "04-eval-design"
+  },
+  "kind": "phase",
+  "result": "pass",
+  "schema_version": 1,
+  "state": "completed"
+}

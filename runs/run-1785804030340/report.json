@@ -1,0 +1,472 @@
+{
+  "artifacts": [
+    {
+      "kind": "phase-reports",
+      "path": "phases/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 359,
+      "budget_failures": 0,
+      "cost_usd": 0.33587371800000004,
+      "tool_errors": 14,
+      "total_bucket_tokens": 13534445.0,
+      "unknown_costs": 0,
+      "workers": 8
+    },
+    "mode": "organization",
+    "phases": [
+      {
+        "id": "01-ticket",
+        "path": "phases/01-ticket/report.json",
+        "result": "pass",
+        "valid": true
+      },
+      {
+        "id": "02-reeval-task-ecount-006",
+        "path": "phases/02-reeval-task-ecount-006/report.json",
+        "result": "pass",
+        "valid": true
+      },
+      {
+        "id": "02-reeval-task-tags-003",
+        "path": "phases/02-reeval-task-tags-003/report.json",
+        "result": "missing",
+        "valid": false
+      },
+      {
+        "id": "03-eval",
+        "path": "phases/03-eval/report.json",
+        "result": "pass",
+        "valid": true
+      },
+      {
+        "id": "04-eval-design",
+        "path": "phases/04-eval-design/report.json",
+        "result": "pass",
+        "valid": true
+      }
+    ],
+    "tool_errors": [
+      {
+        "report": "phases/01-ticket/workers/engineer/task-ecount-006/report.json",
+        "summary": "(no output)\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 24,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-ecount-006"
+        }
+      },
+      {
+        "report": "phases/01-ticket/workers/engineer/task-tags-003/report.json",
+        "summary": "arena.rs\ncst.rs\nlexer.rs\nliteral.rs\nmod.rs\nnode.rs\nparser\nparser.rs\ntoken.rs\n---\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 4,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-tags-003"
+        }
+      },
+      {
+        "report": "phases/01-ticket/workers/engineer/task-tags-003/report.json",
+        "summary": "proc main(...argv: List[Str]) [io] {\n  let lowered = argv |> map { |a| a.lower() } |> collect()\n  print f\"tags: ${lowered.join(', ')}\"\n}\n===CHECK===\nerr[lex.unexpected-character]: unexpected character\n  /tmp/tag.xsh:1:14\n  proc main(...argv: List[Str]) [io] {\n               ^ not valid in source\n\nerr[lex.unexpected-character]: unexpected character\n  /tmp/tag.xsh:1:17\n  proc main(...argv: List[Str]) [io] {\n                  ^ not valid in source\n\nerr[parse.expected-expression]: expected expression\n  /tmp/tag.xsh:1:15\n  proc main(...argv: List[Str]) [io] {\n                ^ expected expression\n\nerr[parse.expected-token]: expected `)` after call arguments\n  /tmp/tag.xsh:1:15\n  proc main(...argv: List[Str]) [io] {\n                ^ expected `)` after call arguments\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 16,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-tags-003"
+        }
+      },
+      {
+        "report": "phases/01-ticket/workers/engineer/task-tags-003/report.json",
+        "summary": "3:use super::{Diagnostic, EscapeIssueKind, InterpolationChunk, Label, Lexer, Parser, Span, literal};\ngrep: src/syntax/parser/mod.rs: No such file or directory\ngrep: src/syntax/parser/mod.rs: No such file or directory\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 19,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-tags-003"
+        }
+      },
+      {
+        "report": "phases/01-ticket/workers/engineer/task-tags-003/report.json",
+        "summary": "=== check ===\nOK\n=== fmt check (no changes) ===\nFMT-OK\n=== lint ===\nwarn[lint.unused-local]: unused local variable `name`\n  /tmp/valid.xsh:2:3\n    let name = \"world\"\n    ------------------ binding is never read\n=== run ===\n/bin/bash: line 14: ./target/debug/xsh: No such file or directory\n\n\nCommand exited with code 127",
+        "tool": "bash",
+        "turn": 28,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-tags-003"
+        }
+      },
+      {
+        "report": "phases/01-ticket/workers/engineer/task-tags-003/report.json",
+        "summary": "No changes made to /Users/josh/d/laputa-systems/xsh-factory/runs/run-1785804030340/phases/01-ticket/worktrees/task-tags-003/tests/syntax.rs. The replacement produced identical content. This might indicate an issue with special characters or the text not existing as expected.",
+        "tool": "edit",
+        "turn": 41,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-tags-003"
+        }
+      },
+      {
+        "report": "phases/01-ticket/workers/engineer/task-tags-003/report.json",
+        "summary": "cat: illegal option -- A\nusage: cat [-belnstuv] [file ...]\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 53,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-tags-003"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-worker/task-envcfg-1/report.json",
+        "summary": "err[parse.expected-token]: expected `=>` in match arm\n  /tmp/t.xsh:5:9\n        ok: v -> f\"OK ${s} -> ${v}\"\n          ^ expected `=>` in match arm\n\nerr[parse.expected-expression]: expected expression\n  /tmp/t.xsh:5:9\n        ok: v -> f\"OK ${s} -> ${v}\"\n          ^ expected expression\n\nerr[parse.expected-token]: expected `=>` in match arm\n  /tmp/t.xsh:6:10\n        err: e -> f\"ERR ${s}\"\n           ^ expected `=>` in match arm\n\nerr[parse.expected-expression]: expected expression\n  /tmp/t.xsh:6:10\n        err: e -> f\"ERR ${s}\"\n           ^ expected expression\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 6,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-envcfg-1"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-worker/task-envcfg-1/report.json",
+        "summary": "err[check.standard-module-shadow]: name `path` shadows the standard module `path`\n  /tmp/path.xsh:2:3\n    let path = Path(argv[0])\n    ^^^^^^^^^^^^^^^^^^^^^^^^ name `path` shadows the standard module `path`\nexit=2\ncat: can't open '/tmp/ptest.txt': No such file or directory\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 13,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-envcfg-1"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-worker/task-envcfg-1/report.json",
+        "summary": "sh: export: line 0: illegal option -f\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 20,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-envcfg-1"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-worker/task-envcfg-1/report.json",
+        "summary": "FAIL defaults: exit oracle=1 xsh=3\nPASS all-set\nPASS empty-host\nPASS empty-debug\nFAIL bad-alpha: exit oracle=1 xsh=3\nFAIL bad-neg: exit oracle=1 xsh=3\nFAIL bad-plus: exit oracle=1 xsh=3\nFAIL bad-space: exit oracle=1 xsh=3\nFAIL bad-decimal: exit oracle=1 xsh=3\nFAIL bad-empty: exit oracle=1 xsh=3\nPASS leading\nPASS debug-set\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 21,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-envcfg-1"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-worker/task-envcfg-1/report.json",
+        "summary": "PASS defaults\nPASS all-set\nPASS empty-host\nPASS empty-debug\nFAIL empty-all: stdout: runtime traceback\nexecutable: /usr/local/bin/xsh\noperation: result.propagate\nerror: parse-int: invalid integer `x`\ncall path:\n  1. proc main at /work/envcfg.xsh:1:1-1:1\nFAIL bad-alpha: stdout: runtime traceback\nexecutable: /usr/local/bin/xsh\noperation: result.propagate\nerror: parse-int: invalid integer `xabc`\ncall path:\n  1. proc main at /work/envcfg.xsh:1:1-1:1\nFAIL bad-neg: stdout: runtime traceback\nexecutable: /usr/local/bin/xsh\noperation: result.propagate\nerror: parse-int: invalid integer `x-5`\ncall path:\n  1. proc main at /work/envcfg.xsh:1:1-1:1\nFAIL bad-plus: stdout: runtime traceback\nexecutable: /usr/local/bin/xsh\noperation: result.propagate\nerror: parse-int: invalid integer `x+5`\ncall path:\n  1. proc main at /work/envcfg.xsh:1:1-1:1\nFAIL bad-space: stdout: runtime traceback\nexecutable: /usr/local/bin/xsh\noperation: result.propagate\nerror: parse-int: invalid integer `x 5`\ncall path:\n  1. proc main at /work/envcfg.xsh:1:1-1:1\nFAIL bad-decimal: stdout: runtime traceback\nexecutable: /usr/local/bin/xsh\noperation: result.propagate\nerror: parse-int: invalid integer `x5.0`\ncall path:\n  1. proc main at /work/envcfg.xsh:1:1-1:1\nFAIL bad-empty-port: stdout: runtime traceback\nexecutable: /usr/local/bin/xsh\noperation: result.propagate\nerror: parse-int: invalid integer `x`\ncall path:\n  1. proc main at /work/envcfg.xsh:1:1-1:1\nPASS leading\nPASS debug-set\nPASS port-only-unset-host\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 22,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-envcfg-1"
+        }
+      },
+      {
+        "report": "phases/04-eval-design/workers/eval-designer/proposal-1/report.json",
+        "summary": "=== find oracle ===\npermlist-test/root/a.txt\npermlist-test/root/sub/c\n=== xsh candidate ===\nerr[parse.expected-terminator]: expected statement terminator\n  perm.xsh:8:16\n      |> sort_by { |a| a }\n                 ^ expected statement terminator\n\nerr[parse.expected-record-field]: expected record field\n  perm.xsh:8:18\n      |> sort_by { |a| a }\n                   ^ expected record field\n\nerr[parse.expected-token]: expected `}` after record\n  perm.xsh:8:18\n      |> sort_by { |a| a }\n                   ^ expected `}` after record\n\nerr[parse.expected-terminator]: expected statement terminator\n  perm.xsh:8:18\n      |> sort_by { |a| a }\n                   ^ expected statement terminator\n\nerr[parse.expected-expression]: expected expression\n  perm.xsh:8:18\n      |> sort_by { |a| a }\n                   ^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  perm.xsh:9:5\n      |> collect()\n      ^^ expected expression\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 14,
+        "worker": {
+          "role": "eval-designer",
+          "worker_id": "proposal-1"
+        }
+      },
+      {
+        "report": "phases/04-eval-design/workers/eval-designer/proposal-1/report.json",
+        "summary": "=== oracle ===\n/t/.h1\n/t/sub/.h2\n/t/sub/r.sh\n=== candidate hidden=true ===\nerr[parse.expected-token]: expected `)` after call arguments\n  /test/candidate3.xsh:3:37\n    let files = fs.files(root, hidden = true)?\n                                      ^ expected `)` after call arguments\n\nerr[parse.expected-terminator]: expected statement terminator\n  /test/candidate3.xsh:3:37\n    let files = fs.files(root, hidden = true)?\n                                      ^ expected statement terminator\n\nerr[parse.expected-expression]: expected expression\n  /test/candidate3.xsh:3:37\n    let files = fs.files(root, hidden = true)?\n                                      ^ expected expression\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 38,
+        "worker": {
+          "role": "eval-designer",
+          "worker_id": "proposal-1"
+        }
+      }
+    ],
+    "workers": [
+      {
+        "identity": {
+          "role": "director",
+          "worker_id": "director"
+        },
+        "path": "phases/01-ticket/workers/director/director/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 11,
+          "budget_usd": 0.06,
+          "cache_read_cost_usd": 0.003033216,
+          "cache_read_tokens": 168512,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.009765216,
+          "input_cost_usd": 0.0055492200000000005,
+          "input_tokens": 61658,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00118278,
+          "output_tokens": 6571,
+          "provider_total_tokens": 236741,
+          "reasoning_tokens": 3124,
+          "thinking_blocks": 11,
+          "tool_calls": 22,
+          "tool_errors": 0,
+          "tool_results": 22,
+          "total_bucket_tokens": 236741,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "engineer",
+          "worker_id": "task-ecount-006"
+        },
+        "path": "phases/01-ticket/workers/engineer/task-ecount-006/report.json",
+        "result": "pass",
+        "tool_errors": 1,
+        "usage": {
+          "assistant_turns": 107,
+          "budget_usd": 0.25,
+          "cache_read_cost_usd": 0.09317375999999998,
+          "cache_read_tokens": 5176320,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.12217356000000004,
+          "input_cost_usd": 0.022931639999999993,
+          "input_tokens": 254796,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.006068159999999999,
+          "output_tokens": 33712,
+          "provider_total_tokens": 5464828,
+          "reasoning_tokens": 16576,
+          "thinking_blocks": 67,
+          "tool_calls": 111,
+          "tool_errors": 1,
+          "tool_results": 111,
+          "total_bucket_tokens": 5464828,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "engineer",
+          "worker_id": "task-tags-003"
+        },
+        "path": "phases/01-ticket/workers/engineer/task-tags-003/report.json",
+        "result": "pass",
+        "tool_errors": 6,
+        "usage": {
+          "assistant_turns": 66,
+          "budget_usd": 0.25,
+          "cache_read_cost_usd": 0.048827520000000006,
+          "cache_read_tokens": 2712640,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.06975324,
+          "input_cost_usd": 0.016618680000000004,
+          "input_tokens": 184652,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.004307040000000001,
+          "output_tokens": 23928,
+          "provider_total_tokens": 2921220,
+          "reasoning_tokens": 11590,
+          "thinking_blocks": 43,
+          "tool_calls": 76,
+          "tool_errors": 6,
+          "tool_results": 76,
+          "total_bucket_tokens": 2921220,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-ecount"
+        },
+        "path": "phases/02-reeval-task-ecount-006/workers/eval-manager/task-ecount/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 24,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.009626112,
+          "cache_read_tokens": 534784,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.019223802,
+          "input_cost_usd": 0.0068537699999999995,
+          "input_tokens": 76153,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0027439199999999995,
+          "output_tokens": 15244,
+          "provider_total_tokens": 626181,
+          "reasoning_tokens": 8077,
+          "thinking_blocks": 21,
+          "tool_calls": 35,
+          "tool_errors": 0,
+          "tool_results": 35,
+          "total_bucket_tokens": 626181,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-ecount-1"
+        },
+        "path": "phases/02-reeval-task-ecount-006/workers/eval-worker/task-ecount-1/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 46,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.019419264,
+          "cache_read_tokens": 1078848,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.027166194,
+          "input_cost_usd": 0.0033464700000000003,
+          "input_tokens": 37183,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.004400460000000001,
+          "output_tokens": 24447,
+          "provider_total_tokens": 1140478,
+          "reasoning_tokens": 16478,
+          "thinking_blocks": 43,
+          "tool_calls": 53,
+          "tool_errors": 0,
+          "tool_results": 53,
+          "total_bucket_tokens": 1140478,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-envcfg"
+        },
+        "path": "phases/03-eval/workers/eval-manager/task-envcfg/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 21,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.010040832,
+          "cache_read_tokens": 557824,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.020016071999999996,
+          "input_cost_usd": 0.007207020000000001,
+          "input_tokens": 80078,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00276822,
+          "output_tokens": 15379,
+          "provider_total_tokens": 653281,
+          "reasoning_tokens": 9839,
+          "thinking_blocks": 14,
+          "tool_calls": 30,
+          "tool_errors": 0,
+          "tool_results": 30,
+          "total_bucket_tokens": 653281,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-envcfg-1"
+        },
+        "path": "phases/03-eval/workers/eval-worker/task-envcfg-1/report.json",
+        "result": "pass",
+        "tool_errors": 5,
+        "usage": {
+          "assistant_turns": 30,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.0072576,
+          "cache_read_tokens": 403200,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.01131183,
+          "input_cost_usd": 0.00188433,
+          "input_tokens": 20937,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0021699,
+          "output_tokens": 12055,
+          "provider_total_tokens": 436192,
+          "reasoning_tokens": 6475,
+          "thinking_blocks": 25,
+          "tool_calls": 39,
+          "tool_errors": 5,
+          "tool_results": 39,
+          "total_bucket_tokens": 436192,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-designer",
+          "worker_id": "proposal-1"
+        },
+        "path": "phases/04-eval-design/workers/eval-designer/proposal-1/report.json",
+        "result": "pass",
+        "tool_errors": 2,
+        "usage": {
+          "assistant_turns": 54,
+          "budget_usd": 0.3,
+          "cache_read_cost_usd": 0.032868864000000005,
+          "cache_read_tokens": 1826048,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.056463804000000006,
+          "input_cost_usd": 0.017710740000000006,
+          "input_tokens": 196786,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.005884199999999999,
+          "output_tokens": 32690,
+          "provider_total_tokens": 2055524,
+          "reasoning_tokens": 18624,
+          "thinking_blocks": 37,
+          "tool_calls": 69,
+          "tool_errors": 2,
+          "tool_results": 69,
+          "total_bucket_tokens": 2055524,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "5cee79306e2ce8c12fbd5b8575ff7accfcc5c82f"
+  },
+  "findings": [
+    {
+      "id": "02-reeval-task-tags-003",
+      "kind": "phase",
+      "result": "missing"
+    }
+  ],
+  "identity": {
+    "mode": "organization",
+    "run_id": "run-1785804030340"
+  },
+  "kind": "run",
+  "result": "fail",
+  "schema_version": 1,
+  "state": "completed"
+}

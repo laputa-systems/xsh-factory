@@ -1,0 +1,111 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785777983535/phases/02-reeval/workers/eval-worker/task-ecount-1/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_state": "pass",
+    "agent_wall_ms": 629293,
+    "artifact": {
+      "name": "ecount.xsh",
+      "state": "present"
+    },
+    "budget_state": "pass",
+    "classification": "pass",
+    "evaluator_manifest": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785777983535/phases/02-reeval/workers/eval-worker/task-ecount-1/run.json",
+    "evaluator_state": "pass",
+    "reporting_state": "pass",
+    "result": "pass",
+    "review": {
+      "state": "present"
+    }
+  },
+  "findings": [
+    {
+      "count": 2,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "role": "eval-worker",
+    "worker_id": "task-ecount-1"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785777983535/phases/02-reeval/workers/eval-worker/task-ecount-1/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 95,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 627601
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785777983535/phases/02-reeval/workers/eval-worker/task-ecount-1/session.jsonl.bz2",
+      "summary": "(no output)\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 47
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785777983535/phases/02-reeval/workers/eval-worker/task-ecount-1/session.jsonl.bz2",
+      "summary": "sh: can't create ftest/foo.bar/x: nonexistent directory\n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 84
+    }
+  ],
+  "tools": [
+    {
+      "count": 87,
+      "name": "bash"
+    },
+    {
+      "count": 2,
+      "name": "edit"
+    },
+    {
+      "count": 4,
+      "name": "read"
+    },
+    {
+      "count": 12,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 96,
+    "budget_usd": 0.5,
+    "cache_read_cost_usd": 0.048075264,
+    "cache_read_tokens": 2670848,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.07061792400000003,
+    "input_cost_usd": 0.01697562,
+    "input_tokens": 188618,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.005567039999999997,
+    "output_tokens": 30928,
+    "provider_total_tokens": 2890394,
+    "reasoning_tokens": 18225,
+    "thinking_blocks": 66,
+    "tool_calls": 105,
+    "tool_errors": 2,
+    "tool_results": 105,
+    "total_bucket_tokens": 2890394,
+    "user_messages": 1
+  }
+}

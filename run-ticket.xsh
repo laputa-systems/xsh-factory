@@ -397,6 +397,7 @@ proc run_ticket_cycle(
   if ! skip_cycle_budget {
     runtime.stop_cycle_budget_watch(run_dir)?
   }
+  runtime.compress_run_sessions(run_dir)?
   print f"factory run: ${run_dir} (${result})"
   return if result == "pass" { 0 } else { 1 }
 }

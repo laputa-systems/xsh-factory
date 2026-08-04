@@ -1,0 +1,78 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/private/tmp/xsh-factory-englishlint-baseline/runs/run-1785861543618/workers/eval-manager/task-envcfg/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_process": "pass",
+    "reporting": "pass",
+    "required_report": "present",
+    "session_limit_watcher": "pass",
+    "watcher": "pass"
+  },
+  "findings": [],
+  "identity": {
+    "role": "eval-manager",
+    "worker_id": "task-envcfg"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/private/tmp/xsh-factory-englishlint-baseline/runs/run-1785861543618/workers/eval-manager/task-envcfg/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 11,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 457718
+  },
+  "tool_errors": [],
+  "tools": [
+    {
+      "count": 8,
+      "name": "bash"
+    },
+    {
+      "count": 10,
+      "name": "read"
+    },
+    {
+      "count": 1,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 12,
+    "budget_usd": 0.15,
+    "cache_read_cost_usd": 0.0032382720000000004,
+    "cache_read_tokens": 179904,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.010339632,
+    "input_cost_usd": 0.0056964599999999995,
+    "input_tokens": 63294,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.0014049,
+    "output_tokens": 7805,
+    "provider_total_tokens": 251003,
+    "reasoning_tokens": 3839,
+    "thinking_blocks": 8,
+    "tool_calls": 19,
+    "tool_errors": 0,
+    "tool_results": 19,
+    "total_bucket_tokens": 251003,
+    "user_messages": 1
+  }
+}

@@ -1,0 +1,136 @@
+diff --git a/src/syntax/lexer.rs b/src/syntax/lexer.rs
+index 8b9fb8f..edaac61 100644
+--- a/src/syntax/lexer.rs
++++ b/src/syntax/lexer.rs
+@@ -190,14 +190,20 @@ impl<'a> Lexer<'a> {
+                         b'%' => self.push(TokenKind::Percent, start, self.offset),
+                         b'|' => self.push(TokenKind::Pipe, start, self.offset),
+                         b'&' => self.push(TokenKind::Amp, start, self.offset),
+-                        _ => self.diagnostics.push(
+-                            Diagnostic::error("unexpected character")
++                        _ => {
++                            let mut diagnostic = Diagnostic::error("unexpected character")
+                                 .with_code("lex.unexpected-character")
+                                 .with_label(Label::primary(
+                                     self.span(start, self.offset),
+                                     "not valid in source",
+-                                )),
+-                        ),
++                                ));
++                            if byte == b'\'' {
++                                diagnostic = diagnostic.with_note(
++                                    "XSH strings use `\"...\"`, not `'...'`",
++                                );
++                            }
++                            self.diagnostics.push(diagnostic);
++                        },
+                     }
+                 }
+                 None => break,
+diff --git a/src/syntax/parser/literals.rs b/src/syntax/parser/literals.rs
+index 40825c8..c12aab1 100644
+--- a/src/syntax/parser/literals.rs
++++ b/src/syntax/parser/literals.rs
+@@ -235,10 +235,37 @@ pub(in crate::syntax::parser) fn parse_interpolation_expr_arena_only_for(
+         if expr_id.is_some() {
+             arena.shift_spans_since(marks, offset);
+         }
+-        (expr_id, parser.diagnostics)
++        // The throwaway sub-lexer/parser is positioned at byte offset 0, so its
++        // diagnostics carry chunk-relative spans. File-absolute diagnostics are
++        // produced by shifting every span by the interpolation content's offset
++        // in the enclosing source; without this, an error inside `${...}` points
++        // at an unrelated earlier token (e.g. a `proc` signature) on the line.
++        let diagnostics = parser
++            .diagnostics
++            .into_iter()
++            .map(|diagnostic| shift_diagnostic(diagnostic, offset))
++            .collect();
++        (expr_id, diagnostics)
+     })
+ }
+ 
++fn shift_diagnostic(mut diagnostic: Diagnostic, offset: usize) -> Diagnostic {
++    shift_span_fix_hint_span_opt(&mut diagnostic.span, offset);
++    for label in &mut diagnostic.labels {
++        label.span.shift_start(offset);
++    }
++    for hint in &mut diagnostic.fix_hints {
++        shift_span_fix_hint_span_opt(&mut hint.span, offset);
++    }
++    diagnostic
++}
++
++fn shift_span_fix_hint_span_opt(span: &mut Option<Span>, offset: usize) {
++    if let Some(span) = span {
++        span.shift_start(offset);
++    }
++}
++
+ pub(in crate::syntax::parser) fn dollar_shorthand_end(source: &str, start: usize) -> usize {
+     let bytes = source.as_bytes();
+     let mut end = scan_ident_end(bytes, start);
+diff --git a/tests/syntax.rs b/tests/syntax.rs
+index 818d8f8..909fe20 100644
+--- a/tests/syntax.rs
++++ b/tests/syntax.rs
+@@ -1456,6 +1456,59 @@ fn quoted_command_interpolation_spans_use_source_offsets() {
+     assert_eq!(spans[1].start(), source.find("two").unwrap());
+ }
+ 
++#[test]
++fn fmt_string_interpolation_errors_report_true_source_span() {
++    // An invalid token inside `${...}` must be reported at the real byte
++    // offset of the offending token, not at an earlier position on the line
++    // such as the enclosing `proc` signature. The throwaway sub-lexer/parser
++    // that parses interpolation content sits at byte offset 0, so its
++    // diagnostics carry chunk-relative spans that must be shifted by the
++    // interpolation content's absolute offset in the source.
++    let source = "proc main() [io] {\n  print f\"tags: ${lowered.join(', ')}\"\n}\n";
++    let output = Parser::parse_source_arena_only(SourceId::new(0), source);
++
++    let unexpected: Vec<_> = output
++        .diagnostics
++        .iter()
++        .filter(|diag| diag.code.as_deref() == Some("lex.unexpected-character"))
++        .collect();
++    assert!(!unexpected.is_empty(), "expected unexpected-character errors");
++    for diag in &unexpected {
++        let span = diag
++            .labels
++            .iter()
++            .find(|label| label.message.as_deref() == Some("not valid in source"))
++            .expect("primary label")
++            .span;
++        assert_eq!(
++            &source[span.range()],
++            "'",
++            "unexpected-character must point at the real single-quote token"
++        );
++    }
++
++    // A malformed expression inside interpolation is likewise located at the
++    // offending token rather than at the start of the string or the proc line.
++    let malformed = "proc main() [io] {\n  print f\"a ${1 + } b\"\n}\n";
++    let output = Parser::parse_source_arena_only(SourceId::new(0), malformed);
++    let expr = output
++        .diagnostics
++        .iter()
++        .find(|diag| diag.code.as_deref() == Some("parse.expected-expression"))
++        .expect("expected-expression diagnostic");
++    let span = expr
++        .labels
++        .iter()
++        .find(|label| label.message.as_deref() == Some("expected expression"))
++        .expect("primary label")
++        .span;
++    assert_eq!(
++        malformed.as_bytes()[span.start()],
++        b'}',
++        "error must point at the stray brace"
++    );
++}
++
+ #[test]
+ fn braced_command_interpolation_is_accepted() {
+     let output = Parser::parse_source_arena_only(

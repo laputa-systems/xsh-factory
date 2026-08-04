@@ -1,0 +1,87 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785783822421/phases/01-ticket/workers/engineer/task-envcfg-005/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_process": "nonzero-exit",
+    "reporting": "pass",
+    "required_report": "present",
+    "session_limit_watcher": "failed",
+    "watcher": "failed"
+  },
+  "findings": [
+    {
+      "count": 1,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "role": "engineer",
+    "worker_id": "task-envcfg-005"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785783822421/phases/01-ticket/workers/engineer/task-envcfg-005/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 8,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 29312
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785783822421/phases/01-ticket/workers/engineer/task-envcfg-005/session.jsonl.bz2",
+      "summary": "full.rs\nsemantic.rs\n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 5
+    }
+  ],
+  "tools": [
+    {
+      "count": 3,
+      "name": "bash"
+    },
+    {
+      "count": 5,
+      "name": "grep"
+    },
+    {
+      "count": 8,
+      "name": "read"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 8,
+    "budget_usd": 0.25,
+    "cache_read_cost_usd": 0.001603584,
+    "cache_read_tokens": 89088,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.003842784,
+    "input_cost_usd": 0.00187308,
+    "input_tokens": 20812,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.00036612,
+    "output_tokens": 2034,
+    "provider_total_tokens": 111934,
+    "reasoning_tokens": 550,
+    "thinking_blocks": 7,
+    "tool_calls": 16,
+    "tool_errors": 1,
+    "tool_results": 16,
+    "total_bucket_tokens": 111934,
+    "user_messages": 1
+  }
+}

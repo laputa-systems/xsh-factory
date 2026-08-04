@@ -1,0 +1,111 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785805967215/phases/01-ticket/workers/engineer/task-ecount-004/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_process": "pass",
+    "reporting": "pass",
+    "required_report": "present",
+    "session_limit_watcher": "pass",
+    "watcher": "pass"
+  },
+  "findings": [
+    {
+      "count": 3,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "role": "engineer",
+    "worker_id": "task-ecount-004"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785805967215/phases/01-ticket/workers/engineer/task-ecount-004/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 79,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 432862
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785805967215/phases/01-ticket/workers/engineer/task-ecount-004/session.jsonl.bz2",
+      "summary": "(no output)\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 51
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785805967215/phases/01-ticket/workers/engineer/task-ecount-004/session.jsonl.bz2",
+      "summary": "err[check.stream-sort]: sort-by keys must be Int, Str, Bool, or Path\n  /tmp/sortprog.xsh:6:6\n    |> sort-by .count\n       ^^^^^^^^^^^^^^ sort-by keys must be Int, Str, Bool, or Path\n\nerr[check.display-conversion]: value cannot be displayed by print\n  /tmp/sortprog.xsh:8:7\n  print $by_count\n        ^^^^^^^^^ value cannot be displayed by print\n\nerr[check.stream-sort]: sort-by keys must be Int, Str, Bool, or Path\n  /tmp/sortprog.xsh:13:6\n  ] |> sort-by .count |> collect()\n       ^^^^^^^^^^^^^^ sort-by keys must be Int, Str, Bool, or Path\n\nerr[check.display-conversion]: value cannot be displayed by print\n  /tmp/sortprog.xsh:14:7\n  print $by_count_comp\n        ^^^^^^^^^^^^^^ value cannot be displayed by print\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 58
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785805967215/phases/01-ticket/workers/engineer/task-ecount-004/session.jsonl.bz2",
+      "summary": "err[check.display-conversion]: value cannot be displayed by print\n  /tmp/sortprog.xsh:8:7\n  print $by_count\n        ^^^^^^^^^ value cannot be displayed by print\n\nerr[check.display-conversion]: value cannot be displayed by print\n  /tmp/sortprog.xsh:14:7\n  print $by_count_comp\n        ^^^^^^^^^^^^^^ value cannot be displayed by print\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 60
+    }
+  ],
+  "tools": [
+    {
+      "count": 56,
+      "name": "bash"
+    },
+    {
+      "count": 8,
+      "name": "edit"
+    },
+    {
+      "count": 5,
+      "name": "grep"
+    },
+    {
+      "count": 13,
+      "name": "read"
+    },
+    {
+      "count": 2,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 80,
+    "budget_usd": 0.25,
+    "cache_read_cost_usd": 0.051593471999999994,
+    "cache_read_tokens": 2866304,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.07227511199999997,
+    "input_cost_usd": 0.016473599999999998,
+    "input_tokens": 183040,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.0042080400000000006,
+    "output_tokens": 23378,
+    "provider_total_tokens": 3072722,
+    "reasoning_tokens": 9486,
+    "thinking_blocks": 53,
+    "tool_calls": 84,
+    "tool_errors": 3,
+    "tool_results": 84,
+    "total_bucket_tokens": 3072722,
+    "user_messages": 1
+  }
+}

@@ -1,0 +1,262 @@
+{
+  "artifacts": [
+    {
+      "kind": "session-directory",
+      "path": "workers/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 121,
+      "budget_failures": 0,
+      "cost_usd": 0.08389583719999999,
+      "tool_errors": 1,
+      "total_bucket_tokens": 4019171.0,
+      "unknown_costs": 0,
+      "workers": 3
+    },
+    "designer": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785723986829/phases/03-eval/workers/eval-designer/proposal-1/REPORT.md",
+      "present": false,
+      "result": "not-requested",
+      "role": "eval-designer",
+      "valid": true
+    },
+    "director": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785723986829/phases/03-eval/workers/director/director/REPORT.md",
+      "present": true,
+      "result": "pass",
+      "role": "director",
+      "valid": true
+    },
+    "engineer": [],
+    "handbook_lineage": {
+      "approved": "lineage/handbook-approved.md",
+      "candidate": "lineage/handbook-candidate.md"
+    },
+    "manager": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785723986829/phases/03-eval/workers/eval-manager/task-ecount/REPORT.md",
+      "present": true,
+      "result": "pass",
+      "role": "eval-manager",
+      "valid": true
+    },
+    "mode": "eval",
+    "narratives": [
+      {
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785723986829/phases/03-eval/workers/director/director/REPORT.md",
+        "present": true,
+        "result": "pass",
+        "role": "director",
+        "valid": true
+      },
+      {
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785723986829/phases/03-eval/workers/eval-manager/task-ecount/REPORT.md",
+        "present": true,
+        "result": "pass",
+        "role": "eval-manager",
+        "valid": true
+      }
+    ],
+    "open_tickets": [
+      {
+        "eval_id": "task-ecount",
+        "id": "task-ecount-001",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-ecount-001.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-ecount",
+        "id": "task-ecount-002",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-ecount-002.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-ecount",
+        "id": "task-ecount-003",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-ecount-003.md",
+        "status": "Approved."
+      },
+      {
+        "eval_id": "task-ecount",
+        "id": "task-ecount-004",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-ecount-004.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-ecount",
+        "id": "task-ecount-005",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-ecount-005.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-ecount",
+        "id": "task-ecount-006",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-ecount-006.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-envcfg",
+        "id": "task-envcfg-001",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-envcfg-001.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-tags",
+        "id": "task-tags-003",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-tags-003.md",
+        "status": "Open."
+      }
+    ],
+    "sessions": [
+      "workers/director/director/session.jsonl.bz2",
+      "workers/eval-manager/task-ecount/session.jsonl.bz2",
+      "workers/eval-worker/task-ecount-1/session.jsonl.bz2"
+    ],
+    "tool_errors": [
+      {
+        "report": "workers/eval-worker/task-ecount-1/report.json",
+        "summary": "(no output)\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 69,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-ecount-1"
+        }
+      }
+    ],
+    "trials": [
+      {
+        "evidence": {
+          "candidate_sha256": "c7c356092b7731520891c6ec695ba9de9f5faa40967a7f9689a1f6d199a2fbb1",
+          "classification": "pass",
+          "correctness": "pass",
+          "eval_id": "task-ecount",
+          "handbook_sha256": "c7c9dd9abb6d50dac60562757a1824900f24d4bc2d38014d5cbf869f56bb0723",
+          "oracle_sha256": "c7c356092b7731520891c6ec695ba9de9f5faa40967a7f9689a1f6d199a2fbb1",
+          "passed": true,
+          "protocol": "pass",
+          "restrictions": "pass",
+          "result": "pass",
+          "timing": "pass",
+          "trial_id": "1",
+          "valid": true
+        },
+        "path": "workers/eval-worker/task-ecount-1/run.json"
+      }
+    ],
+    "workers": [
+      {
+        "identity": {
+          "role": "director",
+          "worker_id": "director"
+        },
+        "path": "workers/director/director/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 8,
+          "budget_usd": 0.06,
+          "cache_read_cost_usd": 0.0002734592,
+          "cache_read_tokens": 97664,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.0041522992,
+          "input_cost_usd": 0.00235536,
+          "input_tokens": 16824,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00152348,
+          "output_tokens": 5441,
+          "provider_total_tokens": 119929,
+          "reasoning_tokens": 2037,
+          "thinking_blocks": 7,
+          "tool_calls": 17,
+          "tool_errors": 0,
+          "tool_results": 17,
+          "total_bucket_tokens": 119929,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-ecount"
+        },
+        "path": "workers/eval-manager/task-ecount/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 20,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.002184448,
+          "cache_read_tokens": 780160,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.013822228,
+          "input_cost_usd": 0.006493900000000002,
+          "input_tokens": 46385,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00514388,
+          "output_tokens": 18371,
+          "provider_total_tokens": 844916,
+          "reasoning_tokens": 9776,
+          "thinking_blocks": 18,
+          "tool_calls": 29,
+          "tool_errors": 0,
+          "tool_results": 29,
+          "total_bucket_tokens": 844916,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-ecount-1"
+        },
+        "path": "workers/eval-worker/task-ecount-1/report.json",
+        "result": "pass",
+        "tool_errors": 1,
+        "usage": {
+          "assistant_turns": 93,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.05306111999999998,
+          "cache_read_tokens": 2947840,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.06592131,
+          "input_cost_usd": 0.006307290000000001,
+          "input_tokens": 70081,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.006552899999999999,
+          "output_tokens": 36405,
+          "provider_total_tokens": 3054326,
+          "reasoning_tokens": 22977,
+          "thinking_blocks": 78,
+          "tool_calls": 99,
+          "tool_errors": 1,
+          "tool_results": 99,
+          "total_bucket_tokens": 3054326,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "ea7dea2f2b436cce34262d7a02105cbb029243dd"
+  },
+  "findings": [],
+  "identity": {
+    "eval_id": "task-ecount",
+    "mode": "eval",
+    "run_id": "03-eval"
+  },
+  "kind": "phase",
+  "result": "pass",
+  "schema_version": 1,
+  "state": "completed"
+}

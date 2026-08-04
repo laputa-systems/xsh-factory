@@ -1,3 +1,4 @@
+use factory_runtime as runtime
 ##! Enforce the hard aggregate spend cap for one factory cycle.
 
 use factory_control as control
@@ -34,10 +35,11 @@ proc reported_cost(run_dir: Path) [fs, error] -> Result[CostReport] {
     if entry.kind != "file" {
       continue
     }
-    if entry.name != "session.jsonl" {
+    if entry.name != "session.jsonl" and entry.name != "session.jsonl.bz2" {
       continue
     }
-    for line in entry.path.read_text()?.lines() {
+    let session_text = runtime.session_text(entry.path)?
+    for line in session_text.lines() {
       match json.decode(line) {
         Ok(entry_record) => {
           match json.get(entry_record, ["message"], null) {

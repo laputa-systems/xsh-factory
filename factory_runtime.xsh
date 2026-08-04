@@ -911,13 +911,57 @@ export proc reconcile_tickets(
   return merged
 }
 
-## Proves that a Pi session called the read tool for one exact path.
-export proc session_read_path(session: Path, expected: Path) [fs, error] -> Result[Bool] {
-  if ! fs.exists(session)? {
-    return false
+## Reads an active or compressed persisted Pi session.
+## A missing `.jsonl` path falls back to its `.jsonl.bz2` archive.
+export proc session_text(session: Path) [fs, process, error] -> Result[Str] {
+  let compressed = fp"${session.display()}.bz2"
+  let source = if fs.exists(session)? { session } else { compressed }
+  if source.display().ends_with(".bz2") {
+    return run.text "bzip2" "-dc" $source.display()
   }
+  return source.read_text()
+}
+
+pure session_reference_file(name: Str) -> Bool {
+  return name.ends_with(".json") or name.ends_with(".jsonl") or
+    name.ends_with(".md") or name.ends_with(".txt") or
+    name.ends_with(".stdout") or name.ends_with(".stderr") or
+    name.ends_with(".state") or name.ends_with(".pids") or
+    name.ends_with(".claimed")
+}
+
+## Compresses raw sessions after a run has finished using them.
+## Textual evidence keeps references to the new `.jsonl.bz2` path.
+export proc compress_run_sessions(run_dir: Path) [fs, process, error] -> Result[Unit] {
+  let bzip2 = process.which("bzip2")?
+  var sessions: List[Path] = []
+  for entry in fs.walk(run_dir, gitignore: false, hidden: true)? |> where .kind == "file" {
+    if entry.name == "session.jsonl" { sessions = sessions.push(entry.path) }
+  }
+  for session in sessions {
+    let archive_path = fp"${session.display()}.bz2"
+    let status = process.run(process.command_argv(
+      bzip2, [bzip2.display(), "-c", session.display()], stdout: archive_path,
+    ))?
+    if ! status.ok { return Ok() }
+    fs.remove(session)?
+  }
+  for entry in fs.walk(run_dir, gitignore: false, hidden: true)? |> where .kind == "file" {
+    if entry.name.ends_with(".bz2") or ! session_reference_file(entry.name) { continue }
+    let text = entry.path.read_text()?
+    let normalized = text.replace("/session/session.jsonl", "/session/__SESSION_JSONL__")
+      .replace("session.jsonl", "session.jsonl.bz2")
+      .replace("__SESSION_JSONL__", "session.jsonl")
+    if normalized != text { fs.write_atomic(entry.path, normalized)? }
+  }
+  return Ok()
+}
+
+## Proves that a Pi session called the read tool for one exact path.
+export proc session_read_path(session: Path, expected: Path) [fs, process, error] -> Result[Bool] {
+  let text = session_text(session)?
   var found = false
-  for line in fs.read_text(session)?.lines() {
+  for line in text.lines() {
     if line.contains("\"name\":\"read\"") and line.contains(expected.display()) {
       found = true
     }

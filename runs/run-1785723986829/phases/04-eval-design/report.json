@@ -1,0 +1,177 @@
+{
+  "artifacts": [
+    {
+      "kind": "session-directory",
+      "path": "workers/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 64,
+      "budget_failures": 0,
+      "cost_usd": 0.04598483119999999,
+      "tool_errors": 2,
+      "total_bucket_tokens": 5937627.0,
+      "unknown_costs": 0,
+      "workers": 1
+    },
+    "designer": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785723986829/phases/04-eval-design/workers/eval-designer/proposal-1/REPORT.md",
+      "present": false,
+      "result": "missing",
+      "role": "eval-designer",
+      "valid": false
+    },
+    "director": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785723986829/phases/04-eval-design/workers/director/director/REPORT.md",
+      "present": false,
+      "result": "missing",
+      "role": "director",
+      "valid": false
+    },
+    "engineer": [],
+    "handbook_lineage": {
+      "approved": "missing",
+      "candidate": "missing"
+    },
+    "manager": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785723986829/phases/04-eval-design/workers/eval-manager/task-ecount/REPORT.md",
+      "present": false,
+      "result": "missing",
+      "role": "eval-manager",
+      "valid": false
+    },
+    "mode": "eval-design",
+    "narratives": [],
+    "open_tickets": [
+      {
+        "eval_id": "task-ecount",
+        "id": "task-ecount-001",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-ecount-001.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-ecount",
+        "id": "task-ecount-002",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-ecount-002.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-ecount",
+        "id": "task-ecount-003",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-ecount-003.md",
+        "status": "Approved."
+      },
+      {
+        "eval_id": "task-ecount",
+        "id": "task-ecount-004",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-ecount-004.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-ecount",
+        "id": "task-ecount-005",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-ecount-005.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-envcfg",
+        "id": "task-envcfg-001",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-envcfg-001.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-tags",
+        "id": "task-tags-003",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-tags-003.md",
+        "status": "Open."
+      }
+    ],
+    "sessions": [
+      "workers/eval-designer/proposal-1/session.jsonl.bz2"
+    ],
+    "tool_errors": [
+      {
+        "report": "workers/eval-designer/proposal-1/report.json",
+        "summary": "Path not found: /Users/josh/d/laputa-systems/xsh-factory/.dist",
+        "tool": "ls",
+        "turn": 8,
+        "worker": {
+          "role": "eval-designer",
+          "worker_id": "proposal-1"
+        }
+      },
+      {
+        "report": "workers/eval-designer/proposal-1/report.json",
+        "summary": "Darwin arm64\n/Users/josh/usr/bin/xsh: Mach-O 64-bit executable arm64\n---\n---\ndebug\nmodules-basic-fixture\nruntime-sugar\ntmp\n---\nxsh\nxsht\n---\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 12,
+        "worker": {
+          "role": "eval-designer",
+          "worker_id": "proposal-1"
+        }
+      }
+    ],
+    "trials": [],
+    "workers": [
+      {
+        "identity": {
+          "role": "eval-designer",
+          "worker_id": "proposal-1"
+        },
+        "path": "workers/eval-designer/proposal-1/report.json",
+        "result": "pass",
+        "tool_errors": 2,
+        "usage": {
+          "assistant_turns": 64,
+          "budget_usd": 0.3,
+          "cache_read_cost_usd": 0.016206131199999998,
+          "cache_read_tokens": 5787904,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.04598483119999999,
+          "input_cost_usd": 0.012143739999999998,
+          "input_tokens": 86741,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.017634959999999998,
+          "output_tokens": 62982,
+          "provider_total_tokens": 5937627,
+          "reasoning_tokens": 41724,
+          "thinking_blocks": 50,
+          "tool_calls": 110,
+          "tool_errors": 2,
+          "tool_results": 110,
+          "total_bucket_tokens": 5937627,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "ea7dea2f2b436cce34262d7a02105cbb029243dd"
+  },
+  "findings": [
+    {
+      "kind": "designer-report",
+      "state": {
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785723986829/phases/04-eval-design/workers/eval-designer/proposal-1/REPORT.md",
+        "present": false,
+        "result": "missing",
+        "role": "eval-designer",
+        "valid": false
+      }
+    }
+  ],
+  "identity": {
+    "eval_id": "task-ecount",
+    "mode": "eval-design",
+    "run_id": "04-eval-design"
+  },
+  "kind": "phase",
+  "result": "fail",
+  "schema_version": 1,
+  "state": "completed"
+}

@@ -1,0 +1,117 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785787490432/phases/02-eval-design/workers/eval-designer/proposal-1/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_process": "nonzero-exit",
+    "reporting": "pass",
+    "required_report": "present",
+    "session_limit_watcher": "failed",
+    "watcher": "pass"
+  },
+  "findings": [
+    {
+      "count": 6,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "role": "eval-designer",
+    "worker_id": "proposal-1"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785787490432/phases/02-eval-design/workers/eval-designer/proposal-1/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 64,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 680732
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785787490432/phases/02-eval-design/workers/eval-designer/proposal-1/session.jsonl.bz2",
+      "summary": "err[parse.module-read]: failed to read module\n  /proposal/evaluator.xsh:6:1\n  use factory_control as control\n  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ failed to read module; tried `/proposal/factory_control.xsh`: No such file or directory (os error 2). Set XSH_MODULE_PATH to add module search roots\nevaluator exit: 2\n=== run.json (summary) ===\nTraceback (most recent call last):\n  File \"<stdin>\", line 2, in <module>\nFileNotFoundError: [Errno 2] No such file or directory: '/tmp/task-total-session/run.json'\n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 31
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785787490432/phases/02-eval-design/workers/eval-designer/proposal-1/session.jsonl.bz2",
+      "summary": "err[runtime.error]: source_has_forbidden_subprocess\n  /proposal/evaluator.xsh:123:7\n      ! control.source_has_forbidden_subprocess(source)\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nruntime traceback\nexecutable: /usr/local/bin/xsh\noperation: runtime.error\nerror: missing-field: source_has_forbidden_subprocess\nevaluator exit: 3\n=== run.json (summary) ===\nrun.json exists: False\nTraceback (most recent call last):\n  File \"<stdin>\", line 4, in <module>\nFileNotFoundError: [Errno 2] No such file or directory: '/tmp/task-total-session/run.json'\n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 32
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785787490432/phases/02-eval-design/workers/eval-designer/proposal-1/session.jsonl.bz2",
+      "summary": "err[runtime.error]: deferred expression produced invalid control flow\n  /proposal/evaluator.xsh:1:1\n  ##! Package-owned evaluator for task-total.\n  ^\nruntime traceback\nexecutable: /usr/local/bin/xsh\noperation: result.propagate\nerror: fs-remove: No such file or directory (os error 2)\ncall path:\n  1. proc main at /proposal/evaluator.xsh:1:1-1:1\n  2. proc run_case at /proposal/evaluator.xsh:126:20-126:41\nevaluator exit: 3\n=== run.json ===\nexists: False\nTraceback (most recent call last):\n  File \"<stdin>\", line 4, in <module>\nFileNotFoundError: [Errno 2] No such file or directory: '/tmp/task-total-session/run.json'\n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 36
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785787490432/phases/02-eval-design/workers/eval-designer/proposal-1/session.jsonl.bz2",
+      "summary": "evaluator exit: 3\nTraceback (most recent call last):\n  File \"<string>\", line 1, in <module>\n    import json; d=json.load(open(\"/tmp/task-total-session/run.json\")); print(\"WRONG-CANDIDATE result:\",d[\"result\"],\"classification:\",d[\"classification\"],\"restrictions:\",d[\"restrictions\"])\n                             ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/tmp/task-total-session/run.json'\n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 45
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785787490432/phases/02-eval-design/workers/eval-designer/proposal-1/session.jsonl.bz2",
+      "summary": "evaluator exit: 3\nTraceback (most recent call last):\n  File \"<string>\", line 1, in <module>\n    import json; d=json.load(open(\"/tmp/task-total-session/run.json\")); print(\"SUBPROCESS-VIOLATION result:\",d[\"result\"],\"classification:\",d[\"classification\"],\"restrictions:\",d[\"restrictions\"])\n                             ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/tmp/task-total-session/run.json'\n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 48
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785787490432/phases/02-eval-design/workers/eval-designer/proposal-1/session.jsonl.bz2",
+      "summary": "err[runtime.error]: deferred expression produced invalid control flow\n  /proposal/evaluator.xsh:1:1\n  ##! Package-owned evaluator for task-total.\n  ^\nruntime traceback\nexecutable: /usr/local/bin/xsh\noperation: result.propagate\nerror: fs-remove: No such file or directory (os error 2)\ncall path:\n  1. proc main at /proposal/evaluator.xsh:1:1-1:1\n  2. proc run_case at /proposal/evaluator.xsh:126:20-126:41\nEXIT:3\n=== candidate-1 stderr (public) ===\ncat: /tmp/ts/task-total-candidate-1.stderr: No such file or directory\n=== candidate-1 stdout (public) ===\ncat: /tmp/ts/task-total-candidate-1.stdout: No such file or directory\n=== oracle-1 stdout (public) ===\ncat: /tmp/ts/task-total-oracle-1.stdout: No such file or directory\n=== run.json result ===\nTraceback (most recent call last):\n  File \"<string>\", line 1, in <module>\n    import json; d=json.load(open(\"/tmp/ts/run.json\")); print(d[\"result\"],d[\"classification\"]); [print(c[\"name\"],c[\"exact\"],\"cexit\",c[\"candidate_exit\"]) for c in d[\"correctness\"][\"cases\"]]\n                             ~~~~^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/tmp/ts/run.json'\n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 54
+    }
+  ],
+  "tools": [
+    {
+      "count": 67,
+      "name": "bash"
+    },
+    {
+      "count": 5,
+      "name": "edit"
+    },
+    {
+      "count": 9,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 64,
+    "budget_usd": 0.3,
+    "cache_read_cost_usd": 0.06330816,
+    "cache_read_tokens": 3517120,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.08888489999999999,
+    "input_cost_usd": 0.01721502,
+    "input_tokens": 191278,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.00836172,
+    "output_tokens": 46454,
+    "provider_total_tokens": 3754852,
+    "reasoning_tokens": 26305,
+    "thinking_blocks": 52,
+    "tool_calls": 81,
+    "tool_errors": 6,
+    "tool_results": 80,
+    "total_bucket_tokens": 3754852,
+    "user_messages": 1
+  }
+}

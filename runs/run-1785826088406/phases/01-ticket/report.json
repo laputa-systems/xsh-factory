@@ -1,0 +1,206 @@
+{
+  "artifacts": [
+    {
+      "kind": "session-directory",
+      "path": "workers/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 38,
+      "budget_failures": 0,
+      "cost_usd": 0.041035951000000015,
+      "tool_errors": 2,
+      "total_bucket_tokens": 1981283.0,
+      "unknown_costs": 0,
+      "workers": 2
+    },
+    "designer": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785826088406/phases/01-ticket/workers/eval-designer/proposal-1/REPORT.md",
+      "present": false,
+      "result": "not-requested",
+      "role": "eval-designer",
+      "valid": true
+    },
+    "director": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785826088406/phases/01-ticket/workers/director/director/REPORT.md",
+      "present": true,
+      "result": "pass",
+      "role": "director",
+      "valid": true
+    },
+    "engineer": [
+      {
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785826088406/phases/01-ticket/workers/director/director/REPORT.md",
+        "present": true,
+        "result": "pass",
+        "role": "director",
+        "valid": true
+      },
+      {
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785826088406/phases/01-ticket/workers/engineer/task-envcfg-002/REPORT.md",
+        "present": true,
+        "result": "ready-for-review",
+        "role": "engineer",
+        "valid": true
+      }
+    ],
+    "handbook_lineage": {
+      "approved": "missing",
+      "candidate": "missing"
+    },
+    "manager": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785826088406/phases/01-ticket/workers/eval-manager/task-envcfg/REPORT.md",
+      "present": false,
+      "result": "missing",
+      "role": "eval-manager",
+      "valid": false
+    },
+    "mode": "ticket-implementation",
+    "narratives": [
+      {
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785826088406/phases/01-ticket/workers/director/director/REPORT.md",
+        "present": true,
+        "result": "pass",
+        "role": "director",
+        "valid": true
+      },
+      {
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785826088406/phases/01-ticket/workers/engineer/task-envcfg-002/REPORT.md",
+        "present": true,
+        "result": "ready-for-review",
+        "role": "engineer",
+        "valid": true
+      }
+    ],
+    "open_tickets": [
+      {
+        "eval_id": "task-envcfg",
+        "id": "task-envcfg-001",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-envcfg-001.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-envcfg",
+        "id": "task-envcfg-002",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-envcfg-002.md",
+        "status": "Approved."
+      },
+      {
+        "eval_id": "task-tags",
+        "id": "task-tags-003",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-tags-003.md",
+        "status": "Open."
+      }
+    ],
+    "required_outputs": null,
+    "sessions": [
+      "workers/director/director/session.jsonl.bz2",
+      "workers/engineer/task-envcfg-002/session.jsonl.bz2"
+    ],
+    "tool_errors": [
+      {
+        "report": "workers/engineer/task-envcfg-002/report.json",
+        "summary": "(no output)\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 16,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-envcfg-002"
+        }
+      },
+      {
+        "report": "workers/engineer/task-envcfg-002/report.json",
+        "summary": "Found 2 occurrences of edits[1] in /Users/josh/d/laputa-systems/xsh-factory/runs/run-1785826088406/phases/01-ticket/worktrees/task-envcfg-002/crates/xsht/tests/api.rs. Each oldText must be unique. Please provide more context to make it unique.",
+        "tool": "edit",
+        "turn": 20,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-envcfg-002"
+        }
+      }
+    ],
+    "trials": [],
+    "workers": [
+      {
+        "identity": {
+          "role": "director",
+          "worker_id": "director"
+        },
+        "path": "workers/director/director/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 10,
+          "budget_usd": 0.06,
+          "cache_read_cost_usd": 0.005331456,
+          "cache_read_tokens": 296192,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.010461006000000002,
+          "input_cost_usd": 0.00421443,
+          "input_tokens": 46827,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00091512,
+          "output_tokens": 5084,
+          "provider_total_tokens": 348103,
+          "reasoning_tokens": 1964,
+          "thinking_blocks": 10,
+          "tool_calls": 20,
+          "tool_errors": 0,
+          "tool_results": 20,
+          "total_bucket_tokens": 348103,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "engineer",
+          "worker_id": "task-envcfg-002"
+        },
+        "path": "workers/engineer/task-envcfg-002/report.json",
+        "result": "pass",
+        "tool_errors": 2,
+        "usage": {
+          "assistant_turns": 28,
+          "budget_usd": 0.35,
+          "cache_read_cost_usd": 0.01547932,
+          "cache_read_tokens": 1547932,
+          "cache_write_cost_usd": 0.009476625,
+          "cache_write_tokens": 75813,
+          "cost_usd": 0.03057494500000001,
+          "input_cost_usd": 8.399999999999998e-6,
+          "input_tokens": 84,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.005610600000000001,
+          "output_tokens": 9351,
+          "provider_total_tokens": 1633180,
+          "reasoning_tokens": 3777,
+          "thinking_blocks": 11,
+          "tool_calls": 62,
+          "tool_errors": 2,
+          "tool_results": 62,
+          "total_bucket_tokens": 1633180,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "97edb51c621260d61a00034ea7ed0742adacbb80"
+  },
+  "findings": [],
+  "identity": {
+    "eval_id": "task-envcfg",
+    "mode": "ticket-implementation",
+    "run_id": "01-ticket"
+  },
+  "kind": "phase",
+  "result": "pass",
+  "schema_version": 1,
+  "state": "completed"
+}

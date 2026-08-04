@@ -1,0 +1,99 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785813921392/phases/03-eval/workers/eval-manager/task-envcfg/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_process": "pass",
+    "reporting": "pass",
+    "required_report": "present",
+    "session_limit_watcher": "pass",
+    "watcher": "pass"
+  },
+  "findings": [
+    {
+      "count": 1,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "role": "eval-manager",
+    "worker_id": "task-envcfg"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785813921392/phases/03-eval/workers/eval-manager/task-envcfg/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 15,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 191763
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785813921392/phases/03-eval/workers/eval-manager/task-envcfg/session.jsonl.bz2",
+      "summary": "diff --git a/handbook-approved.md b/handbook-candidate.md\nindex ecbb40d..46c7a57 100644\n--- a/handbook-approved.md\n+++ b/handbook-candidate.md\n@@ -60,6 +60,13 @@ comment marker and causes a parse error, so use `#` for inline notes:\n     # CFG_PORT must be a run of decimal digits.\n     let digits = port.delete(\"0123456789\")\n \n+Boolean conditions compose with the word forms `or` and `and`; the shell-style\n+symbols `||` and `&&` are not supported and are rejected with guidance. Agents\n+coming from shell glue often reach for `||`/`&&` first, so write conditions with\n+words:\n+\n+    if port.byte_len() == 0 or non_digits.byte_len() > 0 { ... }\n+\n Values have explicit types. Common types include Str, Int, Bool, Path,\n List[T], Map[T], and Result[T]. Records have named fields, accessed with dot\n syntax:\n62a63,69\n> Boolean conditions compose with the word forms `or` and `and`; the shell-style\n> symbols `||` and `&&` are not supported and are rejected with guidance. Agents\n> coming from shell glue often reach for `||`/`&&` first, so write conditions with\n> words:\n> \n>     if port.byte_len() == 0 or non_digits.byte_len() > 0 { ... }\n> \n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 15
+    }
+  ],
+  "tools": [
+    {
+      "count": 7,
+      "name": "bash"
+    },
+    {
+      "count": 1,
+      "name": "edit"
+    },
+    {
+      "count": 2,
+      "name": "find"
+    },
+    {
+      "count": 16,
+      "name": "read"
+    },
+    {
+      "count": 1,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 16,
+    "budget_usd": 0.15,
+    "cache_read_cost_usd": 0.007036416,
+    "cache_read_tokens": 390912,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.017333946,
+    "input_cost_usd": 0.007585109999999999,
+    "input_tokens": 84279,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.0027124200000000005,
+    "output_tokens": 15069,
+    "provider_total_tokens": 490260,
+    "reasoning_tokens": 9778,
+    "thinking_blocks": 14,
+    "tool_calls": 27,
+    "tool_errors": 1,
+    "tool_results": 27,
+    "total_bucket_tokens": 490260,
+    "user_messages": 1
+  }
+}

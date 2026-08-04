@@ -52,8 +52,8 @@ engineer never chooses a ticket. There is one process launcher,
   Synthetic sessions, fake commands, and harmless process doubles are the
   default. Do not spend model budget to test deterministic infrastructure.
 - Preserve a useful evidence chain without producing duplicate reports.
-  `report.json` is the machine contract; raw `session.jsonl` is canonical
-  Pi evidence; `REPORT.md` is the employee's one qualitative narrative;
+  `report.json` is the machine contract; compressed `session.jsonl.bz2` is
+  canonical Pi evidence; `REPORT.md` is the employee's one qualitative narrative;
   `CTO-REPORT.md` is a navigation briefing.
 - The CTO may merge product branches, apply patches, and promote handbook
   candidates when the evidence supports those decisions. The CTO reviews each
@@ -82,7 +82,7 @@ There are deliberately no generated `COST.md`, `AUDIT.md`, `RUN.md`,
 `PROVENANCE.md`, `DISPATCH.md`, `CURRENT-EVIDENCE.md`, `TOOL-ERRORS.md`, or
 role-specific worker report files. Removing a projection must not remove the
 raw evidence that made it useful: costs and errors remain structured fields,
-and session text remains in `session.jsonl`.
+and session text remains in compressed `session.jsonl.bz2` archives.
 
 Markdown still has a clear purpose. Cycle requests, eval contracts, tickets,
 assignments, role prompts, postmortems, and employee `REPORT.md` files are

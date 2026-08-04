@@ -1,0 +1,102 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785713401021/workers/eval-manager/task-tags/session.jsonl.bz2"
+    }
+  ],
+  "findings": [
+    {
+      "count": 2,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "role": "eval-manager",
+    "worker_id": "task-tags"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785713401021/workers/eval-manager/task-tags/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 12,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 230043
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785713401021/workers/eval-manager/task-tags/session.jsonl.bz2",
+      "summary": "(no output)\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 6
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785713401021/workers/eval-manager/task-tags/session.jsonl.bz2",
+      "summary": "91ed23575157eefb62053b0fd2d8a3e77d9752ff828e704453b9a3890f117bd9  runs/run-1785713401021/lineage/handbook-candidate.md\n=== candidate diff ===\n136a137,150\n> print arguments are command words, not general expressions: `+` is not a\n> string-concatenation operator inside print, and a bare identifier must be\n> written `$var` to dereference it. To emit an exact line that needs\n> concatenation, build it in expression position (for example in a `let`\n> binding, where `+` does concatenate strings) and then print the value with\n> `$var` interpolation:\n> \n>     let line = if argv.len() == 0 { \"\" } else { \" \" + joined }\n>     print \"tags:\"$line\n> \n> Expression string literals do not interpolate (`let s = \"tags:$x\"` is a parse\n> error); the interpolating forms are command-word `$var` usage inside print and\n> explicit format strings (`f\"\"\"...\"\"\"`).\n> \n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 10
+    }
+  ],
+  "tools": [
+    {
+      "count": 7,
+      "name": "bash"
+    },
+    {
+      "count": 1,
+      "name": "edit"
+    },
+    {
+      "count": 1,
+      "name": "grep"
+    },
+    {
+      "count": 1,
+      "name": "ls"
+    },
+    {
+      "count": 9,
+      "name": "read"
+    },
+    {
+      "count": 1,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 13,
+    "budget_usd": 0.15,
+    "cache_read_cost_usd": 0.0007269556,
+    "cache_read_tokens": 259627.0,
+    "cache_write_cost_usd": 0.0,
+    "cache_write_tokens": 0.0,
+    "cost_usd": 0.0091836556,
+    "input_cost_usd": 0.004928980000000001,
+    "input_tokens": 35207.0,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.0035277200000000007,
+    "output_tokens": 12599.0,
+    "provider_total_tokens": 307433.0,
+    "reasoning_tokens": 7396.0,
+    "thinking_blocks": 12,
+    "tool_calls": 20,
+    "tool_errors": 2,
+    "tool_results": 20,
+    "total_bucket_tokens": 307433.0,
+    "user_messages": 1
+  }
+}

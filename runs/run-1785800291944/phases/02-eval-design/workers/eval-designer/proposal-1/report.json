@@ -1,0 +1,107 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785800291944/phases/02-eval-design/workers/eval-designer/proposal-1/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_process": "pass",
+    "reporting": "pass",
+    "required_report": "present",
+    "session_limit_watcher": "pass",
+    "watcher": "pass"
+  },
+  "findings": [
+    {
+      "count": 1,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "role": "eval-designer",
+    "worker_id": "proposal-1"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785800291944/phases/02-eval-design/workers/eval-designer/proposal-1/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 54,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 713039
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785800291944/phases/02-eval-design/workers/eval-designer/proposal-1/session.jsonl.bz2",
+      "summary": "Traceback (most recent call last):\n  File \"<string>\", line 1, in <module>\n    import json;d=json.load(open(\"runs/run-1785800291944/phases/02-eval-design/proposals/proposal-1/dry-run/shard/run.json\"));print(\"hard:\",d[\"result\"],d[\"classification\"])\n                            ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: 'runs/run-1785800291944/phases/02-eval-design/proposals/proposal-1/dry-run/shard/run.json'\nTraceback (most recent call last):\n  File \"<string>\", line 1, in <module>\n    import json;d=json.load(open(\"runs/run-1785800291944/phases/02-eval-design/proposals/proposal-1/dry-run/ssubproc/run.json\"));print(\"subproc:\",d[\"result\"],d[\"classification\"])\n                            ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: 'runs/run-1785800291944/phases/02-eval-design/proposals/proposal-1/dry-run/ssubproc/run.json'\nTraceback (most recent call last):\n  File \"<string>\", line 1, in <module>\n    import json;d=json.load(open(\"runs/run-1785800291944/phases/02-eval-design/proposals/proposal-1/dry-run/swrong/run.json\"));print(\"wrong:\",d[\"result\"],d[\"classification\"])\n                            ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: 'runs/run-1785800291944/phases/02-eval-design/proposals/proposal-1/dry-run/swrong/run.json'\nbadreview: fail protocol_failed\nTraceback (most recent call last):\n  File \"<string>\", line 1, in <module>\n    import json;d=json.load(open(\"runs/run-1785800291944/phases/02-eval-design/proposals/proposal-1/dry-run/snoartifact/run.json\"));print(\"noartifact:\",d[\"result\"],d[\"classification\"])\n                            ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: 'runs/run-1785800291944/phases/02-eval-design/proposals/proposal-1/dry-run/snoartifact/run.json'\n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 49
+    }
+  ],
+  "tools": [
+    {
+      "count": 34,
+      "name": "bash"
+    },
+    {
+      "count": 5,
+      "name": "edit"
+    },
+    {
+      "count": 2,
+      "name": "find"
+    },
+    {
+      "count": 1,
+      "name": "grep"
+    },
+    {
+      "count": 2,
+      "name": "ls"
+    },
+    {
+      "count": 36,
+      "name": "read"
+    },
+    {
+      "count": 11,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 55,
+    "budget_usd": 0.3,
+    "cache_read_cost_usd": 0.053620992,
+    "cache_read_tokens": 2978944,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.07768924199999999,
+    "input_cost_usd": 0.015281010000000005,
+    "input_tokens": 169789,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.008787240000000002,
+    "output_tokens": 48818,
+    "provider_total_tokens": 3197551,
+    "reasoning_tokens": 27881,
+    "thinking_blocks": 47,
+    "tool_calls": 91,
+    "tool_errors": 1,
+    "tool_results": 91,
+    "total_bucket_tokens": 3197551,
+    "user_messages": 1
+  }
+}

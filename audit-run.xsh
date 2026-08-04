@@ -59,7 +59,9 @@ proc worker_report_paths(run_dir: Path) [fs, error] -> Result[List[Path]] {
 proc session_paths(run_dir: Path) [fs, error] -> Result[List[Path]] {
   var sessions: List[Path] = []
   for entry in fs.files(run_dir, gitignore: false, hidden: true)? {
-    if entry.name == "session.jsonl" { sessions = sessions.push(entry.path) }
+    if entry.name == "session.jsonl" or entry.name == "session.jsonl.bz2" {
+      sessions = sessions.push(entry.path)
+    }
   }
   return sessions |> sort-by .display()
 }

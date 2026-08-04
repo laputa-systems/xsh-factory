@@ -1,0 +1,117 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785726325461/phases/02-reeval/workers/eval-worker/task-ecount-1/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_state": "pass",
+    "agent_wall_ms": 321255,
+    "artifact": {
+      "name": "ecount.xsh",
+      "state": "present"
+    },
+    "budget_state": "pass",
+    "classification": "pass",
+    "evaluator_manifest": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785726325461/phases/02-reeval/workers/eval-worker/task-ecount-1/run.json",
+    "evaluator_state": "pass",
+    "reporting_state": "pass",
+    "result": "pass",
+    "review": {
+      "state": "present"
+    }
+  },
+  "findings": [
+    {
+      "count": 3,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "role": "eval-worker",
+    "worker_id": "task-ecount-1"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785726325461/phases/02-reeval/workers/eval-worker/task-ecount-1/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 84,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 319747
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785726325461/phases/02-reeval/workers/eval-worker/task-ecount-1/session.jsonl.bz2",
+      "summary": "=== Str.contains ===\nsignature: Str.contains(needle: Str) -> Bool\ntags: str, contains, text, lookup\n=== Str.last_index_of ===\n=== Str.index_of ===\n=== Str.split ===\nsignature: Str.split(separator: Str, maxsplit: Int = default) -> List[Str]\ntags: str, split, text\n=== Str.substring ===\n=== Str.slice ===\n=== Str.chars ===\n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 8
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785726325461/phases/02-reeval/workers/eval-worker/task-ecount-1/session.jsonl.bz2",
+      "summary": "sh: python3: not found\n\n\nCommand exited with code 127",
+      "tool": "bash",
+      "turn": 17
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785726325461/phases/02-reeval/workers/eval-worker/task-ecount-1/session.jsonl.bz2",
+      "summary": "Could not find edits[0] in /work/ecount.xsh. The oldText must match exactly including all whitespace and newlines.",
+      "tool": "edit",
+      "turn": 72
+    }
+  ],
+  "tools": [
+    {
+      "count": 78,
+      "name": "bash"
+    },
+    {
+      "count": 7,
+      "name": "edit"
+    },
+    {
+      "count": 6,
+      "name": "read"
+    },
+    {
+      "count": 14,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 85,
+    "budget_usd": 0.5,
+    "cache_read_cost_usd": 0.06218035199999998,
+    "cache_read_tokens": 3454464,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.07349785199999999,
+    "input_cost_usd": 0.0061471799999999995,
+    "input_tokens": 68302,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.00517032,
+    "output_tokens": 28724,
+    "provider_total_tokens": 3551490,
+    "reasoning_tokens": 16795,
+    "thinking_blocks": 59,
+    "tool_calls": 105,
+    "tool_errors": 3,
+    "tool_results": 105,
+    "total_bucket_tokens": 3551490,
+    "user_messages": 1
+  }
+}

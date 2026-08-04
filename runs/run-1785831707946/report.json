@@ -1,0 +1,200 @@
+{
+  "artifacts": [
+    {
+      "kind": "phase-reports",
+      "path": "phases/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 111,
+      "budget_failures": 0,
+      "cost_usd": 0.081663246,
+      "tool_errors": 4,
+      "total_bucket_tokens": 2647289.0,
+      "unknown_costs": 0,
+      "workers": 3
+    },
+    "mode": "organization",
+    "outcomes": {
+      "cycle": "fail",
+      "evaluator": "fail",
+      "infrastructure": "pass",
+      "product": "fail"
+    },
+    "phases": [
+      {
+        "id": "01-eval",
+        "path": "phases/01-eval/report.json",
+        "result": "pass",
+        "valid": true
+      },
+      {
+        "id": "02-eval-design",
+        "path": "phases/02-eval-design/report.json",
+        "result": "fail",
+        "valid": true
+      }
+    ],
+    "tool_errors": [
+      {
+        "report": "phases/01-eval/workers/eval-worker/task-envcfg-1/report.json",
+        "summary": "query: search:Result\nstatus: matches\n\napi: language.core.postfix-question\nkind: language\npurpose: Defines postfix ? error propagation.\n\napi: language.core.results\nkind: language\npurpose: Defines Result values and error families.\n\napi: language.core.run\nkind: language\npurpose: Defines process run forms and status boundaries.\n\napi: language.core.statements\nkind: language\npurpose: Defines statement sequencing and result propagation.\n\napi: language.stream.each\nkind: language\npurpose: Runs a side-effecting block for each stream item.\n\napi: language.stream.repeat\nkind: language\npurpose: Repeats a value as a stream.\n\napi: language.stream.shuffle\nkind: language\npurpose: Randomizes the order of all stream items.\n\napi: language.stream.sort-by\nkind: language\npurpose: Sorts stream items by a projected key.\n\napi: language.trace.core.call\nkind: language\npurpose: Records a call into a core language operation.\n\napi: language.trace.core.result\n===\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 6,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-envcfg-1"
+        }
+      },
+      {
+        "report": "phases/01-eval/workers/eval-worker/task-envcfg-1/report.json",
+        "summary": "== [8080]\nerr[parse.expected-token]: expected `)` after expression\n  t4.xsh:4:25\n      Ok(v) => \"OK:\" + (v as Str)\n                          ^^ expected `)` after expression\n\nerr[parse.expected-token]: expected `=>` in match arm\n  t4.xsh:4:28\n      Ok(v) => \"OK:\" + (v as Str)\n                             ^^^ expected `=>` in match arm\n\nerr[parse.expected-pattern]: expected pattern\n  t4.xsh:4:31\n      Ok(v) => \"OK:\" + (v as Str)\n                                ^ expected pattern\n== [000123]\nerr[parse.expected-token]: expected `)` after expression\n  t4.xsh:4:25\n      Ok(v) => \"OK:\" + (v as Str)\n                          ^^ expected `)` after expression\n\nerr[parse.expected-token]: expected `=>` in match arm\n  t4.xsh:4:28\n      Ok(v) => \"OK:\" + (v as Str)\n                             ^^^ expected `=>` in match arm\n\nerr[parse.expected-pattern]: expected pattern\n  t4.xsh:4:31\n      Ok(v) => \"OK:\" + (v as Str)\n                                ^ expected pattern\n== []\nerr[parse.expected-token]: expected `)` after expression\n  t4.xsh:4:25\n      Ok(v) => \"OK:\" + (v as Str)\n                          ^^ expected `)` after expression\n\nerr[parse.expected-token]: expected `=>` in match arm\n  t4.xsh:4:28\n      Ok(v) => \"OK:\" + (v as Str)\n                             ^^^ expected `=>` in match arm\n\nerr[parse.expected-pattern]: expected pattern\n  t4.xsh:4:31\n      Ok(v) => \"OK:\" + (v as Str)\n                                ^ expected pattern\n== [12a]\nerr[parse.expected-token]: expected `)` after expression\n  t4.xsh:4:25\n      Ok(v) => \"OK:\" + (v as Str)\n                          ^^ expected `)` after expression\n\nerr[parse.expected-token]: expected `=>` in match arm\n  t4.xsh:4:28\n      Ok(v) => \"OK:\" + (v as Str)\n                             ^^^ expected `=>` in match arm\n\nerr[parse.expected-pattern]: expected pattern\n  t4.xsh:4:31\n      Ok(v) => \"OK:\" + (v as Str)\n                                ^ expected pattern\n== [+5]\nerr[parse.expected-token]: expected `)` after expression\n  t4.xsh:4:25\n      Ok(v) => \"OK:\" + (v as Str)\n                          ^^ expected `)` after expression\n\nerr[parse.expected-token]: expected `=>` in match arm\n  t4.xsh:4:28\n      Ok(v) => \"OK:\" + (v as Str)\n                             ^^^ expected `=>` in match arm\n\nerr[parse.expected-pattern]: expected pattern\n  t4.xsh:4:31\n      Ok(v) => \"OK:\" + (v as Str)\n                                ^ expected pattern\n== [-3]\nerr[parse.expected-token]: expected `)` after expression\n  t4.xsh:4:25\n      Ok(v) => \"OK:\" + (v as Str)\n                          ^^ expected `)` after expression\n\nerr[parse.expected-token]: expected `=>` in match arm\n  t4.xsh:4:28\n      Ok(v) => \"OK:\" + (v as Str)\n                             ^^^ expected `=>` in match arm\n\nerr[parse.expected-pattern]: expected pattern\n  t4.xsh:4:31\n      Ok(v) => \"OK:\" + (v as Str)\n                                ^ expected pattern\n== [ 5]\nerr[parse.expected-token]: expected `)` after expression\n  t4.xsh:4:25\n      Ok(v) => \"OK:\" + (v as Str)\n                          ^^ expected `)` after expression\n\nerr[parse.expected-token]: expected `=>` in match arm\n  t4.xsh:4:28\n      Ok(v) => \"OK:\" + (v as Str)\n                             ^^^ expected `=>` in match arm\n\nerr[parse.expected-pattern]: expected pattern\n  t4.xsh:4:31\n      Ok(v) => \"OK:\" + (v as Str)\n                                ^ expected pattern\n== absent ==\nerr[parse.expected-token]: expected `)` after expression\n  t4.xsh:4:25\n      Ok(v) => \"OK:\" + (v as Str)\n                          ^^ expected `)` after expression\n\nerr[parse.expected-token]: expected `=>` in match arm\n  t4.xsh:4:28\n      Ok(v) => \"OK:\" + (v as Str)\n                             ^^^ expected `=>` in match arm\n\nerr[parse.expected-pattern]: expected pattern\n  t4.xsh:4:31\n      Ok(v) => \"OK:\" + (v as Str)\n                                ^ expected pattern\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 31,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-envcfg-1"
+        }
+      },
+      {
+        "report": "phases/01-eval/workers/eval-worker/task-envcfg-1/report.json",
+        "summary": "sh: syntax error: unexpected \";;\"\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 33,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-envcfg-1"
+        }
+      },
+      {
+        "report": "phases/02-eval-design/workers/eval-designer/proposal-1/report.json",
+        "summary": "/Users/josh/usr/bin/xsh\n/Users/josh/usr/bin/xsht\n/Users/josh/d/laputa-systems/xsh-factory/../xsh/target/debug/xsh\n/Users/josh/d/laputa-systems/xsh-factory/../xsh/target/release/xsh\naarch64-unknown-linux-musl\nagent-grievance-repro\nbench-syscalls-final.txt\nCACHEDIR.TAG\ncargo-timings\ndebug\ndocker-aarch64-unknown-linux-musl-release\nfrontend-campaign\nmodules-basic-fixture\npgo-profiles\nrelease\nruntime-sugar\ntmp\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 16,
+        "worker": {
+          "role": "eval-designer",
+          "worker_id": "proposal-1"
+        }
+      }
+    ],
+    "workers": [
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-envcfg"
+        },
+        "path": "phases/01-eval/workers/eval-manager/task-envcfg/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 26,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.009737856,
+          "cache_read_tokens": 540992,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.023176116,
+          "input_cost_usd": 0.01109142,
+          "input_tokens": 123238,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00234684,
+          "output_tokens": 13038,
+          "provider_total_tokens": 677268,
+          "reasoning_tokens": 5266,
+          "thinking_blocks": 24,
+          "tool_calls": 34,
+          "tool_errors": 0,
+          "tool_results": 34,
+          "total_bucket_tokens": 677268,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-envcfg-1"
+        },
+        "path": "phases/01-eval/workers/eval-worker/task-envcfg-1/report.json",
+        "result": "pass",
+        "tool_errors": 3,
+        "usage": {
+          "assistant_turns": 62,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.018956160000000003,
+          "cache_read_tokens": 1053120,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.03380543999999999,
+          "input_cost_usd": 0.01113552,
+          "input_tokens": 123728,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0037137599999999982,
+          "output_tokens": 20632,
+          "provider_total_tokens": 1197480,
+          "reasoning_tokens": 14039,
+          "thinking_blocks": 47,
+          "tool_calls": 64,
+          "tool_errors": 3,
+          "tool_results": 64,
+          "total_bucket_tokens": 1197480,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-designer",
+          "worker_id": "proposal-1"
+        },
+        "path": "phases/02-eval-design/workers/eval-designer/proposal-1/report.json",
+        "result": "pass",
+        "tool_errors": 1,
+        "usage": {
+          "assistant_turns": 23,
+          "budget_usd": 0.3,
+          "cache_read_cost_usd": 0.011664,
+          "cache_read_tokens": 648000,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.02468169,
+          "input_cost_usd": 0.009399690000000002,
+          "input_tokens": 104441,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.003618000000000001,
+          "output_tokens": 20100,
+          "provider_total_tokens": 772541,
+          "reasoning_tokens": 17103,
+          "thinking_blocks": 21,
+          "tool_calls": 31,
+          "tool_errors": 1,
+          "tool_results": 31,
+          "total_bucket_tokens": 772541,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "434080dfe330cc3bb705bd8068d57a1015b7b218"
+  },
+  "findings": [
+    {
+      "id": "02-eval-design",
+      "kind": "phase",
+      "result": "fail"
+    }
+  ],
+  "identity": {
+    "mode": "organization",
+    "run_id": "run-1785831707946"
+  },
+  "kind": "run",
+  "result": "fail",
+  "schema_version": 1,
+  "state": "completed"
+}

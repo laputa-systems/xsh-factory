@@ -1,3 +1,4 @@
+use factory_runtime as runtime
 ##! Stop a Pi process when its reported session cost crosses the hard cap.
 
 type CostReport = {total: Float, seen: Bool}
@@ -10,11 +11,12 @@ pure json_number(value: Any) -> Float {
   }
 }
 
-proc reported_cost(session_path: Path) [fs, error] -> Result[CostReport] {
+proc reported_cost(session_path: Path) [fs, process, error] -> Result[CostReport] {
   var total = 0.0
   var seen = false
   if ! fs.exists(session_path)? { return Ok({total: total, seen: seen}) }
-  for line in session_path.read_text()?.lines() {
+  let session_text = runtime.session_text(session_path)?
+  for line in session_text.lines() {
     match json.decode(line) {
       Ok(entry) => {
         match json.get(entry, ["message"], null) {

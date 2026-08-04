@@ -1,0 +1,61 @@
+{
+  "classification": "candidate_failed",
+  "correctness": {
+    "all_exact": false,
+    "hidden_absolute_exact": false,
+    "hidden_collapse_exact": false,
+    "hidden_deep_escape_exact": false,
+    "hidden_dot_slash_exact": true,
+    "hidden_empty_exact": false,
+    "hidden_leading_dotdot_exact": false,
+    "hidden_midescape_exact": false,
+    "public_exact": true
+  },
+  "eval_id": "task-safepath",
+  "image_id": "unknown",
+  "inputs": {
+    "agents_sha256": "",
+    "handbook_sha256": "",
+    "task_sha256": ""
+  },
+  "model": "unknown",
+  "offline": "unknown",
+  "outputs": {
+    "candidate_sha256": "09f27ec66490e06ca2884e977214a12045e45ba312e1cb2fbfb0e6d272dc6ee1",
+    "oracle_sha256": "09f27ec66490e06ca2884e977214a12045e45ba312e1cb2fbfb0e6d272dc6ee1"
+  },
+  "platform": "unknown",
+  "protocol": {
+    "artifact_present": true,
+    "review_ok": true
+  },
+  "provider": "unknown",
+  "restrictions": {
+    "forbidden_operations": true,
+    "passed": true
+  },
+  "result": "fail",
+  "session": "/session/session.jsonl",
+  "telemetry": "unknown",
+  "thinking": "unknown",
+  "timings": {
+    "hidden_absolute_candidate_wall_ns": 14337709,
+    "hidden_absolute_oracle_wall_ns": 14333209,
+    "hidden_collapse_candidate_wall_ns": 11657493,
+    "hidden_collapse_oracle_wall_ns": 11251533,
+    "hidden_deep_escape_candidate_wall_ns": 12486829,
+    "hidden_deep_escape_oracle_wall_ns": 10990157,
+    "hidden_dot_slash_candidate_wall_ns": 15935255,
+    "hidden_dot_slash_oracle_wall_ns": 15839797,
+    "hidden_empty_candidate_wall_ns": 12687121,
+    "hidden_empty_oracle_wall_ns": 15040128,
+    "hidden_leading_dotdot_candidate_wall_ns": 14655710,
+    "hidden_leading_dotdot_oracle_wall_ns": 11224866,
+    "hidden_midescape_candidate_wall_ns": 10932408,
+    "hidden_midescape_oracle_wall_ns": 11994452,
+    "public_candidate_wall_ns": 11324992,
+    "public_oracle_wall_ns": 11730201
+  },
+  "trial_id": "1",
+  "xsh_commit": "unknown"
+}

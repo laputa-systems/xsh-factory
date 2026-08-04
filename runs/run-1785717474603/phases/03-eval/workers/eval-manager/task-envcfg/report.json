@@ -1,0 +1,109 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785717474603/phases/03-eval/workers/eval-manager/task-envcfg/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_process": "pass",
+    "reporting": "pass",
+    "required_report": "present",
+    "session_limit_watcher": "pass",
+    "watcher": "pass"
+  },
+  "findings": [
+    {
+      "count": 2,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "role": "eval-manager",
+    "worker_id": "task-envcfg"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785717474603/phases/03-eval/workers/eval-manager/task-envcfg/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 18,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 277041
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785717474603/phases/03-eval/workers/eval-manager/task-envcfg/session.jsonl.bz2",
+      "summary": "ORGANIZATION-ACTIVE\neval-build.lock\nfactory.lock\norganization.lock\nrun-1785713401021\nrun-1785714396834\nrun-1785716048226\nrun-1785717474603\n----\nCANDIDATE: runs/run-1785714396834/phases/03-eval/lineage\n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 8
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785717474603/phases/03-eval/workers/eval-manager/task-envcfg/session.jsonl.bz2",
+      "summary": "=== headings ===\n## Result\n## Effort metrics\n## Usage and cost\n## Thinking evidence\n## Tool-error findings\n## Timing evidence\n## Observation classification\n## Handbook decision\n## Tickets created\n## Post-merge decisions\n## Next replay\n## North-star impact\n\n=== candidate vs approved diff ===\n69a70,75\n> To reject invalid input deliberately, propagate an expected failure from a\n> typed conversion (for example `env.int(...)?` or a `parse_int` result) and\n> let postfix `?` produce the nonzero exit. This build has no generic\n> `Error(...)` constructor, so a deliberate failure is expressed by propagating\n> a conversion error, not by constructing an `Error` value.\n> \n78a85,90\n> Path literals do not interpolate. To build a Path from a runtime string (for\n> example a script argument), use the interpolated path string `fp\"${expr}\"`\n> (the lint-preferred form) or the `Path(expr)` cast:\n> \n>     let out = fp\"${argv.get(0, \"env.cfg\")}\"\n> \n136a149,162\n> print arguments are command words, not general expressions: `+` is not a\n> string-concatenation operator inside print, and a bare identifier must be\n> written `$var` to dereference it. To emit an exact line that needs\n> concatenation, build it in expression position (for example in a `let`\n> binding, where `+` does concatenate strings) and then print the value with\n> `$var` interpolation:\n> \n>     let line = if argv.len() == 0 { \"\" } else { \" \" + joined }\n>     print \"tags:\"$line\n> \n> Expression string literals do not interpolate (`let s = \"tags:$x\"` is a parse\n> error); the interpolating forms are command-word `$var` usage inside print and\n> explicit format strings (`f\"\"\"...\"\"\"`).\n> \n165a192,196\n> Language-rule ids live under `language:core.*` and `language.effect.*` (for\n> example `language:core.path-literals`, `language:core.results`,\n> `language.effect.error`), and fuzzy discovery accepts one term:\n> `xsht api search:TERM`.\n> \n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 13
+    }
+  ],
+  "tools": [
+    {
+      "count": 11,
+      "name": "bash"
+    },
+    {
+      "count": 2,
+      "name": "edit"
+    },
+    {
+      "count": 1,
+      "name": "grep"
+    },
+    {
+      "count": 1,
+      "name": "ls"
+    },
+    {
+      "count": 16,
+      "name": "read"
+    },
+    {
+      "count": 2,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 19,
+    "budget_usd": 0.15,
+    "cache_read_cost_usd": 0.0026847743999999993,
+    "cache_read_tokens": 958848,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.0192464944,
+    "input_cost_usd": 0.00805756,
+    "input_tokens": 57554,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.00850416,
+    "output_tokens": 30372,
+    "provider_total_tokens": 1046774,
+    "reasoning_tokens": 20127,
+    "thinking_blocks": 18,
+    "tool_calls": 33,
+    "tool_errors": 2,
+    "tool_results": 33,
+    "total_bucket_tokens": 1046774,
+    "user_messages": 1
+  }
+}

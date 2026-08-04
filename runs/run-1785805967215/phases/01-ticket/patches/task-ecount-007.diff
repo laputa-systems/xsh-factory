@@ -1,0 +1,290 @@
+diff --git a/crates/xsh-registry/src/examples.rs b/crates/xsh-registry/src/examples.rs
+index eb570cf..35bac4b 100644
+--- a/crates/xsh-registry/src/examples.rs
++++ b/crates/xsh-registry/src/examples.rs
+@@ -67,6 +67,8 @@ pub(crate) fn source(id: &str) -> Option<String> {
+             include_str!("../../../docs/snippets/api/stream-par-map.xsh")
+         }
+         "language.stream.where" => include_str!("../../../docs/snippets/api/stream-where.xsh"),
++        "language.stream.fold" => include_str!("../../../docs/snippets/api/stream-fold.xsh"),
++        "language.stream.reduce" => include_str!("../../../docs/snippets/api/stream-reduce.xsh"),
+         "language.core.procs" => include_str!("../../../docs/snippets/api/core-procs.xsh"),
+         "language.core.pure-functions" => {
+             include_str!("../../../docs/snippets/api/core-pure-functions.xsh")
+diff --git a/crates/xsh-registry/src/reference.rs b/crates/xsh-registry/src/reference.rs
+index 097baf0..8005d4b 100644
+--- a/crates/xsh-registry/src/reference.rs
++++ b/crates/xsh-registry/src/reference.rs
+@@ -364,8 +364,8 @@ fn stream_doc(stage: &str) -> ReferenceDoc {
+         "min" => ("Reduces a numeric stream to its minimum value.", "The source is consumed to completion and the item type must satisfy the terminal's numeric contract.", &["stream", "terminal", "reduction"], "min() -> Result[T, Error]"),
+         "max" => ("Reduces a numeric stream to its maximum value.", "The source is consumed to completion and the item type must satisfy the terminal's numeric contract.", &["stream", "terminal", "reduction"], "max() -> Result[T, Error]"),
+         "group-by" => ("Groups stream items by a projected key.", "The terminal materializes groups and preserves each group's source order. Each emitted record has a `key` field holding the projected key and an `items` field holding the list of source items in that group; it is a record, not a Map.", &["stream", "terminal", "grouping"], "group-by(block, --jobs: Int = default) -> Stream[{key, items: List[T]}]"),
+-        "fold" => ("Reduces stream items with an explicit accumulator block.", "Accumulator updates follow source order for the serial form; parallel variants require an associative reduction contract. The initial value fixes the accumulator type.", &["stream", "reduction", "accumulator"], "fold(init, block) -> A"),
+-        "reduce" => ("Reduces stream items with an explicit accumulator block.", "Accumulator updates follow source order for the serial form; parallel variants require an associative reduction contract. The initial value fixes the accumulator type.", &["stream", "reduction", "accumulator"], "reduce(init, block) -> A"),
++        "fold" => ("Reduces stream items with an explicit accumulator block.", "The block takes up to two parameters: the accumulator (typed by the initial value) first, then the stream item, and its tail must produce the accumulator type. Argument order is `fold(init) { |acc, item| ... }`. The initial value fixes the accumulator type and the stage returns that accumulator in source order (a sequential user combine with no merge function).", &["stream", "reduction", "accumulator"], "fold(init, block) -> A"),
++        "reduce" => ("Reduces stream items with an explicit accumulator block.", "The block takes up to two parameters: the accumulator (typed by the initial value) first, then the stream item, and its tail must produce the accumulator type. Argument order is `reduce(init) { |acc, item| ... }`. The initial value fixes the accumulator type and the stage returns that accumulator in source order (a sequential user combine with no merge function).", &["stream", "reduction", "accumulator"], "reduce(init, block) -> A"),
+         "flat-map" => ("Replaces each item with and flattens a child stream.", "Child streams are consumed under the parent stream's cleanup scope and their order is preserved.", &["stream", "transform", "flattening"], "flat-map(block) -> Stream[U]"),
+         "any" => ("Short-circuits a predicate over stream items.", "The terminal stops as soon as the truth value is determined and runs source cleanup on early stop. The predicate block may contain multiple statements, including local `let` bindings.", &["stream", "terminal", "short-circuit"], "any(block) -> Bool"),
+         "all" => ("Short-circuits a predicate over stream items.", "The terminal stops as soon as the truth value is determined and runs source cleanup on early stop. The predicate block may contain multiple statements, including local `let` bindings.", &["stream", "terminal", "short-circuit"], "all(block) -> Bool"),
+diff --git a/docs/SPEC.md b/docs/SPEC.md
+index 8b11385..f5b9062 100644
+--- a/docs/SPEC.md
++++ b/docs/SPEC.md
+@@ -2757,7 +2757,11 @@ final statement and is accepted by both `xsht check` and the runtime. `map`
+ and `par-map` are for values and require a final
+ expression or command tail value. Stage blocks may bind one explicit item
+ parameter with `{ |item| ... }`, but the implicit `.` item is available in
+-one-expression and multi-statement stage blocks.
++one-expression and multi-statement stage blocks. `fold`/`reduce` additionally
++accept a two-parameter block `{ |acc, item| ... }` whose first parameter is the
++accumulated value (typed by the initial value) and whose second is the stream
++item; the block's tail must produce the accumulator's type, and the stage
++returns that accumulated value.
+ 
+ A tail proc call with `?` unwraps the `Ok` value and propagates errors: if
+ any item fails, the entire stage short-circuits with that error. Without
+diff --git a/docs/STREAMS.md b/docs/STREAMS.md
+index 81fde85..d20fe75 100644
+--- a/docs/STREAMS.md
++++ b/docs/STREAMS.md
+@@ -61,6 +61,10 @@ eager vec handlers and the lazy sinks.
+ - **Folding** (`count`/`sum`/`min`/`max`/`last`/`fold`/`reduce`): fold one item at
+   a time into O(1) state (`CountSink`, `SumSink`, …) — no materialization. So
+   `fs.walk |> where … |> count()` is O(1) live memory.
++  `fold(init)`/`reduce(init)` use an explicit accumulator block that binds the
++  accumulator (typed by the initial value) first and the stream item second:
++  `|> fold(0) { |acc, item| acc + item }`. It is a sequential user combine with
++  no merge function and returns that accumulator.
+ - **Explicit materialization** (`collect()`): drain to a `List[T]`, equivalent
+   to the automatic collection that happens when a non-terminal pipeline reaches
+   an expression boundary.
+diff --git a/docs/snippets/api/stream-fold.xsh b/docs/snippets/api/stream-fold.xsh
+new file mode 100644
+index 0000000..4524a08
+--- /dev/null
++++ b/docs/snippets/api/stream-fold.xsh
+@@ -0,0 +1,4 @@
++let total = [1, 2, 3]
++  |> fold(0) { |acc, item|
++    acc + item
++  }
+diff --git a/docs/snippets/api/stream-reduce.xsh b/docs/snippets/api/stream-reduce.xsh
+new file mode 100644
+index 0000000..168f109
+--- /dev/null
++++ b/docs/snippets/api/stream-reduce.xsh
+@@ -0,0 +1,4 @@
++let counts = ["a", "b", "a"]
++  |> reduce(map.empty()) { |acc, item|
++    acc.set(item, acc.get(item, 0) + 1)
++  }
+diff --git a/src/runtime/eval/lower.rs b/src/runtime/eval/lower.rs
+index 4f68c2e..f67f956 100644
+--- a/src/runtime/eval/lower.rs
++++ b/src/runtime/eval/lower.rs
+@@ -10739,9 +10739,6 @@ impl CompactLowerConstructProbe<'_, '_> {
+         let statements = self.program.arena.block(block).statements;
+         let ids = self.program.arena.stmt_ids(statements).collect::<Vec<_>>();
+         let (&tail, prefix) = ids.split_last()?;
+-        let ArenaStmtKind::Expr(expr) = self.program.arena.stmt(tail).kind else {
+-            return None;
+-        };
+         let initial = self.lower_expr(initial, slots, current_function, None)?;
+         let saved = slots.enter();
+         let params = self
+@@ -10796,7 +10793,12 @@ impl CompactLowerConstructProbe<'_, '_> {
+             }
+             body.push(lowered);
+         }
+-        let value = match self.lower_expr(expr, slots, current_function, Some(item_slot)) {
++        let value = match self.lower_tail_stmt_as_expr(
++            tail,
++            slots,
++            current_function,
++            Some(item_slot),
++        ) {
+             Some(value) => value,
+             None => {
+                 slots.exit(saved);
+diff --git a/src/sema/check/stream.rs b/src/sema/check/stream.rs
+index 48cd1fd..c7a450f 100644
+--- a/src/sema/check/stream.rs
++++ b/src/sema/check/stream.rs
+@@ -321,7 +321,12 @@ impl Checker {
+                     .first()
+                     .map(|arg| self.check_call_arg_arena(arena, source, &arg.kind, None))
+                     .unwrap_or(Type::Unknown);
+-                let actual = self.check_required_stream_block_arena(arena, source, stage, &item_ty);
++                // A `fold`/`reduce` block binds the accumulator (typed by the
++                // initial value) before the stream item, so it accepts up to
++                // two parameters: `|acc, item| ...`. The tail must produce the
++                // accumulator type.
++                let actual =
++                    self.check_fold_stream_block_arena(arena, source, stage, &acc_ty, &item_ty);
+                 let actual = result_ok_or_self(&actual);
+                 self.expect_type(&acc_ty, &actual, stage_span);
+                 acc_ty
+@@ -462,30 +467,74 @@ impl Checker {
+             );
+             return Type::Unknown;
+         };
+-        self.check_stream_block_arena(arena, source, block, item_ty)
++        self.check_stream_block_params_arena(
++            arena,
++            source,
++            block,
++            &[item_ty.clone()],
++            1,
++            item_ty,
++        )
+     }
+ 
+-    fn check_stream_block_arena(
++    /// `fold`/`reduce` blocks bind the accumulator (typed by the stage's
++    /// initial value) before the stream item, so the block may take up to two
++    /// parameters: `fold(init) { |acc, item| ... }`. The tail must still
++    /// produce the accumulator type.
++    fn check_fold_stream_block_arena(
++        &mut self,
++        arena: &ArenaProgram,
++        source: &str,
++        stage: &ArenaStreamStage,
++        acc_ty: &Type,
++        item_ty: &Type,
++    ) -> Type {
++        let Some(block) = stage.block else {
++            self.error(
++                arena.arena.span(stage.span),
++                "stream stage requires a block",
++                "check.stream-stage-block",
++            );
++            return Type::Unknown;
++        };
++        self.check_stream_block_params_arena(
++            arena,
++            source,
++            block,
++            &[acc_ty.clone(), item_ty.clone()],
++            2,
++            item_ty,
++        )
++    }
++
++    fn check_stream_block_params_arena(
+         &mut self,
+         arena: &ArenaProgram,
+         source: &str,
+         block_id: crate::syntax::arena::BlockId,
++        param_tys: &[Type],
++        max_params: usize,
+         item_ty: &Type,
+     ) -> Type {
+         let block = arena.arena.block(block_id);
+         let params = arena.arena.block_params(block.params);
+-        if params.len() > 1 {
++        if params.len() > max_params {
+             self.error(
+-                arena.arena.span(params[1].span),
+-                "stream stage blocks accept at most one parameter",
++                arena.arena.span(params[max_params].span),
++                if max_params == 1 {
++                    "stream stage blocks accept at most one parameter"
++                } else {
++                    "fold/reduce blocks accept at most two parameters (accumulator, item)"
++                },
+                 "check.stream-block-params",
+             );
+         }
+         self.push_scope();
+-        if let Some(param) = params.first() {
++        for (index, param) in params.iter().take(max_params).enumerate() {
++            let ty = param_tys.get(index).cloned().unwrap_or(Type::Unknown);
+             self.define(
+                 param.name,
+-                Binding::new(item_ty.clone(), false),
++                Binding::new(ty, false),
+                 arena.arena.span(param.span),
+             );
+         }
+diff --git a/tests/sema.rs b/tests/sema.rs
+index e29b99c..7928b37 100644
+--- a/tests/sema.rs
++++ b/tests/sema.rs
+@@ -624,6 +624,35 @@ let byte_count = "hé".count_bytes()
+     assert!(has_code(&bad_json, "check.type-mismatch"));
+ }
+ 
++#[test]
++fn checker_handles_fold_accumulator_plus_item_blocks() {
++    // The two-parameter accumulator form types the first param as the
++    // accumulator (initial value) and the second as the stream item; the tail
++    // must return the accumulator type.
++    let sum = check(
++        r#"
++let total = [1, 2, 3] |> fold(0) { |acc, it| acc + it }
++let counted = ["a", "b", "a"] |> fold(map.empty()) { |acc, it| acc.set(it, acc.get(it, 0) + 1) }
++"#,
++    );
++    assert_no_codes(
++        &sum,
++        &["check.stream-block-params", "check.type-mismatch", "check.arity"],
++    );
++
++    // A bare accumulator tail compiles and is no longer an IR-blocked form.
++    let bare = check("let x = [1, 2] |> fold(0) { |acc| acc }\n");
++    assert_no_codes(&bare, &["check.stream-block-params", "check.unresolved-name"]);
++
++    // A three-parameter fold block is rejected with a fold-specific diagnostic.
++    let three = check("let x = [1, 2] |> fold(0) { |acc, it, extra| acc + it }\n");
++    assert!(has_code(&three, "check.stream-block-params"));
++
++    // Non-fold stream stages still accept at most one parameter.
++    let map_two = check("let x = [1, 2] |> map { |a, b| a }\n");
++    assert!(has_code(&map_two, "check.stream-block-params"));
++}
++
+ #[test]
+ fn checker_handles_user_stream_producers() {
+     let ok = check(
+diff --git a/tests/xsh/stdlib/streams.xsh b/tests/xsh/stdlib/streams.xsh
+index c2af11d..6e82152 100644
+--- a/tests/xsh/stdlib/streams.xsh
++++ b/tests/xsh/stdlib/streams.xsh
+@@ -55,6 +55,37 @@ beta
+     6,
+   )?
+ 
++  # Accumulator-plus-item form: the block binds the accumulator (typed by the
++  # initial value) before the stream item, and the tail produces the accumulator.
++  test.eq(
++    [1, 2, 3]
++      |> fold(0) { |acc, it|
++        acc + it
++      },
++    6,
++  )?
++
++  test.eq(
++    [1, 2, 3]
++      |> reduce(10) { |acc, it|
++        acc + it
++      },
++    16,
++  )?
++
++  # A bare accumulator-ident tail no longer trips the indexed IR builder; it
++  # returns the running accumulator unchanged.
++  test.eq([1, 2, 3] |> fold(0) { |x| x }, 0)?
++
++  # Counting through fold without group-by: the accumulator is a Map and the
++  # item a Str, which the two-parameter binding types correctly.
++  let fold_counts = ["a", "b", "a", "c"]
++    |> fold(map.empty()) { |acc, it| acc.set(it, acc.get(it, 0) + 1) }
++  test.eq(fold_counts.get("a", 0), 2)?
++  test.eq(fold_counts.get("b", 0), 1)?
++  test.eq(fold_counts.get("c", 0), 1)?
++  test.eq(fold_counts.len(), 3)?
++
+   test.eq(
+     [1, 2, 3]
+       |> reduce(10) { |acc|

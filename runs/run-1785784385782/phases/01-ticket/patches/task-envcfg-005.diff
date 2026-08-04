@@ -1,0 +1,379 @@
+diff --git a/crates/xsh-registry/src/reference.rs b/crates/xsh-registry/src/reference.rs
+index 6d4805f..a372458 100644
+--- a/crates/xsh-registry/src/reference.rs
++++ b/crates/xsh-registry/src/reference.rs
+@@ -338,8 +338,8 @@ fn effect_doc(name: &str) -> ReferenceDoc {
+ 
+ fn stream_doc(stage: &str) -> ReferenceDoc {
+     let (summary, contract, tags): (&'static str, &'static str, &'static [&'static str]) = match stage {
+-        "where" => ("Filters stream items with a predicate block.", "Items remain in source order and only values whose predicate succeeds continue.", &["stream", "filter"]),
+-        "map" => ("Transforms each stream item with a block.", "Mapping preserves source order unless a later stage explicitly changes ordering.", &["stream", "transform"]),
++        "where" => ("Filters stream items with a predicate block.", "Items remain in source order and only values whose predicate succeeds continue. The predicate block may contain multiple statements, including local `let` bindings.", &["stream", "filter"]),
++        "map" => ("Transforms each stream item with a block.", "Mapping preserves source order unless a later stage explicitly changes ordering. The transform block may contain multiple statements, including local `let` bindings.", &["stream", "transform"]),
+         "par-map" => ("Transforms stream items with bounded parallel workers.", "The worker bound is explicit, output order is deterministic for the ordered form, and cancellation still runs stream cleanup.", &["stream", "parallel", "bounded", "ordered"]),
+         "each" => ("Runs a side-effecting block for each stream item.", "The original item remains available to downstream stages and block failures stop the stream explicitly.", &["stream", "effect", "transform"]),
+         "batch" => ("Groups stream items into bounded lists.", "The final short batch is retained and the configured batch size must be positive.", &["stream", "batch", "bounded"]),
+@@ -359,7 +359,7 @@ fn stream_doc(stage: &str) -> ReferenceDoc {
+         "group-by" => ("Groups stream items by a projected key.", "The terminal materializes groups and preserves each group's source order.", &["stream", "terminal", "grouping"]),
+         "fold" | "reduce" => ("Reduces stream items with an explicit accumulator block.", "Accumulator updates follow source order for the serial form; parallel variants require an associative reduction contract.", &["stream", "reduction", "accumulator"]),
+         "flat-map" => ("Replaces each item with and flattens a child stream.", "Child streams are consumed under the parent stream's cleanup scope and their order is preserved.", &["stream", "transform", "flattening"]),
+-        "any" | "all" => ("Short-circuits a predicate over stream items.", "The terminal stops as soon as the truth value is determined and runs source cleanup on early stop.", &["stream", "terminal", "short-circuit"]),
++        "any" | "all" => ("Short-circuits a predicate over stream items.", "The terminal stops as soon as the truth value is determined and runs source cleanup on early stop. The predicate block may contain multiple statements, including local `let` bindings.", &["stream", "terminal", "short-circuit"]),
+         "shuffle" => ("Randomizes the order of all stream items.", "The input is materialized before shuffling and the result is intentionally nondeterministic.", &["stream", "terminal", "random"]),
+         "table.print" => ("Renders stream records as a terminal table.", "Rendering is a terminal presentation boundary and uses terminal width policy rather than raw byte length.", &["stream", "terminal", "tui", "display"]),
+         "text.lines" => ("Adapts text into a lazy line stream.", "Line decoding is UTF-8 based and consumption remains tied to the source stream lifecycle.", &["stream", "text", "utf8", "adapter"]),
+diff --git a/src/runtime/eval.rs b/src/runtime/eval.rs
+index 4647a0f..c1f1bad 100644
+--- a/src/runtime/eval.rs
++++ b/src/runtime/eval.rs
+@@ -1721,6 +1721,11 @@ enum LoweredPipelineStage {
+         slot: usize,
+         predicate: BuildExprId,
+     },
++    WhereBlock {
++        slot: usize,
++        body: Vec<BuildStmtId>,
++        value: BuildExprId,
++    },
+     Map {
+         slot: usize,
+         value: BuildExprId,
+@@ -1825,10 +1830,20 @@ enum LoweredPipelineStage {
+         slot: usize,
+         predicate: BuildExprId,
+     },
++    AnyBlock {
++        slot: usize,
++        body: Vec<BuildStmtId>,
++        value: BuildExprId,
++    },
+     All {
+         slot: usize,
+         predicate: BuildExprId,
+     },
++    AllBlock {
++        slot: usize,
++        body: Vec<BuildStmtId>,
++        value: BuildExprId,
++    },
+     UniqueBy {
+         slot: usize,
+         key: BuildExprId,
+diff --git a/src/runtime/eval/indexed/full.rs b/src/runtime/eval/indexed/full.rs
+index dd68d52..bfeeacd 100644
+--- a/src/runtime/eval/indexed/full.rs
++++ b/src/runtime/eval/indexed/full.rs
+@@ -250,6 +250,7 @@ pub(in crate::runtime::eval) enum FullStageTag {
+     TextLines,
+     JsonLines,
+     Where,
++    WhereBlock,
+     Map,
+     MapBlock,
+     FlatMap,
+@@ -274,7 +275,9 @@ pub(in crate::runtime::eval) enum FullStageTag {
+     GroupBy,
+     CountBy,
+     Any,
++    AnyBlock,
+     All,
++    AllBlock,
+     UniqueBy,
+     Count,
+     Sum,
+@@ -6022,6 +6025,11 @@ impl_stage_codec! {
+         slot: usize,
+         predicate: BuildExprId,
+     } => LoweredPipelineStage::Where { slot, predicate },
++    LoweredPipelineStage::WhereBlock { slot, body, value } => WhereBlock {
++        slot: usize,
++        body: Vec<BuildStmtId>,
++        value: BuildExprId,
++    } => LoweredPipelineStage::WhereBlock { slot, body, value },
+     LoweredPipelineStage::Map { slot, value } => Map {
+         slot: usize,
+         value: BuildExprId,
+@@ -6194,10 +6202,20 @@ impl_stage_codec! {
+         slot: usize,
+         predicate: BuildExprId,
+     } => LoweredPipelineStage::Any { slot, predicate },
++    LoweredPipelineStage::AnyBlock { slot, body, value } => AnyBlock {
++        slot: usize,
++        body: Vec<BuildStmtId>,
++        value: BuildExprId,
++    } => LoweredPipelineStage::AnyBlock { slot, body, value },
+     LoweredPipelineStage::All { slot, predicate } => All {
+         slot: usize,
+         predicate: BuildExprId,
+     } => LoweredPipelineStage::All { slot, predicate },
++    LoweredPipelineStage::AllBlock { slot, body, value } => AllBlock {
++        slot: usize,
++        body: Vec<BuildStmtId>,
++        value: BuildExprId,
++    } => LoweredPipelineStage::AllBlock { slot, body, value },
+     LoweredPipelineStage::UniqueBy { slot, key } => UniqueBy {
+         slot: usize,
+         key: BuildExprId,
+diff --git a/src/runtime/eval/lower.rs b/src/runtime/eval/lower.rs
+index 17ad32e..3bc3380 100644
+--- a/src/runtime/eval/lower.rs
++++ b/src/runtime/eval/lower.rs
+@@ -10279,9 +10279,14 @@ impl CompactLowerConstructProbe<'_, '_> {
+                 {
+                     return Some(LoweredPipelineStage::Where { slot, predicate });
+                 }
+-                let (slot, predicate) =
+-                    self.lower_pipeline_stage_expr(stage, slots, current_function, item_ty)?;
+-                Some(LoweredPipelineStage::Where { slot, predicate })
++                if let Some((slot, predicate)) =
++                    self.lower_pipeline_stage_expr(stage, slots, current_function, item_ty)
++                {
++                    return Some(LoweredPipelineStage::Where { slot, predicate });
++                }
++                let (slot, body, value) =
++                    self.lower_pipeline_stage_block(stage, slots, current_function, item_ty)?;
++                Some(LoweredPipelineStage::WhereBlock { slot, body, value })
+             }
+             StreamStageKind::Map => {
+                 if !stage.options.is_empty() {
+@@ -10340,9 +10345,14 @@ impl CompactLowerConstructProbe<'_, '_> {
+                 {
+                     return Some(LoweredPipelineStage::Any { slot, predicate });
+                 }
+-                let (slot, predicate) =
+-                    self.lower_pipeline_stage_expr(stage, slots, current_function, item_ty)?;
+-                Some(LoweredPipelineStage::Any { slot, predicate })
++                if let Some((slot, predicate)) =
++                    self.lower_pipeline_stage_expr(stage, slots, current_function, item_ty)
++                {
++                    return Some(LoweredPipelineStage::Any { slot, predicate });
++                }
++                let (slot, body, value) =
++                    self.lower_pipeline_stage_block(stage, slots, current_function, item_ty)?;
++                Some(LoweredPipelineStage::AnyBlock { slot, body, value })
+             }
+             StreamStageKind::All => {
+                 if !stage.options.is_empty() {
+@@ -10353,9 +10363,14 @@ impl CompactLowerConstructProbe<'_, '_> {
+                 {
+                     return Some(LoweredPipelineStage::All { slot, predicate });
+                 }
+-                let (slot, predicate) =
+-                    self.lower_pipeline_stage_expr(stage, slots, current_function, item_ty)?;
+-                Some(LoweredPipelineStage::All { slot, predicate })
++                if let Some((slot, predicate)) =
++                    self.lower_pipeline_stage_expr(stage, slots, current_function, item_ty)
++                {
++                    return Some(LoweredPipelineStage::All { slot, predicate });
++                }
++                let (slot, body, value) =
++                    self.lower_pipeline_stage_block(stage, slots, current_function, item_ty)?;
++                Some(LoweredPipelineStage::AllBlock { slot, body, value })
+             }
+             StreamStageKind::Take | StreamStageKind::Drop => {
+                 if !stage.options.is_empty() {
+diff --git a/src/runtime/eval/lowered_run/indexed_run.rs b/src/runtime/eval/lowered_run/indexed_run.rs
+index 67637e9..afdc893 100644
+--- a/src/runtime/eval/lowered_run/indexed_run.rs
++++ b/src/runtime/eval/lowered_run/indexed_run.rs
+@@ -1801,7 +1801,7 @@ impl Evaluator {
+         match tag {
+             FullStageTag::TextLines => "text.lines",
+             FullStageTag::JsonLines => "json.lines",
+-            FullStageTag::Where => "where",
++            FullStageTag::Where | FullStageTag::WhereBlock => "where",
+             FullStageTag::Map | FullStageTag::MapBlock => "map",
+             FullStageTag::FlatMap | FullStageTag::FlatMapBlock => "flat-map",
+             FullStageTag::BytesChunks => "bytes.chunks",
+@@ -1822,8 +1822,8 @@ impl Evaluator {
+             FullStageTag::SortBy => "sort-by",
+             FullStageTag::GroupBy => "group-by",
+             FullStageTag::CountBy | FullStageTag::Count => "count",
+-            FullStageTag::Any => "any",
+-            FullStageTag::All => "all",
++            FullStageTag::Any | FullStageTag::AnyBlock => "any",
++            FullStageTag::All | FullStageTag::AllBlock => "all",
+             FullStageTag::UniqueBy => "unique-by",
+             FullStageTag::Sum => "sum",
+             FullStageTag::Collect => "collect",
+@@ -3043,6 +3043,59 @@ impl Evaluator {
+                             }
+                             LoweredValue::List(filtered)
+                         }
++                        FullStageTag::WhereBlock => {
++                            let slot =
++                                indexed_decode::<usize>(&mut stage_payload, execution, span)?;
++                            let body = indexed_raw(&mut stage_payload, span)?;
++                            let value = indexed_raw(&mut stage_payload, span)?;
++                            indexed_finish(stage_payload, span)?;
++                            let items = self.lowered_pipeline_input_items(current, span)?;
++                            let block_header = Self::indexed_block_header(slots.len());
++                            let mut filtered = Vec::new();
++                            for item in items {
++                                slots[slot] = item;
++                                match self.eval_indexed_statement_block(
++                                    execution,
++                                    body,
++                                    &block_header,
++                                    slots,
++                                    call_span,
++                                )? {
++                                    StmtFlow::None => {}
++                                    StmtFlow::Return(value) | StmtFlow::Propagate(value) => {
++                                        return Ok(ControlFlow::Break(value));
++                                    }
++                                    StmtFlow::Break(_) => {
++                                        return Err(RuntimeError::new(
++                                            "break-outside-loop",
++                                            "break used outside loop",
++                                        )
++                                        .with_span(span));
++                                    }
++                                    StmtFlow::Continue => {
++                                        return Err(RuntimeError::new(
++                                            "continue-outside-loop",
++                                            "continue used outside loop",
++                                        )
++                                        .with_span(span));
++                                    }
++                                }
++                                let keep = match self
++                                    .eval_indexed_bool(execution, value, slots, span)?
++                                {
++                                    ControlFlow::Continue(value) => value,
++                                    ControlFlow::Break(value) => {
++                                        return Ok(ControlFlow::Break(value));
++                                    }
++                                };
++                                let item =
++                                    std::mem::replace(&mut slots[slot], LoweredValue::Unit);
++                                if keep {
++                                    filtered.push(item);
++                                }
++                            }
++                            LoweredValue::List(filtered)
++                        }
+                         FullStageTag::Any | FullStageTag::All => {
+                             let slot =
+                                 indexed_decode::<usize>(&mut stage_payload, execution, span)?;
+@@ -3069,6 +3122,60 @@ impl Evaluator {
+                             }
+                             LoweredValue::Bool(matched)
+                         }
++                        FullStageTag::AnyBlock | FullStageTag::AllBlock => {
++                            let slot =
++                                indexed_decode::<usize>(&mut stage_payload, execution, span)?;
++                            let body = indexed_raw(&mut stage_payload, span)?;
++                            let value = indexed_raw(&mut stage_payload, span)?;
++                            indexed_finish(stage_payload, span)?;
++                            let items = self.lowered_pipeline_input_items(current, span)?;
++                            let all = tag == FullStageTag::AllBlock;
++                            let block_header = Self::indexed_block_header(slots.len());
++                            let mut matched = all;
++                            for item in items {
++                                slots[slot] = item;
++                                match self.eval_indexed_statement_block(
++                                    execution,
++                                    body,
++                                    &block_header,
++                                    slots,
++                                    call_span,
++                                )? {
++                                    StmtFlow::None => {}
++                                    StmtFlow::Return(value) | StmtFlow::Propagate(value) => {
++                                        return Ok(ControlFlow::Break(value));
++                                    }
++                                    StmtFlow::Break(_) => {
++                                        return Err(RuntimeError::new(
++                                            "break-outside-loop",
++                                            "break used outside loop",
++                                        )
++                                        .with_span(span));
++                                    }
++                                    StmtFlow::Continue => {
++                                        return Err(RuntimeError::new(
++                                            "continue-outside-loop",
++                                            "continue used outside loop",
++                                        )
++                                        .with_span(span));
++                                    }
++                                }
++                                let keep = match self
++                                    .eval_indexed_bool(execution, value, slots, span)?
++                                {
++                                    ControlFlow::Continue(value) => value,
++                                    ControlFlow::Break(value) => {
++                                        return Ok(ControlFlow::Break(value));
++                                    }
++                                };
++                                slots[slot] = LoweredValue::Unit;
++                                if keep != all {
++                                    matched = !all;
++                                    break;
++                                }
++                            }
++                            LoweredValue::Bool(matched)
++                        }
+                         FullStageTag::Map => {
+                             let slot =
+                                 indexed_decode::<usize>(&mut stage_payload, execution, span)?;
+diff --git a/tests/xsh/stdlib/streams.xsh b/tests/xsh/stdlib/streams.xsh
+index 83df138..c3b251c 100644
+--- a/tests/xsh/stdlib/streams.xsh
++++ b/tests/xsh/stdlib/streams.xsh
+@@ -125,6 +125,55 @@ beta
+   [{name: "small", size: 1}, {name: "large", size: 4}] |> table.print(columns: ["name", "size"])
+ }
+ 
++proc test_predicate_stage_blocks_bind_local_lets() [error] {
++  # A multi-statement predicate block with a local let binding must compile
++  # and behave identically to the single-expression form for where/any/all.
++  let nums = [1, 2, 3, 4, 5, 6]
++
++  let filtered_block = nums
++    |> where { |n|
++      let rem = n % 2
++      rem == 0
++    }
++  let filtered_expr = nums
++    |> where { |n|
++      n % 2 == 0
++    }
++  test.eq(filtered_block, filtered_expr)?
++  test.eq(filtered_block, [2, 4, 6])?
++
++  let any_block = nums
++    |> any { |n|
++      let twice = n * 2
++      twice > 8
++    }
++  let any_expr = nums
++    |> any { |n|
++      n * 2 > 8
++    }
++  test.eq(any_block, any_expr)?
++  test.ok(any_block)?
++
++  let all_block = nums
++    |> all { |n|
++      let rem = n % 2
++      rem == 0
++    }
++  let all_expr = nums
++    |> all { |n|
++      n % 2 == 0
++    }
++  test.eq(all_block, all_expr)?
++  test.ok(! all_block)?
++  test.ok(
++    [2, 4, 6]
++      |> all { |n|
++        let rem = n % 2
++        rem == 0
++      },
++  )?
++}
++
+ proc test_implicit_standard_read_helpers_and_pipe_shorthand(ctx: TestContext) [fs, error] {
+   let file = test.temp_file(ctx, name: "pipe-shorthand-input", contents: b"ok\nwarn one\nwarn two\n")?
+   let file_text = fs.read_text(file)?

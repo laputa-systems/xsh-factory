@@ -1,0 +1,119 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/private/tmp/xsh-factory-ab2-baseline/runs/run-1785864457727/workers/eval-worker/task-envcfg-1/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_state": "pass",
+    "agent_wall_ms": 484022,
+    "artifact": {
+      "name": "envcfg.xsh",
+      "state": "present"
+    },
+    "budget_state": "pass",
+    "classification": "pass",
+    "evaluator_manifest": "/private/tmp/xsh-factory-ab2-baseline/runs/run-1785864457727/workers/eval-worker/task-envcfg-1/run.json",
+    "evaluator_state": "pass",
+    "reporting_state": "pass",
+    "result": "pass",
+    "review": {
+      "state": "present"
+    }
+  },
+  "findings": [
+    {
+      "count": 4,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "role": "eval-worker",
+    "worker_id": "task-envcfg-1"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/private/tmp/xsh-factory-ab2-baseline/runs/run-1785864457727/workers/eval-worker/task-envcfg-1/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 31,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 482406
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/private/tmp/xsh-factory-ab2-baseline/runs/run-1785864457727/workers/eval-worker/task-envcfg-1/session.jsonl.bz2",
+      "summary": "env.int sh: %-6q -> exit=%s  out=%s\\n: invalid format\nenv.int sh: %-6q -> exit=%s  out=%s\\n: invalid format\nenv.int sh: %-6q -> exit=%s  out=%s\\n: invalid format\nenv.int sh: %-6q -> exit=%s  out=%s\\n: invalid format\nenv.int sh: %-6q -> exit=%s  out=%s\\n: invalid format\nenv.int sh: %-6q -> exit=%s  out=%s\\n: invalid format\nenv.int sh: %-6q -> exit=%s  out=%s\\n: invalid format\nenv.int sh: %-6q -> exit=%s  out=%s\\n: invalid format\nenv.int sh: %-6q -> exit=%s  out=%s\\n: invalid format\n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 13
+    },
+    {
+      "raw_session": "/private/tmp/xsh-factory-ab2-baseline/runs/run-1785864457727/workers/eval-worker/task-envcfg-1/session.jsonl.bz2",
+      "summary": "err[parse.expected-expression]: expected expression\n  /tmp/t.xsh:8:6\n    if not ok {\n       ^^^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  /tmp/t.xsh:14:1\n  }\n  ^ expected expression\ncheck=2\nerr[parse.expected-expression]: expected expression\n  /tmp/t.xsh:8:6\n    if not ok {\n       ^^^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  /tmp/t.xsh:14:1\n  }\n  ^ expected expression\nerr[parse.expected-expression]: expected expression\n  /tmp/t.xsh:8:6\n    if not ok {\n       ^^^ expected expression\nerr[parse.expected-expression]: expected expression\n  /tmp/t.xsh:14:1\n  }\n  ^ expected expression\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 17
+    },
+    {
+      "raw_session": "/private/tmp/xsh-factory-ab2-baseline/runs/run-1785864457727/workers/eval-worker/task-envcfg-1/session.jsonl.bz2",
+      "summary": "--- defaults ---\nexit=0\nhost=localhost\nport=8080\ndebug=false\n--- set ---\nexit=0\nhost=node-a\nport=9001\ndebug=true\n--- empty host ---\nexit=0\nhost=\nport=8080\ndebug=false\n--- invalid port abc ---\nruntime traceback\nexecutable: /usr/local/bin/xsh\noperation: result.propagate\nerror: parse-int: expected integer\ncall path:\n  1. proc main at envcfg.xsh:1:1-1:1\nexit=3\nls: /tmp/out4.cfg: No such file or directory\n--- empty port ---\nruntime traceback\nexecutable: /usr/local/bin/xsh\noperation: result.propagate\nerror: parse-int: expected integer\ncall path:\n  1. proc main at envcfg.xsh:1:1-1:1\nexit=3\nls: /tmp/out5.cfg: No such file or directory\n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 24
+    },
+    {
+      "raw_session": "/private/tmp/xsh-factory-ab2-baseline/runs/run-1785864457727/workers/eval-worker/task-envcfg-1/session.jsonl.bz2",
+      "summary": "exit=0\nhost=node-a$\nport=9001$\ndebug=true$\n--- default ---\nexit=0\nhost=localhost$\nport=8080$\ndebug=false$\n--- invalid still rejected ---\nexit=3\nls: /tmp/o3.cfg: No such file or directory\n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 29
+    }
+  ],
+  "tools": [
+    {
+      "count": 29,
+      "name": "bash"
+    },
+    {
+      "count": 3,
+      "name": "read"
+    },
+    {
+      "count": 1,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 32,
+    "budget_usd": 0.5,
+    "cache_read_cost_usd": 0.009247104,
+    "cache_read_tokens": 513728,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.02169194399999999,
+    "input_cost_usd": 0.00928926,
+    "input_tokens": 103214,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.00315558,
+    "output_tokens": 17531,
+    "provider_total_tokens": 634473,
+    "reasoning_tokens": 11829,
+    "thinking_blocks": 30,
+    "tool_calls": 33,
+    "tool_errors": 4,
+    "tool_results": 33,
+    "total_bucket_tokens": 634473,
+    "user_messages": 1
+  }
+}

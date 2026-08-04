@@ -1,0 +1,304 @@
+{
+  "artifacts": [
+    {
+      "kind": "session-directory",
+      "path": "workers/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 92,
+      "budget_failures": 0,
+      "cost_usd": 0.0604120592,
+      "tool_errors": 5,
+      "total_bucket_tokens": 2557698.0,
+      "unknown_costs": 0,
+      "workers": 3
+    },
+    "designer": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785716048226/phases/03-eval/workers/eval-designer/proposal-1/REPORT.md",
+      "present": false,
+      "result": "not-requested",
+      "role": "eval-designer",
+      "valid": true
+    },
+    "director": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785716048226/phases/03-eval/workers/director/director/REPORT.md",
+      "present": true,
+      "result": "fail",
+      "role": "director",
+      "valid": true
+    },
+    "engineer": [],
+    "handbook_lineage": {
+      "approved": "lineage/handbook-approved.md",
+      "candidate": "missing"
+    },
+    "manager": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785716048226/phases/03-eval/workers/eval-manager/task-envcfg/REPORT.md",
+      "present": false,
+      "result": "missing",
+      "role": "eval-manager",
+      "valid": false
+    },
+    "mode": "eval",
+    "narratives": [
+      {
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785716048226/phases/03-eval/workers/director/director/REPORT.md",
+        "present": true,
+        "result": "fail",
+        "role": "director",
+        "valid": true
+      }
+    ],
+    "open_tickets": [
+      {
+        "eval_id": "task-ecount",
+        "id": "task-ecount-001",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-ecount-001.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-ecount",
+        "id": "task-ecount-002",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-ecount-002.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-ecount",
+        "id": "task-ecount-003",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-ecount-003.md",
+        "status": "Approved."
+      },
+      {
+        "eval_id": "task-ecount",
+        "id": "task-ecount-004",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-ecount-004.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-ecount",
+        "id": "task-ecount-005",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-ecount-005.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-envcfg",
+        "id": "task-envcfg-001",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-envcfg-001.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-tags",
+        "id": "task-tags-003",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-tags-003.md",
+        "status": "Open."
+      }
+    ],
+    "sessions": [
+      "workers/director/director/session.jsonl.bz2",
+      "workers/eval-manager/task-envcfg/session.jsonl.bz2",
+      "workers/eval-worker/task-envcfg-1/session.jsonl.bz2"
+    ],
+    "tool_errors": [
+      {
+        "report": "workers/eval-manager/task-envcfg/report.json",
+        "summary": "      96 session.jsonl.bz2\n0\n0\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 6,
+        "worker": {
+          "role": "eval-manager",
+          "worker_id": "task-envcfg"
+        }
+      },
+      {
+        "report": "workers/eval-worker/task-envcfg-1/report.json",
+        "summary": "(no output)\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 9,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-envcfg-1"
+        }
+      },
+      {
+        "report": "workers/eval-worker/task-envcfg-1/report.json",
+        "summary": "port= 5\nsh: syntax error: bad substitution\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 15,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-envcfg-1"
+        }
+      },
+      {
+        "report": "workers/eval-worker/task-envcfg-1/report.json",
+        "summary": "FAIL(exit): defaults oracle=127 xsh=0 xfile=yes\nFAIL(exit): valid values oracle=127 xsh=0 xfile=yes\nFAIL(exit): host+debug only oracle=127 xsh=0 xfile=yes\nFAIL(exit): port only oracle=127 xsh=0 xfile=yes\nFAIL(exit): debug only oracle=127 xsh=0 xfile=yes\nPASS(exit, no file): port empty\n--- xsh stderr ---\nruntime traceback\nexecutable: /usr/local/bin/xsh\noperation: result.propagate\nerror: env-int: environment value is not an integer\ncall path:\n  1. proc main at envcfg.xsh:1:1-1:1\nPASS(exit, no file): port abc\n--- xsh stderr ---\nruntime traceback\nexecutable: /usr/local/bin/xsh\noperation: result.propagate\nerror: env-int: environment value is not an integer\ncall path:\n  1. proc main at envcfg.xsh:1:1-1:1\nPASS(exit, no file): port 12x\n--- xsh stderr ---\nruntime traceback\nexecutable: /usr/local/bin/xsh\noperation: result.propagate\nerror: env-int: environment value is not an integer\ncall path:\n  1. proc main at envcfg.xsh:1:1-1:1\nPASS(exit, no file): all empty\n--- xsh stderr ---\nruntime traceback\nexecutable: /usr/local/bin/xsh\noperation: result.propagate\nerror: env-int: environment value is not an integer\ncall path:\n  1. proc main at envcfg.xsh:1:1-1:1\nFAIL(exit): host empty valid port oracle=127 xsh=0 xfile=yes\nFAIL(exit): debug empty valid port oracle=127 xsh=0 xfile=yes\nFAIL(exit): port leading zero oracle=127 xsh=0 xfile=yes\nFAIL(exit): port zero oracle=127 xsh=0 xfile=yes\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 34,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-envcfg-1"
+        }
+      },
+      {
+        "report": "workers/eval-worker/task-envcfg-1/report.json",
+        "summary": "PASS: defaults\nPASS: valid values\nPASS: host+debug only\nPASS: port only\nPASS: debug only\nPASS(exit, no file): port empty\n--- stderr ---\nruntime traceback\nexecutable: /usr/local/bin/xsh\noperation: result.propagate\nerror: env-int: environment value is not an integer\ncall path:\n  1. proc main at envcfg.xsh:1:1-1:1\nPASS(exit, no file): port abc\n--- stderr ---\nruntime traceback\nexecutable: /usr/local/bin/xsh\noperation: result.propagate\nerror: env-int: environment value is not an integer\ncall path:\n  1. proc main at envcfg.xsh:1:1-1:1\nPASS(exit, no file): port 12x\n--- stderr ---\nruntime traceback\nexecutable: /usr/local/bin/xsh\noperation: result.propagate\nerror: env-int: environment value is not an integer\ncall path:\n  1. proc main at envcfg.xsh:1:1-1:1\nPASS(exit, no file): all empty\n--- stderr ---\nruntime traceback\nexecutable: /usr/local/bin/xsh\noperation: result.propagate\nerror: env-int: environment value is not an integer\ncall path:\n  1. proc main at envcfg.xsh:1:1-1:1\nPASS: host empty valid port\nPASS: debug empty valid port\nPASS: port leading zero\nPASS: port zero\nFAIL(exit): port +5 oracle=1 xsh=0 xfile=yes\nFAIL(exit): port -5 oracle=1 xsh=0 xfile=yes\nFAIL(exit): port space oracle=1 xsh=0 xfile=yes\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 35,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-envcfg-1"
+        }
+      }
+    ],
+    "trials": [
+      {
+        "evidence": {
+          "candidate_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "classification": "pass",
+          "correctness": "pass",
+          "eval_id": "task-envcfg",
+          "handbook_sha256": "c7c9dd9abb6d50dac60562757a1824900f24d4bc2d38014d5cbf869f56bb0723",
+          "oracle_sha256": "594a1118ea571bcfe5b2a8b7239b28924bd32ced928ba9ea5377a2c1b0bd71f6",
+          "passed": true,
+          "protocol": "pass",
+          "restrictions": "pass",
+          "result": "pass",
+          "timing": "pass",
+          "trial_id": "1",
+          "valid": true
+        },
+        "path": "workers/eval-worker/task-envcfg-1/run.json"
+      }
+    ],
+    "workers": [
+      {
+        "identity": {
+          "role": "director",
+          "worker_id": "director"
+        },
+        "path": "workers/director/director/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 21,
+          "budget_usd": 0.06,
+          "cache_read_cost_usd": 0.0012945408,
+          "cache_read_tokens": 462336,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.0092856008,
+          "input_cost_usd": 0.0042063,
+          "input_tokens": 30045,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00378476,
+          "output_tokens": 13517,
+          "provider_total_tokens": 505898,
+          "reasoning_tokens": 7565,
+          "thinking_blocks": 21,
+          "tool_calls": 38,
+          "tool_errors": 0,
+          "tool_results": 38,
+          "total_bucket_tokens": 505898,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-envcfg"
+        },
+        "path": "workers/eval-manager/task-envcfg/report.json",
+        "result": "pass",
+        "tool_errors": 1,
+        "usage": {
+          "assistant_turns": 25,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.0026686464,
+          "cache_read_tokens": 953088,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.0195056064,
+          "input_cost_usd": 0.004857159999999999,
+          "input_tokens": 34694,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.011979799999999995,
+          "output_tokens": 42785,
+          "provider_total_tokens": 1030567,
+          "reasoning_tokens": 36691,
+          "thinking_blocks": 23,
+          "tool_calls": 38,
+          "tool_errors": 1,
+          "tool_results": 38,
+          "total_bucket_tokens": 1030567,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-envcfg-1"
+        },
+        "path": "workers/eval-worker/task-envcfg-1/report.json",
+        "result": "pass",
+        "tool_errors": 4,
+        "usage": {
+          "assistant_turns": 46,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.015558912,
+          "cache_read_tokens": 864384,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.031620852,
+          "input_cost_usd": 0.012170880000000004,
+          "input_tokens": 135232,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.003891059999999999,
+          "output_tokens": 21617,
+          "provider_total_tokens": 1021233,
+          "reasoning_tokens": 14838,
+          "thinking_blocks": 36,
+          "tool_calls": 46,
+          "tool_errors": 4,
+          "tool_results": 46,
+          "total_bucket_tokens": 1021233,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "de9880ce9cd13c4ef63acc212554d786358ed869"
+  },
+  "findings": [
+    {
+      "kind": "manager-report",
+      "state": {
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785716048226/phases/03-eval/workers/eval-manager/task-envcfg/REPORT.md",
+        "present": false,
+        "result": "missing",
+        "role": "eval-manager",
+        "valid": false
+      }
+    },
+    {
+      "kind": "handbook-lineage",
+      "state": "missing"
+    }
+  ],
+  "identity": {
+    "eval_id": "task-envcfg",
+    "mode": "eval",
+    "run_id": "03-eval"
+  },
+  "kind": "phase",
+  "result": "fail",
+  "schema_version": 1,
+  "state": "completed"
+}

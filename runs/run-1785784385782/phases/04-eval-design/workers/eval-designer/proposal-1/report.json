@@ -1,0 +1,109 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785784385782/phases/04-eval-design/workers/eval-designer/proposal-1/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_process": "pass",
+    "reporting": "pass",
+    "required_report": "present",
+    "session_limit_watcher": "pass",
+    "watcher": "pass"
+  },
+  "findings": [
+    {
+      "count": 2,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "role": "eval-designer",
+    "worker_id": "proposal-1"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785784385782/phases/04-eval-design/workers/eval-designer/proposal-1/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 34,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 534881
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785784385782/phases/04-eval-design/workers/eval-designer/proposal-1/session.jsonl.bz2",
+      "summary": "=== parse_int n=2 ===\nerr[check.unresolved-call]: unresolved pure function call\n  t2.xsh:2:11\n    let n = parse_int(argv[1])?\n            ^^^^^^^^^^^^^^^^^^ unresolved pure function call\n=== parse_int n=99 ===\nerr[check.unresolved-call]: unresolved pure function call\n  t2.xsh:2:11\n    let n = parse_int(argv[1])?\n            ^^^^^^^^^^^^^^^^^^ unresolved pure function call\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 18
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785784385782/phases/04-eval-design/workers/eval-designer/proposal-1/session.jsonl.bz2",
+      "summary": "=== default ===\n50 /tmp/probe_tree/sub/big.bin\n20 /tmp/probe_tree/sub/b.log\n5 /tmp/probe_tree/a.txt\n3 /tmp/probe_tree/empty/zzz.txt\n=== n=2 ===\n50 /tmp/probe_tree/sub/big.bin\n20 /tmp/probe_tree/sub/b.log\n=== n=0 ===\nexit=0\n=== bad n ===\nruntime traceback\nexecutable: /Users/josh/usr/bin/xsh\noperation: result.propagate\nerror: parse-int: invalid integer `abc`\ncall path:\n  1. proc main at big.xsh:1:1-1:1\nexit=3\n=== oracle n=2 ===\n50 /tmp/probe_tree/sub/big.bin\n20 /tmp/probe_tree/sub/b.log\n=== check/fmt/lint ===\nwarn[lint.path-constructor]: prefer p-string interpolation over `Path(...)`\n  big.xsh:2:14\n    let root = Path(argv[0])\n               ------------- use path string syntax instead\nnote: `Path(...)` remains a cast, but p-strings are the preferred path syntax\nhelp: replace with path string -> fp\"${argv[0]}\"\nwarn[lint.redundant-command-interpolation]: command args can use expression syntax directly\n  big.xsh:12:19\n      print $e.size $e.path.display()\n                    ----------------- this interpolation is unnecessary\nhelp: use the expression directly -> e.path.display()\nwarn[lint.redundant-path-display]: redundant `.display()` on a Path value\n  big.xsh:12:19\n      print $e.size $e.path.display()\n                    ----------------- Path values display automatically in command arguments\nhelp: remove `.display()` -> $e.path\n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 20
+    }
+  ],
+  "tools": [
+    {
+      "count": 19,
+      "name": "bash"
+    },
+    {
+      "count": 2,
+      "name": "edit"
+    },
+    {
+      "count": 1,
+      "name": "find"
+    },
+    {
+      "count": 6,
+      "name": "ls"
+    },
+    {
+      "count": 24,
+      "name": "read"
+    },
+    {
+      "count": 5,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 35,
+    "budget_usd": 0.3,
+    "cache_read_cost_usd": 0.018895104,
+    "cache_read_tokens": 1049728,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.032379264,
+    "input_cost_usd": 0.007676820000000001,
+    "input_tokens": 85298,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.0058073399999999985,
+    "output_tokens": 32263,
+    "provider_total_tokens": 1167289,
+    "reasoning_tokens": 19798,
+    "thinking_blocks": 28,
+    "tool_calls": 57,
+    "tool_errors": 2,
+    "tool_results": 57,
+    "total_bucket_tokens": 1167289,
+    "user_messages": 1
+  }
+}

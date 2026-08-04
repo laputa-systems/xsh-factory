@@ -85,7 +85,7 @@ boundary is always `report.json`:
 ```text
 runs/run-<id>/report.json                         run or phase report
 runs/run-<id>/phases/<phase>/report.json          child phase report
-runs/run-<id>/workers/<role>/<worker>/session.jsonl raw Pi session
+runs/run-<id>/workers/<role>/<worker>/session.jsonl.bz2 compressed raw Pi session
 runs/run-<id>/workers/<role>/<worker>/report.json  normalized worker metrics
 runs/run-<id>/workers/<role>/<worker>/REPORT.md   employee judgment
 runs/run-<id>/events.jsonl                        canonical lifecycle and process-output ledger

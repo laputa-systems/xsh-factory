@@ -1,0 +1,127 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785784385782/phases/01-ticket/workers/engineer/task-envcfg-005/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_process": "pass",
+    "reporting": "pass",
+    "required_report": "present",
+    "session_limit_watcher": "pass",
+    "watcher": "pass"
+  },
+  "findings": [
+    {
+      "count": 5,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "role": "engineer",
+    "worker_id": "task-envcfg-005"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785784385782/phases/01-ticket/workers/engineer/task-envcfg-005/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 130,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 884100
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785784385782/phases/01-ticket/workers/engineer/task-envcfg-005/session.jsonl.bz2",
+      "summary": "51b035a streams: support compound sortable keys\nea7dea2 fix test\n168d746 expand module argv regression coverage\nOn branch factory/task-envcfg-005/1785784386279\nnothing to commit, working tree clean\n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 9
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785784385782/phases/01-ticket/workers/engineer/task-envcfg-005/session.jsonl.bz2",
+      "summary": "err[compact.indexed-build]: indexed IR could not encode `full_ir_function_blocker`\n  /tmp/dig3.xsh:1:13\n  proc main() {\n              ^ indexed IR could not encode `full_ir_function_blocker`\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 11
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785784385782/phases/01-ticket/workers/engineer/task-envcfg-005/session.jsonl.bz2",
+      "summary": "(no output)\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 40
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785784385782/phases/01-ticket/workers/engineer/task-envcfg-005/session.jsonl.bz2",
+      "summary": "(no output)\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 41
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785784385782/phases/01-ticket/workers/engineer/task-envcfg-005/session.jsonl.bz2",
+      "summary": "(no output)\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 89
+    }
+  ],
+  "tools": [
+    {
+      "count": 87,
+      "name": "bash"
+    },
+    {
+      "count": 13,
+      "name": "edit"
+    },
+    {
+      "count": 1,
+      "name": "grep"
+    },
+    {
+      "count": 1,
+      "name": "ls"
+    },
+    {
+      "count": 32,
+      "name": "read"
+    },
+    {
+      "count": 1,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 131,
+    "budget_usd": 0.25,
+    "cache_read_cost_usd": 0.13747967999999997,
+    "cache_read_tokens": 7637760,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.17484462000000003,
+    "input_cost_usd": 0.030025619999999996,
+    "input_tokens": 333618,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.007339319999999995,
+    "output_tokens": 40774,
+    "provider_total_tokens": 8012152,
+    "reasoning_tokens": 17546,
+    "thinking_blocks": 88,
+    "tool_calls": 135,
+    "tool_errors": 5,
+    "tool_results": 135,
+    "total_bucket_tokens": 8012152,
+    "user_messages": 1
+  }
+}

@@ -1,0 +1,117 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785809029885/phases/03-eval/workers/eval-worker/task-envcfg-1/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_state": "pass",
+    "agent_wall_ms": 236034,
+    "artifact": {
+      "name": "envcfg.xsh",
+      "state": "present"
+    },
+    "budget_state": "pass",
+    "classification": "pass",
+    "evaluator_manifest": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785809029885/phases/03-eval/workers/eval-worker/task-envcfg-1/run.json",
+    "evaluator_state": "pass",
+    "reporting_state": "pass",
+    "result": "pass",
+    "review": {
+      "state": "present"
+    }
+  },
+  "findings": [
+    {
+      "count": 3,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "role": "eval-worker",
+    "worker_id": "task-envcfg-1"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785809029885/phases/03-eval/workers/eval-worker/task-envcfg-1/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 34,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 234759
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785809029885/phases/03-eval/workers/eval-worker/task-envcfg-1/session.jsonl.bz2",
+      "summary": "query: method:Result\nstatus: exact\n\napi: method.Result.context\nkind: method\npurpose: Adds a domain-specific error context before propagation.\n---\nxsht api: invalid API query 'api:method.Str.parse_int'; expected NAME.MEMBER\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 5
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785809029885/phases/03-eval/workers/eval-worker/task-envcfg-1/session.jsonl.bz2",
+      "summary": "xsht api: invalid API query 'language.core.results'; expected KIND:VALUE\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 8
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785809029885/phases/03-eval/workers/eval-worker/task-envcfg-1/session.jsonl.bz2",
+      "summary": "CHECK-OK\nwarn[lint.path-constructor]: prefer p-string interpolation over `Path(...)`\n  envcfg.xsh:17:12\n    fs.write(Path(out), f\"host=${host}\\nport=${port}\\ndebug=${debug}\\n\")?\n             --------- use path string syntax instead\nnote: `Path(...)` remains a cast, but p-strings are the preferred path syntax\nhelp: replace with path string -> fp\"${out}\"\n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 26
+    }
+  ],
+  "tools": [
+    {
+      "count": 30,
+      "name": "bash"
+    },
+    {
+      "count": 2,
+      "name": "edit"
+    },
+    {
+      "count": 3,
+      "name": "read"
+    },
+    {
+      "count": 2,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 35,
+    "budget_usd": 0.5,
+    "cache_read_cost_usd": 0.010465919999999998,
+    "cache_read_tokens": 581440,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.016123500000000002,
+    "input_cost_usd": 0.0023859,
+    "input_tokens": 26510,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.0032716800000000003,
+    "output_tokens": 18176,
+    "provider_total_tokens": 626126,
+    "reasoning_tokens": 13215,
+    "thinking_blocks": 27,
+    "tool_calls": 37,
+    "tool_errors": 3,
+    "tool_results": 37,
+    "total_bucket_tokens": 626126,
+    "user_messages": 1
+  }
+}

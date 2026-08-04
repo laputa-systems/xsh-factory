@@ -1,0 +1,91 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785777983535/phases/02-reeval/workers/eval-manager/task-ecount/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_process": "pass",
+    "reporting": "pass",
+    "required_report": "present",
+    "session_limit_watcher": "pass",
+    "watcher": "pass"
+  },
+  "findings": [
+    {
+      "count": 1,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "role": "eval-manager",
+    "worker_id": "task-ecount"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785777983535/phases/02-reeval/workers/eval-manager/task-ecount/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 27,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 338601
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785777983535/phases/02-reeval/workers/eval-manager/task-ecount/session.jsonl.bz2",
+      "summary": "=== main HEAD ===\nd7d35fb wip\n33a73b3 wip\n36b320c wip\n=== is ea7dea2 ancestor of c2e1039? ===\nfatal: Not a valid commit name ea7dea2f2b436cce34262d7a02105cbb029243dd\nno\n=== log of c2e1039 from ea7dea2 ===\nfatal: Invalid revision range ea7dea2f2b436cce34262d7a02105cbb029243dd..c2e1039d8856c04ad8466504d445dc93a341f720\n\n\nCommand exited with code 128",
+      "tool": "bash",
+      "turn": 5
+    }
+  ],
+  "tools": [
+    {
+      "count": 30,
+      "name": "bash"
+    },
+    {
+      "count": 12,
+      "name": "read"
+    },
+    {
+      "count": 1,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 28,
+    "budget_usd": 0.15,
+    "cache_read_cost_usd": 0.013037184,
+    "cache_read_tokens": 724288,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.024675084,
+    "input_cost_usd": 0.00811962,
+    "input_tokens": 90218,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.003518280000000001,
+    "output_tokens": 19546,
+    "provider_total_tokens": 834052,
+    "reasoning_tokens": 10521,
+    "thinking_blocks": 25,
+    "tool_calls": 43,
+    "tool_errors": 1,
+    "tool_results": 43,
+    "total_bucket_tokens": 834052,
+    "user_messages": 1
+  }
+}

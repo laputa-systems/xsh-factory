@@ -1,0 +1,107 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785787490432/phases/01-eval/workers/eval-worker/task-envcfg-1/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_state": "pass",
+    "agent_wall_ms": 394870,
+    "artifact": {
+      "name": "envcfg.xsh",
+      "state": "present"
+    },
+    "budget_state": "pass",
+    "classification": "pass",
+    "evaluator_manifest": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785787490432/phases/01-eval/workers/eval-worker/task-envcfg-1/run.json",
+    "evaluator_state": "pass",
+    "reporting_state": "pass",
+    "result": "pass",
+    "review": {
+      "state": "present"
+    }
+  },
+  "findings": [
+    {
+      "count": 2,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "role": "eval-worker",
+    "worker_id": "task-envcfg-1"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785787490432/phases/01-eval/workers/eval-worker/task-envcfg-1/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 61,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 393211
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785787490432/phases/01-eval/workers/eval-worker/task-envcfg-1/session.jsonl.bz2",
+      "summary": "query: api:env.get\nstatus: exact\n\napi: module.env.get\nkind: module-function\npurpose: Reads one environment variable as text.\ncontract: Missing variables and invalid host bytes remain distinguishable results.\neffects: env\nsignature: env.get(name: Str) -> Result[Str, Error]\ntags: env, get, lookup, utf8\n===\nerr[check.arity]: incorrect standard API arity\n  t5.xsh:2:11\n    let g = env.get(\"CFG_PORT\", \"?\")\n            ^^^^^^^^^^^^^^^^^^^^^^^^ incorrect standard API arity\n\nerr[check.display-conversion]: value cannot be displayed in fmt string\n  t5.xsh:3:17\n    print f\"GET=${g}\"\n                  ^ value cannot be displayed in fmt string\nerr[check.arity]: incorrect standard API arity\n  t5.xsh:2:11\n    let g = env.get(\"CFG_PORT\", \"?\")\n            ^^^^^^^^^^^^^^^^^^^^^^^^ incorrect standard API arity\n\nerr[check.display-conversion]: value cannot be displayed in fmt string\n  t5.xsh:3:17\n    print f\"GET=${g}\"\n                  ^ value cannot be displayed in fmt string\nerr[check.arity]: incorrect standard API arity\n  t5.xsh:2:11\n    let g = env.get(\"CFG_PORT\", \"?\")\n            ^^^^^^^^^^^^^^^^^^^^^^^^ incorrect standard API arity\n\nerr[check.display-conversion]: value cannot be displayed in fmt string\n  t5.xsh:3:17\n    print f\"GET=${g}\"\n                  ^ value cannot be displayed in fmt string\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 21
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785787490432/phases/01-eval/workers/eval-worker/task-envcfg-1/session.jsonl.bz2",
+      "summary": "err[parse.expected-terminator]: expected statement terminator\n  t10.xsh:2:31\n    let bad = a.byte_len() == 0 || a.delete(\"0123456789\").byte_len() != 0\n                                ^ expected statement terminator\n\nerr[parse.expected-expression]: expected expression\n  t10.xsh:2:31\n    let bad = a.byte_len() == 0 || a.delete(\"0123456789\").byte_len() != 0\n                                ^ expected expression\ncheck rc=2\nerr[parse.expected-terminator]: expected statement terminator\n  t10.xsh:2:31\n    let bad = a.byte_len() == 0 || a.delete(\"0123456789\").byte_len() != 0\n                                ^ expected statement terminator\n\nerr[parse.expected-expression]: expected expression\n  t10.xsh:2:31\n    let bad = a.byte_len() == 0 || a.delete(\"0123456789\").byte_len() != 0\n                                ^ expected expression\nerr[parse.expected-terminator]: expected statement terminator\n  t10.xsh:2:31\n    let bad = a.byte_len() == 0 || a.delete(\"0123456789\").byte_len() != 0\n                                ^ expected statement terminator\n\nerr[parse.expected-expression]: expected expression\n  t10.xsh:2:31\n    let bad = a.byte_len() == 0 || a.delete(\"0123456789\").byte_len() != 0\n                                ^ expected expression\nerr[parse.expected-terminator]: expected statement terminator\n  t10.xsh:2:31\n    let bad = a.byte_len() == 0 || a.delete(\"0123456789\").byte_len() != 0\n                                ^ expected statement terminator\n\nerr[parse.expected-expression]: expected expression\n  t10.xsh:2:31\n    let bad = a.byte_len() == 0 || a.delete(\"0123456789\").byte_len() != 0\n                                ^ expected expression\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 44
+    }
+  ],
+  "tools": [
+    {
+      "count": 50,
+      "name": "bash"
+    },
+    {
+      "count": 4,
+      "name": "read"
+    },
+    {
+      "count": 9,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 62,
+    "budget_usd": 0.5,
+    "cache_read_cost_usd": 0.023848704,
+    "cache_read_tokens": 1324928,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.034312013999999995,
+    "input_cost_usd": 0.006253110000000001,
+    "input_tokens": 69479,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.0042102,
+    "output_tokens": 23390,
+    "provider_total_tokens": 1417797,
+    "reasoning_tokens": 14984,
+    "thinking_blocks": 44,
+    "tool_calls": 63,
+    "tool_errors": 2,
+    "tool_results": 63,
+    "total_bucket_tokens": 1417797,
+    "user_messages": 1
+  }
+}

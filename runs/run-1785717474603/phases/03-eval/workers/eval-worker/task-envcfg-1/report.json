@@ -1,0 +1,129 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785717474603/phases/03-eval/workers/eval-worker/task-envcfg-1/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_state": "pass",
+    "agent_wall_ms": 539600,
+    "artifact": {
+      "name": "envcfg.xsh",
+      "state": "present"
+    },
+    "budget_state": "pass",
+    "classification": "pass",
+    "evaluator_manifest": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785717474603/phases/03-eval/workers/eval-worker/task-envcfg-1/run.json",
+    "evaluator_state": "pass",
+    "reporting_state": "pass",
+    "result": "pass",
+    "review": {
+      "state": "present"
+    }
+  },
+  "findings": [
+    {
+      "count": 5,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "role": "eval-worker",
+    "worker_id": "task-envcfg-1"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785717474603/phases/03-eval/workers/eval-worker/task-envcfg-1/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 96,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 537840
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785717474603/phases/03-eval/workers/eval-worker/task-envcfg-1/session.jsonl.bz2",
+      "summary": "(no output)\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 8
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785717474603/phases/03-eval/workers/eval-worker/task-envcfg-1/session.jsonl.bz2",
+      "summary": "(no output)\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 9
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785717474603/phases/03-eval/workers/eval-worker/task-envcfg-1/session.jsonl.bz2",
+      "summary": "err[parse.expected-terminator]: expected statement terminator\n  /tmp/tp.xsh:2:12\n    let p = p$argv[0]\n             ^^^^^ expected statement terminator\n\nerr[parse.expected-expression]: `$name` is command-word syntax; in expression context, use `name` directly\n  /tmp/tp.xsh:2:12\n    let p = p$argv[0]\n             ^^^^^ use `argv` here, not `$argv`\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 24
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785717474603/phases/03-eval/workers/eval-worker/task-envcfg-1/session.jsonl.bz2",
+      "summary": "err[check.unresolved-call]: unresolved pure function call\n  /tmp/tp.xsh:2:11\n    let p = p(argv.get(0, \"/tmp/out3.cfg\"))\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ unresolved pure function call\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 25
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785717474603/phases/03-eval/workers/eval-worker/task-envcfg-1/session.jsonl.bz2",
+      "summary": "\nsh: python3: not found\n\n\nCommand exited with code 127",
+      "tool": "bash",
+      "turn": 62
+    }
+  ],
+  "tools": [
+    {
+      "count": 94,
+      "name": "bash"
+    },
+    {
+      "count": 1,
+      "name": "edit"
+    },
+    {
+      "count": 3,
+      "name": "read"
+    },
+    {
+      "count": 8,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 97,
+    "budget_usd": 0.5,
+    "cache_read_cost_usd": 0.05032051199999999,
+    "cache_read_tokens": 2795584,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.08116342200000001,
+    "input_cost_usd": 0.02458323,
+    "input_tokens": 273147,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.006259680000000001,
+    "output_tokens": 34776,
+    "provider_total_tokens": 3103507,
+    "reasoning_tokens": 22142,
+    "thinking_blocks": 74,
+    "tool_calls": 106,
+    "tool_errors": 5,
+    "tool_results": 106,
+    "total_bucket_tokens": 3103507,
+    "user_messages": 1
+  }
+}

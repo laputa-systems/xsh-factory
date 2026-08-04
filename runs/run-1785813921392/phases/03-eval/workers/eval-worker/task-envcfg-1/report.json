@@ -1,0 +1,107 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785813921392/phases/03-eval/workers/eval-worker/task-envcfg-1/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_state": "pass",
+    "agent_wall_ms": 185363,
+    "artifact": {
+      "name": "envcfg.xsh",
+      "state": "present"
+    },
+    "budget_state": "pass",
+    "classification": "pass",
+    "evaluator_manifest": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785813921392/phases/03-eval/workers/eval-worker/task-envcfg-1/run.json",
+    "evaluator_state": "pass",
+    "reporting_state": "pass",
+    "result": "pass",
+    "review": {
+      "state": "present"
+    }
+  },
+  "findings": [
+    {
+      "count": 2,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "role": "eval-worker",
+    "worker_id": "task-envcfg-1"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785813921392/phases/03-eval/workers/eval-worker/task-envcfg-1/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 20,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 183976
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785813921392/phases/03-eval/workers/eval-worker/task-envcfg-1/session.jsonl.bz2",
+      "summary": "xsht api: invalid API query 'language.core.results'; expected KIND:VALUE\n===\nxsht api: invalid API query 'language.core.fallback'; expected KIND:VALUE\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 7
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785813921392/phases/03-eval/workers/eval-worker/task-envcfg-1/session.jsonl.bz2",
+      "summary": "OK\nruntime traceback\nexecutable: /usr/local/bin/xsh\noperation: result.propagate\nerror: parse-int: invalid integer `!`\ncall path:\n  1. proc main at envcfg.xsh:1:1-1:1\nminus5 exit:3 (expect nonzero)\nls: /tmp/o.cfg: No such file or directory\nruntime traceback\nexecutable: /usr/local/bin/xsh\noperation: result.propagate\nerror: parse-int: invalid integer `!`\ncall path:\n  1. proc main at envcfg.xsh:1:1-1:1\nhex exit:3 (expect nonzero)\nls: /tmp/o.cfg: No such file or directory\n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 19
+    }
+  ],
+  "tools": [
+    {
+      "count": 17,
+      "name": "bash"
+    },
+    {
+      "count": 3,
+      "name": "read"
+    },
+    {
+      "count": 2,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 21,
+    "budget_usd": 0.5,
+    "cache_read_cost_usd": 0.004276224,
+    "cache_read_tokens": 237568,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.008017794,
+    "input_cost_usd": 0.00219429,
+    "input_tokens": 24381,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.0015472799999999998,
+    "output_tokens": 8596,
+    "provider_total_tokens": 270545,
+    "reasoning_tokens": 5951,
+    "thinking_blocks": 18,
+    "tool_calls": 22,
+    "tool_errors": 2,
+    "tool_results": 22,
+    "total_bucket_tokens": 270545,
+    "user_messages": 1
+  }
+}

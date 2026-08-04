@@ -1,3 +1,4 @@
+use factory_runtime as runtime
 ##! Stop a Pi process when its turn or wall-clock ceiling is reached.
 
 pure json_text(value: Any) -> Str {
@@ -10,10 +11,11 @@ pure json_text(value: Any) -> Str {
   }
 }
 
-proc assistant_turns(session_path: Path) [fs, error] -> Result[Int] {
+proc assistant_turns(session_path: Path) [fs, process, error] -> Result[Int] {
   var turns = 0
   if ! fs.exists(session_path)? { return Ok(turns) }
-  for line in session_path.read_text()?.lines() {
+  let session_text = runtime.session_text(session_path)?
+  for line in session_text.lines() {
     match json.decode(line) {
       Ok(entry) => {
         if json_text(json.get(entry, ["type"], "")) != "message" { continue }

@@ -1,0 +1,23 @@
+{
+  "classification": "worker_missing_artifact",
+  "correctness": {
+    "all_exact": false,
+    "cases": [],
+    "passed": false
+  },
+  "eval_id": "task-manifest",
+  "image_id": "unknown",
+  "platform": "unknown",
+  "protocol": {
+    "artifact_present": false,
+    "review_ok": true
+  },
+  "restrictions": {
+    "passed": false
+  },
+  "result": "fail",
+  "timings": {
+    "passed": true
+  },
+  "trial_id": "1"
+}

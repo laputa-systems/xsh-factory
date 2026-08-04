@@ -1,0 +1,261 @@
+{
+  "artifacts": [
+    {
+      "kind": "session-directory",
+      "path": "workers/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 56,
+      "budget_failures": 0,
+      "cost_usd": 0.03296421000000001,
+      "tool_errors": 5,
+      "total_bucket_tokens": 1132278.0,
+      "unknown_costs": 0,
+      "workers": 2
+    },
+    "designer": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785809029885/phases/03-eval/workers/eval-designer/proposal-1/REPORT.md",
+      "present": false,
+      "result": "not-requested",
+      "role": "eval-designer",
+      "valid": true
+    },
+    "director": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785809029885/phases/03-eval/workers/director/director/REPORT.md",
+      "present": false,
+      "result": "not-requested",
+      "role": "director",
+      "valid": true
+    },
+    "engineer": [],
+    "handbook_lineage": {
+      "approved": "lineage/handbook-approved.md",
+      "candidate": "lineage/handbook-candidate.md"
+    },
+    "manager": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785809029885/phases/03-eval/workers/eval-manager/task-envcfg/REPORT.md",
+      "present": true,
+      "result": "pass",
+      "role": "eval-manager",
+      "valid": true
+    },
+    "mode": "eval",
+    "narratives": [
+      {
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785809029885/phases/03-eval/workers/eval-manager/task-envcfg/REPORT.md",
+        "present": true,
+        "result": "pass",
+        "role": "eval-manager",
+        "valid": true
+      }
+    ],
+    "open_tickets": [
+      {
+        "eval_id": "task-ecount",
+        "id": "task-ecount-008",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-ecount-008.md",
+        "status": "Approved."
+      },
+      {
+        "eval_id": "task-ecount",
+        "id": "task-ecount-009",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-ecount-009.md",
+        "status": "Approved."
+      },
+      {
+        "eval_id": "task-envcfg",
+        "id": "task-envcfg-002",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-envcfg-002.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-envcfg",
+        "id": "task-envcfg-006",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-envcfg-006.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-tags",
+        "id": "task-tags-003",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-tags-003.md",
+        "status": "Open."
+      }
+    ],
+    "required_outputs": {
+      "audit": true,
+      "candidate_handbook": true,
+      "designer_handbook_read": true,
+      "designer_output": true,
+      "handbook_lineage": true,
+      "manager_evidence_read": true,
+      "manager_handbook_read": true,
+      "manager_report": true,
+      "manager_session": true,
+      "required": true,
+      "trial1_process": true,
+      "trial1_report": true,
+      "trial2_process": true,
+      "trial2_report": true,
+      "worker_handbook_read": true
+    },
+    "sessions": [
+      "workers/eval-manager/task-envcfg/session.jsonl.bz2",
+      "workers/eval-worker/task-envcfg-1/session.jsonl.bz2"
+    ],
+    "tool_errors": [
+      {
+        "report": "workers/eval-manager/task-envcfg/report.json",
+        "summary": "total 912\ndrwxr-xr-x  54 josh  staff    1728 Aug  3 19:30 .\ndrwxr-xr-x   3 josh  staff      96 Aug  3 19:26 ..\n-rw-r--r--@  1 josh  staff      64 Aug  3 19:26 agent.cid\n-rw-r--r--@  1 josh  staff       0 Aug  3 19:30 candidate.1.stderr\n-rw-r--r--@  1 josh  staff       0 Aug  3 19:30 candidate.1.stdout\n-rw-r--r--@  1 josh  staff     166 Aug  3 19:30 candidate.10.stderr\n-rw-r--r--@  1 josh  staff       0 Aug  3 19:30 candidate.10.stdout\n-rw-r--r--@  1 josh  staff       0 Aug  3 19:30 candidate.2.stderr\n-rw-r--r--@  1 josh  staff       0 Aug  3 19:30 candidate.2.stdout\n-rw-r--r--@  1 josh  staff       0 Aug  3 19:30 candidate.3.stderr\n-rw-r--r--@  1 josh  staff       0 Aug  3 19:30 candidate.3.stdout\n-rw-r--r--@  1 josh  staff       0 Aug  3 19:30 candidate.4.stderr\n-rw-r--r--@  1 josh  staff       0 Aug  3 19:30 candidate.4.stdout\n-rw-r--r--@  1 josh  staff       0 Aug  3 19:30 candidate.5.stderr\n-rw-r--r--@  1 josh  staff       0 Aug  3 19:30 candidate.5.stdout\n-rw-r--r--@  1 josh  staff       0 Aug  3 19:30 candidate.6.stderr\n-rw-r--r--@  1 josh  staff       0 Aug  3 19:30 candidate.6.stdout\n-rw-r--r--@  1 josh  staff       0 Aug  3 19:30 candidate.7.stderr\n-rw-r--r--@  1 josh  staff       0 Aug  3 19:30 candidate.7.stdout\n-rw-r--r--@  1 josh  staff       0 Aug  3 19:30 candidate.8.stderr\n-rw-r--r--@  1 josh  staff       0 Aug  3 19:30 candidate.8.stdout\n-rw-r--r--@  1 josh  staff     171 Aug  3 19:30 candidate.9.stderr\n-rw-r--r--@  1 josh  staff       0 Aug  3 19:30 candidate.9.stdout\n-rw-r--r--   1 josh  staff       0 Aug  3 19:26 container.stderr\n-rw-r--r--   1 josh  staff  143628 Aug  3 19:30 container.stdout\n-rw-r--r--@  1 josh  staff     580 Aug  3 19:30 envcfg.xsh\n-rw-r--r--@  1 josh  staff      64 Aug  3 19:30 evaluator.cid\n-rw-r--r--   1 josh  staff       0 Aug  3 19:30 evaluator.stderr\n-rw-r--r--   1 josh  staff      30 Aug  3 19:30 evaluator.stdout\n-rw-r--r--@  1 josh  staff       0 Aug  3 19:30 oracle.1.stderr\n-rw-r--r--@  1 josh  staff      33 Aug  3 19:30 oracle.1.stdout\n-rw-r--r--@  1 josh  staff       0 Aug  3 19:30 oracle.10.stderr\n-rw-r--r--@  1 josh  staff       0 Aug  3 19:30 oracle.10.stdout\n-rw-r--r--@  1 josh  staff       0 Aug  3 19:30 oracle.2.stderr\n-rw-r--r--@  1 josh  staff      37 Aug  3 19:30 oracle.2.stdout\n-rw-r--r--@  1 josh  staff       0 Aug  3 19:30 oracle.3.stderr\n-rw-r--r--@  1 josh  staff      31 Aug  3 19:30 oracle.3.stdout\n-rw-r--r--@  1 josh  staff       0 Aug  3 19:30 oracle.4.stderr\n-rw-r--r--@  1 josh  staff      28 Aug  3 19:30 oracle.4.stdout\n-rw-r--r--@  1 josh  staff       0 Aug  3 19:30 oracle.5.stderr\n-rw-r--r--@  1 josh  staff      36 Aug  3 19:30 oracle.5.stdout\n-rw-r--r--@  1 josh  staff       0 Aug  3 19:30 oracle.6.stderr\n-rw-r--r--@  1 josh  staff      34 Aug  3 19:30 oracle.6.stdout\n-rw-r--r--@  1 josh  staff       0 Aug  3 19:30 oracle.7.stderr\n-rw-r--r--@  1 josh  staff      41 Aug  3 19:30 oracle.7.stdout\n-rw-r--r--@  1 josh  staff       0 Aug  3 19:30 oracle.8.stderr\n-rw-r--r--@  1 josh  staff      37 Aug  3 19:30 oracle.8.stdout\n-rw-r--r--@  1 josh  staff       0 Aug  3 19:30 oracle.9.stderr\n-rw-r--r--@  1 josh  staff       0 Aug  3 19:30 oracle.9.stdout\n-rw-r--r--   1 josh  staff    3683 Aug  3 19:30 report.json\n-rw-r--r--@  1 josh  staff    1511 Aug  3 19:30 review.md\n-rw-r--r--@  1 josh  staff    2478 Aug  3 19:30 run.json\n-rw-r--r--@  1 josh  staff  144248 Aug  3 19:30 session.jsonl.bz2\ndrwxr-xr-x   7 josh  staff     224 Aug  3 19:29 work\n---ARTIFACTS---\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 3,
+        "worker": {
+          "role": "eval-manager",
+          "worker_id": "task-envcfg"
+        }
+      },
+      {
+        "report": "workers/eval-manager/task-envcfg/report.json",
+        "summary": "Could not find the exact text in /Users/josh/d/laputa-systems/xsh-factory/runs/run-1785809029885/phases/03-eval/lineage/handbook-candidate.md. The old text must match exactly including all whitespace and newlines.",
+        "tool": "edit",
+        "turn": 13,
+        "worker": {
+          "role": "eval-manager",
+          "worker_id": "task-envcfg"
+        }
+      },
+      {
+        "report": "workers/eval-worker/task-envcfg-1/report.json",
+        "summary": "query: method:Result\nstatus: exact\n\napi: method.Result.context\nkind: method\npurpose: Adds a domain-specific error context before propagation.\n---\nxsht api: invalid API query 'api:method.Str.parse_int'; expected NAME.MEMBER\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 5,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-envcfg-1"
+        }
+      },
+      {
+        "report": "workers/eval-worker/task-envcfg-1/report.json",
+        "summary": "xsht api: invalid API query 'language.core.results'; expected KIND:VALUE\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 8,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-envcfg-1"
+        }
+      },
+      {
+        "report": "workers/eval-worker/task-envcfg-1/report.json",
+        "summary": "CHECK-OK\nwarn[lint.path-constructor]: prefer p-string interpolation over `Path(...)`\n  envcfg.xsh:17:12\n    fs.write(Path(out), f\"host=${host}\\nport=${port}\\ndebug=${debug}\\n\")?\n             --------- use path string syntax instead\nnote: `Path(...)` remains a cast, but p-strings are the preferred path syntax\nhelp: replace with path string -> fp\"${out}\"\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 26,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-envcfg-1"
+        }
+      }
+    ],
+    "trials": [
+      {
+        "evidence": {
+          "candidate_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "classification": "pass",
+          "correctness": "pass",
+          "eval_id": "task-envcfg",
+          "handbook_sha256": "97c5d804c42c7742c9edfea4480163828d864279391d391df77aa60ee4a40e83",
+          "oracle_sha256": "594a1118ea571bcfe5b2a8b7239b28924bd32ced928ba9ea5377a2c1b0bd71f6",
+          "passed": true,
+          "protocol": "pass",
+          "restrictions": "pass",
+          "result": "pass",
+          "timing": "pass",
+          "trial_id": "1",
+          "valid": true
+        },
+        "path": "workers/eval-worker/task-envcfg-1/run.json"
+      }
+    ],
+    "workers": [
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-envcfg"
+        },
+        "path": "workers/eval-manager/task-envcfg/report.json",
+        "result": "pass",
+        "tool_errors": 2,
+        "usage": {
+          "assistant_turns": 21,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.00744768,
+          "cache_read_tokens": 413760,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.016840710000000005,
+          "input_cost_usd": 0.007237529999999998,
+          "input_tokens": 80417,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0021555000000000003,
+          "output_tokens": 11975,
+          "provider_total_tokens": 506152,
+          "reasoning_tokens": 6421,
+          "thinking_blocks": 12,
+          "tool_calls": 28,
+          "tool_errors": 2,
+          "tool_results": 28,
+          "total_bucket_tokens": 506152,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-envcfg-1"
+        },
+        "path": "workers/eval-worker/task-envcfg-1/report.json",
+        "result": "pass",
+        "tool_errors": 3,
+        "usage": {
+          "assistant_turns": 35,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.010465919999999998,
+          "cache_read_tokens": 581440,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.016123500000000002,
+          "input_cost_usd": 0.0023859,
+          "input_tokens": 26510,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0032716800000000003,
+          "output_tokens": 18176,
+          "provider_total_tokens": 626126,
+          "reasoning_tokens": 13215,
+          "thinking_blocks": 27,
+          "tool_calls": 37,
+          "tool_errors": 3,
+          "tool_results": 37,
+          "total_bucket_tokens": 626126,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "e8f64a244af1727f64b4ee368441d04ca820d774"
+  },
+  "findings": [],
+  "identity": {
+    "eval_id": "task-envcfg",
+    "mode": "eval",
+    "run_id": "03-eval"
+  },
+  "kind": "phase",
+  "result": "pass",
+  "schema_version": 1,
+  "state": "completed"
+}

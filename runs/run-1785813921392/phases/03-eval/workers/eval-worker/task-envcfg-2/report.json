@@ -1,0 +1,129 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785813921392/phases/03-eval/workers/eval-worker/task-envcfg-2/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_state": "pass",
+    "agent_wall_ms": 213815,
+    "artifact": {
+      "name": "envcfg.xsh",
+      "state": "present"
+    },
+    "budget_state": "pass",
+    "classification": "pass",
+    "evaluator_manifest": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785813921392/phases/03-eval/workers/eval-worker/task-envcfg-2/run.json",
+    "evaluator_state": "pass",
+    "reporting_state": "pass",
+    "result": "pass",
+    "review": {
+      "state": "present"
+    }
+  },
+  "findings": [
+    {
+      "count": 5,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "role": "eval-worker",
+    "worker_id": "task-envcfg-2"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785813921392/phases/03-eval/workers/eval-worker/task-envcfg-2/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 37,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 212460
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785813921392/phases/03-eval/workers/eval-worker/task-envcfg-2/session.jsonl.bz2",
+      "summary": "(no output)\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 5
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785813921392/phases/03-eval/workers/eval-worker/task-envcfg-2/session.jsonl.bz2",
+      "summary": "err[check.argv-conversion]: interpolation cannot convert to one command word\n  /tmp/t2.xsh:3:17\n    print \"first\" $argv[0]\n                  ^^^^^ interpolation cannot convert to one command word\nexit=2\n--- file ---\ncat: can't open '/tmp/out2.cfg': No such file or directory\nls: /tmp/out2.cfg: No such file or directory\n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 15
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785813921392/phases/03-eval/workers/eval-worker/task-envcfg-2/session.jsonl.bz2",
+      "summary": "err[parse.unsupported-boolean-operator]: unsupported operator '||': XSH boolean operators are the word forms 'or'\n  envcfg.xsh:8:27\n    if port.byte_len() == 0 || non_digits.byte_len() > 0 {\n                            ^^ use 'or' instead of '||'\n\nerr[parse.expected-token]: expected `{` to start block\n  envcfg.xsh:8:27\n    if port.byte_len() == 0 || non_digits.byte_len() > 0 {\n                            ^ expected `{` to start block\n\nerr[parse.expected-expression]: expected expression\n  envcfg.xsh:16:1\n  }\n  ^ expected expression\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 18
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785813921392/phases/03-eval/workers/eval-worker/task-envcfg-2/session.jsonl.bz2",
+      "summary": "err[parse.unsupported-boolean-operator]: unsupported operator '||': XSH boolean operators are the word forms 'or'\n  envcfg.xsh:8:27\n    if port.byte_len() == 0 || non_digits.byte_len() > 0 {\n                            ^^ use 'or' instead of '||'\n\nerr[parse.unsupported-boolean-operator]: unsupported operator '||': XSH boolean operators are the word forms 'or'\n  envcfg.xsh:8:27\n    if port.byte_len() == 0 || non_digits.byte_len() > 0 {\n                            ^^ use 'or' instead of '||'\n\nerr[parse.expected-token]: expected `{` to start block\n  envcfg.xsh:8:27\n    if port.byte_len() == 0 || non_digits.byte_len() > 0 {\n                            ^ expected `{` to start block\n\nerr[parse.expected-expression]: expected expression\n  envcfg.xsh:16:1\n  }\n  ^ expected expression\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 18
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785813921392/phases/03-eval/workers/eval-worker/task-envcfg-2/session.jsonl.bz2",
+      "summary": "xsht api: invalid API query 'api:module.applet.exit_code'; expected NAME.MEMBER\n===\nxsht api: invalid API query 'api:module.applet.exited_with'; expected NAME.MEMBER\n===\nxsht api: invalid API query 'api:module.applet.exited'; expected NAME.MEMBER\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 28
+    }
+  ],
+  "tools": [
+    {
+      "count": 36,
+      "name": "bash"
+    },
+    {
+      "count": 3,
+      "name": "edit"
+    },
+    {
+      "count": 2,
+      "name": "read"
+    },
+    {
+      "count": 2,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 38,
+    "budget_usd": 0.5,
+    "cache_read_cost_usd": 0.009486720000000002,
+    "cache_read_tokens": 527040,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.018464490000000007,
+    "input_cost_usd": 0.006580710000000002,
+    "input_tokens": 73119,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.00239706,
+    "output_tokens": 13317,
+    "provider_total_tokens": 613476,
+    "reasoning_tokens": 7540,
+    "thinking_blocks": 26,
+    "tool_calls": 43,
+    "tool_errors": 5,
+    "tool_results": 43,
+    "total_bucket_tokens": 613476,
+    "user_messages": 1
+  }
+}

@@ -1,0 +1,123 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785714396834/phases/03-eval/workers/eval-worker/task-envcfg-1/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_state": "pass",
+    "agent_wall_ms": 471720,
+    "artifact": {
+      "name": "envcfg.xsh",
+      "state": "present"
+    },
+    "budget_state": "pass",
+    "classification": "pass",
+    "evaluator_manifest": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785714396834/phases/03-eval/workers/eval-worker/task-envcfg-1/run.json",
+    "evaluator_state": "pass",
+    "reporting_state": "pass",
+    "result": "pass",
+    "review": {
+      "state": "present"
+    }
+  },
+  "findings": [
+    {
+      "count": 4,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "role": "eval-worker",
+    "worker_id": "task-envcfg-1"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785714396834/phases/03-eval/workers/eval-worker/task-envcfg-1/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 90,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 470048
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785714396834/phases/03-eval/workers/eval-worker/task-envcfg-1/session.jsonl.bz2",
+      "summary": "query: api:fs.write\nstatus: exact\n\napi: module.fs.write\nkind: module-function\npurpose: Writes text or bytes to a path.\ncontract: The input type selects the boundary explicitly and the write replaces the destination according to host filesystem policy.\neffects: fs\nsignature: fs.write(path: Path, data: Bytes) -> Result[Unit, Error]\nsignature: fs.write(path: Path, data: Str) -> Result[Unit, Error]\ntags: fs, write, filesystem\nexample:\n  fs.write(p\"output.txt\", \"done\\n\")?\n===\nquery: api:fs.write_atomic\nstatus: exact\n\napi: module.fs.write_atomic\nkind: module-function\npurpose: Replaces a file through an atomic write path.\ncontract: Use when readers must not observe a partially written replacement.\neffects: fs\nsignature: fs.write_atomic(path: Path, data: Bytes) -> Result[Unit, Error]\nsignature: fs.write_atomic(path: Path, data: Str) -> Result[Unit, Error]\ntags: fs, write_atomic, filesystem, atomic, write\n===\nxsht api: invalid API query 'api:fs.path.write'; expected NAME.MEMBER\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 18
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785714396834/phases/03-eval/workers/eval-worker/task-envcfg-1/session.jsonl.bz2",
+      "summary": "==run==\nexit=0\ncat: can't open '/tmp/px1.out': No such file or directory\n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 44
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785714396834/phases/03-eval/workers/eval-worker/task-envcfg-1/session.jsonl.bz2",
+      "summary": "sh: python3: not found\n\n\nCommand exited with code 127",
+      "tool": "bash",
+      "turn": 59
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785714396834/phases/03-eval/workers/eval-worker/task-envcfg-1/session.jsonl.bz2",
+      "summary": "err[parse.expected-expression]: expected expression\n  /tmp/concat.xsh:4:13\n    print (a ++ \"\\n\" ++ b)\n              ^ expected expression\n\nerr[parse.expected-terminator]: expected statement terminator\n  /tmp/concat.xsh:4:13\n    print (a ++ \"\\n\" ++ b)\n              ^ expected statement terminator\n==\nerr[parse.expected-expression]: expected expression\n  /tmp/concat.xsh:4:13\n    print (a ++ \"\\n\" ++ b)\n              ^ expected expression\n\nerr[parse.expected-terminator]: expected statement terminator\n  /tmp/concat.xsh:4:13\n    print (a ++ \"\\n\" ++ b)\n              ^ expected statement terminator\n\nerr[parse.expected-expression]: expected expression\n  /tmp/concat.xsh:4:13\n    print (a ++ \"\\n\" ++ b)\n              ^ expected expression\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 71
+    }
+  ],
+  "tools": [
+    {
+      "count": 84,
+      "name": "bash"
+    },
+    {
+      "count": 2,
+      "name": "edit"
+    },
+    {
+      "count": 2,
+      "name": "read"
+    },
+    {
+      "count": 3,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 91,
+    "budget_usd": 0.5,
+    "cache_read_cost_usd": 0.03880051199999999,
+    "cache_read_tokens": 2155584,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.06285544199999998,
+    "input_cost_usd": 0.01830969,
+    "input_tokens": 203441,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.005745240000000003,
+    "output_tokens": 31918,
+    "provider_total_tokens": 2390943,
+    "reasoning_tokens": 22522,
+    "thinking_blocks": 73,
+    "tool_calls": 91,
+    "tool_errors": 4,
+    "tool_results": 91,
+    "total_bucket_tokens": 2390943,
+    "user_messages": 1
+  }
+}

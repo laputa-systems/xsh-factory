@@ -1,0 +1,105 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785800291944/phases/01-eval/workers/eval-worker/task-envcfg-1/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_state": "pass",
+    "agent_wall_ms": 185554,
+    "artifact": {
+      "name": "envcfg.xsh",
+      "state": "present"
+    },
+    "budget_state": "pass",
+    "classification": "pass",
+    "evaluator_manifest": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785800291944/phases/01-eval/workers/eval-worker/task-envcfg-1/run.json",
+    "evaluator_state": "pass",
+    "reporting_state": "pass",
+    "result": "pass",
+    "review": {
+      "state": "present"
+    }
+  },
+  "findings": [
+    {
+      "count": 1,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "role": "eval-worker",
+    "worker_id": "task-envcfg-1"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785800291944/phases/01-eval/workers/eval-worker/task-envcfg-1/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 22,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 183792
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785800291944/phases/01-eval/workers/eval-worker/task-envcfg-1/session.jsonl.bz2",
+      "summary": "export HOME='/root'\nexport HOSTNAME='3437bc0ade6a'\nexport OLDPWD='/work'\nexport PATH='/run/pi-agent/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'\nexport PI_CODING_AGENT='true'\nexport PI_CODING_AGENT_DIR='/run/pi-agent'\nexport PI_COMMAND='pi'\nexport PI_MODEL='deepseek/deepseek-v4-flash-0731'\nexport PI_PACKAGE_DIR='/tmp/pi-embedded-6b429a2fc3e59dca'\nexport PI_PROVIDER='openrouter'\nexport PI_REASONING_LEVEL='high'\nexport PI_SESSION_FILE='/session/session.jsonl'\nexport PI_SESSION_ID='019fca00-f963-72b6-87fe-69a166dcdd20'\nexport PI_STANDALONE_BINARY='1'\nexport PI_THINKING='high'\nexport PI_TOOLS='read,write,edit,bash'\nexport PWD='/work'\nexport SHLVL='1'\nFAIL[defaults] content differs\n--- /dev/fd/64\n+++ /dev/fd/65\n@@ -1,3 +1,21 @@\n+export HOME='/root'\n+export HOSTNAME='3437bc0ade6a'\n+export OLDPWD='/work'\n+export PATH='/run/pi-agent/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'\n+export PI_CODING_AGENT='true'\n+export PI_CODING_AGENT_DIR='/run/pi-agent'\n+export PI_COMMAND='pi'\n+export PI_MODEL='deepseek/deepseek-v4-flash-0731'\n+export PI_PACKAGE_DIR='/tmp/pi-embedded-6b429a2fc3e59dca'\n+export PI_PROVIDER='openrouter'\n+export PI_REASONING_LEVEL='high'\n+export PI_SESSION_FILE='/session/session.jsonl'\n+export PI_SESSION_ID='019fca00-f963-72b6-87fe-69a166dcdd20'\n+export PI_STANDALONE_BINARY='1'\n+export PI_THINKING='high'\n+export PI_TOOLS='read,write,edit,bash'\n+export PWD='/work'\n+export SHLVL='1'\n host=localhost\n port=8080\n-debug=false\n+debug=false\n\\ No newline at end of file\nFAIL[all set] content differs\n--- /dev/fd/64\n+++ /dev/fd/65\n@@ -1,3 +1,3 @@\n host=node-a\n port=9001\n-debug=true\n+debug=true\n\\ No newline at end of file\nFAIL[empty host] content differs\n--- /dev/fd/64\n+++ /dev/fd/65\n@@ -1,3 +1,3 @@\n host=\n port=8080\n-debug=false\n+debug=false\n\\ No newline at end of file\nFAIL[empty debug] content differs\n--- /dev/fd/64\n+++ /dev/fd/65\n@@ -1,3 +1,3 @@\n host=localhost\n port=8080\n-debug=\n+debug=\n\\ No newline at end of file\nFAIL[empty port] exit xsh=3 oracle=1\nFAIL[bad port abc] exit xsh=3 oracle=1\nFAIL[bad port 12x] exit xsh=3 oracle=1\nFAIL[bad port +5] exit xsh=3 oracle=1\nFAIL[bad port -1] exit xsh=3 oracle=1\nFAIL[bad port space] exit xsh=3 oracle=1\nFAIL[leading zero] content differs\n--- /dev/fd/64\n+++ /dev/fd/65\n@@ -1,3 +1,3 @@\n host=localhost\n port=08\n-debug=false\n+debug=false\n\\ No newline at end of file\nFAIL[debug false] content differs\n--- /dev/fd/64\n+++ /dev/fd/65\n@@ -1,3 +1,3 @@\n host=localhost\n port=8080\n-debug=false\n+debug=false\n\\ No newline at end of file\nFAIL[debug TRUE] content differs\n--- /dev/fd/64\n+++ /dev/fd/65\n@@ -1,3 +1,3 @@\n host=localhost\n port=8080\n-debug=TRUE\n+debug=TRUE\n\\ No newline at end of file\nFAIL[empty host port valid] content differs\n--- /dev/fd/64\n+++ /dev/fd/65\n@@ -1,3 +1,3 @@\n host=\n port=1\n-debug=\n+debug=\n\\ No newline at end of file\n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 17
+    }
+  ],
+  "tools": [
+    {
+      "count": 26,
+      "name": "bash"
+    },
+    {
+      "count": 1,
+      "name": "edit"
+    },
+    {
+      "count": 3,
+      "name": "read"
+    },
+    {
+      "count": 2,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 23,
+    "budget_usd": 0.5,
+    "cache_read_cost_usd": 0.004310784,
+    "cache_read_tokens": 239488,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.010067364,
+    "input_cost_usd": 0.00419112,
+    "input_tokens": 46568,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.00156546,
+    "output_tokens": 8697,
+    "provider_total_tokens": 294753,
+    "reasoning_tokens": 4506,
+    "thinking_blocks": 17,
+    "tool_calls": 32,
+    "tool_errors": 1,
+    "tool_results": 32,
+    "total_bucket_tokens": 294753,
+    "user_messages": 1
+  }
+}

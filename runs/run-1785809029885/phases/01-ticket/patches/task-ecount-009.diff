@@ -1,0 +1,72 @@
+diff --git a/docs/SPEC.md b/docs/SPEC.md
+index c48a6dd..01e771d 100644
+--- a/docs/SPEC.md
++++ b/docs/SPEC.md
+@@ -2770,7 +2770,8 @@ any item fails, the entire stage short-circuits with that error. Without
+ This lets the caller choose between short-circuit semantics (use `?`) and
+ collect-all semantics (omit `?`), matching how Rust's rayon, Go's
+ goroutines, and Haskell's `parMap` separate parallelism from error
+-handling.
++handling. The unwrapped value may be used inline as a receiver in the same
++expression, for example `map { |s| (s.split(".") |> last())?.lower() }`.
+ 
+ `where`, `any`, and `all` require `Bool` or `Result[Bool]`. `min()` and
+ `max()` return `Result[T]`. `first()` and `last()` return `Result[T]`.
+diff --git a/src/runtime/eval/lower.rs b/src/runtime/eval/lower.rs
+index f67f956..fc7815c 100644
+--- a/src/runtime/eval/lower.rs
++++ b/src/runtime/eval/lower.rs
+@@ -4707,6 +4707,24 @@ impl CompactLowerConstructProbe<'_, '_> {
+                 fields.insert(Name::intern("value"), value);
+                 Some(Type::List(Box::new(Type::Record(fields))))
+             }
++            StreamStageKind::First
++            | StreamStageKind::Last
++            | StreamStageKind::Min
++            | StreamStageKind::Max => {
++                // These terminals consume the stream and return a single item;
++                // in this build `first`/`last`/`min`/`max` yield a `Result`, so
++                // the pipeline carries a `Result<item, Error>` until a postfix
++                // `?` (or null-safe receiver) unwraps it. Without this the
++                // lightweight slot inference falls through to the input list
++                // type, so a null-safe method call such as
++                // `(s.split(".") |> last())?.lower()` is mistaken for a method
++                // on the list and wrongly rejected as an IR blocker.
++                let item = match input {
++                    Type::List(item) | Type::Stream(item) => item.as_ref().clone(),
++                    _ => return None,
++                };
++                Some(Type::Result(Box::new(item), Box::new(Type::Error)))
++            }
+             StreamStageKind::Collect => match input {
+                 Type::List(item) | Type::Stream(item) => Some(Type::List(item.clone())),
+                 _ => None,
+diff --git a/tests/xsh/stdlib/streams.xsh b/tests/xsh/stdlib/streams.xsh
+index 206d06e..bf752cb 100644
+--- a/tests/xsh/stdlib/streams.xsh
++++ b/tests/xsh/stdlib/streams.xsh
+@@ -73,6 +73,24 @@ beta
+     16,
+   )?
+ 
++  # A postfix `?` inside a stream-stage closure, followed by a method call on
++  # the unwrapped value, must compile and propagate normally instead of
++  # tripping the compact indexed-IR `full_ir_function_blocker`. The blocker was
++  # caused by the slot-based pipeline inference mis-typing a `first`/`last`/
++  # `min`/`max` terminal as its input list, so the `.lower()` on the unwrapped
++  # item was mistaken for a method on the list.
++  let ext_lower = ["a.TXT", "b.com"]
++    |> map { |s| (s.split(".") |> last())?.lower() }
++    |> collect()
++  test.eq(ext_lower, ["txt", "com"])?
++
++  # A bare trailing `?` (no method tail) in a stage block is still accepted and
++  # unwraps the terminal result inside the closure.
++  let firsts = [["a"], ["b"], ["c"]]
++    |> map { |row| row.get(0)? }
++    |> collect()
++  test.eq(firsts, ["a", "b", "c"])?
++
+   # A bare accumulator-ident tail no longer trips the indexed IR builder; it
+   # returns the running accumulator unchanged.
+   test.eq([1, 2, 3] |> fold(0) { |x| x }, 0)?

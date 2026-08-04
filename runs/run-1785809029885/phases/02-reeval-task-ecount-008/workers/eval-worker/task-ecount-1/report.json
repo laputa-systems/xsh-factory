@@ -1,0 +1,117 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785809029885/phases/02-reeval-task-ecount-008/workers/eval-worker/task-ecount-1/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_state": "pass",
+    "agent_wall_ms": 266827,
+    "artifact": {
+      "name": "ecount.xsh",
+      "state": "present"
+    },
+    "budget_state": "pass",
+    "classification": "evaluator_failed",
+    "evaluator_manifest": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785809029885/phases/02-reeval-task-ecount-008/workers/eval-worker/task-ecount-1/run.json",
+    "evaluator_state": "fail",
+    "reporting_state": "pass",
+    "result": "fail",
+    "review": {
+      "state": "present"
+    }
+  },
+  "findings": [
+    {
+      "count": 3,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "role": "eval-worker",
+    "worker_id": "task-ecount-1"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785809029885/phases/02-reeval-task-ecount-008/workers/eval-worker/task-ecount-1/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 39,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 265373
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785809029885/phases/02-reeval-task-ecount-008/workers/eval-worker/task-ecount-1/session.jsonl.bz2",
+      "summary": "(no output)\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 16
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785809029885/phases/02-reeval-task-ecount-008/workers/eval-worker/task-ecount-1/session.jsonl.bz2",
+      "summary": "exit=0\n---stderr---\n---candidate---\n     1 script\n    18 pub\n   119 crt\n---oracle---\n      1 script\n     18 pub\n    119 crt\n---diff---\n--- /dev/fd/64\n+++ /tmp/cand.txt\n@@ -1,3 +1,3 @@\n-      1 script\n-     18 pub\n-    119 crt\n+     1 script\n+    18 pub\n+   119 crt\n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 23
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785809029885/phases/02-reeval-task-ecount-008/workers/eval-worker/task-ecount-1/session.jsonl.bz2",
+      "summary": "sh: syntax error: unexpected redirection\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 29
+    }
+  ],
+  "tools": [
+    {
+      "count": 44,
+      "name": "bash"
+    },
+    {
+      "count": 2,
+      "name": "edit"
+    },
+    {
+      "count": 3,
+      "name": "read"
+    },
+    {
+      "count": 1,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 40,
+    "budget_usd": 0.5,
+    "cache_read_cost_usd": 0.014840063999999997,
+    "cache_read_tokens": 824448,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.023902794,
+    "input_cost_usd": 0.005301990000000001,
+    "input_tokens": 58911,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.00376074,
+    "output_tokens": 20893,
+    "provider_total_tokens": 904252,
+    "reasoning_tokens": 13563,
+    "thinking_blocks": 37,
+    "tool_calls": 50,
+    "tool_errors": 3,
+    "tool_results": 50,
+    "total_bucket_tokens": 904252,
+    "user_messages": 1
+  }
+}

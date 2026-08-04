@@ -1,0 +1,105 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785813489101/phases/03-eval/workers/eval-worker/task-envcfg-1/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_state": "pass",
+    "agent_wall_ms": 186904,
+    "artifact": {
+      "name": "envcfg.xsh",
+      "state": "present"
+    },
+    "budget_state": "pass",
+    "classification": "pass",
+    "evaluator_manifest": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785813489101/phases/03-eval/workers/eval-worker/task-envcfg-1/run.json",
+    "evaluator_state": "pass",
+    "reporting_state": "pass",
+    "result": "pass",
+    "review": {
+      "state": "present"
+    }
+  },
+  "findings": [
+    {
+      "count": 1,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "role": "eval-worker",
+    "worker_id": "task-envcfg-1"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785813489101/phases/03-eval/workers/eval-worker/task-envcfg-1/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 24,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 185497
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785813489101/phases/03-eval/workers/eval-worker/task-envcfg-1/session.jsonl.bz2",
+      "summary": "err[check.standard-module-shadow]: name `path` shadows the standard module `path`\n  envcfg.xsh:8:3\n    let path = fp\"${argv[0]}\"\n    ^^^^^^^^^^^^^^^^^^^^^^^^^ name `path` shadows the standard module `path`\nerr[check.standard-module-shadow]: name `path` shadows the standard module `path`\n  envcfg.xsh:8:3\n    let path = fp\"${argv[0]}\"\n    ^^^^^^^^^^^^^^^^^^^^^^^^^ name `path` shadows the standard module `path`\nerr[check.standard-module-shadow]: name `path` shadows the standard module `path`\n  envcfg.xsh:8:3\n    let path = fp\"${argv[0]}\"\n    ^^^^^^^^^^^^^^^^^^^^^^^^^ name `path` shadows the standard module `path`\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 16
+    }
+  ],
+  "tools": [
+    {
+      "count": 22,
+      "name": "bash"
+    },
+    {
+      "count": 1,
+      "name": "edit"
+    },
+    {
+      "count": 2,
+      "name": "read"
+    },
+    {
+      "count": 2,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 25,
+    "budget_usd": 0.5,
+    "cache_read_cost_usd": 0.0055480320000000005,
+    "cache_read_tokens": 308224,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.010136592000000002,
+    "input_cost_usd": 0.0027917999999999997,
+    "input_tokens": 31020,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.00179676,
+    "output_tokens": 9982,
+    "provider_total_tokens": 349226,
+    "reasoning_tokens": 5883,
+    "thinking_blocks": 18,
+    "tool_calls": 27,
+    "tool_errors": 1,
+    "tool_results": 27,
+    "total_bucket_tokens": 349226,
+    "user_messages": 1
+  }
+}

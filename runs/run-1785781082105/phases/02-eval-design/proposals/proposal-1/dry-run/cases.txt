@@ -1,0 +1,13 @@
+PASS  public
+PASS  hidden_disjoint
+PASS  hidden_all_in_b
+PASS  hidden_b_empty
+PASS  hidden_a_empty
+PASS  hidden_duplicates
+PASS  hidden_utf8_spaces
+PASS  hidden_unsorted
+PASS  hidden_blank_lines
+PASS  hidden_trailing
+--- failure controls (candidate-only; exit must be nonzero) ---
+missing A exit=3  (want nonzero)
+missing B exit=3  (want nonzero)

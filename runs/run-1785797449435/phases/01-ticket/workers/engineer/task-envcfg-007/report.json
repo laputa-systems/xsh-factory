@@ -1,0 +1,111 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785797449435/phases/01-ticket/workers/engineer/task-envcfg-007/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_process": "nonzero-exit",
+    "reporting": "pass",
+    "required_report": "present",
+    "session_limit_watcher": "failed",
+    "watcher": "pass"
+  },
+  "findings": [
+    {
+      "count": 3,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "role": "engineer",
+    "worker_id": "task-envcfg-007"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785797449435/phases/01-ticket/workers/engineer/task-envcfg-007/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 160,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 1534477
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785797449435/phases/01-ticket/workers/engineer/task-envcfg-007/session.jsonl.bz2",
+      "summary": "ls: src/bin/: No such file or directory\n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 23
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785797449435/phases/01-ticket/workers/engineer/task-envcfg-007/session.jsonl.bz2",
+      "summary": "(no output)\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 33
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785797449435/phases/01-ticket/workers/engineer/task-envcfg-007/session.jsonl.bz2",
+      "summary": "Could not find edits[1] in /Users/josh/d/laputa-systems/xsh-factory/runs/run-1785797449435/phases/01-ticket/worktrees/task-envcfg-007/src/runtime/eval.rs. The oldText must match exactly including all whitespace and newlines.",
+      "tool": "edit",
+      "turn": 101
+    }
+  ],
+  "tools": [
+    {
+      "count": 94,
+      "name": "bash"
+    },
+    {
+      "count": 18,
+      "name": "edit"
+    },
+    {
+      "count": 1,
+      "name": "find"
+    },
+    {
+      "count": 11,
+      "name": "grep"
+    },
+    {
+      "count": 43,
+      "name": "read"
+    },
+    {
+      "count": 1,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 160,
+    "budget_usd": 0.25,
+    "cache_read_cost_usd": 0.19727078400000003,
+    "cache_read_tokens": 10959488,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.243474804,
+    "input_cost_usd": 0.03357647999999999,
+    "input_tokens": 373072,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.012627540000000005,
+    "output_tokens": 70153,
+    "provider_total_tokens": 11402713,
+    "reasoning_tokens": 38725,
+    "thinking_blocks": 96,
+    "tool_calls": 168,
+    "tool_errors": 3,
+    "tool_results": 168,
+    "total_bucket_tokens": 11402713,
+    "user_messages": 1
+  }
+}

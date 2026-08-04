@@ -1,0 +1,290 @@
+{
+  "artifacts": [
+    {
+      "kind": "phase-reports",
+      "path": "phases/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 279,
+      "budget_failures": 0,
+      "cost_usd": 0.23248259799999998,
+      "tool_errors": 6,
+      "total_bucket_tokens": 10966890.0,
+      "unknown_costs": 0,
+      "workers": 5
+    },
+    "mode": "organization",
+    "phases": [
+      {
+        "id": "01-ticket",
+        "path": "phases/01-ticket/report.json",
+        "result": "pass",
+        "valid": true
+      },
+      {
+        "id": "02-reeval",
+        "path": "phases/02-reeval/report.json",
+        "result": "pass",
+        "valid": true
+      },
+      {
+        "id": "03-eval",
+        "path": "phases/03-eval/report.json",
+        "result": "pass",
+        "valid": true
+      },
+      {
+        "id": "04-eval-design",
+        "path": "phases/04-eval-design/report.json",
+        "result": "fail",
+        "valid": true
+      }
+    ],
+    "tool_errors": [
+      {
+        "report": "phases/03-eval/workers/eval-manager/task-envcfg/report.json",
+        "summary": "EISDIR: illegal operation on a directory, read",
+        "tool": "read",
+        "turn": 5,
+        "worker": {
+          "role": "eval-manager",
+          "worker_id": "task-envcfg"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-worker/task-envcfg-1/report.json",
+        "summary": "xsht api: invalid API query 'constructor:Path.parse_bytes'; unknown selector kind 'constructor'\n===\nquery: api:Path.parse_bytes\nstatus: missing\n===\nxsht api: invalid API query 'constructor:Path'; unknown selector kind 'constructor'\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 19,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-envcfg-1"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-worker/task-envcfg-1/report.json",
+        "summary": "--- CFG_DEBUG='true' ---\ntrue\nsh: syntax error: bad substitution\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 49,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-envcfg-1"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-worker/task-envcfg-1/report.json",
+        "summary": "exit=3\n== stdout ==\n== stderr ==\nruntime traceback\nexecutable: /usr/local/bin/xsh\noperation: result.propagate\nerror: env-int: environment value is not an integer\ncall path:\n  1. proc main at /work/envcfg.xsh:1:1-1:1\n== file? ==\nls: /tmp/out.cfg: No such file or directory\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 58,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-envcfg-1"
+        }
+      },
+      {
+        "report": "phases/04-eval-design/workers/eval-designer/proposal-1/report.json",
+        "summary": "ENOENT: no such file or directory, access '/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785733794880/phases/04-eval-design/proposals/proposal-1/evaluator.xsh'",
+        "tool": "read",
+        "turn": 5,
+        "worker": {
+          "role": "eval-designer",
+          "worker_id": "proposal-1"
+        }
+      },
+      {
+        "report": "phases/04-eval-design/workers/eval-designer/proposal-1/report.json",
+        "summary": "Could not find the exact text in /Users/josh/d/laputa-systems/xsh-factory/runs/run-1785733794880/phases/04-eval-design/proposals/proposal-1/evaluator.xsh. The old text must match exactly including all whitespace and newlines.",
+        "tool": "edit",
+        "turn": 59,
+        "worker": {
+          "role": "eval-designer",
+          "worker_id": "proposal-1"
+        }
+      }
+    ],
+    "workers": [
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-ecount"
+        },
+        "path": "phases/02-reeval/workers/eval-manager/task-ecount/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 18,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.0005890919999999999,
+          "cache_read_tokens": 210390,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.043339912,
+          "input_cost_usd": 0.03867654,
+          "input_tokens": 276261,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00407428,
+          "output_tokens": 14551,
+          "provider_total_tokens": 501202,
+          "reasoning_tokens": 7243,
+          "thinking_blocks": 17,
+          "tool_calls": 31,
+          "tool_errors": 0,
+          "tool_results": 31,
+          "total_bucket_tokens": 501202,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-ecount-1"
+        },
+        "path": "phases/02-reeval/workers/eval-worker/task-ecount-1/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 83,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.034407936,
+          "cache_read_tokens": 1911552,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.04197288600000001,
+          "input_cost_usd": 0.0040644900000000005,
+          "input_tokens": 45161,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00350046,
+          "output_tokens": 19447,
+          "provider_total_tokens": 1976160,
+          "reasoning_tokens": 9458,
+          "thinking_blocks": 69,
+          "tool_calls": 91,
+          "tool_errors": 0,
+          "tool_results": 91,
+          "total_bucket_tokens": 1976160,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-envcfg"
+        },
+        "path": "phases/03-eval/workers/eval-manager/task-envcfg/report.json",
+        "result": "pass",
+        "tool_errors": 1,
+        "usage": {
+          "assistant_turns": 40,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.0055610519999999995,
+          "cache_read_tokens": 1986090,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.032916212,
+          "input_cost_usd": 0.012082280000000004,
+          "input_tokens": 86302,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.01527288,
+          "output_tokens": 54546,
+          "provider_total_tokens": 2126938,
+          "reasoning_tokens": 38797,
+          "thinking_blocks": 35,
+          "tool_calls": 57,
+          "tool_errors": 1,
+          "tool_results": 57,
+          "total_bucket_tokens": 2126938,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-envcfg-1"
+        },
+        "path": "phases/03-eval/workers/eval-worker/task-envcfg-1/report.json",
+        "result": "pass",
+        "tool_errors": 3,
+        "usage": {
+          "assistant_turns": 74,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.039044736,
+          "cache_read_tokens": 2169152,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.05398473599999999,
+          "input_cost_usd": 0.008067419999999999,
+          "input_tokens": 89638,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00687258,
+          "output_tokens": 38181,
+          "provider_total_tokens": 2296971,
+          "reasoning_tokens": 29183,
+          "thinking_blocks": 65,
+          "tool_calls": 75,
+          "tool_errors": 3,
+          "tool_results": 75,
+          "total_bucket_tokens": 2296971,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-designer",
+          "worker_id": "proposal-1"
+        },
+        "path": "phases/04-eval-design/workers/eval-designer/proposal-1/report.json",
+        "result": "pass",
+        "tool_errors": 2,
+        "usage": {
+          "assistant_turns": 64,
+          "budget_usd": 0.3,
+          "cache_read_cost_usd": 0.010574592,
+          "cache_read_tokens": 3776640,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.060268852,
+          "input_cost_usd": 0.03121986,
+          "input_tokens": 222999,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.018474399999999995,
+          "output_tokens": 65980,
+          "provider_total_tokens": 4065619,
+          "reasoning_tokens": 46802,
+          "thinking_blocks": 52,
+          "tool_calls": 97,
+          "tool_errors": 2,
+          "tool_results": 96,
+          "total_bucket_tokens": 4065619,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "ea7dea2f2b436cce34262d7a02105cbb029243dd"
+  },
+  "findings": [
+    {
+      "id": "04-eval-design",
+      "kind": "phase",
+      "result": "fail"
+    }
+  ],
+  "identity": {
+    "mode": "organization",
+    "run_id": "run-1785733794880"
+  },
+  "kind": "run",
+  "result": "fail",
+  "schema_version": 1,
+  "state": "completed"
+}

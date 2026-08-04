@@ -1,0 +1,95 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785717474603/phases/03-eval/workers/director/director/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_process": "pass",
+    "reporting": "pass",
+    "required_report": "present",
+    "session_limit_watcher": "pass",
+    "watcher": "pass"
+  },
+  "findings": [
+    {
+      "count": 1,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "role": "director",
+    "worker_id": "director"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785717474603/phases/03-eval/workers/director/director/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 8,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 42467
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785717474603/phases/03-eval/workers/director/director/session.jsonl.bz2",
+      "summary": "ENOENT: no such file or directory, access '/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785717474603/phases/03-eval/workers/eval-worker/task-envcfg-1/REPORT.md'",
+      "tool": "read",
+      "turn": 2
+    }
+  ],
+  "tools": [
+    {
+      "count": 2,
+      "name": "bash"
+    },
+    {
+      "count": 6,
+      "name": "ls"
+    },
+    {
+      "count": 11,
+      "name": "read"
+    },
+    {
+      "count": 1,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 9,
+    "budget_usd": 0.06,
+    "cache_read_cost_usd": 0.0003347456,
+    "cache_read_tokens": 119552,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.004219605600000001,
+    "input_cost_usd": 0.0026704999999999997,
+    "input_tokens": 19075,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.00121436,
+    "output_tokens": 4337,
+    "provider_total_tokens": 142964,
+    "reasoning_tokens": 946,
+    "thinking_blocks": 9,
+    "tool_calls": 20,
+    "tool_errors": 1,
+    "tool_results": 20,
+    "total_bucket_tokens": 142964,
+    "user_messages": 1
+  }
+}

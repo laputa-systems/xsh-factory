@@ -1,0 +1,94 @@
+diff --git a/docs/SPEC.md b/docs/SPEC.md
+index a39bcba..8b11385 100644
+--- a/docs/SPEC.md
++++ b/docs/SPEC.md
+@@ -2742,16 +2742,19 @@ let warnings = fs.read_text(p"build.log")?
+ ```
+ 
+ Accepted **transformation** stage kinds include `where`, `map`, `par-map`,
+-`each`, `batch`, `sort`, `sort-by`, `take`, `drop`, `unique-by`, `enumerate`,
++`batch`, `sort`, `sort-by`, `take`, `drop`, `unique-by`, `enumerate`,
+ `zip`, `range`, `repeat`, `tee`, and `flat-map`. These produce a stream.
+ 
+ Accepted **terminal** stage kinds: `count()`, `collect()`, `sum()`, `min()`,
+ `max()`, `first()`, `last()`, `any`, `all`, `fold(init) { ... }`, `reduce`,
+-`shuffle`, `group-by`, and `table.print(...)`. These produce a scalar,
++`shuffle`, `group-by`, `each`, and `table.print(...)`. These produce a scalar,
+ materialized list, or consume the stream.
+ 
+ `each` is for effects and accepts a block whose result is `Unit` or
+-`Result[Unit]`. `map` and `par-map` are for values and require a final
++`Result[Unit]`. A pipeline that ends in a `Unit`-valued terminal stage such as
++`each` or `table.print(...)` evaluates to `Unit`, so it may be a procedure's
++final statement and is accepted by both `xsht check` and the runtime. `map`
++and `par-map` are for values and require a final
+ expression or command tail value. Stage blocks may bind one explicit item
+ parameter with `{ |item| ... }`, but the implicit `.` item is available in
+ one-expression and multi-statement stage blocks.
+diff --git a/src/runtime/eval/lowered_run/indexed_run.rs b/src/runtime/eval/lowered_run/indexed_run.rs
+index afdc893..2bd9c39 100644
+--- a/src/runtime/eval/lowered_run/indexed_run.rs
++++ b/src/runtime/eval/lowered_run/indexed_run.rs
+@@ -3870,7 +3870,16 @@ impl Evaluator {
+                                 }
+                             }
+                             slots[slot] = LoweredValue::Unit;
+-                            LoweredValue::List(output)
++                            if tee {
++                                // tee is a pass-through stage: it yields the
++                                // items unchanged for later stages. each is a
++                                // terminal stage that the checker types as Unit,
++                                // so its pipeline value must be Unit rather than
++                                // the drained (empty) list.
++                                LoweredValue::List(output)
++                            } else {
++                                LoweredValue::Unit
++                            }
+                         }
+                         FullStageTag::TablePrint => {
+                             let columns = indexed_decode::<Option<Vec<String>>>(
+diff --git a/tests/runtime/streams.rs b/tests/runtime/streams.rs
+index 31f84d6..51f75c5 100644
+--- a/tests/runtime/streams.rs
++++ b/tests/runtime/streams.rs
+@@ -178,6 +178,40 @@ fn batch_max_argv_splits_long_path_lists_before_running_commands() {
+     assert_eq!(String::from_utf8(output.stderr).unwrap(), "");
+ }
+ 
++#[test]
++fn terminal_each_as_final_proc_statement_exits_clean() {
++    // Regression: a proc whose final statement is the terminal stream stage
++    // `each` was accepted by `xsht check` (typed as Unit) but failed at
++    // runtime with `lowered return type mismatch` (exit 3) after emitting all
++    // its output, because the runtime lowered the drained `each` to an empty
++    // list instead of Unit. Checker and runtime must agree: exit 0 with full
++    // output.
++    let source = r#"
++proc main() [io] {
++  ["one", "two", "three"]
++    |> each { |word| print $word }
++}
++"#;
++    let path = write_temp_script("stream-terminal-each-final", source);
++    let path_str = path.to_str().unwrap();
++
++    let check = xsht(["check", path_str]);
++    assert!(
++        check.status.success(),
++        "xsht check rejected a terminal `each` final statement: {}",
++        String::from_utf8_lossy(&check.stderr)
++    );
++
++    let run = xsh([path_str]);
++    assert!(
++        run.status.success(),
++        "xsh failed on a terminal `each` final statement: {}",
++        String::from_utf8_lossy(&run.stderr)
++    );
++    assert_eq!(String::from_utf8(run.stdout).unwrap(), "one\ntwo\nthree\n");
++    let _ = std::fs::remove_file(path);
++}
++
+ #[test]
+ fn sigterm_cancels_parallel_stream_process_work_without_losing_trace_context() {
+     let root = temp_path("cancel-parallel-stream-root");

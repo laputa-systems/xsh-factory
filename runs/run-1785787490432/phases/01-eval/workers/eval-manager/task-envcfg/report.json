@@ -1,0 +1,105 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785787490432/phases/01-eval/workers/eval-manager/task-envcfg/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_process": "pass",
+    "reporting": "pass",
+    "required_report": "present",
+    "session_limit_watcher": "pass",
+    "watcher": "pass"
+  },
+  "findings": [
+    {
+      "count": 2,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "role": "eval-manager",
+    "worker_id": "task-envcfg"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785787490432/phases/01-eval/workers/eval-manager/task-envcfg/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 21,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 235402
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785787490432/phases/01-eval/workers/eval-manager/task-envcfg/session.jsonl.bz2",
+      "summary": "=== line 20 role assistant\n type toolCall bash\nTraceback (most recent call last):\n  File \"<stdin>\", line 12, in <module>\nKeyError: slice(None, 900, None)\n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 13
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785787490432/phases/01-eval/workers/eval-manager/task-envcfg/session.jsonl.bz2",
+      "summary": "=== diff approved vs candidate ===\n61a62,65\n> \n> Boolean expression operators are the word forms `or` and `and` (and `not`\n> for negation); the C-style symbols `||`, `&&`, and `!` are parse errors, and\n> `then` is not an `if` separator.\n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 20
+    }
+  ],
+  "tools": [
+    {
+      "count": 13,
+      "name": "bash"
+    },
+    {
+      "count": 1,
+      "name": "edit"
+    },
+    {
+      "count": 2,
+      "name": "ls"
+    },
+    {
+      "count": 13,
+      "name": "read"
+    },
+    {
+      "count": 1,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 22,
+    "budget_usd": 0.15,
+    "cache_read_cost_usd": 0.009232128,
+    "cache_read_tokens": 512896,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.019902798,
+    "input_cost_usd": 0.00796275,
+    "input_tokens": 88475,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.0027079199999999995,
+    "output_tokens": 15044,
+    "provider_total_tokens": 616415,
+    "reasoning_tokens": 8657,
+    "thinking_blocks": 19,
+    "tool_calls": 30,
+    "tool_errors": 2,
+    "tool_results": 30,
+    "total_bucket_tokens": 616415,
+    "user_messages": 1
+  }
+}

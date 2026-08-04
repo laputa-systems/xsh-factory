@@ -1,0 +1,46 @@
+{
+  "classification": "pass",
+  "correctness": {
+    "all_exact": true,
+    "empty_exact": true,
+    "hidden_exact": true,
+    "public_exact": true
+  },
+  "eval_id": "task-tags",
+  "image_id": "sha256:cd6b7f8e990676a781a4e9a22f7bfc9cea65507510c0f63e4c4553f7d189c2e4",
+  "inputs": {
+    "agents_sha256": "241445c30475a96d91bbd6020164378b776c03b368720236d2dc8c112b13167b",
+    "handbook_sha256": "c7c9dd9abb6d50dac60562757a1824900f24d4bc2d38014d5cbf869f56bb0723",
+    "task_sha256": "d1115bae2edbd1bb5912d6c50062ddbb6da21b110bc861c90924bdda83cf2f60"
+  },
+  "model": "deepseek/deepseek-v4-flash-0731",
+  "offline": "unknown",
+  "outputs": {
+    "candidate_sha256": "7fd788a6f69b4b2862b6b52f56e78cb2ae5f164811c804aacb21352851b4d42f",
+    "oracle_sha256": "7fd788a6f69b4b2862b6b52f56e78cb2ae5f164811c804aacb21352851b4d42f"
+  },
+  "platform": "linux/arm64",
+  "protocol": {
+    "artifact_present": true,
+    "review_ok": true
+  },
+  "provider": "openrouter",
+  "restrictions": {
+    "forbidden_operations": true,
+    "passed": true
+  },
+  "result": "pass",
+  "session": "/session/session.jsonl",
+  "telemetry": "unknown",
+  "thinking": "high",
+  "timings": {
+    "empty_candidate_wall_ns": 12085953,
+    "empty_oracle_wall_ns": 12622625,
+    "hidden_candidate_wall_ns": 12265704,
+    "hidden_oracle_wall_ns": 11199360,
+    "public_candidate_wall_ns": 12026494,
+    "public_oracle_wall_ns": 11303654
+  },
+  "trial_id": "1",
+  "xsh_commit": "de9880ce9cd13c4ef63acc212554d786358ed869"
+}

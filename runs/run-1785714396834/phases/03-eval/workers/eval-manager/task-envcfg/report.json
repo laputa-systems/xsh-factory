@@ -1,0 +1,96 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785714396834/phases/03-eval/workers/eval-manager/task-envcfg/session.jsonl.bz2"
+    }
+  ],
+  "findings": [
+    {
+      "count": 1,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "role": "eval-manager",
+    "worker_id": "task-envcfg"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785714396834/phases/03-eval/workers/eval-manager/task-envcfg/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 23,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 403421
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785714396834/phases/03-eval/workers/eval-manager/task-envcfg/session.jsonl.bz2",
+      "summary": "10:## Result\n23:## Effort metrics\n42:## Usage and cost\n59:## Thinking evidence\n73:## Tool-error findings\n98:## Timing evidence\n112:## Observation classification\n147:## Handbook decision\n168:## Tickets created\n178:## Post-merge decisions\n185:## Next replay\n204:## North-star impact\n---- candidate diff ----\n78a79,84\n> Path literals do not interpolate. To build a path from data, convert a string\n> explicitly:\n> \n>     let arg = argv.get(0)?\n>     let out = Path.parse_bytes(bytes.from_text(arg))?\n> \n136a143,151\n> Compose exact multi-line text with display strings. Only a display string\n> interpolates, using `${expr}`:\n> \n>     let text = f\"host=${host}\\nport=${port}\\ndebug=${debug}\\n\"\n> \n> Ordinary string literals (\"...\") and path literals (p\"...\") never\n> interpolate; the braces are literal characters. To write a file deliverable,\n> build the text value with a display string and write it with fs.write.\n> \n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 22
+    }
+  ],
+  "tools": [
+    {
+      "count": 16,
+      "name": "bash"
+    },
+    {
+      "count": 1,
+      "name": "edit"
+    },
+    {
+      "count": 2,
+      "name": "find"
+    },
+    {
+      "count": 3,
+      "name": "ls"
+    },
+    {
+      "count": 12,
+      "name": "read"
+    },
+    {
+      "count": 1,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 24,
+    "budget_usd": 0.15,
+    "cache_read_cost_usd": 0.00217875,
+    "cache_read_tokens": 778125.0,
+    "cache_write_cost_usd": 0.0,
+    "cache_write_tokens": 0.0,
+    "cost_usd": 0.02550891,
+    "input_cost_usd": 0.015446759999999999,
+    "input_tokens": 110334.0,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.0078834,
+    "output_tokens": 28155.0,
+    "provider_total_tokens": 916614.0,
+    "reasoning_tokens": 21286.0,
+    "thinking_blocks": 20,
+    "tool_calls": 35,
+    "tool_errors": 1,
+    "tool_results": 35,
+    "total_bucket_tokens": 916614.0,
+    "user_messages": 1
+  }
+}

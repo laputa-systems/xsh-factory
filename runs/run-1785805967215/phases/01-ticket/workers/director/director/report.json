@@ -1,0 +1,95 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785805967215/phases/01-ticket/workers/director/director/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_process": "pass",
+    "reporting": "pass",
+    "required_report": "present",
+    "session_limit_watcher": "pass",
+    "watcher": "pass"
+  },
+  "findings": [
+    {
+      "count": 1,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "role": "director",
+    "worker_id": "director"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785805967215/phases/01-ticket/workers/director/director/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 12,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 97732
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785805967215/phases/01-ticket/workers/director/director/session.jsonl.bz2",
+      "summary": "Path not found: /Users/josh/d/laputa-systems/xsh-factory/.env",
+      "tool": "grep",
+      "turn": 10
+    }
+  ],
+  "tools": [
+    {
+      "count": 14,
+      "name": "bash"
+    },
+    {
+      "count": 1,
+      "name": "grep"
+    },
+    {
+      "count": 9,
+      "name": "read"
+    },
+    {
+      "count": 1,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 13,
+    "budget_usd": 0.06,
+    "cache_read_cost_usd": 0.0031345920000000003,
+    "cache_read_tokens": 174144,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.008687232,
+    "input_cost_usd": 0.00444276,
+    "input_tokens": 49364,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.00110988,
+    "output_tokens": 6166,
+    "provider_total_tokens": 229674,
+    "reasoning_tokens": 3152,
+    "thinking_blocks": 12,
+    "tool_calls": 25,
+    "tool_errors": 1,
+    "tool_results": 25,
+    "total_bucket_tokens": 229674,
+    "user_messages": 1
+  }
+}

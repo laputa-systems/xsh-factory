@@ -1,0 +1,99 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785731807794/phases/04-eval-design/workers/eval-designer/proposal-1/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_process": "nonzero-exit",
+    "reporting": "pass",
+    "required_report": "present",
+    "session_limit_watcher": "failed",
+    "watcher": "pass"
+  },
+  "findings": [
+    {
+      "count": 1,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "role": "eval-designer",
+    "worker_id": "proposal-1"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785731807794/phases/04-eval-design/workers/eval-designer/proposal-1/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 64,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 494254
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785731807794/phases/04-eval-design/workers/eval-designer/proposal-1/session.jsonl.bz2",
+      "summary": "Aug 2 17:43 src/runtime/eval/lowered_run.rs\nJul 29 14:05 src/runtime/process.rs\nJul 27 11:12 src/syntax/parser/command.rs\ndist build: Aug 2 21:40\n=== run.text variant ===\n      print field\n            ^^^^^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $field\n1,12c1,25\n< task-12-item-1\n< task-12-item-10\n< task-12-item-11\n< task-12-item-12\n< task-12-item-2\n< task-12-item-3\n< task-12-item-4\n< task-12-item-5\n< task-12-item-6\n< task-12-item-7\n< task-12-item-8\n< task-12-item-9\n---\n> task-25-item-1\n> task-25-item-10\n> task-25-item-11\n> task-25-item-12\n> task-25-item-13\n> task-25-item-14\n> task-25-item-15\n> task-25-item-16\n> task-25-item-17\n> task-25-item-18\n> task-25-item-19\n> task-25-item-2\n> task-25-item-20\n> task-25-item-21\n> task-25-item-22\n> task-25-item-23\n> task-25-item-24\n> task-25-item-25\n> task-25-item-3\n> task-25-item-4\n> task-25-item-5\n> task-25-item-6\n> task-25-item-7\n> task-25-item-8\n> task-25-item-9\n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 62
+    }
+  ],
+  "tools": [
+    {
+      "count": 42,
+      "name": "bash"
+    },
+    {
+      "count": 4,
+      "name": "edit"
+    },
+    {
+      "count": 1,
+      "name": "grep"
+    },
+    {
+      "count": 16,
+      "name": "ls"
+    },
+    {
+      "count": 30,
+      "name": "read"
+    },
+    {
+      "count": 5,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 64,
+    "budget_usd": 0.3,
+    "cache_read_cost_usd": 0.008208510800000004,
+    "cache_read_tokens": 2931611,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.026708670800000004,
+    "input_cost_usd": 0.008117760000000002,
+    "input_tokens": 57984,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.010382399999999998,
+    "output_tokens": 37080,
+    "provider_total_tokens": 3026675,
+    "reasoning_tokens": 27376,
+    "thinking_blocks": 45,
+    "tool_calls": 98,
+    "tool_errors": 1,
+    "tool_results": 97,
+    "total_bucket_tokens": 3026675,
+    "user_messages": 1
+  }
+}

@@ -1,0 +1,656 @@
+{
+  "artifacts": [
+    {
+      "kind": "phase-reports",
+      "path": "phases/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 453,
+      "budget_failures": 0,
+      "cost_usd": 0.451022634,
+      "tool_errors": 26,
+      "total_bucket_tokens": 18831422.0,
+      "unknown_costs": 0,
+      "workers": 10
+    },
+    "mode": "organization",
+    "phases": [
+      {
+        "id": "01-ticket",
+        "path": "phases/01-ticket/report.json",
+        "result": "pass",
+        "valid": true
+      },
+      {
+        "id": "02-reeval-task-ecount-004",
+        "path": "phases/02-reeval-task-ecount-004/report.json",
+        "result": "pass",
+        "valid": true
+      },
+      {
+        "id": "02-reeval-task-ecount-007",
+        "path": "phases/02-reeval-task-ecount-007/report.json",
+        "result": "fail",
+        "valid": true
+      },
+      {
+        "id": "03-eval",
+        "path": "phases/03-eval/report.json",
+        "result": "pass",
+        "valid": true
+      },
+      {
+        "id": "04-eval-design",
+        "path": "phases/04-eval-design/report.json",
+        "result": "pass",
+        "valid": true
+      }
+    ],
+    "tool_errors": [
+      {
+        "report": "phases/01-ticket/workers/director/director/report.json",
+        "summary": "Path not found: /Users/josh/d/laputa-systems/xsh-factory/.env",
+        "tool": "grep",
+        "turn": 10,
+        "worker": {
+          "role": "director",
+          "worker_id": "director"
+        }
+      },
+      {
+        "report": "phases/01-ticket/workers/engineer/task-ecount-004/report.json",
+        "summary": "(no output)\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 51,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-ecount-004"
+        }
+      },
+      {
+        "report": "phases/01-ticket/workers/engineer/task-ecount-004/report.json",
+        "summary": "err[check.stream-sort]: sort-by keys must be Int, Str, Bool, or Path\n  /tmp/sortprog.xsh:6:6\n    |> sort-by .count\n       ^^^^^^^^^^^^^^ sort-by keys must be Int, Str, Bool, or Path\n\nerr[check.display-conversion]: value cannot be displayed by print\n  /tmp/sortprog.xsh:8:7\n  print $by_count\n        ^^^^^^^^^ value cannot be displayed by print\n\nerr[check.stream-sort]: sort-by keys must be Int, Str, Bool, or Path\n  /tmp/sortprog.xsh:13:6\n  ] |> sort-by .count |> collect()\n       ^^^^^^^^^^^^^^ sort-by keys must be Int, Str, Bool, or Path\n\nerr[check.display-conversion]: value cannot be displayed by print\n  /tmp/sortprog.xsh:14:7\n  print $by_count_comp\n        ^^^^^^^^^^^^^^ value cannot be displayed by print\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 58,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-ecount-004"
+        }
+      },
+      {
+        "report": "phases/01-ticket/workers/engineer/task-ecount-004/report.json",
+        "summary": "err[check.display-conversion]: value cannot be displayed by print\n  /tmp/sortprog.xsh:8:7\n  print $by_count\n        ^^^^^^^^^ value cannot be displayed by print\n\nerr[check.display-conversion]: value cannot be displayed by print\n  /tmp/sortprog.xsh:14:7\n  print $by_count_comp\n        ^^^^^^^^^^^^^^ value cannot be displayed by print\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 60,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-ecount-004"
+        }
+      },
+      {
+        "report": "phases/01-ticket/workers/engineer/task-ecount-007/report.json",
+        "summary": "---\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 12,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-ecount-007"
+        }
+      },
+      {
+        "report": "phases/01-ticket/workers/engineer/task-ecount-007/report.json",
+        "summary": "err[compact.indexed-build]: indexed IR could not encode `full_ir_function_blocker`\n  /tmp/foldtest/t1.xsh:1:13\n  proc main() {\n              ^ indexed IR could not encode `full_ir_function_blocker`\n=== run ===\nerr[compact.indexed-build]: indexed IR could not encode `full_ir_function_blocker`\n  /tmp/foldtest/t1.xsh:1:13\n  proc main() {\n              ^ indexed IR could not encode `full_ir_function_blocker`\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 15,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-ecount-007"
+        }
+      },
+      {
+        "report": "phases/01-ticket/workers/engineer/task-ecount-007/report.json",
+        "summary": "2555:        ArenaExprKind::Pipeline { .. } => 29,\n2599:        ArenaExprKind::Pipeline { .. } => \"pipeline\",\n4419:            ArenaExprKind::Pipeline { input, stages } => {\n5094:            ArenaExprKind::Pipeline { stages, .. } => {\n7468:            ArenaExprKind::Pipeline { input, stages } => {\n===\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 23,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-ecount-007"
+        }
+      },
+      {
+        "report": "phases/01-ticket/workers/engineer/task-ecount-007/report.json",
+        "summary": "=== check ===\nerr[check.stream-block-params]: stream stage blocks accept at most one parameter\n  /tmp/foldtest/t2.xsh:3:40\n    let total = items |> fold(0) { |acc, it| acc + it }\n                                         ^^ stream stage blocks accept at most one parameter\n\nerr[check.unresolved-name]: unresolved name\n  /tmp/foldtest/t2.xsh:3:50\n    let total = items |> fold(0) { |acc, it| acc + it }\n                                                   ^^ unresolved name\n=== run ===\nerr[check.stream-block-params]: stream stage blocks accept at most one parameter\n  /tmp/foldtest/t2.xsh:3:40\n    let total = items |> fold(0) { |acc, it| acc + it }\n                                         ^^ stream stage blocks accept at most one parameter\n\nerr[check.unresolved-name]: unresolved name\n  /tmp/foldtest/t2.xsh:3:50\n    let total = items |> fold(0) { |acc, it| acc + it }\n                                                   ^^ unresolved name\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 25,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-ecount-007"
+        }
+      },
+      {
+        "report": "phases/01-ticket/workers/engineer/task-ecount-007/report.json",
+        "summary": "err[check.display-conversion]: value cannot be displayed by print\n  /tmp/foldtest/count.xsh:5:9\n    print $counts\n          ^^^^^^^ value cannot be displayed by print\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 65,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-ecount-007"
+        }
+      },
+      {
+        "report": "phases/01-ticket/workers/engineer/task-ecount-007/report.json",
+        "summary": "fold snippet OK\nerr[check.type-mismatch]: type mismatch\n  /Users/josh/d/laputa-systems/xsh-factory/runs/run-1785805967215/phases/01-ticket/worktrees/task-ecount-007/docs/snippets/api/stream-reduce.xsh:3:13\n      acc.set(item, acc.get(item, 0) + 1)\n              ^^^^ expected Str, found Int\n\nerr[check.type-mismatch]: no standard API overload matches argument types\n  /Users/josh/d/laputa-systems/xsh-factory/runs/run-1785805967215/phases/01-ticket/worktrees/task-ecount-007/docs/snippets/api/stream-reduce.xsh:3:19\n      acc.set(item, acc.get(item, 0) + 1)\n                    ^^^^^^^^^^^^^^^^ no standard API overload matches argument types\n\nerr[check.type-mismatch]: type mismatch\n  /Users/josh/d/laputa-systems/xsh-factory/runs/run-1785805967215/phases/01-ticket/worktrees/task-ecount-007/docs/snippets/api/stream-reduce.xsh:3:27\n      acc.set(item, acc.get(item, 0) + 1)\n                            ^^^^ expected Str, found Int\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 97,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-ecount-007"
+        }
+      },
+      {
+        "report": "phases/01-ticket/workers/engineer/task-ecount-007/report.json",
+        "summary": "--- clean worktree confirmed ---\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 132,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-ecount-007"
+        }
+      },
+      {
+        "report": "phases/02-reeval-task-ecount-004/workers/eval-manager/task-ecount/report.json",
+        "summary": "   4 sort-by\n   1 sort-by { |r|\n   2 sort-by { |r| r }\n   1 sort-by { |r| r }` returning the record. The record fields cnt then ext order. So primary cnt, secondary ext. \n   1 sort-by 2>&1; echo ===; xsht api language:stream.group-by 2>&1\n   1 sort-by and group-by.\n   1 sort-by on (cnt, ext) is deterministic.\n   1 sort-by on the record returns the record; contract: records compare field by field in sorted field-name order. Field names: cnt and ext. Sorted alphabetical: \n   1 sort-by or use stream. Let me simplify. Print all entries with kind. Actually just count. Let me fix.\n   1 sort-by twice: first by `.e`, then by `.c`. Or single sort-by on the record — but field order is alphabetical: 'c' then 'd'? If I name fields `cnt` and `ext`, alphabetical order: cnt < ext, so compares cnt first. Good. Let me use record {cnt: Int, ext: Str} and sort-by single `.` (the whole record). Actually sort-by block returns the key. If I return the record `{cnt, ext}` it compares field-by-field in sorted field-name order: cnt then ext. \n===Any/map.empty/Map[Int]===\n13\n0\n0\n===stream-sort rejection?===\n0\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 6,
+        "worker": {
+          "role": "eval-manager",
+          "worker_id": "task-ecount"
+        }
+      },
+      {
+        "report": "phases/02-reeval-task-ecount-004/workers/eval-worker/task-ecount-1/report.json",
+        "summary": "sh: python3: not found\n\n\nCommand exited with code 127",
+        "tool": "bash",
+        "turn": 5,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-ecount-1"
+        }
+      },
+      {
+        "report": "phases/02-reeval-task-ecount-004/workers/eval-worker/task-ecount-1/report.json",
+        "summary": "err[check.unknown-method]: unknown method `sort` on List[Str]\n  /tmp/explore.xsh:8:15\n    let kinds = bykind.keys().sort()\n                ^^^^^^^^^^^^^^^^^^^^ `sort` is not defined for List[Str]\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 10,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-ecount-1"
+        }
+      },
+      {
+        "report": "phases/02-reeval-task-ecount-004/workers/eval-worker/task-ecount-1/report.json",
+        "summary": "err[runtime.error]: lowered `?` expected Result\n  /tmp/explore.xsh:3:17\n    let entries = fs.files(root)?.collect()\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^\nruntime traceback\nexecutable: /usr/local/bin/xsh\noperation: runtime.error\nerror: type-error: lowered `?` expected Result\n\n\nCommand exited with code 3",
+        "tool": "bash",
+        "turn": 11,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-ecount-1"
+        }
+      },
+      {
+        "report": "phases/02-reeval-task-ecount-004/workers/eval-worker/task-ecount-1/report.json",
+        "summary": "err[parse.expected-ident]: expected binding name\n  /tmp/explore.xsh:3:7\n    let stream = fs.files(root)?\n        ^^^^^^ expected binding name\n\nerr[parse.expected-expression]: expected expression\n  /tmp/explore.xsh:4:17\n    let entries = stream.collect()\n                  ^^^^^^ expected expression\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 12,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-ecount-1"
+        }
+      },
+      {
+        "report": "phases/02-reeval-task-ecount-004/workers/eval-worker/task-ecount-1/report.json",
+        "summary": "err[check.type-mismatch]: type mismatch\n  ecount.xsh:2:19\n    let root = Path(argv.get(0))\n                    ^^^^^^^^^^^ expected Str, found Result[Str, Error]\n=== fmt ===\nerr[check.type-mismatch]: type mismatch\n  ecount.xsh:2:19\n    let root = Path(argv.get(0))\n                    ^^^^^^^^^^^ expected Str, found Result[Str, Error]\n=== lint ===\nerr[check.type-mismatch]: type mismatch\n  ecount.xsh:2:19\n    let root = Path(argv.get(0))\n                    ^^^^^^^^^^^ expected Str, found Result[Str, Error]\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 30,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-ecount-1"
+        }
+      },
+      {
+        "report": "phases/02-reeval-task-ecount-004/workers/eval-worker/task-ecount-1/report.json",
+        "summary": "=== fmt ===\n=== lint ===\nwarn[lint.path-constructor]: prefer p-string interpolation over `Path(...)`\n  ecount.xsh:2:14\n    let root = Path(argv.get(0)?)\n               ------------------ use path string syntax instead\nnote: `Path(...)` remains a cast, but p-strings are the preferred path syntax\nhelp: replace with path string -> fp\"${argv.get(0)?}\"\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 32,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-ecount-1"
+        }
+      },
+      {
+        "report": "phases/02-reeval-task-ecount-007/workers/eval-worker/task-ecount-1/report.json",
+        "summary": "(no output)\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 9,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-ecount-1"
+        }
+      },
+      {
+        "report": "phases/02-reeval-task-ecount-007/workers/eval-worker/task-ecount-1/report.json",
+        "summary": "(no output)\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 9,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-ecount-1"
+        }
+      },
+      {
+        "report": "phases/02-reeval-task-ecount-007/workers/eval-worker/task-ecount-1/report.json",
+        "summary": "(no output)\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 26,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-ecount-1"
+        }
+      },
+      {
+        "report": "phases/02-reeval-task-ecount-007/workers/eval-worker/task-ecount-1/report.json",
+        "summary": "xsht api: invalid API query 'language.stream.group-by'; expected KIND:VALUE\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 30,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-ecount-1"
+        }
+      },
+      {
+        "report": "phases/02-reeval-task-ecount-007/workers/eval-worker/task-ecount-1/report.json",
+        "summary": "Could not find edits[1] in /work/ecount.xsh. The oldText must match exactly including all whitespace and newlines.",
+        "tool": "edit",
+        "turn": 50,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-ecount-1"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-manager/task-envcfg/report.json",
+        "summary": "Could not find the exact text in /Users/josh/d/laputa-systems/xsh-factory/runs/run-1785805967215/phases/03-eval/lineage/handbook-candidate.md. The old text must match exactly including all whitespace and newlines.",
+        "tool": "edit",
+        "turn": 11,
+        "worker": {
+          "role": "eval-manager",
+          "worker_id": "task-envcfg"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-worker/task-envcfg-1/report.json",
+        "summary": "---fmt done---\nproc main(...argv: List[Str]) [fs, env, error] {\n  let host = env.get_or(\"CFG_HOST\", \"localhost\")?\n  let port = env.get_or(\"CFG_PORT\", \"8080\")?\n  let debug = env.get_or(\"CFG_DEBUG\", \"false\")?\n\n  # CFG_PORT must be a non-empty decimal integer when present.\n  let _ = env.int(\"CFG_PORT\", 8080)?\n  let text = \"host=\" + host + \"\"\"\nport=\"\"\" + port + \"\"\"\ndebug=\"\"\" + debug + \"\\n\"\n  let out_path = Path(argv[0])\n  fs.write(out_path, text)?\n}\n---lint---\nwarn[lint.path-constructor]: prefer p-string interpolation over `Path(...)`\n  envcfg.xsh:11:18\n    let out_path = Path(argv[0])\n                   ------------- use path string syntax instead\nnote: `Path(...)` remains a cast, but p-strings are the preferred path syntax\nhelp: replace with path string -> fp\"${argv[0]}\"\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 16,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-envcfg-1"
+        }
+      },
+      {
+        "report": "phases/04-eval-design/workers/eval-designer/proposal-1/report.json",
+        "summary": "evals/task-envcfg/EVAL.md\nevals/task-envcfg/evaluate.xsh\nevals/task-envcfg/evaluator.xsh\nevals/task-envcfg/executor.xsh\nevals/task-envcfg/runtime/artifact.md\nevals/task-envcfg/runtime/task.md\n---agents/handbook mount refs---\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 8,
+        "worker": {
+          "role": "eval-designer",
+          "worker_id": "proposal-1"
+        }
+      }
+    ],
+    "workers": [
+      {
+        "identity": {
+          "role": "director",
+          "worker_id": "director"
+        },
+        "path": "phases/01-ticket/workers/director/director/report.json",
+        "result": "pass",
+        "tool_errors": 1,
+        "usage": {
+          "assistant_turns": 13,
+          "budget_usd": 0.06,
+          "cache_read_cost_usd": 0.0031345920000000003,
+          "cache_read_tokens": 174144,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.008687232,
+          "input_cost_usd": 0.00444276,
+          "input_tokens": 49364,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00110988,
+          "output_tokens": 6166,
+          "provider_total_tokens": 229674,
+          "reasoning_tokens": 3152,
+          "thinking_blocks": 12,
+          "tool_calls": 25,
+          "tool_errors": 1,
+          "tool_results": 25,
+          "total_bucket_tokens": 229674,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "engineer",
+          "worker_id": "task-ecount-004"
+        },
+        "path": "phases/01-ticket/workers/engineer/task-ecount-004/report.json",
+        "result": "pass",
+        "tool_errors": 3,
+        "usage": {
+          "assistant_turns": 80,
+          "budget_usd": 0.25,
+          "cache_read_cost_usd": 0.051593471999999994,
+          "cache_read_tokens": 2866304,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.07227511199999997,
+          "input_cost_usd": 0.016473599999999998,
+          "input_tokens": 183040,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0042080400000000006,
+          "output_tokens": 23378,
+          "provider_total_tokens": 3072722,
+          "reasoning_tokens": 9486,
+          "thinking_blocks": 53,
+          "tool_calls": 84,
+          "tool_errors": 3,
+          "tool_results": 84,
+          "total_bucket_tokens": 3072722,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "engineer",
+          "worker_id": "task-ecount-007"
+        },
+        "path": "phases/01-ticket/workers/engineer/task-ecount-007/report.json",
+        "result": "pass",
+        "tool_errors": 7,
+        "usage": {
+          "assistant_turns": 134,
+          "budget_usd": 0.25,
+          "cache_read_cost_usd": 0.162588672,
+          "cache_read_tokens": 9032704,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.19957669200000003,
+          "input_cost_usd": 0.028583099999999997,
+          "input_tokens": 317590,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.008404919999999998,
+          "output_tokens": 46694,
+          "provider_total_tokens": 9396988,
+          "reasoning_tokens": 22110,
+          "thinking_blocks": 96,
+          "tool_calls": 143,
+          "tool_errors": 7,
+          "tool_results": 143,
+          "total_bucket_tokens": 9396988,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-ecount"
+        },
+        "path": "phases/02-reeval-task-ecount-004/workers/eval-manager/task-ecount/report.json",
+        "result": "pass",
+        "tool_errors": 1,
+        "usage": {
+          "assistant_turns": 14,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.004478976,
+          "cache_read_tokens": 248832,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.012759066,
+          "input_cost_usd": 0.006193529999999999,
+          "input_tokens": 68817,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00208656,
+          "output_tokens": 11592,
+          "provider_total_tokens": 329241,
+          "reasoning_tokens": 6960,
+          "thinking_blocks": 13,
+          "tool_calls": 21,
+          "tool_errors": 1,
+          "tool_results": 21,
+          "total_bucket_tokens": 329241,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-ecount-1"
+        },
+        "path": "phases/02-reeval-task-ecount-004/workers/eval-worker/task-ecount-1/report.json",
+        "result": "pass",
+        "tool_errors": 6,
+        "usage": {
+          "assistant_turns": 46,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.015600384,
+          "cache_read_tokens": 866688,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.024605424,
+          "input_cost_usd": 0.005858459999999997,
+          "input_tokens": 65094,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.003146580000000001,
+          "output_tokens": 17481,
+          "provider_total_tokens": 949263,
+          "reasoning_tokens": 10168,
+          "thinking_blocks": 39,
+          "tool_calls": 57,
+          "tool_errors": 6,
+          "tool_results": 57,
+          "total_bucket_tokens": 949263,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-ecount"
+        },
+        "path": "phases/02-reeval-task-ecount-007/workers/eval-manager/task-ecount/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 27,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.01645632,
+          "cache_read_tokens": 914240,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.03059856,
+          "input_cost_usd": 0.00865458,
+          "input_tokens": 96162,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.005487660000000001,
+          "output_tokens": 30487,
+          "provider_total_tokens": 1040889,
+          "reasoning_tokens": 21479,
+          "thinking_blocks": 25,
+          "tool_calls": 38,
+          "tool_errors": 0,
+          "tool_results": 38,
+          "total_bucket_tokens": 1040889,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-ecount-1"
+        },
+        "path": "phases/02-reeval-task-ecount-007/workers/eval-worker/task-ecount-1/report.json",
+        "result": "pass",
+        "tool_errors": 5,
+        "usage": {
+          "assistant_turns": 60,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.02313792000000001,
+          "cache_read_tokens": 1285440,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.03402170999999999,
+          "input_cost_usd": 0.007148609999999998,
+          "input_tokens": 79429,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0037351799999999994,
+          "output_tokens": 20751,
+          "provider_total_tokens": 1385620,
+          "reasoning_tokens": 12958,
+          "thinking_blocks": 42,
+          "tool_calls": 71,
+          "tool_errors": 5,
+          "tool_results": 71,
+          "total_bucket_tokens": 1385620,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-envcfg"
+        },
+        "path": "phases/03-eval/workers/eval-manager/task-envcfg/report.json",
+        "result": "pass",
+        "tool_errors": 1,
+        "usage": {
+          "assistant_turns": 16,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.004372992,
+          "cache_read_tokens": 242944,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.009987282,
+          "input_cost_usd": 0.00408321,
+          "input_tokens": 45369,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00153108,
+          "output_tokens": 8506,
+          "provider_total_tokens": 296819,
+          "reasoning_tokens": 3511,
+          "thinking_blocks": 13,
+          "tool_calls": 21,
+          "tool_errors": 1,
+          "tool_results": 21,
+          "total_bucket_tokens": 296819,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-envcfg-1"
+        },
+        "path": "phases/03-eval/workers/eval-worker/task-envcfg-1/report.json",
+        "result": "pass",
+        "tool_errors": 1,
+        "usage": {
+          "assistant_turns": 28,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.005250815999999999,
+          "cache_read_tokens": 291712,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.009903726000000002,
+          "input_cost_usd": 0.0031812299999999997,
+          "input_tokens": 35347,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0014716799999999993,
+          "output_tokens": 8176,
+          "provider_total_tokens": 335235,
+          "reasoning_tokens": 3864,
+          "thinking_blocks": 17,
+          "tool_calls": 38,
+          "tool_errors": 1,
+          "tool_results": 38,
+          "total_bucket_tokens": 335235,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-designer",
+          "worker_id": "proposal-1"
+        },
+        "path": "phases/04-eval-design/workers/eval-designer/proposal-1/report.json",
+        "result": "pass",
+        "tool_errors": 1,
+        "usage": {
+          "assistant_turns": 35,
+          "budget_usd": 0.3,
+          "cache_read_cost_usd": 0.02878271999999999,
+          "cache_read_tokens": 1599040,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.04860782999999999,
+          "input_cost_usd": 0.015442469999999996,
+          "input_tokens": 171583,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00438264,
+          "output_tokens": 24348,
+          "provider_total_tokens": 1794971,
+          "reasoning_tokens": 10888,
+          "thinking_blocks": 26,
+          "tool_calls": 66,
+          "tool_errors": 1,
+          "tool_results": 66,
+          "total_bucket_tokens": 1794971,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "e45dc69d301e9db44f9166f2abf0e7f9e1ab5bf9"
+  },
+  "findings": [
+    {
+      "id": "02-reeval-task-ecount-007",
+      "kind": "phase",
+      "result": "fail"
+    }
+  ],
+  "identity": {
+    "mode": "organization",
+    "run_id": "run-1785805967215"
+  },
+  "kind": "run",
+  "result": "fail",
+  "schema_version": 1,
+  "state": "completed"
+}

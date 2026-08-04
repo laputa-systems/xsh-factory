@@ -1,0 +1,91 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785805967215/phases/02-reeval-task-ecount-004/workers/eval-manager/task-ecount/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_process": "pass",
+    "reporting": "pass",
+    "required_report": "present",
+    "session_limit_watcher": "pass",
+    "watcher": "pass"
+  },
+  "findings": [
+    {
+      "count": 1,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "role": "eval-manager",
+    "worker_id": "task-ecount"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785805967215/phases/02-reeval-task-ecount-004/workers/eval-manager/task-ecount/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 13,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 182254
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785805967215/phases/02-reeval-task-ecount-004/workers/eval-manager/task-ecount/session.jsonl.bz2",
+      "summary": "   4 sort-by\n   1 sort-by { |r|\n   2 sort-by { |r| r }\n   1 sort-by { |r| r }` returning the record. The record fields cnt then ext order. So primary cnt, secondary ext. \n   1 sort-by 2>&1; echo ===; xsht api language:stream.group-by 2>&1\n   1 sort-by and group-by.\n   1 sort-by on (cnt, ext) is deterministic.\n   1 sort-by on the record returns the record; contract: records compare field by field in sorted field-name order. Field names: cnt and ext. Sorted alphabetical: \n   1 sort-by or use stream. Let me simplify. Print all entries with kind. Actually just count. Let me fix.\n   1 sort-by twice: first by `.e`, then by `.c`. Or single sort-by on the record — but field order is alphabetical: 'c' then 'd'? If I name fields `cnt` and `ext`, alphabetical order: cnt < ext, so compares cnt first. Good. Let me use record {cnt: Int, ext: Str} and sort-by single `.` (the whole record). Actually sort-by block returns the key. If I return the record `{cnt, ext}` it compares field-by-field in sorted field-name order: cnt then ext. \n===Any/map.empty/Map[Int]===\n13\n0\n0\n===stream-sort rejection?===\n0\n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 6
+    }
+  ],
+  "tools": [
+    {
+      "count": 9,
+      "name": "bash"
+    },
+    {
+      "count": 11,
+      "name": "read"
+    },
+    {
+      "count": 1,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 14,
+    "budget_usd": 0.15,
+    "cache_read_cost_usd": 0.004478976,
+    "cache_read_tokens": 248832,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.012759066,
+    "input_cost_usd": 0.006193529999999999,
+    "input_tokens": 68817,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.00208656,
+    "output_tokens": 11592,
+    "provider_total_tokens": 329241,
+    "reasoning_tokens": 6960,
+    "thinking_blocks": 13,
+    "tool_calls": 21,
+    "tool_errors": 1,
+    "tool_results": 21,
+    "total_bucket_tokens": 329241,
+    "user_messages": 1
+  }
+}

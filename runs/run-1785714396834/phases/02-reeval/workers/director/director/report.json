@@ -1,0 +1,90 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785714396834/phases/02-reeval/workers/director/director/session.jsonl.bz2"
+    }
+  ],
+  "findings": [
+    {
+      "count": 2,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "role": "director",
+    "worker_id": "director"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785714396834/phases/02-reeval/workers/director/director/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 8,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 122918
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785714396834/phases/02-reeval/workers/director/director/session.jsonl.bz2",
+      "summary": "ENOENT: no such file or directory, access '/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785714396834/phases/02-reeval/workers/eval-worker/task-ecount-1/REPORT.md'",
+      "tool": "read",
+      "turn": 2
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785714396834/phases/02-reeval/workers/director/director/session.jsonl.bz2",
+      "summary": "Path not found: /Users/josh/d/laputa-systems/xsh-factory/runs/run-1785714396834/phases/02-reeval/workers/eval-designer",
+      "tool": "ls",
+      "turn": 3
+    }
+  ],
+  "tools": [
+    {
+      "count": 7,
+      "name": "ls"
+    },
+    {
+      "count": 14,
+      "name": "read"
+    },
+    {
+      "count": 1,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 9,
+    "budget_usd": 0.06,
+    "cache_read_cost_usd": 0.0003459372,
+    "cache_read_tokens": 123549.0,
+    "cache_write_cost_usd": 0.0,
+    "cache_write_tokens": 0.0,
+    "cost_usd": 0.005448097200000001,
+    "input_cost_usd": 0.00342916,
+    "input_tokens": 24494.0,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.0016730000000000002,
+    "output_tokens": 5975.0,
+    "provider_total_tokens": 154018.0,
+    "reasoning_tokens": 2688.0,
+    "thinking_blocks": 8,
+    "tool_calls": 22,
+    "tool_errors": 2,
+    "tool_results": 22,
+    "total_bucket_tokens": 154018.0,
+    "user_messages": 1
+  }
+}

@@ -1,0 +1,121 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785784385782/phases/01-ticket/workers/engineer/task-envcfg-001/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_process": "nonzero-exit",
+    "reporting": "failed",
+    "required_report": "present",
+    "session_limit_watcher": "pass",
+    "watcher": "failed"
+  },
+  "findings": [
+    {
+      "count": 6,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "role": "engineer",
+    "worker_id": "task-envcfg-001"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "result": "fail",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785784385782/phases/01-ticket/workers/engineer/task-envcfg-001/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 155,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 1326070
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785784385782/phases/01-ticket/workers/engineer/task-envcfg-001/session.jsonl.bz2",
+      "summary": "/bin/bash: line 0: cd: /Users/josh/d/laputa-systems/xsh-factory/runs/run-1785785782/phases/01-ticket/worktrees/task-envcfg-001: No such file or directory\n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 4
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785784385782/phases/01-ticket/workers/engineer/task-envcfg-001/session.jsonl.bz2",
+      "summary": "ENOENT: no such file or directory, access '/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785785782/phases/01-ticket/worktrees/task-envcfg-001/src/sema/check/call.rs'",
+      "tool": "read",
+      "turn": 4
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785784385782/phases/01-ticket/workers/engineer/task-envcfg-001/session.jsonl.bz2",
+      "summary": "Path not found: /Users/josh/d/laputa-systems/xsh-factory/runs/run-1785785782/phases/01-ticket/worktrees/task-envcfg-001/src/sema/types.rs",
+      "tool": "grep",
+      "turn": 8
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785784385782/phases/01-ticket/workers/engineer/task-envcfg-001/session.jsonl.bz2",
+      "summary": "/bin/bash: line 0: cd: /Users/josh/d/laputa-systems/xsh-factory/runs/run-1785785782/phases/01-ticket/worktrees/task-envcfg-001: No such file or directory\n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 9
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785784385782/phases/01-ticket/workers/engineer/task-envcfg-001/session.jsonl.bz2",
+      "summary": "Path not found: /Users/josh/d/laputa-systems/xsh-factory/runs/run-1785785782/phases/01-ticket/worktrees/task-envcfg-001/src/runtime/value.rs",
+      "tool": "grep",
+      "turn": 29
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785784385782/phases/01-ticket/workers/engineer/task-envcfg-001/session.jsonl.bz2",
+      "summary": "Could not find edits[0] in /Users/josh/d/laputa-systems/xsh-factory/runs/run-1785784385782/phases/01-ticket/worktrees/task-envcfg-001/src/runtime/eval/lowered_run/indexed_run.rs. The oldText must match exactly including all whitespace and newlines.",
+      "tool": "edit",
+      "turn": 145
+    }
+  ],
+  "tools": [
+    {
+      "count": 100,
+      "name": "bash"
+    },
+    {
+      "count": 11,
+      "name": "edit"
+    },
+    {
+      "count": 4,
+      "name": "grep"
+    },
+    {
+      "count": 48,
+      "name": "read"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 155,
+    "budget_usd": 0.25,
+    "cache_read_cost_usd": 0.216958464,
+    "cache_read_tokens": 12053248,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.25148372399999996,
+    "input_cost_usd": 0.021195900000000004,
+    "input_tokens": 235510,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.013329359999999998,
+    "output_tokens": 74052,
+    "provider_total_tokens": 12362810,
+    "reasoning_tokens": 49719,
+    "thinking_blocks": 114,
+    "tool_calls": 163,
+    "tool_errors": 6,
+    "tool_results": 163,
+    "total_bucket_tokens": 12362810,
+    "user_messages": 1
+  }
+}

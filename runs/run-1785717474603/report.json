@@ -1,0 +1,346 @@
+{
+  "artifacts": [
+    {
+      "kind": "phase-reports",
+      "path": "phases/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 163,
+      "budget_failures": 0,
+      "cost_usd": 0.1320212312,
+      "tool_errors": 9,
+      "total_bucket_tokens": 5710157.0,
+      "unknown_costs": 0,
+      "workers": 6
+    },
+    "mode": "organization",
+    "phases": [
+      {
+        "id": "01-ticket",
+        "path": "phases/01-ticket/report.json",
+        "result": "pass",
+        "valid": true
+      },
+      {
+        "id": "02-reeval",
+        "path": "phases/02-reeval/report.json",
+        "result": "fail",
+        "valid": true
+      },
+      {
+        "id": "03-eval",
+        "path": "phases/03-eval/report.json",
+        "result": "pass",
+        "valid": true
+      }
+    ],
+    "tool_errors": [
+      {
+        "report": "phases/02-reeval/workers/eval-worker/task-ecount-1/report.json",
+        "summary": "b\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nb\nuse small:\n      1 1\n      1 2\n      1 3\n---\nsh: python3: not found\n\n[Showing lines 8012-10011 of 10011. Full output: /tmp/pi-bash-e8a50e0f79f0fdb9.log]\n\nCommand exited with code 127",
+        "tool": "bash",
+        "turn": 7,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-ecount-1"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/director/director/report.json",
+        "summary": "ENOENT: no such file or directory, access '/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785717474603/phases/03-eval/workers/eval-worker/task-envcfg-1/REPORT.md'",
+        "tool": "read",
+        "turn": 2,
+        "worker": {
+          "role": "director",
+          "worker_id": "director"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-manager/task-envcfg/report.json",
+        "summary": "ORGANIZATION-ACTIVE\neval-build.lock\nfactory.lock\norganization.lock\nrun-1785713401021\nrun-1785714396834\nrun-1785716048226\nrun-1785717474603\n----\nCANDIDATE: runs/run-1785714396834/phases/03-eval/lineage\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 8,
+        "worker": {
+          "role": "eval-manager",
+          "worker_id": "task-envcfg"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-manager/task-envcfg/report.json",
+        "summary": "=== headings ===\n## Result\n## Effort metrics\n## Usage and cost\n## Thinking evidence\n## Tool-error findings\n## Timing evidence\n## Observation classification\n## Handbook decision\n## Tickets created\n## Post-merge decisions\n## Next replay\n## North-star impact\n\n=== candidate vs approved diff ===\n69a70,75\n> To reject invalid input deliberately, propagate an expected failure from a\n> typed conversion (for example `env.int(...)?` or a `parse_int` result) and\n> let postfix `?` produce the nonzero exit. This build has no generic\n> `Error(...)` constructor, so a deliberate failure is expressed by propagating\n> a conversion error, not by constructing an `Error` value.\n> \n78a85,90\n> Path literals do not interpolate. To build a Path from a runtime string (for\n> example a script argument), use the interpolated path string `fp\"${expr}\"`\n> (the lint-preferred form) or the `Path(expr)` cast:\n> \n>     let out = fp\"${argv.get(0, \"env.cfg\")}\"\n> \n136a149,162\n> print arguments are command words, not general expressions: `+` is not a\n> string-concatenation operator inside print, and a bare identifier must be\n> written `$var` to dereference it. To emit an exact line that needs\n> concatenation, build it in expression position (for example in a `let`\n> binding, where `+` does concatenate strings) and then print the value with\n> `$var` interpolation:\n> \n>     let line = if argv.len() == 0 { \"\" } else { \" \" + joined }\n>     print \"tags:\"$line\n> \n> Expression string literals do not interpolate (`let s = \"tags:$x\"` is a parse\n> error); the interpolating forms are command-word `$var` usage inside print and\n> explicit format strings (`f\"\"\"...\"\"\"`).\n> \n165a192,196\n> Language-rule ids live under `language:core.*` and `language.effect.*` (for\n> example `language:core.path-literals`, `language:core.results`,\n> `language.effect.error`), and fuzzy discovery accepts one term:\n> `xsht api search:TERM`.\n> \n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 13,
+        "worker": {
+          "role": "eval-manager",
+          "worker_id": "task-envcfg"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-worker/task-envcfg-1/report.json",
+        "summary": "(no output)\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 8,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-envcfg-1"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-worker/task-envcfg-1/report.json",
+        "summary": "(no output)\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 9,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-envcfg-1"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-worker/task-envcfg-1/report.json",
+        "summary": "err[parse.expected-terminator]: expected statement terminator\n  /tmp/tp.xsh:2:12\n    let p = p$argv[0]\n             ^^^^^ expected statement terminator\n\nerr[parse.expected-expression]: `$name` is command-word syntax; in expression context, use `name` directly\n  /tmp/tp.xsh:2:12\n    let p = p$argv[0]\n             ^^^^^ use `argv` here, not `$argv`\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 24,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-envcfg-1"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-worker/task-envcfg-1/report.json",
+        "summary": "err[check.unresolved-call]: unresolved pure function call\n  /tmp/tp.xsh:2:11\n    let p = p(argv.get(0, \"/tmp/out3.cfg\"))\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ unresolved pure function call\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 25,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-envcfg-1"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-worker/task-envcfg-1/report.json",
+        "summary": "\nsh: python3: not found\n\n\nCommand exited with code 127",
+        "tool": "bash",
+        "turn": 62,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-envcfg-1"
+        }
+      }
+    ],
+    "workers": [
+      {
+        "identity": {
+          "role": "director",
+          "worker_id": "director"
+        },
+        "path": "phases/02-reeval/workers/director/director/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 11,
+          "budget_usd": 0.06,
+          "cache_read_cost_usd": 0.0005522944000000001,
+          "cache_read_tokens": 197248,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.0058517144,
+          "input_cost_usd": 0.00365946,
+          "input_tokens": 26139,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00163996,
+          "output_tokens": 5857,
+          "provider_total_tokens": 229244,
+          "reasoning_tokens": 1865,
+          "thinking_blocks": 11,
+          "tool_calls": 22,
+          "tool_errors": 0,
+          "tool_results": 22,
+          "total_bucket_tokens": 229244,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-ecount"
+        },
+        "path": "phases/02-reeval/workers/eval-manager/task-ecount/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 19,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.0028732928,
+          "cache_read_tokens": 1026176,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.0179139128,
+          "input_cost_usd": 0.00974554,
+          "input_tokens": 69611,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00529508,
+          "output_tokens": 18911,
+          "provider_total_tokens": 1114698,
+          "reasoning_tokens": 11690,
+          "thinking_blocks": 19,
+          "tool_calls": 28,
+          "tool_errors": 0,
+          "tool_results": 28,
+          "total_bucket_tokens": 1114698,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-ecount-1"
+        },
+        "path": "phases/02-reeval/workers/eval-worker/task-ecount-1/report.json",
+        "result": "pass",
+        "tool_errors": 1,
+        "usage": {
+          "assistant_turns": 8,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.0008248319999999998,
+          "cache_read_tokens": 45824,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.003626082,
+          "input_cost_usd": 0.00208503,
+          "input_tokens": 23167,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00071622,
+          "output_tokens": 3979,
+          "provider_total_tokens": 72970,
+          "reasoning_tokens": 2560,
+          "thinking_blocks": 8,
+          "tool_calls": 13,
+          "tool_errors": 1,
+          "tool_results": 13,
+          "total_bucket_tokens": 72970,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "director",
+          "worker_id": "director"
+        },
+        "path": "phases/03-eval/workers/director/director/report.json",
+        "result": "pass",
+        "tool_errors": 1,
+        "usage": {
+          "assistant_turns": 9,
+          "budget_usd": 0.06,
+          "cache_read_cost_usd": 0.0003347456,
+          "cache_read_tokens": 119552,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.004219605600000001,
+          "input_cost_usd": 0.0026704999999999997,
+          "input_tokens": 19075,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00121436,
+          "output_tokens": 4337,
+          "provider_total_tokens": 142964,
+          "reasoning_tokens": 946,
+          "thinking_blocks": 9,
+          "tool_calls": 20,
+          "tool_errors": 1,
+          "tool_results": 20,
+          "total_bucket_tokens": 142964,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-envcfg"
+        },
+        "path": "phases/03-eval/workers/eval-manager/task-envcfg/report.json",
+        "result": "pass",
+        "tool_errors": 2,
+        "usage": {
+          "assistant_turns": 19,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.0026847743999999993,
+          "cache_read_tokens": 958848,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.0192464944,
+          "input_cost_usd": 0.00805756,
+          "input_tokens": 57554,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00850416,
+          "output_tokens": 30372,
+          "provider_total_tokens": 1046774,
+          "reasoning_tokens": 20127,
+          "thinking_blocks": 18,
+          "tool_calls": 33,
+          "tool_errors": 2,
+          "tool_results": 33,
+          "total_bucket_tokens": 1046774,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-envcfg-1"
+        },
+        "path": "phases/03-eval/workers/eval-worker/task-envcfg-1/report.json",
+        "result": "pass",
+        "tool_errors": 5,
+        "usage": {
+          "assistant_turns": 97,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.05032051199999999,
+          "cache_read_tokens": 2795584,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.08116342200000001,
+          "input_cost_usd": 0.02458323,
+          "input_tokens": 273147,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.006259680000000001,
+          "output_tokens": 34776,
+          "provider_total_tokens": 3103507,
+          "reasoning_tokens": 22142,
+          "thinking_blocks": 74,
+          "tool_calls": 106,
+          "tool_errors": 5,
+          "tool_results": 106,
+          "total_bucket_tokens": 3103507,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "ea7dea2f2b436cce34262d7a02105cbb029243dd"
+  },
+  "findings": [
+    {
+      "id": "02-reeval",
+      "kind": "phase",
+      "result": "fail"
+    }
+  ],
+  "identity": {
+    "mode": "organization",
+    "run_id": "run-1785717474603"
+  },
+  "kind": "run",
+  "result": "fail",
+  "schema_version": 1,
+  "state": "completed"
+}

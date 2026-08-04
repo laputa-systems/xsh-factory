@@ -1,0 +1,88 @@
+{
+  "classification": "candidate_failed",
+  "correctness": {
+    "all_exact": false,
+    "cases": [
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 12992574,
+        "exact": false,
+        "name": "public",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 13343867
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 12030652,
+        "exact": false,
+        "name": "hidden_nested",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 11270523
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 13157950,
+        "exact": false,
+        "name": "hidden_empty_dirs",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 13354326
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 12299445,
+        "exact": false,
+        "name": "hidden_single",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 11681358
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 13147658,
+        "exact": false,
+        "name": "hidden_spaces",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 13163366
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 13188659,
+        "exact": false,
+        "name": "hidden_utf8",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 13467702
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 12001985,
+        "exact": false,
+        "name": "hidden_empty",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 13221367
+      },
+      {
+        "candidate_exit": 3,
+        "candidate_wall_ns": 13077616,
+        "exact": true,
+        "name": "hidden_missing_root",
+        "oracle_exit": 1,
+        "oracle_wall_ns": 11309064
+      }
+    ],
+    "passed": false
+  },
+  "eval_id": "task-manifest",
+  "image_id": "unknown",
+  "platform": "unknown",
+  "protocol": {
+    "artifact_present": true,
+    "review_ok": true
+  },
+  "restrictions": {
+    "passed": true
+  },
+  "result": "fail",
+  "timings": {
+    "passed": true
+  },
+  "trial_id": "1"
+}

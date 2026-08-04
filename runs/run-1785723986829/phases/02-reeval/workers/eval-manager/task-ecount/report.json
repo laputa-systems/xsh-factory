@@ -1,0 +1,82 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785723986829/phases/02-reeval/workers/eval-manager/task-ecount/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_process": "pass",
+    "reporting": "pass",
+    "required_report": "present",
+    "session_limit_watcher": "pass",
+    "watcher": "pass"
+  },
+  "findings": [],
+  "identity": {
+    "role": "eval-manager",
+    "worker_id": "task-ecount"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785723986829/phases/02-reeval/workers/eval-manager/task-ecount/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 31,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 401095
+  },
+  "tool_errors": [],
+  "tools": [
+    {
+      "count": 27,
+      "name": "bash"
+    },
+    {
+      "count": 4,
+      "name": "ls"
+    },
+    {
+      "count": 17,
+      "name": "read"
+    },
+    {
+      "count": 2,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 32,
+    "budget_usd": 0.15,
+    "cache_read_cost_usd": 0.0043703296,
+    "cache_read_tokens": 1560832,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.024914769600000004,
+    "input_cost_usd": 0.01029392,
+    "input_tokens": 73528,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.01025052,
+    "output_tokens": 36609,
+    "provider_total_tokens": 1670969,
+    "reasoning_tokens": 22857,
+    "thinking_blocks": 29,
+    "tool_calls": 50,
+    "tool_errors": 0,
+    "tool_results": 50,
+    "total_bucket_tokens": 1670969,
+    "user_messages": 1
+  }
+}

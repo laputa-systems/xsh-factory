@@ -1,0 +1,99 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785733794880/phases/03-eval/workers/eval-manager/task-envcfg/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_process": "pass",
+    "reporting": "pass",
+    "required_report": "present",
+    "session_limit_watcher": "pass",
+    "watcher": "pass"
+  },
+  "findings": [
+    {
+      "count": 1,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "role": "eval-manager",
+    "worker_id": "task-envcfg"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785733794880/phases/03-eval/workers/eval-manager/task-envcfg/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 39,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 541066
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785733794880/phases/03-eval/workers/eval-manager/task-envcfg/session.jsonl.bz2",
+      "summary": "EISDIR: illegal operation on a directory, read",
+      "tool": "read",
+      "turn": 5
+    }
+  ],
+  "tools": [
+    {
+      "count": 30,
+      "name": "bash"
+    },
+    {
+      "count": 2,
+      "name": "edit"
+    },
+    {
+      "count": 3,
+      "name": "ls"
+    },
+    {
+      "count": 20,
+      "name": "read"
+    },
+    {
+      "count": 2,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 40,
+    "budget_usd": 0.15,
+    "cache_read_cost_usd": 0.0055610519999999995,
+    "cache_read_tokens": 1986090,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.032916212,
+    "input_cost_usd": 0.012082280000000004,
+    "input_tokens": 86302,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.01527288,
+    "output_tokens": 54546,
+    "provider_total_tokens": 2126938,
+    "reasoning_tokens": 38797,
+    "thinking_blocks": 35,
+    "tool_calls": 57,
+    "tool_errors": 1,
+    "tool_results": 57,
+    "total_bucket_tokens": 2126938,
+    "user_messages": 1
+  }
+}

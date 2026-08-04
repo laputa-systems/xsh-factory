@@ -1,0 +1,237 @@
+{
+  "artifacts": [
+    {
+      "kind": "session-directory",
+      "path": "workers/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 44,
+      "budget_failures": 0,
+      "cost_usd": 0.019891008,
+      "tool_errors": 2,
+      "total_bucket_tokens": 632054.0,
+      "unknown_costs": 0,
+      "workers": 2
+    },
+    "designer": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785805967215/phases/03-eval/workers/eval-designer/proposal-1/REPORT.md",
+      "present": false,
+      "result": "not-requested",
+      "role": "eval-designer",
+      "valid": true
+    },
+    "director": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785805967215/phases/03-eval/workers/director/director/REPORT.md",
+      "present": false,
+      "result": "not-requested",
+      "role": "director",
+      "valid": true
+    },
+    "engineer": [],
+    "handbook_lineage": {
+      "approved": "lineage/handbook-approved.md",
+      "candidate": "lineage/handbook-candidate.md"
+    },
+    "manager": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785805967215/phases/03-eval/workers/eval-manager/task-envcfg/REPORT.md",
+      "present": true,
+      "result": "pass",
+      "role": "eval-manager",
+      "valid": true
+    },
+    "mode": "eval",
+    "narratives": [
+      {
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785805967215/phases/03-eval/workers/eval-manager/task-envcfg/REPORT.md",
+        "present": true,
+        "result": "pass",
+        "role": "eval-manager",
+        "valid": true
+      }
+    ],
+    "open_tickets": [
+      {
+        "eval_id": "task-ecount",
+        "id": "task-ecount-004",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-ecount-004.md",
+        "status": "Approved."
+      },
+      {
+        "eval_id": "task-ecount",
+        "id": "task-ecount-007",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-ecount-007.md",
+        "status": "Approved."
+      },
+      {
+        "eval_id": "task-ecount",
+        "id": "task-ecount-008",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-ecount-008.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-envcfg",
+        "id": "task-envcfg-002",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-envcfg-002.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-envcfg",
+        "id": "task-envcfg-006",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-envcfg-006.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-tags",
+        "id": "task-tags-003",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-tags-003.md",
+        "status": "Open."
+      }
+    ],
+    "required_outputs": {
+      "audit": true,
+      "candidate_handbook": true,
+      "designer_handbook_read": true,
+      "designer_output": true,
+      "handbook_lineage": true,
+      "manager_evidence_read": true,
+      "manager_handbook_read": true,
+      "manager_report": true,
+      "manager_session": true,
+      "required": true,
+      "trial1_process": true,
+      "trial1_report": true,
+      "trial2_process": true,
+      "trial2_report": true,
+      "worker_handbook_read": true
+    },
+    "sessions": [
+      "workers/eval-manager/task-envcfg/session.jsonl.bz2",
+      "workers/eval-worker/task-envcfg-1/session.jsonl.bz2"
+    ],
+    "tool_errors": [
+      {
+        "report": "workers/eval-manager/task-envcfg/report.json",
+        "summary": "Could not find the exact text in /Users/josh/d/laputa-systems/xsh-factory/runs/run-1785805967215/phases/03-eval/lineage/handbook-candidate.md. The old text must match exactly including all whitespace and newlines.",
+        "tool": "edit",
+        "turn": 11,
+        "worker": {
+          "role": "eval-manager",
+          "worker_id": "task-envcfg"
+        }
+      },
+      {
+        "report": "workers/eval-worker/task-envcfg-1/report.json",
+        "summary": "---fmt done---\nproc main(...argv: List[Str]) [fs, env, error] {\n  let host = env.get_or(\"CFG_HOST\", \"localhost\")?\n  let port = env.get_or(\"CFG_PORT\", \"8080\")?\n  let debug = env.get_or(\"CFG_DEBUG\", \"false\")?\n\n  # CFG_PORT must be a non-empty decimal integer when present.\n  let _ = env.int(\"CFG_PORT\", 8080)?\n  let text = \"host=\" + host + \"\"\"\nport=\"\"\" + port + \"\"\"\ndebug=\"\"\" + debug + \"\\n\"\n  let out_path = Path(argv[0])\n  fs.write(out_path, text)?\n}\n---lint---\nwarn[lint.path-constructor]: prefer p-string interpolation over `Path(...)`\n  envcfg.xsh:11:18\n    let out_path = Path(argv[0])\n                   ------------- use path string syntax instead\nnote: `Path(...)` remains a cast, but p-strings are the preferred path syntax\nhelp: replace with path string -> fp\"${argv[0]}\"\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 16,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-envcfg-1"
+        }
+      }
+    ],
+    "trials": [
+      {
+        "evidence": {
+          "candidate_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "classification": "pass",
+          "correctness": "pass",
+          "eval_id": "task-envcfg",
+          "handbook_sha256": "97c5d804c42c7742c9edfea4480163828d864279391d391df77aa60ee4a40e83",
+          "oracle_sha256": "594a1118ea571bcfe5b2a8b7239b28924bd32ced928ba9ea5377a2c1b0bd71f6",
+          "passed": true,
+          "protocol": "pass",
+          "restrictions": "pass",
+          "result": "pass",
+          "timing": "pass",
+          "trial_id": "1",
+          "valid": true
+        },
+        "path": "workers/eval-worker/task-envcfg-1/run.json"
+      }
+    ],
+    "workers": [
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-envcfg"
+        },
+        "path": "workers/eval-manager/task-envcfg/report.json",
+        "result": "pass",
+        "tool_errors": 1,
+        "usage": {
+          "assistant_turns": 16,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.004372992,
+          "cache_read_tokens": 242944,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.009987282,
+          "input_cost_usd": 0.00408321,
+          "input_tokens": 45369,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00153108,
+          "output_tokens": 8506,
+          "provider_total_tokens": 296819,
+          "reasoning_tokens": 3511,
+          "thinking_blocks": 13,
+          "tool_calls": 21,
+          "tool_errors": 1,
+          "tool_results": 21,
+          "total_bucket_tokens": 296819,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-envcfg-1"
+        },
+        "path": "workers/eval-worker/task-envcfg-1/report.json",
+        "result": "pass",
+        "tool_errors": 1,
+        "usage": {
+          "assistant_turns": 28,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.005250815999999999,
+          "cache_read_tokens": 291712,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.009903726000000002,
+          "input_cost_usd": 0.0031812299999999997,
+          "input_tokens": 35347,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0014716799999999993,
+          "output_tokens": 8176,
+          "provider_total_tokens": 335235,
+          "reasoning_tokens": 3864,
+          "thinking_blocks": 17,
+          "tool_calls": 38,
+          "tool_errors": 1,
+          "tool_results": 38,
+          "total_bucket_tokens": 335235,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "e45dc69d301e9db44f9166f2abf0e7f9e1ab5bf9"
+  },
+  "findings": [],
+  "identity": {
+    "eval_id": "task-envcfg",
+    "mode": "eval",
+    "run_id": "03-eval"
+  },
+  "kind": "phase",
+  "result": "pass",
+  "schema_version": 1,
+  "state": "completed"
+}

@@ -1,0 +1,155 @@
+{
+  "artifacts": [
+    {
+      "kind": "session-directory",
+      "path": "workers/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 45,
+      "budget_failures": 0,
+      "cost_usd": 0.043639092,
+      "tool_errors": 3,
+      "total_bucket_tokens": 1593507.0,
+      "unknown_costs": 0,
+      "workers": 1
+    },
+    "designer": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785813921392/phases/04-eval-design/workers/eval-designer/proposal-1/REPORT.md",
+      "present": true,
+      "result": "ready-for-review",
+      "role": "eval-designer",
+      "valid": true
+    },
+    "director": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785813921392/phases/04-eval-design/workers/director/director/REPORT.md",
+      "present": false,
+      "result": "missing",
+      "role": "director",
+      "valid": false
+    },
+    "engineer": [],
+    "handbook_lineage": {
+      "approved": "missing",
+      "candidate": "missing"
+    },
+    "manager": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785813921392/phases/04-eval-design/workers/eval-manager/task-envcfg/REPORT.md",
+      "present": false,
+      "result": "missing",
+      "role": "eval-manager",
+      "valid": false
+    },
+    "mode": "eval-design",
+    "narratives": [
+      {
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785813921392/phases/04-eval-design/workers/eval-designer/proposal-1/REPORT.md",
+        "present": true,
+        "result": "ready-for-review",
+        "role": "eval-designer",
+        "valid": true
+      }
+    ],
+    "open_tickets": [
+      {
+        "eval_id": "task-ecount",
+        "id": "task-ecount-008",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-ecount-008.md",
+        "status": "Approved."
+      },
+      {
+        "eval_id": "task-tags",
+        "id": "task-tags-003",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-tags-003.md",
+        "status": "Open."
+      }
+    ],
+    "required_outputs": null,
+    "sessions": [
+      "workers/eval-designer/proposal-1/session.jsonl.bz2"
+    ],
+    "tool_errors": [
+      {
+        "report": "workers/eval-designer/proposal-1/report.json",
+        "summary": "     212 eval-executor.xsh\n      16 evaluate_common.xsh\n     508 evaluate_legacy.xsh\n     736 total\n---\nagents.md\nhandbook-ledger.md\nhandbook.md\nreview.md\n---lib---\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 10,
+        "worker": {
+          "role": "eval-designer",
+          "worker_id": "proposal-1"
+        }
+      },
+      {
+        "report": "workers/eval-designer/proposal-1/report.json",
+        "summary": "---OUT---\nhost=alpha.local\nport=8080\nother=@NOPE@\nEXIT=0\nerr[check.duplicate-name]: duplicate name in scope\n  render.xsh:18:3\n    let _ = m.keys() |> each { |k|\n    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ duplicate name in scope\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 27,
+        "worker": {
+          "role": "eval-designer",
+          "worker_id": "proposal-1"
+        }
+      },
+      {
+        "report": "workers/eval-designer/proposal-1/report.json",
+        "summary": "warn[lint.path-constructor]: prefer p-string interpolation over `Path(...)`\n  render.xsh:2:31\n    let template = fs.read_text(Path(argv[0]))?\n                                ------------- use path string syntax instead\nnote: `Path(...)` remains a cast, but p-strings are the preferred path syntax\nhelp: replace with path string -> fp\"${argv[0]}\"\nwarn[lint.path-constructor]: prefer p-string interpolation over `Path(...)`\n  render.xsh:3:34\n    let values_text = fs.read_text(Path(argv[1]))?\n                                   ------------- use path string syntax instead\nnote: `Path(...)` remains a cast, but p-strings are the preferred path syntax\nhelp: replace with path string -> fp\"${argv[1]}\"\nwarn[lint.path-constructor]: prefer p-string interpolation over `Path(...)`\n  render.xsh:4:16\n    let output = Path(argv[2])\n                 ------------- use path string syntax instead\nnote: `Path(...)` remains a cast, but p-strings are the preferred path syntax\nhelp: replace with path string -> fp\"${argv[2]}\"\nwarn[lint.prefer-in]: prefer `in` over `.contains(...)`\n  render.xsh:7:8\n      if line.contains(\"=\") {\n         ------------------ use membership syntax instead\nhelp: rewrite with `in` -> \"=\" in line\nwarn[lint.unused-local]: unused local variable `_built`\n  render.xsh:6:3\n    let _built = values_text.split(\"\\n\") |> each { |line|\n    ----------------------------------------------------- binding is never read\nwarn[lint.unused-local]: unused local variable `_rendered`\n  render.xsh:18:3\n    let _rendered = m.keys() |> each { |k|\n    -------------------------------------- binding is never read\n=== fmt diff ===\n6,12c6,14\n<   let _built = values_text.split(\"\\n\") |> each { |line|\n<     if line.contains(\"=\") {\n<       let parts = line.split(\"=\", 1)\n<       if parts.len() == 2 {\n<         let key = parts.get(0, \"\")\n<         if key.byte_len() > 0 {\n<           m = m.set(key, parts.get(1, \"\"))\n---\n>   let _built = values_text.split(\"\\n\")\n>     |> each { |line|\n>       if line.contains(\"=\") {\n>         let parts = line.split(\"=\", 1)\n>         if parts.len() == 2 {\n>           let key = parts.get(0, \"\")\n>           if key.byte_len() > 0 {\n>             m = m.set(key, parts.get(1, \"\"))\n>           }\n16d17\n<   }\n18,20c19,22\n<   let _rendered = m.keys() |> each { |k|\n<     rendered = rendered.replace(f\"@${k}@\", m.get(k, \"\"))\n<   }\n---\n>   let _rendered = m.keys()\n>     |> each { |k|\n>       rendered = rendered.replace(f\"@${k}@\", m.get(k, \"\"))\n>     }\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 29,
+        "worker": {
+          "role": "eval-designer",
+          "worker_id": "proposal-1"
+        }
+      }
+    ],
+    "trials": [],
+    "workers": [
+      {
+        "identity": {
+          "role": "eval-designer",
+          "worker_id": "proposal-1"
+        },
+        "path": "workers/eval-designer/proposal-1/report.json",
+        "result": "pass",
+        "tool_errors": 3,
+        "usage": {
+          "assistant_turns": 45,
+          "budget_usd": 0.3,
+          "cache_read_cost_usd": 0.02554099200000001,
+          "cache_read_tokens": 1418944,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.043639092,
+          "input_cost_usd": 0.01332324,
+          "input_tokens": 148036,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00477486,
+          "output_tokens": 26527,
+          "provider_total_tokens": 1593507,
+          "reasoning_tokens": 14848,
+          "thinking_blocks": 41,
+          "tool_calls": 53,
+          "tool_errors": 3,
+          "tool_results": 53,
+          "total_bucket_tokens": 1593507,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "5e0c679344458c4f39bf3f368a6d63a4c51aa01f"
+  },
+  "findings": [],
+  "identity": {
+    "eval_id": "task-envcfg",
+    "mode": "eval-design",
+    "run_id": "04-eval-design"
+  },
+  "kind": "phase",
+  "result": "pass",
+  "schema_version": 1,
+  "state": "completed"
+}

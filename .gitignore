@@ -1,4 +1,3 @@
-runs/
 evals/*/.dist/
 evals/.dist/
 evals/*/runtime/.DS_Store

@@ -1,0 +1,5 @@
+- A subprocess escape: `restriction_failed`
+- B no fs.rename (print-only): `restriction_failed`
+- C wrong target extension (.txt): `candidate_failed`
+- D missing review.md: `protocol_failed`
+- reference correct solution: `pass`

@@ -1,0 +1,141 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785725237379/phases/03-eval/workers/eval-worker/task-ecount-1/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_state": "pass",
+    "agent_wall_ms": 287774,
+    "artifact": {
+      "name": "ecount.xsh",
+      "state": "present"
+    },
+    "budget_state": "pass",
+    "classification": "pass",
+    "evaluator_manifest": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785725237379/phases/03-eval/workers/eval-worker/task-ecount-1/run.json",
+    "evaluator_state": "pass",
+    "reporting_state": "pass",
+    "result": "pass",
+    "review": {
+      "state": "present"
+    }
+  },
+  "findings": [
+    {
+      "count": 7,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "role": "eval-worker",
+    "worker_id": "task-ecount-1"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785725237379/phases/03-eval/workers/eval-worker/task-ecount-1/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 80,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 286199
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785725237379/phases/03-eval/workers/eval-worker/task-ecount-1/session.jsonl.bz2",
+      "summary": "err[compact.indexed-build]: indexed IR could not encode `full_ir_function_blocker`\n  probe.xsh:1:43\n  proc main(...argv: List[Str]) [fs, error] {\n                                            ^ indexed IR could not encode `full_ir_function_blocker`\n---run---\nerr[compact.indexed-build]: indexed IR could not encode `full_ir_function_blocker`\n  probe.xsh:1:43\n  proc main(...argv: List[Str]) [fs, error] {\n                                            ^ indexed IR could not encode `full_ir_function_blocker`\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 14
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785725237379/phases/03-eval/workers/eval-worker/task-ecount-1/session.jsonl.bz2",
+      "summary": "err[compact.indexed-build]: indexed IR could not encode `full_ir_function_blocker`\n  probe.xsh:1:25\n  proc main() [fs, error] {\n                          ^ indexed IR could not encode `full_ir_function_blocker`\n---run---\nerr[compact.indexed-build]: indexed IR could not encode `full_ir_function_blocker`\n  probe.xsh:1:25\n  proc main() [fs, error] {\n                          ^ indexed IR could not encode `full_ir_function_blocker`\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 16
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785725237379/phases/03-eval/workers/eval-worker/task-ecount-1/session.jsonl.bz2",
+      "summary": "err[check.bare-print-ident]: field access and indexing in print require `$`; use `$ident.field` or `${expr}`\n  probe2.xsh:3:9\n    print m.name\n          ^^^^^^ field access and indexing in print require `$`; use `$ident.field` or `${expr}`\nhelp: use `$` shorthand -> $m.name\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 18
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785725237379/phases/03-eval/workers/eval-worker/task-ecount-1/session.jsonl.bz2",
+      "summary": "err[parse.expected-record-field]: expected record field\n  probe7.xsh:7:35\n    let counts = exts |> fold({}, { |acc, ex| acc.set(ex, acc.get(ex, 0) + 1) })\n                                    ^ expected record field\n\nerr[parse.expected-token]: expected `}` after record\n  probe7.xsh:7:35\n    let counts = exts |> fold({}, { |acc, ex| acc.set(ex, acc.get(ex, 0) + 1) })\n                                    ^ expected `}` after record\n\nerr[parse.expected-token]: expected `)` after stage arguments\n  probe7.xsh:7:35\n    let counts = exts |> fold({}, { |acc, ex| acc.set(ex, acc.get(ex, 0) + 1) })\n                                    ^ expected `)` after stage arguments\n\nerr[parse.expected-terminator]: expected statement terminator\n  probe7.xsh:7:35\n    let counts = exts |> fold({}, { |acc, ex| acc.set(ex, acc.get(ex, 0) + 1) })\n                                    ^ expected statement terminator\n\nerr[parse.expected-expression]: expected expression\n  probe7.xsh:7:35\n    let counts = exts |> fold({}, { |acc, ex| acc.set(ex, acc.get(ex, 0) + 1) })\n                                    ^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  probe7.xsh:7:78\n    let counts = exts |> fold({}, { |acc, ex| acc.set(ex, acc.get(ex, 0) + 1) })\n                                                                               ^ expected expression\n---\nerr[parse.expected-record-field]: expected record field\n  probe7.xsh:7:35\n    let counts = exts |> fold({}, { |acc, ex| acc.set(ex, acc.get(ex, 0) + 1) })\n                                    ^ expected record field\n\nerr[parse.expected-token]: expected `}` after record\n  probe7.xsh:7:35\n    let counts = exts |> fold({}, { |acc, ex| acc.set(ex, acc.get(ex, 0) + 1) })\n                                    ^ expected `}` after record\n\nerr[parse.expected-token]: expected `)` after stage arguments\n  probe7.xsh:7:35\n    let counts = exts |> fold({}, { |acc, ex| acc.set(ex, acc.get(ex, 0) + 1) })\n                                    ^ expected `)` after stage arguments\n\nerr[parse.expected-terminator]: expected statement terminator\n  probe7.xsh:7:35\n    let counts = exts |> fold({}, { |acc, ex| acc.set(ex, acc.get(ex, 0) + 1) })\n                                    ^ expected statement terminator\n\nerr[parse.expected-expression]: expected expression\n  probe7.xsh:7:35\n    let counts = exts |> fold({}, { |acc, ex| acc.set(ex, acc.get(ex, 0) + 1) })\n                                    ^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  probe7.xsh:7:78\n    let counts = exts |> fold({}, { |acc, ex| acc.set(ex, acc.get(ex, 0) + 1) })\n                                                                               ^ expected expression\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 49
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785725237379/phases/03-eval/workers/eval-worker/task-ecount-1/session.jsonl.bz2",
+      "summary": "err[parse.expected-token]: expected `=` in binding\n  probe8.xsh:3:11\n    let mut total = 0\n            ^^^^^ expected `=` in binding\n\nerr[parse.expected-terminator]: expected statement terminator\n  probe8.xsh:3:17\n    let mut total = 0\n                  ^ expected statement terminator\n\nerr[parse.expected-expression]: expected expression\n  probe8.xsh:3:17\n    let mut total = 0\n                  ^ expected expression\n---\nerr[parse.expected-token]: expected `=` in binding\n  probe8.xsh:3:11\n    let mut total = 0\n            ^^^^^ expected `=` in binding\n\nerr[parse.expected-terminator]: expected statement terminator\n  probe8.xsh:3:17\n    let mut total = 0\n                  ^ expected statement terminator\n\nerr[parse.expected-expression]: expected expression\n  probe8.xsh:3:17\n    let mut total = 0\n                  ^ expected expression\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 53
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785725237379/phases/03-eval/workers/eval-worker/task-ecount-1/session.jsonl.bz2",
+      "summary": "err[check.assign-let]: assignment to immutable `let` binding\n  probe9.xsh:3:3\n    total = total + 1\n    ^^^^^^^^^^^^^^^^^ assignment to immutable `let` binding\n---\nerr[check.assign-let]: assignment to immutable `let` binding\n  probe9.xsh:3:3\n    total = total + 1\n    ^^^^^^^^^^^^^^^^^ assignment to immutable `let` binding\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 56
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785725237379/phases/03-eval/workers/eval-worker/task-ecount-1/session.jsonl.bz2",
+      "summary": "Could not find edits[1] in /work/ecount.xsh. The oldText must match exactly including all whitespace and newlines.",
+      "tool": "edit",
+      "turn": 67
+    }
+  ],
+  "tools": [
+    {
+      "count": 70,
+      "name": "bash"
+    },
+    {
+      "count": 4,
+      "name": "edit"
+    },
+    {
+      "count": 4,
+      "name": "read"
+    },
+    {
+      "count": 15,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 81,
+    "budget_usd": 0.5,
+    "cache_read_cost_usd": 0.035251199999999996,
+    "cache_read_tokens": 1958400,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.04442778,
+    "input_cost_usd": 0.00487404,
+    "input_tokens": 54156,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.004302539999999998,
+    "output_tokens": 23903,
+    "provider_total_tokens": 2036459,
+    "reasoning_tokens": 13687,
+    "thinking_blocks": 61,
+    "tool_calls": 93,
+    "tool_errors": 7,
+    "tool_results": 93,
+    "total_bucket_tokens": 2036459,
+    "user_messages": 1
+  }
+}

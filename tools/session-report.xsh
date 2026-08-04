@@ -1,6 +1,7 @@
 ##! Normalize Pi session JSONL into the factory's structured report schema.
 
 use factory_control as control
+use factory_runtime as runtime
 use report_schema as schema
 
 type Usage = {
@@ -212,7 +213,8 @@ proc iso_millis(value: Str) [error] -> Result[Int] {
   return Ok(days * 86400000 + hour * 3600000 + minute * 60000 + second * 1000 + millis)
 }
 
-proc read_session(session_path: Path) [fs, error] -> Result[SessionReport] {
+proc read_session(session_path: Path) [fs, process, error] -> Result[SessionReport] {
+  let session_text = runtime.session_text(session_path)?
   var assistant_turns = 0
   var user_messages = 0
   var tool_calls = 0
@@ -242,7 +244,7 @@ proc read_session(session_path: Path) [fs, error] -> Result[SessionReport] {
   var end_ms = -1
   var tool_error_details: List[ToolError] = []
 
-  for line in session_path.read_text()?.lines() {
+  for line in session_text.lines() {
     if line.trim() != "" {
       match json.decode(line) {
         Err(_) => malformed_lines += 1

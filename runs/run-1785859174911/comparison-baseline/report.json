@@ -1,0 +1,209 @@
+{
+  "artifacts": [
+    {
+      "kind": "session-directory",
+      "path": "workers/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 30,
+      "budget_failures": 0,
+      "cost_usd": 0.015814547999999998,
+      "tool_errors": 1,
+      "total_bucket_tokens": 431890.0,
+      "unknown_costs": 0,
+      "workers": 2
+    },
+    "designer": {
+      "path": "/private/tmp/xsh-factory-englishlint-baseline/runs/run-1785861543618/workers/eval-designer/proposal-1/REPORT.md",
+      "present": false,
+      "result": "not-requested",
+      "role": "eval-designer",
+      "valid": true
+    },
+    "director": {
+      "path": "/private/tmp/xsh-factory-englishlint-baseline/runs/run-1785861543618/workers/director/director/REPORT.md",
+      "present": false,
+      "result": "not-requested",
+      "role": "director",
+      "valid": true
+    },
+    "engineer": [],
+    "handbook_lineage": {
+      "approved": "lineage/handbook-approved.md",
+      "candidate": "lineage/handbook-candidate.md"
+    },
+    "manager": {
+      "path": "/private/tmp/xsh-factory-englishlint-baseline/runs/run-1785861543618/workers/eval-manager/task-envcfg/REPORT.md",
+      "present": true,
+      "result": "pass",
+      "role": "eval-manager",
+      "valid": true
+    },
+    "mode": "eval",
+    "narratives": [
+      {
+        "path": "/private/tmp/xsh-factory-englishlint-baseline/runs/run-1785861543618/workers/eval-manager/task-envcfg/REPORT.md",
+        "present": true,
+        "result": "pass",
+        "role": "eval-manager",
+        "valid": true
+      }
+    ],
+    "open_tickets": [
+      {
+        "eval_id": "task-envcfg",
+        "id": "task-envcfg-001",
+        "path": "/private/tmp/xsh-factory-englishlint-baseline/tickets/task-envcfg-001.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-tags",
+        "id": "task-tags-003",
+        "path": "/private/tmp/xsh-factory-englishlint-baseline/tickets/task-tags-003.md",
+        "status": "Open."
+      }
+    ],
+    "outcomes": {
+      "cycle": "pass",
+      "evaluator": "pass",
+      "infrastructure": "pass",
+      "product": "pass"
+    },
+    "required_outputs": {
+      "audit": true,
+      "candidate_handbook": true,
+      "designer_handbook_read": true,
+      "designer_output": true,
+      "handbook_lineage": true,
+      "manager_evidence_read": true,
+      "manager_handbook_read": true,
+      "manager_report": true,
+      "manager_session": true,
+      "required": true,
+      "trial1_process": true,
+      "trial1_report": true,
+      "trial2_process": true,
+      "trial2_report": true,
+      "worker_handbook_read": true
+    },
+    "sessions": [
+      "workers/eval-manager/task-envcfg/session.jsonl.bz2",
+      "workers/eval-worker/task-envcfg-1/session.jsonl.bz2"
+    ],
+    "tool_errors": [
+      {
+        "report": "workers/eval-worker/task-envcfg-1/report.json",
+        "summary": "===FMT===\n===LINT===\nwarn[lint.path-constructor]: prefer p-string interpolation over `Path(...)`\n  envcfg.xsh:16:12\n    fs.write(Path(out), content)?\n             --------- use path string syntax instead\nnote: `Path(...)` remains a cast, but p-strings are the preferred path syntax\nhelp: replace with path string -> fp\"${out}\"\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 9,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-envcfg-1"
+        }
+      }
+    ],
+    "trials": [
+      {
+        "evidence": {
+          "candidate_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "classification": "pass",
+          "correctness": "pass",
+          "eval_id": "task-envcfg",
+          "handbook_sha256": "97c5d804c42c7742c9edfea4480163828d864279391d391df77aa60ee4a40e83",
+          "oracle_sha256": "594a1118ea571bcfe5b2a8b7239b28924bd32ced928ba9ea5377a2c1b0bd71f6",
+          "passed": true,
+          "protocol": "pass",
+          "restrictions": "pass",
+          "result": "pass",
+          "timing": "pass",
+          "trial_id": "1",
+          "valid": true
+        },
+        "path": "workers/eval-worker/task-envcfg-1/run.json"
+      }
+    ],
+    "workers": [
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-envcfg"
+        },
+        "path": "workers/eval-manager/task-envcfg/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 12,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.0032382720000000004,
+          "cache_read_tokens": 179904,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.010339632,
+          "input_cost_usd": 0.0056964599999999995,
+          "input_tokens": 63294,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0014049,
+          "output_tokens": 7805,
+          "provider_total_tokens": 251003,
+          "reasoning_tokens": 3839,
+          "thinking_blocks": 8,
+          "tool_calls": 19,
+          "tool_errors": 0,
+          "tool_results": 19,
+          "total_bucket_tokens": 251003,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-envcfg-1"
+        },
+        "path": "workers/eval-worker/task-envcfg-1/report.json",
+        "result": "pass",
+        "tool_errors": 1,
+        "usage": {
+          "assistant_turns": 18,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.0028316160000000003,
+          "cache_read_tokens": 157312,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.005474916,
+          "input_cost_usd": 0.0016002,
+          "input_tokens": 17780,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0010431,
+          "output_tokens": 5795,
+          "provider_total_tokens": 180887,
+          "reasoning_tokens": 3343,
+          "thinking_blocks": 13,
+          "tool_calls": 18,
+          "tool_errors": 1,
+          "tool_results": 18,
+          "total_bucket_tokens": 180887,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "434080dfe330cc3bb705bd8068d57a1015b7b218"
+  },
+  "findings": [],
+  "identity": {
+    "eval_id": "task-envcfg",
+    "mode": "eval",
+    "run_id": "run-1785861543618"
+  },
+  "kind": "phase",
+  "result": "pass",
+  "schema_version": 1,
+  "state": "completed"
+}

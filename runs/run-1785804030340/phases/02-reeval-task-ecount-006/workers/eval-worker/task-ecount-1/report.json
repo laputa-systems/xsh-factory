@@ -1,0 +1,88 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785804030340/phases/02-reeval-task-ecount-006/workers/eval-worker/task-ecount-1/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_state": "pass",
+    "agent_wall_ms": 299131,
+    "artifact": {
+      "name": "ecount.xsh",
+      "state": "present"
+    },
+    "budget_state": "pass",
+    "classification": "pass",
+    "evaluator_manifest": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785804030340/phases/02-reeval-task-ecount-006/workers/eval-worker/task-ecount-1/run.json",
+    "evaluator_state": "pass",
+    "reporting_state": "pass",
+    "result": "pass",
+    "review": {
+      "state": "present"
+    }
+  },
+  "findings": [],
+  "identity": {
+    "role": "eval-worker",
+    "worker_id": "task-ecount-1"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785804030340/phases/02-reeval-task-ecount-006/workers/eval-worker/task-ecount-1/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 45,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 296137
+  },
+  "tool_errors": [],
+  "tools": [
+    {
+      "count": 48,
+      "name": "bash"
+    },
+    {
+      "count": 4,
+      "name": "read"
+    },
+    {
+      "count": 1,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 46,
+    "budget_usd": 0.5,
+    "cache_read_cost_usd": 0.019419264,
+    "cache_read_tokens": 1078848,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.027166194,
+    "input_cost_usd": 0.0033464700000000003,
+    "input_tokens": 37183,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.004400460000000001,
+    "output_tokens": 24447,
+    "provider_total_tokens": 1140478,
+    "reasoning_tokens": 16478,
+    "thinking_blocks": 43,
+    "tool_calls": 53,
+    "tool_errors": 0,
+    "tool_results": 53,
+    "total_bucket_tokens": 1140478,
+    "user_messages": 1
+  }
+}

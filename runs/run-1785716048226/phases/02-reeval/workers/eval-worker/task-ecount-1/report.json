@@ -1,0 +1,80 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785716048226/phases/02-reeval/workers/eval-worker/task-ecount-1/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_state": "fail",
+    "agent_wall_ms": 306047,
+    "artifact": {
+      "name": "ecount.xsh",
+      "state": "missing"
+    },
+    "budget_state": "pass",
+    "classification": "worker_failed",
+    "evaluator_manifest": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785716048226/phases/02-reeval/workers/eval-worker/task-ecount-1/run.json",
+    "evaluator_state": "fail",
+    "reporting_state": "pass",
+    "result": "fail",
+    "review": {
+      "state": "present"
+    }
+  },
+  "findings": [],
+  "identity": {
+    "role": "eval-worker",
+    "worker_id": "task-ecount-1"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785716048226/phases/02-reeval/workers/eval-worker/task-ecount-1/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 14,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 74474
+  },
+  "tool_errors": [],
+  "tools": [
+    {
+      "count": 16,
+      "name": "bash"
+    },
+    {
+      "count": 2,
+      "name": "read"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 14,
+    "budget_usd": 0.5,
+    "cache_read_cost_usd": 0.001675008,
+    "cache_read_tokens": 93056,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.004548887999999999,
+    "input_cost_usd": 0.0019252799999999997,
+    "input_tokens": 21392,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.0009486000000000002,
+    "output_tokens": 5270,
+    "provider_total_tokens": 119718,
+    "reasoning_tokens": 3542,
+    "thinking_blocks": 12,
+    "tool_calls": 18,
+    "tool_errors": 0,
+    "tool_results": 17,
+    "total_bucket_tokens": 119718,
+    "user_messages": 1
+  }
+}

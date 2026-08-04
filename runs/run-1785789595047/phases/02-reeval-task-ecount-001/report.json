@@ -1,0 +1,342 @@
+{
+  "artifacts": [
+    {
+      "kind": "session-directory",
+      "path": "workers/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 67,
+      "budget_failures": 0,
+      "cost_usd": 0.047907108,
+      "tool_errors": 10,
+      "total_bucket_tokens": 1927241.0,
+      "unknown_costs": 0,
+      "workers": 2
+    },
+    "designer": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785789595047/phases/02-reeval-task-ecount-001/workers/eval-designer/proposal-1/REPORT.md",
+      "present": false,
+      "result": "not-requested",
+      "role": "eval-designer",
+      "valid": true
+    },
+    "director": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785789595047/phases/02-reeval-task-ecount-001/workers/director/director/REPORT.md",
+      "present": false,
+      "result": "not-requested",
+      "role": "director",
+      "valid": true
+    },
+    "engineer": [],
+    "handbook_lineage": {
+      "approved": "lineage/handbook-approved.md",
+      "candidate": "lineage/handbook-candidate.md"
+    },
+    "manager": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785789595047/phases/02-reeval-task-ecount-001/workers/eval-manager/task-ecount/REPORT.md",
+      "present": true,
+      "result": "pass",
+      "role": "eval-manager",
+      "valid": true
+    },
+    "mode": "eval",
+    "narratives": [
+      {
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785789595047/phases/02-reeval-task-ecount-001/workers/eval-manager/task-ecount/REPORT.md",
+        "present": true,
+        "result": "pass",
+        "role": "eval-manager",
+        "valid": true
+      }
+    ],
+    "open_tickets": [
+      {
+        "eval_id": "task-ecount",
+        "id": "task-ecount-001",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-ecount-001.md",
+        "status": "Approved."
+      },
+      {
+        "eval_id": "task-ecount",
+        "id": "task-ecount-002",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-ecount-002.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-ecount",
+        "id": "task-ecount-004",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-ecount-004.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-ecount",
+        "id": "task-ecount-005",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-ecount-005.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-ecount",
+        "id": "task-ecount-006",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-ecount-006.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-ecount",
+        "id": "task-ecount-007",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-ecount-007.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-ecount",
+        "id": "task-ecount-008",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-ecount-008.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-envcfg",
+        "id": "task-envcfg-002",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-envcfg-002.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-envcfg",
+        "id": "task-envcfg-003",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-envcfg-003.md",
+        "status": "Approved."
+      },
+      {
+        "eval_id": "task-envcfg",
+        "id": "task-envcfg-004",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-envcfg-004.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-envcfg",
+        "id": "task-envcfg-006",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-envcfg-006.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-envcfg",
+        "id": "task-envcfg-007",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-envcfg-007.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-tags",
+        "id": "task-tags-003",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-tags-003.md",
+        "status": "Open."
+      }
+    ],
+    "sessions": [
+      "workers/eval-manager/task-ecount/session.jsonl.bz2",
+      "workers/eval-worker/task-ecount-1/session.jsonl.bz2"
+    ],
+    "tool_errors": [
+      {
+        "report": "workers/eval-worker/task-ecount-1/report.json",
+        "summary": "err[parse.expected-ident]: expected binding name\n  /tmp/probe.xsh:3:7\n    let stream = fs.files(root)?\n        ^^^^^^ expected binding name\n\nerr[parse.expected-expression]: expected expression\n  /tmp/probe.xsh:4:13\n    let all = stream |> collect()\n              ^^^^^^ expected expression\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 20,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-ecount-1"
+        }
+      },
+      {
+        "report": "workers/eval-worker/task-ecount-1/report.json",
+        "summary": "err[check.type-mismatch]: type mismatch\n  /tmp/probe.xsh:2:19\n    let root = Path(argv.get(0))\n                    ^^^^^^^^^^^ expected Str, found Result[Str, Error]\n\nerr[check.effect-violation]: `?` requires the `error` effect\n  /tmp/probe.xsh:3:12\n    let st = fs.files(root)?\n             ^^^^^^^^^^^^^^^ `?` requires the `error` effect\n\nerr[check.unresolved-proc-command]: unresolved proc command\n  /tmp/probe.xsh:6:34\n    let files = all |> where { |e| e.kind == \"file\" } |> collect()\n                                   ^^^^^^^^^^^^^^^^ unresolved proc command\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 21,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-ecount-1"
+        }
+      },
+      {
+        "report": "workers/eval-worker/task-ecount-1/report.json",
+        "summary": "err[compact.indexed-build]: indexed IR could not encode `full_ir_function_blocker`\n  /tmp/probe.xsh:1:43\n  proc main(...argv: List[Str]) [fs, error] {\n                                            ^ indexed IR could not encode `full_ir_function_blocker`\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 23,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-ecount-1"
+        }
+      },
+      {
+        "report": "workers/eval-worker/task-ecount-1/report.json",
+        "summary": "err[compact.indexed-build]: indexed IR could not encode `full_ir_function_blocker`\n  /tmp/probe5.xsh:1:43\n  proc main(...argv: List[Str]) [fs, error] {\n                                            ^ indexed IR could not encode `full_ir_function_blocker`\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 27,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-ecount-1"
+        }
+      },
+      {
+        "report": "workers/eval-worker/task-ecount-1/report.json",
+        "summary": "err[compact.indexed-build]: indexed IR could not encode `full_ir_function_blocker`\n  /tmp/probe6.xsh:1:43\n  proc main(...argv: List[Str]) [fs, error] {\n                                            ^ indexed IR could not encode `full_ir_function_blocker`\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 28,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-ecount-1"
+        }
+      },
+      {
+        "report": "workers/eval-worker/task-ecount-1/report.json",
+        "summary": "err[compact.indexed-build]: indexed IR could not encode `full_ir_function_blocker`\n  /tmp/probe8.xsh:1:43\n  proc main(...argv: List[Str]) [fs, error] {\n                                            ^ indexed IR could not encode `full_ir_function_blocker`\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 30,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-ecount-1"
+        }
+      },
+      {
+        "report": "workers/eval-worker/task-ecount-1/report.json",
+        "summary": "err[runtime.error]: lowered `?` expected Result\n  /tmp/probe9.xsh:1:1\n  proc main(...argv: List[Str]) [fs, error] {\n  ^\nruntime traceback\nexecutable: /usr/local/bin/xsh\noperation: runtime.error\nerror: type-error: lowered `?` expected Result\n\n\nCommand exited with code 3",
+        "tool": "bash",
+        "turn": 31,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-ecount-1"
+        }
+      },
+      {
+        "report": "workers/eval-worker/task-ecount-1/report.json",
+        "summary": "err[compact.indexed-build]: indexed IR could not encode `full_ir_function_blocker`\n  /tmp/probe10.xsh:1:43\n  proc main(...argv: List[Str]) [fs, error] {\n                                            ^ indexed IR could not encode `full_ir_function_blocker`\ncheck=2\nerr[compact.indexed-build]: indexed IR could not encode `full_ir_function_blocker`\n  /tmp/probe10.xsh:1:43\n  proc main(...argv: List[Str]) [fs, error] {\n                                            ^ indexed IR could not encode `full_ir_function_blocker`\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 33,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-ecount-1"
+        }
+      },
+      {
+        "report": "workers/eval-worker/task-ecount-1/report.json",
+        "summary": "err[check.unknown-method]: unknown method `lower` on Result[Str, Error]\n  /tmp/probe14.xsh:7:22\n      |> map { |parts| parts.get(parts.len() - 1).lower() }\n                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `lower` is not defined for Result[Str, Error]\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 38,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-ecount-1"
+        }
+      },
+      {
+        "report": "workers/eval-worker/task-ecount-1/report.json",
+        "summary": "CHECK OK\nwarn[lint.path-constructor]: prefer p-string interpolation over `Path(...)`\n  ecount.xsh:2:14\n    let root = Path(argv.get(0)?)\n               ------------------ use path string syntax instead\nnote: `Path(...)` remains a cast, but p-strings are the preferred path syntax\nhelp: replace with path string -> fp\"${argv.get(0)?}\"\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 47,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-ecount-1"
+        }
+      }
+    ],
+    "trials": [
+      {
+        "evidence": {
+          "candidate_sha256": "c7c356092b7731520891c6ec695ba9de9f5faa40967a7f9689a1f6d199a2fbb1",
+          "classification": "pass",
+          "correctness": "pass",
+          "eval_id": "task-ecount",
+          "handbook_sha256": "97c5d804c42c7742c9edfea4480163828d864279391d391df77aa60ee4a40e83",
+          "oracle_sha256": "c7c356092b7731520891c6ec695ba9de9f5faa40967a7f9689a1f6d199a2fbb1",
+          "passed": true,
+          "protocol": "pass",
+          "restrictions": "pass",
+          "result": "pass",
+          "timing": "pass",
+          "trial_id": "1",
+          "valid": true
+        },
+        "path": "workers/eval-worker/task-ecount-1/run.json"
+      }
+    ],
+    "workers": [
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-ecount"
+        },
+        "path": "workers/eval-manager/task-ecount/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 12,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.009234432,
+          "cache_read_tokens": 513024,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.018096462,
+          "input_cost_usd": 0.0066476700000000005,
+          "input_tokens": 73863,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00221436,
+          "output_tokens": 12302,
+          "provider_total_tokens": 599189,
+          "reasoning_tokens": 7316,
+          "thinking_blocks": 12,
+          "tool_calls": 21,
+          "tool_errors": 0,
+          "tool_results": 21,
+          "total_bucket_tokens": 599189,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-ecount-1"
+        },
+        "path": "workers/eval-worker/task-ecount-1/report.json",
+        "result": "pass",
+        "tool_errors": 10,
+        "usage": {
+          "assistant_turns": 55,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.022824576,
+          "cache_read_tokens": 1268032,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.029810645999999996,
+          "input_cost_usd": 0.003817529999999999,
+          "input_tokens": 42417,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0031685399999999996,
+          "output_tokens": 17603,
+          "provider_total_tokens": 1328052,
+          "reasoning_tokens": 9710,
+          "thinking_blocks": 46,
+          "tool_calls": 70,
+          "tool_errors": 10,
+          "tool_results": 70,
+          "total_bucket_tokens": 1328052,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "d2d87d2575c45343abfbcfe378f6ade4065043cf"
+  },
+  "findings": [],
+  "identity": {
+    "eval_id": "task-ecount",
+    "mode": "eval",
+    "run_id": "02-reeval-task-ecount-001"
+  },
+  "kind": "phase",
+  "result": "pass",
+  "schema_version": 1,
+  "state": "completed"
+}

@@ -1,0 +1,111 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785816263612/phases/03-eval/workers/eval-worker/task-envcfg-2/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_state": "pass",
+    "agent_wall_ms": 127529,
+    "artifact": {
+      "name": "envcfg.xsh",
+      "state": "present"
+    },
+    "budget_state": "pass",
+    "classification": "pass",
+    "evaluator_manifest": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785816263612/phases/03-eval/workers/eval-worker/task-envcfg-2/run.json",
+    "evaluator_state": "pass",
+    "reporting_state": "pass",
+    "result": "pass",
+    "review": {
+      "state": "present"
+    }
+  },
+  "findings": [
+    {
+      "count": 2,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "role": "eval-worker",
+    "worker_id": "task-envcfg-2"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785816263612/phases/03-eval/workers/eval-worker/task-envcfg-2/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 24,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 126298
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785816263612/phases/03-eval/workers/eval-worker/task-envcfg-2/session.jsonl.bz2",
+      "summary": "err[parse.unsupported-boolean-operator]: unsupported operator '&&': XSH boolean operators are the word forms 'and'\n  t1.xsh:4:20\n    let ok = a != \"\" && a.delete(\"0123456789\") == \"\"\n                     ^^ use 'and' instead of '&&'\n\nerr[parse.expected-terminator]: expected statement terminator\n  t1.xsh:4:20\n    let ok = a != \"\" && a.delete(\"0123456789\") == \"\"\n                     ^ expected statement terminator\n\nerr[parse.expected-expression]: expected expression\n  t1.xsh:4:20\n    let ok = a != \"\" && a.delete(\"0123456789\") == \"\"\n                     ^ expected expression\n\nerr[parse.unsupported-boolean-operator]: unsupported operator '&&': XSH boolean operators are the word forms 'and'\n  t1.xsh:5:21\n    let bad = b != \"\" && b.delete(\"0123456789\") == \"\"\n                      ^^ use 'and' instead of '&&'\n\nerr[parse.expected-terminator]: expected statement terminator\n  t1.xsh:5:21\n    let bad = b != \"\" && b.delete(\"0123456789\") == \"\"\n                      ^ expected statement terminator\n\nerr[parse.expected-expression]: expected expression\n  t1.xsh:5:21\n    let bad = b != \"\" && b.delete(\"0123456789\") == \"\"\n                      ^ expected expression\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 9
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785816263612/phases/03-eval/workers/eval-worker/task-envcfg-2/session.jsonl.bz2",
+      "summary": "err[check.standard-module-shadow]: name `path` shadows the standard module `path`\n  t2.xsh:1:11\n  proc main(path: Path) {\n            ^^^^^^^^^^ name `path` shadows the standard module `path`\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 13
+    }
+  ],
+  "tools": [
+    {
+      "count": 21,
+      "name": "bash"
+    },
+    {
+      "count": 1,
+      "name": "edit"
+    },
+    {
+      "count": 5,
+      "name": "read"
+    },
+    {
+      "count": 3,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 25,
+    "budget_usd": 0.5,
+    "cache_read_cost_usd": 0.0051275520000000005,
+    "cache_read_tokens": 284864,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.011133521999999998,
+    "input_cost_usd": 0.00450621,
+    "input_tokens": 50069,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.0014997600000000002,
+    "output_tokens": 8332,
+    "provider_total_tokens": 343265,
+    "reasoning_tokens": 4863,
+    "thinking_blocks": 19,
+    "tool_calls": 30,
+    "tool_errors": 2,
+    "tool_results": 30,
+    "total_bucket_tokens": 343265,
+    "user_messages": 1
+  }
+}

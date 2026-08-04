@@ -1,0 +1,330 @@
+{
+  "artifacts": [
+    {
+      "kind": "phase-reports",
+      "path": "phases/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 269,
+      "budget_failures": 0,
+      "cost_usd": 0.205615296,
+      "tool_errors": 10,
+      "total_bucket_tokens": 7715102.0,
+      "unknown_costs": 0,
+      "workers": 5
+    },
+    "mode": "organization",
+    "phases": [
+      {
+        "id": "01-ticket",
+        "path": "phases/01-ticket/report.json",
+        "result": "pass",
+        "valid": true
+      },
+      {
+        "id": "02-reeval",
+        "path": "phases/02-reeval/report.json",
+        "result": "pass",
+        "valid": true
+      },
+      {
+        "id": "03-eval",
+        "path": "phases/03-eval/report.json",
+        "result": "pass",
+        "valid": true
+      },
+      {
+        "id": "04-eval-design",
+        "path": "phases/04-eval-design/report.json",
+        "result": "fail",
+        "valid": true
+      }
+    ],
+    "tool_errors": [
+      {
+        "report": "phases/02-reeval/workers/eval-manager/task-ecount/report.json",
+        "summary": "=== main HEAD ===\nd7d35fb wip\n33a73b3 wip\n36b320c wip\n=== is ea7dea2 ancestor of c2e1039? ===\nfatal: Not a valid commit name ea7dea2f2b436cce34262d7a02105cbb029243dd\nno\n=== log of c2e1039 from ea7dea2 ===\nfatal: Invalid revision range ea7dea2f2b436cce34262d7a02105cbb029243dd..c2e1039d8856c04ad8466504d445dc93a341f720\n\n\nCommand exited with code 128",
+        "tool": "bash",
+        "turn": 5,
+        "worker": {
+          "role": "eval-manager",
+          "worker_id": "task-ecount"
+        }
+      },
+      {
+        "report": "phases/02-reeval/workers/eval-worker/task-ecount-1/report.json",
+        "summary": "(no output)\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 47,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-ecount-1"
+        }
+      },
+      {
+        "report": "phases/02-reeval/workers/eval-worker/task-ecount-1/report.json",
+        "summary": "sh: can't create ftest/foo.bar/x: nonexistent directory\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 84,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-ecount-1"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-manager/task-envcfg/report.json",
+        "summary": "num calls 93 num results 0\nTraceback (most recent call last):\n  File \"<stdin>\", line 21, in <module>\nTypeError: unsupported format string passed to NoneType.__format__\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 10,
+        "worker": {
+          "role": "eval-manager",
+          "worker_id": "task-envcfg"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-worker/task-envcfg-1/report.json",
+        "summary": "err[check.unresolved-proc-command]: unresolved proc command\n  probe6.xsh:2:3\n    panic \"boom\"\nerr[check.unresolved-proc-command]: unresolved proc command\n  probe6.xsh:2:3\n    panic \"boom\"\n    ^^^^^^^^^^^^ unresolved proc command\nsh: syntax error: bad substitution\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 29,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-envcfg-1"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-worker/task-envcfg-1/report.json",
+        "summary": "err[check.type-mismatch]: type mismatch\n  probe7.xsh:2:10\n    return Err(\"bad config\")\n           ^^^^^^^^^^^^^^^^^ expected Result[Str, Error], found Result[<unknown>, Str]\nerr[check.type-mismatch]: type mismatch\n  probe7.xsh:2:10\n    return Err(\"bad config\")\n           ^^^^^^^^^^^^^^^^^ expected Result[Str, Error], found Result[<unknown>, Str]\nsh: syntax error: bad substitution\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 38,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-envcfg-1"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-worker/task-envcfg-1/report.json",
+        "summary": "sh: syntax error: unexpected \"(\"\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 51,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-envcfg-1"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-worker/task-envcfg-1/report.json",
+        "summary": "language reference items: 95\ntotal queryable items: 621\ndocumented items: 621\n\nmodules\n├── applet (8 items)\n│   ├── current_euid (1 overload)\n│   ├── current_exe (1 overload)\n│   ├── hash_password (1 overload)\n│   ├── login_session (1 overload)\n│   ├── mdev (1 overload)\n│   ├── su_session (1 overload)\n│   ├── sulogin_session (1 overload)\n│   └── verify_password (1 overload)\n├── archive (11 items)\n│   ├── compress (1 overload)\n│   ├── cpio_create (1 overload)\n│   ├── cpio_extract (1 overload)\n│   ├── cpio_list (1 overload)\n│   ├── decompress (1 overload)\n│   ├── decompress_bytes (1 overload)\n│   ├── tar_create (1 overload)\n│   ├── tar_extract (1 overload)\n│   ├── tar_list (1 overload)\n│   ├── zip_extract (1 overload)\n│   └── zip_list (1 overload)\n├── bytes (14 items)\n│   ├── concat (1 overload)\n│   ├── copy (1 overload)\n│   ├── copy_file (1 overload)\n│   ├── from_ints (1 overload)\n│   ├── from_text (1 overload)\n│   ├── human (1 overload)\n│   ├── pack_be (1 overload)\n│   ├── pack_le (1 overload)\n│   ├── read_at (1 overload)\n│   ├── unpack_be (1 overload)\n│   ├── unpack_le (1 overload)\n│   ├── write_at (1 overload)\n│   ├── zero (1 overload)\n====\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 57,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-envcfg-1"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-worker/task-envcfg-1/report.json",
+        "summary": "(no output)\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 58,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-envcfg-1"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-worker/task-envcfg-1/report.json",
+        "summary": "--- run ---\nruntime traceback\nexecutable: /usr/local/bin/xsh\noperation: main\nerror: runtime-error: runtime error\nsh: syntax error: bad substitution\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 61,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-envcfg-1"
+        }
+      }
+    ],
+    "workers": [
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-ecount"
+        },
+        "path": "phases/02-reeval/workers/eval-manager/task-ecount/report.json",
+        "result": "pass",
+        "tool_errors": 1,
+        "usage": {
+          "assistant_turns": 28,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.013037184,
+          "cache_read_tokens": 724288,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.024675084,
+          "input_cost_usd": 0.00811962,
+          "input_tokens": 90218,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.003518280000000001,
+          "output_tokens": 19546,
+          "provider_total_tokens": 834052,
+          "reasoning_tokens": 10521,
+          "thinking_blocks": 25,
+          "tool_calls": 43,
+          "tool_errors": 1,
+          "tool_results": 43,
+          "total_bucket_tokens": 834052,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-ecount-1"
+        },
+        "path": "phases/02-reeval/workers/eval-worker/task-ecount-1/report.json",
+        "result": "pass",
+        "tool_errors": 2,
+        "usage": {
+          "assistant_turns": 96,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.048075264,
+          "cache_read_tokens": 2670848,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.07061792400000003,
+          "input_cost_usd": 0.01697562,
+          "input_tokens": 188618,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.005567039999999997,
+          "output_tokens": 30928,
+          "provider_total_tokens": 2890394,
+          "reasoning_tokens": 18225,
+          "thinking_blocks": 66,
+          "tool_calls": 105,
+          "tool_errors": 2,
+          "tool_results": 105,
+          "total_bucket_tokens": 2890394,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-envcfg"
+        },
+        "path": "phases/03-eval/workers/eval-manager/task-envcfg/report.json",
+        "result": "pass",
+        "tool_errors": 1,
+        "usage": {
+          "assistant_turns": 21,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.010321919999999997,
+          "cache_read_tokens": 573440,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.01972817999999999,
+          "input_cost_usd": 0.006698159999999999,
+          "input_tokens": 74424,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0027080999999999997,
+          "output_tokens": 15045,
+          "provider_total_tokens": 662909,
+          "reasoning_tokens": 7224,
+          "thinking_blocks": 17,
+          "tool_calls": 28,
+          "tool_errors": 1,
+          "tool_results": 28,
+          "total_bucket_tokens": 662909,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-envcfg-1"
+        },
+        "path": "phases/03-eval/workers/eval-worker/task-envcfg-1/report.json",
+        "result": "pass",
+        "tool_errors": 6,
+        "usage": {
+          "assistant_turns": 91,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.035974656000000015,
+          "cache_read_tokens": 1998592,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.056415996,
+          "input_cost_usd": 0.01461834,
+          "input_tokens": 162426,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.005823,
+          "output_tokens": 32350,
+          "provider_total_tokens": 2193368,
+          "reasoning_tokens": 22384,
+          "thinking_blocks": 68,
+          "tool_calls": 93,
+          "tool_errors": 6,
+          "tool_results": 93,
+          "total_bucket_tokens": 2193368,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-designer",
+          "worker_id": "proposal-1"
+        },
+        "path": "phases/04-eval-design/workers/eval-designer/proposal-1/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 33,
+          "budget_usd": 0.3,
+          "cache_read_cost_usd": 0.017563392000000004,
+          "cache_read_tokens": 975744,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.034178112,
+          "input_cost_usd": 0.011939579999999997,
+          "input_tokens": 132662,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0046751399999999995,
+          "output_tokens": 25973,
+          "provider_total_tokens": 1134379,
+          "reasoning_tokens": 21408,
+          "thinking_blocks": 32,
+          "tool_calls": 50,
+          "tool_errors": 0,
+          "tool_results": 50,
+          "total_bucket_tokens": 1134379,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "ea7dea2f2b436cce34262d7a02105cbb029243dd"
+  },
+  "findings": [
+    {
+      "id": "04-eval-design",
+      "kind": "phase",
+      "result": "fail"
+    }
+  ],
+  "identity": {
+    "mode": "organization",
+    "run_id": "run-1785777983535"
+  },
+  "kind": "run",
+  "result": "fail",
+  "schema_version": 1,
+  "state": "completed"
+}

@@ -1,0 +1,405 @@
+{
+  "artifacts": [
+    {
+      "kind": "phase-reports",
+      "path": "phases/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 278,
+      "budget_failures": 0,
+      "cost_usd": 0.362770398,
+      "tool_errors": 17,
+      "total_bucket_tokens": 15096943.0,
+      "unknown_costs": 0,
+      "workers": 5
+    },
+    "mode": "organization",
+    "phases": [
+      {
+        "id": "01-ticket",
+        "path": "phases/01-ticket/report.json",
+        "result": "pass",
+        "valid": true
+      },
+      {
+        "id": "02-reeval-task-envcfg-001",
+        "path": "phases/02-reeval-task-envcfg-001/report.json",
+        "result": "missing",
+        "valid": false
+      },
+      {
+        "id": "03-eval",
+        "path": "phases/03-eval/report.json",
+        "result": "pass",
+        "valid": true
+      },
+      {
+        "id": "04-eval-design",
+        "path": "phases/04-eval-design/report.json",
+        "result": "fail",
+        "valid": true
+      }
+    ],
+    "tool_errors": [
+      {
+        "report": "phases/01-ticket/workers/engineer/task-envcfg-001/report.json",
+        "summary": "(no output)\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 33,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-envcfg-001"
+        }
+      },
+      {
+        "report": "phases/01-ticket/workers/engineer/task-envcfg-001/report.json",
+        "summary": "(no output)\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 50,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-envcfg-001"
+        }
+      },
+      {
+        "report": "phases/01-ticket/workers/engineer/task-envcfg-001/report.json",
+        "summary": "sed: 1: \",+45p\n\": invalid command code ,\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 59,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-envcfg-001"
+        }
+      },
+      {
+        "report": "phases/01-ticket/workers/engineer/task-envcfg-001/report.json",
+        "summary": "(no output)\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 60,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-envcfg-001"
+        }
+      },
+      {
+        "report": "phases/01-ticket/workers/engineer/task-envcfg-001/report.json",
+        "summary": "(no output)\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 81,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-envcfg-001"
+        }
+      },
+      {
+        "report": "phases/01-ticket/workers/engineer/task-envcfg-001/report.json",
+        "summary": "./showcase/tests/test-jq.xsh:118:  let out2 = run_jq(ctx, \"try error(\\\"boom\\\") catch .\", \"null\")?\n=== check 'fail' is NOT free (confirm collision)===\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 90,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-envcfg-001"
+        }
+      },
+      {
+        "report": "phases/01-ticket/workers/engineer/task-envcfg-001/report.json",
+        "summary": "(no output)\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 93,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-envcfg-001"
+        }
+      },
+      {
+        "report": "phases/01-ticket/workers/engineer/task-envcfg-001/report.json",
+        "summary": "(no output)\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 112,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-envcfg-001"
+        }
+      },
+      {
+        "report": "phases/01-ticket/workers/engineer/task-envcfg-001/report.json",
+        "summary": "src/runtime/eval.rs:1902:enum LoweredErrorExpr {\n---Simple variant---\nsrc/runtime/eval/lower.rs:9829:            return Some(LoweredErrorExpr::Simple {\n---push_build_row def---\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 116,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-envcfg-001"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-worker/task-envcfg-1/report.json",
+        "summary": "query: language:effect.error\nstatus: exact\n\napi: language.effect.error\nkind: language\npurpose: Declares explicit error propagation with postfix ?.\ncontract: The error effect is required when ? can propagate outside a retry attempt block; it does not describe a host capability.\neffects: none\ntags: effect, error, propagation\nexample:\n  proc load(path: Path) [fs, error] -> Result[Str] {\n    return path.read_text()?\n  }\n=====\nquery: language:core.postfix-question\nstatus: exact\n\napi: language.core.postfix-question\nkind: language\npurpose: Defines postfix ? error propagation.\ncontract: ? unwraps a Result or returns its error and requires the declared error effect outside retry attempt blocks.\neffects: none\ntags: language, postfix-question\nexample:\n  let value = Ok(\"ready\")?\n=====\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 6,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-envcfg-1"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-worker/task-envcfg-1/report.json",
+        "summary": "err[parse.expected-expression]: expected expression\n  /tmp/mix.xsh:4:14\n    return Ok(())\n               ^ expected expression\n\nerr[parse.expected-terminator]: expected statement terminator\n  /tmp/mix.xsh:4:15\n    return Ok(())\n                ^ expected statement terminator\n\nsh: syntax error: bad substitution\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 29,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-envcfg-1"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-worker/task-envcfg-1/report.json",
+        "summary": "err[check.try-error]: incompatible propagated error\n  /tmp/mix2.xsh:2:11\n    let h = env.get_or(\"CFG_HOST\", \"x\")?\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^ cannot propagate Error from function returning Str\n\nerr[check.type-mismatch]: type mismatch\n  /tmp/mix2.xsh:4:10\n    return Ok(1)\n           ^^^^^ expected Result[Int, Str], found Result[Int, Error]\nsh: syntax error: bad substitution\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 31,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-envcfg-1"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-worker/task-envcfg-1/report.json",
+        "summary": "err[check.effect-violation]: `?` requires the `error` effect\n  /tmp/path.xsh:3:3\n    fs.write(out, \"hello\\n\")?\n    ^^^^^^^^^^^^^^^^^^^^^^^^^ `?` requires the `error` effect\nexit=2\ncat: can't open '/tmp/outtest.cfg': No such file or directory\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 33,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-envcfg-1"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-worker/task-envcfg-1/report.json",
+        "summary": "all absent                   xsh_exit=0 oracle_exit=0\n  xsh file:   oracle  : sh: %q\\n: invalid format\nsh: %q\\n: invalid format\nvalid all                    xsh_exit=0 oracle_exit=0\n  xsh file:   oracle  : sh: %q\\n: invalid format\nsh: %q\\n: invalid format\npresent empty host/debug     xsh_exit=0 oracle_exit=0\n  xsh file:   oracle  : sh: %q\\n: invalid format\nsh: %q\\n: invalid format\nruntime traceback\nexecutable: /usr/local/bin/xsh\noperation: result.propagate\nerror: parse-int: invalid integer `abc`\ncall path:\n  1. proc main at envcfg.xsh:1:1-1:1\nport abc                     xsh_exit=3 oracle_exit=1\nruntime traceback\nexecutable: /usr/local/bin/xsh\noperation: result.propagate\nerror: parse-int: expected integer\ncall path:\n  1. proc main at envcfg.xsh:1:1-1:1\nport empty                   xsh_exit=3 oracle_exit=1\nruntime traceback\nexecutable: /usr/local/bin/xsh\noperation: result.propagate\nerror: parse-int: invalid integer `a`\ncall path:\n  1. proc main at envcfg.xsh:1:1-1:1\nport 12a                     xsh_exit=3 oracle_exit=1\nruntime traceback\nexecutable: /usr/local/bin/xsh\noperation: result.propagate\nerror: parse-int: expected integer\ncall path:\n  1. proc main at envcfg.xsh:1:1-1:1\nport -1                      xsh_exit=3 oracle_exit=1\nruntime traceback\nexecutable: /usr/local/bin/xsh\noperation: result.propagate\nerror: parse-int: expected integer\ncall path:\n  1. proc main at envcfg.xsh:1:1-1:1\nport +10                     xsh_exit=3 oracle_exit=1\nport leading zero            xsh_exit=0 oracle_exit=0\n  xsh file: sh: %q\\n: invalid format\n  oracle  : sh: %q\\n: invalid format\nruntime traceback\nexecutable: /usr/local/bin/xsh\noperation: result.propagate\nerror: parse-int: invalid integer `.`\ncall path:\n  1. proc main at envcfg.xsh:1:1-1:1\nport 1.5                     xsh_exit=3 oracle_exit=1\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 42,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-envcfg-1"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-worker/task-envcfg-1/report.json",
+        "summary": "-rw-r--r--    1 root     root           489 Aug  4 05:18 envcfg.xsh\n-rw-r--r--    1 root     root          2028 Aug  4 05:18 review.md\n=== valid full ===\nhost=node-a\nport=9001\ndebug=true\n=== invalid (no file, nonzero) ===\nruntime traceback\nexecutable: /usr/local/bin/xsh\noperation: result.propagate\nerror: parse-int: expected integer\ncall path:\n  1. proc main at envcfg.xsh:1:1-1:1\nexit=3\nls: /tmp/oc: No such file or directory\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 47,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-envcfg-1"
+        }
+      },
+      {
+        "report": "phases/04-eval-design/workers/eval-designer/proposal-1/report.json",
+        "summary": "=== task-safepath files ===\n.\n..\nEVAL.md\nevaluate.xsh\nevaluator.xsh\nexecutor.xsh\nruntime\n--- Dockerfile (if any) ---\n--- dockerignore (if any) ---\n=== task-render files ===\n.\n..\nEVAL.md\nevaluate.xsh\nevaluator.xsh\nexecutor.xsh\nruntime\n--- Dockerfile (if any) ---\n--- dockerignore (if any) ---\n=== task-propsort files ===\n.\n..\nEVAL.md\nevaluate.xsh\nevaluator.xsh\nexecutor.xsh\nruntime\n--- Dockerfile (if any) ---\n--- dockerignore (if any) ---\n=== task-envcfg files ===\n.\n..\nEVAL.md\nevaluate.xsh\nevaluator.xsh\nexecutor.xsh\nruntime\n--- Dockerfile (if any) ---\n--- dockerignore (if any) ---\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 24,
+        "worker": {
+          "role": "eval-designer",
+          "worker_id": "proposal-1"
+        }
+      },
+      {
+        "report": "phases/04-eval-design/workers/eval-designer/proposal-1/report.json",
+        "summary": "work dir ready:\nagents.md\nhandbook.md\nlogstat.xsh\nreview.md\ntask.md\n=== running evaluator ===\npi completed without creating /work/logstat.xsh\ntask-logstat evaluation failed: review.md missing or incomplete\nruntime traceback\nexecutable: /Users/josh/usr/bin/xsh\noperation: result.propagate\nerror: fs-write: No such file or directory (os error 2)\ncall path:\n  1. proc main at /Users/josh/d/laputa-systems/xsh-factory/runs/run-1785818570933/phases/04-eval-design/proposals/proposal-1/evaluator.xsh:1:1-1:1\n  2. proc run_task_logstat at /Users/josh/d/laputa-systems/xsh-factory/runs/run-1785818570933/phases/04-eval-design/proposals/proposal-1/evaluator.xsh:320:14-320:32\n\n\nCommand exited with code 3",
+        "tool": "bash",
+        "turn": 34,
+        "worker": {
+          "role": "eval-designer",
+          "worker_id": "proposal-1"
+        }
+      }
+    ],
+    "workers": [
+      {
+        "identity": {
+          "role": "director",
+          "worker_id": "director"
+        },
+        "path": "phases/01-ticket/workers/director/director/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 12,
+          "budget_usd": 0.06,
+          "cache_read_cost_usd": 0.0032544000000000006,
+          "cache_read_tokens": 180800,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.0085212,
+          "input_cost_usd": 0.00413892,
+          "input_tokens": 45988,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0011278799999999995,
+          "output_tokens": 6266,
+          "provider_total_tokens": 233054,
+          "reasoning_tokens": 2534,
+          "thinking_blocks": 10,
+          "tool_calls": 19,
+          "tool_errors": 0,
+          "tool_results": 19,
+          "total_bucket_tokens": 233054,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "engineer",
+          "worker_id": "task-envcfg-001"
+        },
+        "path": "phases/01-ticket/workers/engineer/task-envcfg-001/report.json",
+        "result": "pass",
+        "tool_errors": 9,
+        "usage": {
+          "assistant_turns": 160,
+          "budget_usd": 0.25,
+          "cache_read_cost_usd": 0.18593971200000003,
+          "cache_read_tokens": 10329984,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.23855965199999996,
+          "input_cost_usd": 0.039365280000000016,
+          "input_tokens": 437392,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.01325466,
+          "output_tokens": 73637,
+          "provider_total_tokens": 10841013,
+          "reasoning_tokens": 51090,
+          "thinking_blocks": 121,
+          "tool_calls": 176,
+          "tool_errors": 9,
+          "tool_results": 176,
+          "total_bucket_tokens": 10841013,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-envcfg"
+        },
+        "path": "phases/03-eval/workers/eval-manager/task-envcfg/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 10,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.003808512,
+          "cache_read_tokens": 211584,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.010592081999999996,
+          "input_cost_usd": 0.00492201,
+          "input_tokens": 54689,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00186156,
+          "output_tokens": 10342,
+          "provider_total_tokens": 276615,
+          "reasoning_tokens": 6010,
+          "thinking_blocks": 8,
+          "tool_calls": 18,
+          "tool_errors": 0,
+          "tool_results": 18,
+          "total_bucket_tokens": 276615,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-envcfg-1"
+        },
+        "path": "phases/03-eval/workers/eval-worker/task-envcfg-1/report.json",
+        "result": "pass",
+        "tool_errors": 6,
+        "usage": {
+          "assistant_turns": 48,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.021864959999999996,
+          "cache_read_tokens": 1214720,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.04341050999999999,
+          "input_cost_usd": 0.016663230000000008,
+          "input_tokens": 185147,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00488232,
+          "output_tokens": 27124,
+          "provider_total_tokens": 1426991,
+          "reasoning_tokens": 21538,
+          "thinking_blocks": 37,
+          "tool_calls": 48,
+          "tool_errors": 6,
+          "tool_results": 48,
+          "total_bucket_tokens": 1426991,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-designer",
+          "worker_id": "proposal-1"
+        },
+        "path": "phases/04-eval-design/workers/eval-designer/proposal-1/report.json",
+        "result": "pass",
+        "tool_errors": 2,
+        "usage": {
+          "assistant_turns": 48,
+          "budget_usd": 0.3,
+          "cache_read_cost_usd": 0.037782144,
+          "cache_read_tokens": 2099008,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.061686953999999995,
+          "input_cost_usd": 0.01574235,
+          "input_tokens": 174915,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.008162460000000002,
+          "output_tokens": 45347,
+          "provider_total_tokens": 2319270,
+          "reasoning_tokens": 26623,
+          "thinking_blocks": 44,
+          "tool_calls": 62,
+          "tool_errors": 2,
+          "tool_results": 62,
+          "total_bucket_tokens": 2319270,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "97edb51c621260d61a00034ea7ed0742adacbb80"
+  },
+  "findings": [
+    {
+      "id": "02-reeval-task-envcfg-001",
+      "kind": "phase",
+      "result": "missing"
+    },
+    {
+      "id": "04-eval-design",
+      "kind": "phase",
+      "result": "fail"
+    }
+  ],
+  "identity": {
+    "mode": "organization",
+    "run_id": "run-1785818570933"
+  },
+  "kind": "run",
+  "result": "fail",
+  "schema_version": 1,
+  "state": "completed"
+}

@@ -1,0 +1,384 @@
+diff --git a/crates/xsh-registry/src/reference.rs b/crates/xsh-registry/src/reference.rs
+index 880b445..b4b7596 100644
+--- a/crates/xsh-registry/src/reference.rs
++++ b/crates/xsh-registry/src/reference.rs
+@@ -343,8 +343,8 @@ fn stream_doc(stage: &str) -> ReferenceDoc {
+         "par-map" => ("Transforms stream items with bounded parallel workers.", "The worker bound is explicit, output order is deterministic for the ordered form, and cancellation still runs stream cleanup.", &["stream", "parallel", "bounded", "ordered"]),
+         "each" => ("Runs a side-effecting block for each stream item.", "The original item remains available to downstream stages and block failures stop the stream explicitly.", &["stream", "effect", "transform"]),
+         "batch" => ("Groups stream items into bounded lists.", "The final short batch is retained and the configured batch size must be positive.", &["stream", "batch", "bounded"]),
+-        "sort" => ("Sorts all stream items.", "Sorting materializes the input and therefore requires a finite source and a defined item ordering.", &["stream", "sorting", "materialization"]),
+-        "sort-by" => ("Sorts stream items by a projected key.", "The key projection controls ordering and the stage materializes the input before emitting results.", &["stream", "sorting", "projection"]),
++        "sort" => ("Sorts all stream items.", "Sorting materializes the input and therefore requires a finite source and a defined item ordering. Supported items are Int, Str, Bool, Path, and Records whose fields are themselves supported items; records compare field by field in sorted field-name order. The sort is stable, so equal items keep their source order.", &["stream", "sorting", "materialization", "stable"]),
++        "sort-by" => ("Sorts stream items by a projected key.", "The key projection controls ordering and the stage materializes the input before emitting results. Supported key types are Int, Str, Bool, Path, and Records whose fields are themselves supported keys; records compare field by field in sorted field-name order. The default order is ascending and --desc reverses it. The sort is stable, so items with equal keys keep their source order and the two-pass idiom (sort by the secondary key first, then by the primary key) produces a reliable compound ordering. Other key types are rejected at check time and fail with a runtime diagnostic that names the stage and key type.", &["stream", "sorting", "projection", "stable"]),
+         "take" => ("Keeps at most a requested number of stream items.", "Taking zero stops the source promptly and runs source defers before downstream completion.", &["stream", "limit", "cleanup"]),
+         "drop" => ("Skips an initial number of stream items.", "Dropped items are consumed from the source and the remainder preserves source order.", &["stream", "skip"]),
+         "first" => ("Returns the first stream item.", "The source is consumed only as far as needed and absence remains distinguishable from a stored null-like value.", &["stream", "terminal", "short-circuit"]),
+diff --git a/docs/SPEC.md b/docs/SPEC.md
+index 40db88c..5bcdab0 100644
+--- a/docs/SPEC.md
++++ b/docs/SPEC.md
+@@ -2779,6 +2779,17 @@ worker-local aggregation avoids building one intermediate list. Suffixes such as
+ `par-map |> where |> flat-map |> reduce-by` currently materialize between
+ stages.
+ 
++`sort` and `sort-by` order by a defined key ordering. Supported items and
++projected keys are `Int`, `Str`, `Bool`, `Path`, and `Record`s whose fields are
++themselves supported (recursively). Records compare field by field in sorted
++field-name order, so `sort-by { |r| {c: r.count, n: r.name} }` sorts by `count`
++then `name`. The default order is ascending and `--desc` reverses it. Both
++stages are stable: items with equal keys keep their source order, so sorting by
++a secondary key first and the primary key second is a reliable two-pass idiom
++for compound ordering. Any other item or key type is rejected at check time and
++fails at runtime with a diagnostic naming the stage and the offending type
++rather than silently returning unsorted input.
++
+ ## 15. Builder Blocks
+ 
+ Builder blocks are accepted only by APIs whose signatures declare a builder
+diff --git a/docs/STREAMS.md b/docs/STREAMS.md
+index 84db96d..81fde85 100644
+--- a/docs/STREAMS.md
++++ b/docs/STREAMS.md
+@@ -208,6 +208,9 @@ could win on flat trees. See §7 pitfalls.
+   count/sum, use `reduce-by` (O(distinct)) or `count { key }`.
+ - **Order isn't free.** Recursive walks are unordered/parallel; `take`/`first`/
+   `last` over them are nondeterministic. Add `|> sort-by` when order matters.
++  `sort-by`/`sort` are stable and order `Int`/`Str`/`Bool`/`Path` keys and
++  records (field by field in sorted field-name order); unsupported key types
++  fail loudly instead of silently leaving the stream unsorted.
+ - **Don't wrap trivial work in a `pure`.** A per-item user-function call pays
+   scope + dispatch overhead; prefer a builtin (`.lower()` over a `translate`
+   helper) or an inline block.
+diff --git a/src/runtime/eval/lowered_ops.rs b/src/runtime/eval/lowered_ops.rs
+index 4645148..c36a99a 100644
+--- a/src/runtime/eval/lowered_ops.rs
++++ b/src/runtime/eval/lowered_ops.rs
+@@ -471,6 +471,25 @@ pub(super) fn lowered_contains_value(
+     }
+ }
+ 
++/// Whether a projected sort key has a defined ordering. The supported key,
++/// item, and record-field types stay aligned with the checker contract in
++/// `src/sema/check/stream.rs`; anything else must fail loudly instead of
++/// silently comparing equal and leaving the stream unsorted.
++pub(super) fn lowered_sort_key_orderable(value: &LoweredValue) -> bool {
++    match value {
++        LoweredValue::Int(_)
++        | LoweredValue::Bool(_)
++        | LoweredValue::Str(_)
++        | LoweredValue::StrView(_)
++        | LoweredValue::Path(_) => true,
++        LoweredValue::Record(fields) => fields.values().all(lowered_sort_key_orderable),
++        LoweredValue::RecordVec(fields) => fields
++            .iter()
++            .all(|(_, value)| lowered_sort_key_orderable(value)),
++        _ => false,
++    }
++}
++
+ pub(super) fn compare_lowered_sort_keys(left: &LoweredValue, right: &LoweredValue) -> Ordering {
+     if let (Some(left), Some(right)) = (lowered_str_value(left), lowered_str_value(right)) {
+         return left.cmp(right);
+@@ -479,10 +498,51 @@ pub(super) fn compare_lowered_sort_keys(left: &LoweredValue, right: &LoweredValu
+         (LoweredValue::Int(left), LoweredValue::Int(right)) => left.cmp(right),
+         (LoweredValue::Bool(left), LoweredValue::Bool(right)) => left.cmp(right),
+         (LoweredValue::Path(left), LoweredValue::Path(right)) => left.bytes.cmp(&right.bytes),
++        (
++            LoweredValue::Record(_) | LoweredValue::RecordVec(_),
++            LoweredValue::Record(_) | LoweredValue::RecordVec(_),
++        ) => compare_lowered_record_sort_keys(left, right),
+         _ => left.type_name().cmp(right.type_name()),
+     }
+ }
+ 
++/// Lexicographic record comparison for sort keys: fields compare one by one in
++/// sorted field-name order, and a shorter record precedes a longer one when
++/// every shared field is equal. Normalizing field order makes the comparison
++/// independent of how the record was built (map or vec representation).
++fn compare_lowered_record_sort_keys(left: &LoweredValue, right: &LoweredValue) -> Ordering {
++    let left_fields = lowered_record_sort_fields(left);
++    let right_fields = lowered_record_sort_fields(right);
++    for (left_field, right_field) in left_fields.iter().zip(right_fields.iter()) {
++        match left_field.0.cmp(&right_field.0) {
++            Ordering::Equal => {}
++            ordering => return ordering,
++        }
++        match compare_lowered_sort_keys(left_field.1, right_field.1) {
++            Ordering::Equal => {}
++            ordering => return ordering,
++        }
++    }
++    left_fields.len().cmp(&right_fields.len())
++}
++
++/// Deterministic field-name-ordered view of a record for key comparison.
++fn lowered_record_sort_fields(value: &LoweredValue) -> Vec<(Arc<str>, &LoweredValue)> {
++    let mut fields = match value {
++        LoweredValue::Record(fields) => fields
++            .iter()
++            .map(|(name, value)| (name.clone(), value))
++            .collect::<Vec<(Arc<str>, &LoweredValue)>>(),
++        LoweredValue::RecordVec(fields) => fields
++            .iter()
++            .map(|(name, value)| (Arc::<str>::from(name.as_str().as_str()), value))
++            .collect::<Vec<(Arc<str>, &LoweredValue)>>(),
++        _ => Vec::new(),
++    };
++    fields.sort_by(|(left, _), (right, _)| left.cmp(right));
++    fields
++}
++
+ pub(super) fn lowered_find_text_bytes(text: &str, needle: &str, start: i64) -> i64 {
+     let Ok(start) = usize::try_from(start) else {
+         return -1;
+diff --git a/src/runtime/eval/lowered_run.rs b/src/runtime/eval/lowered_run.rs
+index 6b52690..9d3c877 100644
+--- a/src/runtime/eval/lowered_run.rs
++++ b/src/runtime/eval/lowered_run.rs
+@@ -62,7 +62,8 @@ use super::lowered_ops::{
+     compare_lowered_sort_keys, lowered_assign_value, lowered_binary_value, lowered_bytes_arg,
+     lowered_bytes_parts, lowered_bytes_value, lowered_contains_value, lowered_index_value,
+     lowered_method_value, lowered_nonnegative_count, lowered_path_method_value,
+-    lowered_return_value, lowered_slice_value, lowered_str_arg, lowered_str_byte_at_value,
++    lowered_return_value, lowered_slice_value, lowered_sort_key_orderable, lowered_str_arg,
++    lowered_str_byte_at_value,
+     lowered_str_byte_len_value, lowered_str_count_lines_value, lowered_str_parts,
+     lowered_str_predicate_text, lowered_str_predicate_value, lowered_str_value,
+     lowered_trim_is_empty_value, lowered_trim_str_predicate_value, lowered_type_name,
+diff --git a/src/runtime/eval/lowered_run/indexed_run.rs b/src/runtime/eval/lowered_run/indexed_run.rs
+index c978f90..67637e9 100644
+--- a/src/runtime/eval/lowered_run/indexed_run.rs
++++ b/src/runtime/eval/lowered_run/indexed_run.rs
+@@ -10,7 +10,7 @@ use super::{
+     TraceError, TraceKind, TracePayload, Traceback, TracebackFrame, TracebackFrameKind, Type,
+     Value, api_spec, assign_lowered_bytes_view, assign_lowered_str_view, bind_lowered_comp_target,
+     btree_map, bytes_contains, bytes_module, check_env_name, compare_lowered_sort_keys,
+-    compound_assignment_value, error_constructor, execute_run_with_policy, exit_status, fs_module,
++    compound_assignment_value, lowered_sort_key_orderable, error_constructor, execute_run_with_policy, exit_status, fs_module,
+     fs_root_record, hash_module, json_module, lowered_assign_value, lowered_binary_value,
+     lowered_bool_arg_or, lowered_bool_builder_field, lowered_bytes_or_str_owned,
+     lowered_bytes_parts, lowered_bytes_value, lowered_command_plan_value,
+@@ -2849,7 +2849,7 @@ impl Evaluator {
+                             let descending = indexed_optional_raw(&mut stage_payload, span)?;
+                             indexed_finish(stage_payload, span)?;
+                             let mut items = self.lowered_pipeline_input_items(current, span)?;
+-                            items.sort_unstable_by(compare_lowered_sort_keys);
++                            items.sort_by(compare_lowered_sort_keys);
+                             if self.eval_indexed_pipeline_descending(
+                                 execution, descending, slots, span,
+                             )? {
+@@ -2886,7 +2886,21 @@ impl Evaluator {
+                                 let item = std::mem::replace(&mut slots[slot], LoweredValue::Unit);
+                                 keyed.push((key, item));
+                             }
+-                            keyed.sort_unstable_by(|(left, _), (right, _)| {
++                            if let Some(key) = keyed
++                                .iter()
++                                .find(|(key, _)| !lowered_sort_key_orderable(key))
++                                .map(|(key, _)| key)
++                            {
++                                return Err(RuntimeError::new(
++                                    "stream-sort-key",
++                                    format!(
++                                        "sort-by keys must be Int, Str, Bool, Path, or Records of supported keys; found {}",
++                                        key.type_name()
++                                    ),
++                                )
++                                .with_span(span));
++                            }
++                            keyed.sort_by(|(left, _), (right, _)| {
+                                 compare_lowered_sort_keys(left, right)
+                             });
+                             if self.eval_indexed_pipeline_descending(
+diff --git a/src/sema/check/stream.rs b/src/sema/check/stream.rs
+index 745a780..48cd1fd 100644
+--- a/src/sema/check/stream.rs
++++ b/src/sema/check/stream.rs
+@@ -129,17 +129,19 @@ impl Checker {
+                 if !stage.args.is_empty() || stage.block.is_some() {
+                     self.error(stage_span, "sort accepts no arguments", "check.arity");
+                 }
+-                if !matches!(
++                if matches!(
+                     item_ty,
+                     Type::Int | Type::Str | Type::Bool | Type::Path | Type::Unknown
+-                ) {
++                ) || is_sortable_record_key_type(&item_ty) {
++                    Type::Stream(Box::new(item_ty))
++                } else {
+                     self.error(
+                         stage_span,
+-                        "sort items must be Int, Str, Bool, or Path",
++                        "sort items must be Int, Str, Bool, Path, or a record of supported items",
+                         "check.stream-sort",
+                     );
++                    Type::Stream(Box::new(item_ty))
+                 }
+-                Type::Stream(Box::new(item_ty))
+             }
+             StreamStageKind::SortBy => {
+                 self.check_stage_no_args_arena(arena, stage);
+@@ -163,13 +165,10 @@ impl Checker {
+                 }
+                 let key_ty = self.check_required_stream_block_arena(arena, source, stage, &item_ty);
+                 let key_ty = result_ok_or_self(&key_ty);
+-                if !matches!(
+-                    key_ty,
+-                    Type::Int | Type::Str | Type::Bool | Type::Path | Type::Unknown
+-                ) {
++                if !is_sortable_key_type(&key_ty) {
+                     self.error(
+                         stage_span,
+-                        "sort-by keys must be Int, Str, Bool, or Path",
++                        "sort-by keys must be Int, Str, Bool, Path, or a record of supported keys",
+                         "check.stream-sort",
+                     );
+                 }
+@@ -826,3 +825,19 @@ fn result_ok_or_self(ty: &Type) -> Type {
+         _ => ty.clone(),
+     }
+ }
++
++/// Whether a projected `sort-by` key or `sort` item type has a defined
++/// ordering. Records are orderable when every field is itself orderable; the
++/// runtime comparator in `lowered_ops.rs` implements the same surface so a
++/// checked program and an unchecked `xsh` run agree on what can sort.
++fn is_sortable_key_type(ty: &Type) -> bool {
++    match ty {
++        Type::Int | Type::Str | Type::Bool | Type::Path | Type::Unknown => true,
++        Type::Record(fields) => fields.values().all(is_sortable_key_type),
++        _ => false,
++    }
++}
++
++fn is_sortable_record_key_type(ty: &Type) -> bool {
++    matches!(ty, Type::Record(fields) if fields.values().all(is_sortable_key_type))
++}
+diff --git a/tests/sema.rs b/tests/sema.rs
+index e7ca0f6..1006635 100644
+--- a/tests/sema.rs
++++ b/tests/sema.rs
+@@ -1636,7 +1636,11 @@ fn checker_rejects_stage_8_table_and_sort_contract_errors() {
+             "check.type-mismatch",
+         ),
+         (
+-            "[{ name: \"a\" }] |> sort-by { { key: .name } }\n",
++            "[{ name: \"a\" }] |> sort-by { |r| [r.name] }\n",
++            "check.stream-sort",
++        ),
++        (
++            "[{ name: \"a\" }] |> sort-by { |r| { scores: [r.name] } }\n",
+             "check.stream-sort",
+         ),
+     ];
+@@ -1650,6 +1654,18 @@ fn checker_rejects_stage_8_table_and_sort_contract_errors() {
+     }
+ }
+ 
++#[test]
++fn checker_accepts_sort_by_record_keys_and_record_sort_items() {
++    let output = check(
++        "[{name: \"a\", count: 1}] |> sort-by { |r| {c: r.count, n: r.name} }\n",
++    );
++    assert!(output.is_empty(), "{:?}", output);
++    let nested = check("[{id: 1}] |> sort-by { |r| {outer: {inner: r.id}} }\n");
++    assert!(nested.is_empty(), "{:?}", nested);
++    let record_sort = check("[{name: \"b\", count: 2}, {name: \"a\", count: 1}] |> sort\n");
++    assert!(record_sort.is_empty(), "{:?}", record_sort);
++}
++
+ #[test]
+ fn checker_accepts_sort_by_desc_flag() {
+     let output = check("[1, 2, 3] |> sort-by --desc .\n");
+diff --git a/tests/xsh/stdlib/streams.xsh b/tests/xsh/stdlib/streams.xsh
+index 34f959a..3e69554 100644
+--- a/tests/xsh/stdlib/streams.xsh
++++ b/tests/xsh/stdlib/streams.xsh
+@@ -512,6 +512,87 @@ proc test_sort_by_desc_reverses_sort_order() [error] {
+   test.eq(words[2], "apple")?
+ }
+ 
++proc test_sort_by_compound_record_keys_and_stability() [error] {
++  let records = [
++    {
++      name: "b",
++      count: 2,
++    },
++    {
++      name: "a",
++      count: 1,
++    },
++    {
++      name: "c",
++      count: 1,
++    },
++  ]
++
++  # A two-field record key compares lexicographically: count first, then name.
++  let direct = records
++    |> sort-by { |r|
++      {c: r.count, n: r.name}
++    }
++
++  test.eq(direct, [{name: "a", count: 1}, {name: "c", count: 1}, {name: "b", count: 2}])?
++
++  # --desc reverses the compound comparison.
++  let desc = records
++    |> sort-by --desc { |r|
++      {c: r.count, n: r.name}
++    }
++
++  test.eq(desc, [{name: "b", count: 2}, {name: "c", count: 1}, {name: "a", count: 1}])?
++
++  # The documented two-pass stable idiom matches the direct compound key.
++  let two_pass = records
++    |> sort-by { |r|
++      r.name
++    }
++    |> sort-by { |r|
++      r.count
++    }
++
++  test.eq(two_pass, direct)?
++
++  # Stable sort keeps equal-key items in source order.
++  let repeats = [
++    {
++      name: "x",
++      count: 1,
++    },
++    {
++      name: "y",
++      count: 1,
++    },
++    {
++      name: "z",
++      count: 1,
++    },
++  ]
++  let stable = repeats |> sort-by .count
++  test.eq(stable, repeats)?
++
++  # Whole-record sort uses the same record ordering.
++  let whole = records |> sort
++  test.eq(whole, direct)?
++}
++
++proc test_sort_by_rejects_non_orderable_keys_at_runtime(ctx: TestContext) [error] {
++  let failed = test.run_script(
++    ctx,
++    """
++let rows = [{name: "b"}, {name: "a"}]
++let out = (rows) |> sort-by { |r| [r.name] } |> collect()
++for r in out { print \${r.name} }
++""",
++  )?
++
++  test.ok(! failed.success, failed.stdout)?
++  test.contains(failed.stderr, "sort-by", failed.stderr)?
++  test.contains(failed.stderr, "List", failed.stderr)?
++}
++
+ proc test_structured_stream_batch_count_and_argv_limits() [process, error] {
+   let by_count = [1, 2, 3, 4, 5] |> batch --count=2
+   let by_size = [p"aaaa", p"bbbb", p"cccc"] |> batch --max-bytes=10

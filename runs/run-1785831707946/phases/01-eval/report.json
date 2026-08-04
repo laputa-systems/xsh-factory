@@ -1,0 +1,229 @@
+{
+  "artifacts": [
+    {
+      "kind": "session-directory",
+      "path": "workers/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 88,
+      "budget_failures": 0,
+      "cost_usd": 0.05698155599999999,
+      "tool_errors": 3,
+      "total_bucket_tokens": 1874748.0,
+      "unknown_costs": 0,
+      "workers": 2
+    },
+    "designer": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785831707946/phases/01-eval/workers/eval-designer/proposal-1/REPORT.md",
+      "present": false,
+      "result": "not-requested",
+      "role": "eval-designer",
+      "valid": true
+    },
+    "director": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785831707946/phases/01-eval/workers/director/director/REPORT.md",
+      "present": false,
+      "result": "not-requested",
+      "role": "director",
+      "valid": true
+    },
+    "engineer": [],
+    "handbook_lineage": {
+      "approved": "lineage/handbook-approved.md",
+      "candidate": "lineage/handbook-candidate.md"
+    },
+    "manager": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785831707946/phases/01-eval/workers/eval-manager/task-envcfg/REPORT.md",
+      "present": true,
+      "result": "pass",
+      "role": "eval-manager",
+      "valid": true
+    },
+    "mode": "eval",
+    "narratives": [
+      {
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785831707946/phases/01-eval/workers/eval-manager/task-envcfg/REPORT.md",
+        "present": true,
+        "result": "pass",
+        "role": "eval-manager",
+        "valid": true
+      }
+    ],
+    "open_tickets": [
+      {
+        "eval_id": "task-envcfg",
+        "id": "task-envcfg-001",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-envcfg-001.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-tags",
+        "id": "task-tags-003",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-tags-003.md",
+        "status": "Open."
+      }
+    ],
+    "outcomes": {
+      "cycle": "pass",
+      "evaluator": "pass",
+      "infrastructure": "pass",
+      "product": "pass"
+    },
+    "required_outputs": {
+      "audit": true,
+      "candidate_handbook": true,
+      "designer_handbook_read": true,
+      "designer_output": true,
+      "handbook_lineage": true,
+      "manager_evidence_read": true,
+      "manager_handbook_read": true,
+      "manager_report": true,
+      "manager_session": true,
+      "required": true,
+      "trial1_process": true,
+      "trial1_report": true,
+      "trial2_process": true,
+      "trial2_report": true,
+      "worker_handbook_read": true
+    },
+    "sessions": [
+      "workers/eval-manager/task-envcfg/session.jsonl.bz2",
+      "workers/eval-worker/task-envcfg-1/session.jsonl.bz2"
+    ],
+    "tool_errors": [
+      {
+        "report": "workers/eval-worker/task-envcfg-1/report.json",
+        "summary": "query: search:Result\nstatus: matches\n\napi: language.core.postfix-question\nkind: language\npurpose: Defines postfix ? error propagation.\n\napi: language.core.results\nkind: language\npurpose: Defines Result values and error families.\n\napi: language.core.run\nkind: language\npurpose: Defines process run forms and status boundaries.\n\napi: language.core.statements\nkind: language\npurpose: Defines statement sequencing and result propagation.\n\napi: language.stream.each\nkind: language\npurpose: Runs a side-effecting block for each stream item.\n\napi: language.stream.repeat\nkind: language\npurpose: Repeats a value as a stream.\n\napi: language.stream.shuffle\nkind: language\npurpose: Randomizes the order of all stream items.\n\napi: language.stream.sort-by\nkind: language\npurpose: Sorts stream items by a projected key.\n\napi: language.trace.core.call\nkind: language\npurpose: Records a call into a core language operation.\n\napi: language.trace.core.result\n===\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 6,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-envcfg-1"
+        }
+      },
+      {
+        "report": "workers/eval-worker/task-envcfg-1/report.json",
+        "summary": "== [8080]\nerr[parse.expected-token]: expected `)` after expression\n  t4.xsh:4:25\n      Ok(v) => \"OK:\" + (v as Str)\n                          ^^ expected `)` after expression\n\nerr[parse.expected-token]: expected `=>` in match arm\n  t4.xsh:4:28\n      Ok(v) => \"OK:\" + (v as Str)\n                             ^^^ expected `=>` in match arm\n\nerr[parse.expected-pattern]: expected pattern\n  t4.xsh:4:31\n      Ok(v) => \"OK:\" + (v as Str)\n                                ^ expected pattern\n== [000123]\nerr[parse.expected-token]: expected `)` after expression\n  t4.xsh:4:25\n      Ok(v) => \"OK:\" + (v as Str)\n                          ^^ expected `)` after expression\n\nerr[parse.expected-token]: expected `=>` in match arm\n  t4.xsh:4:28\n      Ok(v) => \"OK:\" + (v as Str)\n                             ^^^ expected `=>` in match arm\n\nerr[parse.expected-pattern]: expected pattern\n  t4.xsh:4:31\n      Ok(v) => \"OK:\" + (v as Str)\n                                ^ expected pattern\n== []\nerr[parse.expected-token]: expected `)` after expression\n  t4.xsh:4:25\n      Ok(v) => \"OK:\" + (v as Str)\n                          ^^ expected `)` after expression\n\nerr[parse.expected-token]: expected `=>` in match arm\n  t4.xsh:4:28\n      Ok(v) => \"OK:\" + (v as Str)\n                             ^^^ expected `=>` in match arm\n\nerr[parse.expected-pattern]: expected pattern\n  t4.xsh:4:31\n      Ok(v) => \"OK:\" + (v as Str)\n                                ^ expected pattern\n== [12a]\nerr[parse.expected-token]: expected `)` after expression\n  t4.xsh:4:25\n      Ok(v) => \"OK:\" + (v as Str)\n                          ^^ expected `)` after expression\n\nerr[parse.expected-token]: expected `=>` in match arm\n  t4.xsh:4:28\n      Ok(v) => \"OK:\" + (v as Str)\n                             ^^^ expected `=>` in match arm\n\nerr[parse.expected-pattern]: expected pattern\n  t4.xsh:4:31\n      Ok(v) => \"OK:\" + (v as Str)\n                                ^ expected pattern\n== [+5]\nerr[parse.expected-token]: expected `)` after expression\n  t4.xsh:4:25\n      Ok(v) => \"OK:\" + (v as Str)\n                          ^^ expected `)` after expression\n\nerr[parse.expected-token]: expected `=>` in match arm\n  t4.xsh:4:28\n      Ok(v) => \"OK:\" + (v as Str)\n                             ^^^ expected `=>` in match arm\n\nerr[parse.expected-pattern]: expected pattern\n  t4.xsh:4:31\n      Ok(v) => \"OK:\" + (v as Str)\n                                ^ expected pattern\n== [-3]\nerr[parse.expected-token]: expected `)` after expression\n  t4.xsh:4:25\n      Ok(v) => \"OK:\" + (v as Str)\n                          ^^ expected `)` after expression\n\nerr[parse.expected-token]: expected `=>` in match arm\n  t4.xsh:4:28\n      Ok(v) => \"OK:\" + (v as Str)\n                             ^^^ expected `=>` in match arm\n\nerr[parse.expected-pattern]: expected pattern\n  t4.xsh:4:31\n      Ok(v) => \"OK:\" + (v as Str)\n                                ^ expected pattern\n== [ 5]\nerr[parse.expected-token]: expected `)` after expression\n  t4.xsh:4:25\n      Ok(v) => \"OK:\" + (v as Str)\n                          ^^ expected `)` after expression\n\nerr[parse.expected-token]: expected `=>` in match arm\n  t4.xsh:4:28\n      Ok(v) => \"OK:\" + (v as Str)\n                             ^^^ expected `=>` in match arm\n\nerr[parse.expected-pattern]: expected pattern\n  t4.xsh:4:31\n      Ok(v) => \"OK:\" + (v as Str)\n                                ^ expected pattern\n== absent ==\nerr[parse.expected-token]: expected `)` after expression\n  t4.xsh:4:25\n      Ok(v) => \"OK:\" + (v as Str)\n                          ^^ expected `)` after expression\n\nerr[parse.expected-token]: expected `=>` in match arm\n  t4.xsh:4:28\n      Ok(v) => \"OK:\" + (v as Str)\n                             ^^^ expected `=>` in match arm\n\nerr[parse.expected-pattern]: expected pattern\n  t4.xsh:4:31\n      Ok(v) => \"OK:\" + (v as Str)\n                                ^ expected pattern\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 31,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-envcfg-1"
+        }
+      },
+      {
+        "report": "workers/eval-worker/task-envcfg-1/report.json",
+        "summary": "sh: syntax error: unexpected \";;\"\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 33,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-envcfg-1"
+        }
+      }
+    ],
+    "trials": [
+      {
+        "evidence": {
+          "candidate_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "classification": "pass",
+          "correctness": "pass",
+          "eval_id": "task-envcfg",
+          "handbook_sha256": "97c5d804c42c7742c9edfea4480163828d864279391d391df77aa60ee4a40e83",
+          "oracle_sha256": "594a1118ea571bcfe5b2a8b7239b28924bd32ced928ba9ea5377a2c1b0bd71f6",
+          "passed": true,
+          "protocol": "pass",
+          "restrictions": "pass",
+          "result": "pass",
+          "timing": "pass",
+          "trial_id": "1",
+          "valid": true
+        },
+        "path": "workers/eval-worker/task-envcfg-1/run.json"
+      }
+    ],
+    "workers": [
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-envcfg"
+        },
+        "path": "workers/eval-manager/task-envcfg/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 26,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.009737856,
+          "cache_read_tokens": 540992,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.023176116,
+          "input_cost_usd": 0.01109142,
+          "input_tokens": 123238,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00234684,
+          "output_tokens": 13038,
+          "provider_total_tokens": 677268,
+          "reasoning_tokens": 5266,
+          "thinking_blocks": 24,
+          "tool_calls": 34,
+          "tool_errors": 0,
+          "tool_results": 34,
+          "total_bucket_tokens": 677268,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-envcfg-1"
+        },
+        "path": "workers/eval-worker/task-envcfg-1/report.json",
+        "result": "pass",
+        "tool_errors": 3,
+        "usage": {
+          "assistant_turns": 62,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.018956160000000003,
+          "cache_read_tokens": 1053120,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.03380543999999999,
+          "input_cost_usd": 0.01113552,
+          "input_tokens": 123728,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0037137599999999982,
+          "output_tokens": 20632,
+          "provider_total_tokens": 1197480,
+          "reasoning_tokens": 14039,
+          "thinking_blocks": 47,
+          "tool_calls": 64,
+          "tool_errors": 3,
+          "tool_results": 64,
+          "total_bucket_tokens": 1197480,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "434080dfe330cc3bb705bd8068d57a1015b7b218"
+  },
+  "findings": [],
+  "identity": {
+    "eval_id": "task-envcfg",
+    "mode": "eval",
+    "run_id": "01-eval"
+  },
+  "kind": "phase",
+  "result": "pass",
+  "schema_version": 1,
+  "state": "completed"
+}

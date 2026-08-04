@@ -1,0 +1,135 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785777983535/phases/03-eval/workers/eval-worker/task-envcfg-1/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_state": "pass",
+    "agent_wall_ms": 692595,
+    "artifact": {
+      "name": "envcfg.xsh",
+      "state": "present"
+    },
+    "budget_state": "pass",
+    "classification": "pass",
+    "evaluator_manifest": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785777983535/phases/03-eval/workers/eval-worker/task-envcfg-1/run.json",
+    "evaluator_state": "pass",
+    "reporting_state": "pass",
+    "result": "pass",
+    "review": {
+      "state": "present"
+    }
+  },
+  "findings": [
+    {
+      "count": 6,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "role": "eval-worker",
+    "worker_id": "task-envcfg-1"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785777983535/phases/03-eval/workers/eval-worker/task-envcfg-1/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 90,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 690775
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785777983535/phases/03-eval/workers/eval-worker/task-envcfg-1/session.jsonl.bz2",
+      "summary": "err[check.unresolved-proc-command]: unresolved proc command\n  probe6.xsh:2:3\n    panic \"boom\"\nerr[check.unresolved-proc-command]: unresolved proc command\n  probe6.xsh:2:3\n    panic \"boom\"\n    ^^^^^^^^^^^^ unresolved proc command\nsh: syntax error: bad substitution\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 29
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785777983535/phases/03-eval/workers/eval-worker/task-envcfg-1/session.jsonl.bz2",
+      "summary": "err[check.type-mismatch]: type mismatch\n  probe7.xsh:2:10\n    return Err(\"bad config\")\n           ^^^^^^^^^^^^^^^^^ expected Result[Str, Error], found Result[<unknown>, Str]\nerr[check.type-mismatch]: type mismatch\n  probe7.xsh:2:10\n    return Err(\"bad config\")\n           ^^^^^^^^^^^^^^^^^ expected Result[Str, Error], found Result[<unknown>, Str]\nsh: syntax error: bad substitution\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 38
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785777983535/phases/03-eval/workers/eval-worker/task-envcfg-1/session.jsonl.bz2",
+      "summary": "sh: syntax error: unexpected \"(\"\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 51
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785777983535/phases/03-eval/workers/eval-worker/task-envcfg-1/session.jsonl.bz2",
+      "summary": "language reference items: 95\ntotal queryable items: 621\ndocumented items: 621\n\nmodules\n├── applet (8 items)\n│   ├── current_euid (1 overload)\n│   ├── current_exe (1 overload)\n│   ├── hash_password (1 overload)\n│   ├── login_session (1 overload)\n│   ├── mdev (1 overload)\n│   ├── su_session (1 overload)\n│   ├── sulogin_session (1 overload)\n│   └── verify_password (1 overload)\n├── archive (11 items)\n│   ├── compress (1 overload)\n│   ├── cpio_create (1 overload)\n│   ├── cpio_extract (1 overload)\n│   ├── cpio_list (1 overload)\n│   ├── decompress (1 overload)\n│   ├── decompress_bytes (1 overload)\n│   ├── tar_create (1 overload)\n│   ├── tar_extract (1 overload)\n│   ├── tar_list (1 overload)\n│   ├── zip_extract (1 overload)\n│   └── zip_list (1 overload)\n├── bytes (14 items)\n│   ├── concat (1 overload)\n│   ├── copy (1 overload)\n│   ├── copy_file (1 overload)\n│   ├── from_ints (1 overload)\n│   ├── from_text (1 overload)\n│   ├── human (1 overload)\n│   ├── pack_be (1 overload)\n│   ├── pack_le (1 overload)\n│   ├── read_at (1 overload)\n│   ├── unpack_be (1 overload)\n│   ├── unpack_le (1 overload)\n│   ├── write_at (1 overload)\n│   ├── zero (1 overload)\n====\n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 57
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785777983535/phases/03-eval/workers/eval-worker/task-envcfg-1/session.jsonl.bz2",
+      "summary": "(no output)\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 58
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785777983535/phases/03-eval/workers/eval-worker/task-envcfg-1/session.jsonl.bz2",
+      "summary": "--- run ---\nruntime traceback\nexecutable: /usr/local/bin/xsh\noperation: main\nerror: runtime-error: runtime error\nsh: syntax error: bad substitution\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 61
+    }
+  ],
+  "tools": [
+    {
+      "count": 88,
+      "name": "bash"
+    },
+    {
+      "count": 1,
+      "name": "edit"
+    },
+    {
+      "count": 3,
+      "name": "read"
+    },
+    {
+      "count": 1,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 91,
+    "budget_usd": 0.5,
+    "cache_read_cost_usd": 0.035974656000000015,
+    "cache_read_tokens": 1998592,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.056415996,
+    "input_cost_usd": 0.01461834,
+    "input_tokens": 162426,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.005823,
+    "output_tokens": 32350,
+    "provider_total_tokens": 2193368,
+    "reasoning_tokens": 22384,
+    "thinking_blocks": 68,
+    "tool_calls": 93,
+    "tool_errors": 6,
+    "tool_results": 93,
+    "total_bucket_tokens": 2193368,
+    "user_messages": 1
+  }
+}

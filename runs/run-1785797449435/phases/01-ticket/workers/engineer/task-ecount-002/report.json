@@ -1,0 +1,99 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785797449435/phases/01-ticket/workers/engineer/task-ecount-002/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_process": "pass",
+    "reporting": "pass",
+    "required_report": "present",
+    "session_limit_watcher": "pass",
+    "watcher": "pass"
+  },
+  "findings": [
+    {
+      "count": 1,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "role": "engineer",
+    "worker_id": "task-ecount-002"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785797449435/phases/01-ticket/workers/engineer/task-ecount-002/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 123,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 829315
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785797449435/phases/01-ticket/workers/engineer/task-ecount-002/session.jsonl.bz2",
+      "summary": "Could not find the exact text in /Users/josh/d/laputa-systems/xsh-factory/runs/run-1785797449435/phases/01-ticket/workers/engineer/task-ecount-002/REPORT.md. The old text must match exactly including all whitespace and newlines.",
+      "tool": "edit",
+      "turn": 116
+    }
+  ],
+  "tools": [
+    {
+      "count": 86,
+      "name": "bash"
+    },
+    {
+      "count": 10,
+      "name": "edit"
+    },
+    {
+      "count": 1,
+      "name": "grep"
+    },
+    {
+      "count": 29,
+      "name": "read"
+    },
+    {
+      "count": 1,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 124,
+    "budget_usd": 0.25,
+    "cache_read_cost_usd": 0.13900723199999998,
+    "cache_read_tokens": 7722624,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.203852142,
+    "input_cost_usd": 0.054125190000000024,
+    "input_tokens": 601391,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.01071972,
+    "output_tokens": 59554,
+    "provider_total_tokens": 8383569,
+    "reasoning_tokens": 33944,
+    "thinking_blocks": 88,
+    "tool_calls": 127,
+    "tool_errors": 1,
+    "tool_results": 127,
+    "total_bucket_tokens": 8383569,
+    "user_messages": 1
+  }
+}

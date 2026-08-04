@@ -1,0 +1,12 @@
+== success cases ==
+PASS public
+PASS hidden_empty
+PASS hidden_all_inactive
+PASS hidden_single
+PASS hidden_unicode
+PASS hidden_spaces
+PASS hidden_zero
+PASS hidden_large
+== failure controls ==
+PASS hidden_malformed (both nonzero, no output file)
+PASS hidden_missing (both nonzero, no output file)

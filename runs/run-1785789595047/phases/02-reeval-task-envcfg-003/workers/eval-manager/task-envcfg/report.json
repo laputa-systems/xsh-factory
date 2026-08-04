@@ -1,0 +1,95 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785789595047/phases/02-reeval-task-envcfg-003/workers/eval-manager/task-envcfg/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_process": "pass",
+    "reporting": "pass",
+    "required_report": "present",
+    "session_limit_watcher": "pass",
+    "watcher": "pass"
+  },
+  "findings": [
+    {
+      "count": 1,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "role": "eval-manager",
+    "worker_id": "task-envcfg"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785789595047/phases/02-reeval-task-envcfg-003/workers/eval-manager/task-envcfg/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 13,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 165235
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785789595047/phases/02-reeval-task-envcfg-003/workers/eval-manager/task-envcfg/session.jsonl.bz2",
+      "summary": "rg: regex parse error:\n    (?:expected '{' to start block|unsupported operator|or |and |\\|\\||&&|if a or|if .*or )\n                  ^\nerror: repetition quantifier expects a valid decimal",
+      "tool": "grep",
+      "turn": 3
+    }
+  ],
+  "tools": [
+    {
+      "count": 12,
+      "name": "bash"
+    },
+    {
+      "count": 1,
+      "name": "grep"
+    },
+    {
+      "count": 9,
+      "name": "read"
+    },
+    {
+      "count": 1,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 14,
+    "budget_usd": 0.15,
+    "cache_read_cost_usd": 0.005243903999999999,
+    "cache_read_tokens": 291328,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.012034224,
+    "input_cost_usd": 0.004700700000000001,
+    "input_tokens": 52230,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.00208962,
+    "output_tokens": 11609,
+    "provider_total_tokens": 355167,
+    "reasoning_tokens": 6461,
+    "thinking_blocks": 13,
+    "tool_calls": 23,
+    "tool_errors": 1,
+    "tool_results": 23,
+    "total_bucket_tokens": 355167,
+    "user_messages": 1
+  }
+}

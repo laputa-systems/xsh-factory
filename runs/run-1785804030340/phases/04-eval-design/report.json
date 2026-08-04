@@ -1,0 +1,175 @@
+{
+  "artifacts": [
+    {
+      "kind": "session-directory",
+      "path": "workers/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 54,
+      "budget_failures": 0,
+      "cost_usd": 0.056463804000000006,
+      "tool_errors": 2,
+      "total_bucket_tokens": 2055524.0,
+      "unknown_costs": 0,
+      "workers": 1
+    },
+    "designer": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785804030340/phases/04-eval-design/workers/eval-designer/proposal-1/REPORT.md",
+      "present": true,
+      "result": "ready-for-review",
+      "role": "eval-designer",
+      "valid": true
+    },
+    "director": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785804030340/phases/04-eval-design/workers/director/director/REPORT.md",
+      "present": false,
+      "result": "missing",
+      "role": "director",
+      "valid": false
+    },
+    "engineer": [],
+    "handbook_lineage": {
+      "approved": "missing",
+      "candidate": "missing"
+    },
+    "manager": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785804030340/phases/04-eval-design/workers/eval-manager/task-envcfg/REPORT.md",
+      "present": false,
+      "result": "missing",
+      "role": "eval-manager",
+      "valid": false
+    },
+    "mode": "eval-design",
+    "narratives": [
+      {
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785804030340/phases/04-eval-design/workers/eval-designer/proposal-1/REPORT.md",
+        "present": true,
+        "result": "ready-for-review",
+        "role": "eval-designer",
+        "valid": true
+      }
+    ],
+    "open_tickets": [
+      {
+        "eval_id": "task-ecount",
+        "id": "task-ecount-004",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-ecount-004.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-ecount",
+        "id": "task-ecount-006",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-ecount-006.md",
+        "status": "Approved."
+      },
+      {
+        "eval_id": "task-ecount",
+        "id": "task-ecount-007",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-ecount-007.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-ecount",
+        "id": "task-ecount-008",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-ecount-008.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-envcfg",
+        "id": "task-envcfg-002",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-envcfg-002.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-envcfg",
+        "id": "task-envcfg-006",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-envcfg-006.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-tags",
+        "id": "task-tags-003",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-tags-003.md",
+        "status": "Approved."
+      }
+    ],
+    "required_outputs": null,
+    "sessions": [
+      "workers/eval-designer/proposal-1/session.jsonl.bz2"
+    ],
+    "tool_errors": [
+      {
+        "report": "workers/eval-designer/proposal-1/report.json",
+        "summary": "=== find oracle ===\npermlist-test/root/a.txt\npermlist-test/root/sub/c\n=== xsh candidate ===\nerr[parse.expected-terminator]: expected statement terminator\n  perm.xsh:8:16\n      |> sort_by { |a| a }\n                 ^ expected statement terminator\n\nerr[parse.expected-record-field]: expected record field\n  perm.xsh:8:18\n      |> sort_by { |a| a }\n                   ^ expected record field\n\nerr[parse.expected-token]: expected `}` after record\n  perm.xsh:8:18\n      |> sort_by { |a| a }\n                   ^ expected `}` after record\n\nerr[parse.expected-terminator]: expected statement terminator\n  perm.xsh:8:18\n      |> sort_by { |a| a }\n                   ^ expected statement terminator\n\nerr[parse.expected-expression]: expected expression\n  perm.xsh:8:18\n      |> sort_by { |a| a }\n                   ^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  perm.xsh:9:5\n      |> collect()\n      ^^ expected expression\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 14,
+        "worker": {
+          "role": "eval-designer",
+          "worker_id": "proposal-1"
+        }
+      },
+      {
+        "report": "workers/eval-designer/proposal-1/report.json",
+        "summary": "=== oracle ===\n/t/.h1\n/t/sub/.h2\n/t/sub/r.sh\n=== candidate hidden=true ===\nerr[parse.expected-token]: expected `)` after call arguments\n  /test/candidate3.xsh:3:37\n    let files = fs.files(root, hidden = true)?\n                                      ^ expected `)` after call arguments\n\nerr[parse.expected-terminator]: expected statement terminator\n  /test/candidate3.xsh:3:37\n    let files = fs.files(root, hidden = true)?\n                                      ^ expected statement terminator\n\nerr[parse.expected-expression]: expected expression\n  /test/candidate3.xsh:3:37\n    let files = fs.files(root, hidden = true)?\n                                      ^ expected expression\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 38,
+        "worker": {
+          "role": "eval-designer",
+          "worker_id": "proposal-1"
+        }
+      }
+    ],
+    "trials": [],
+    "workers": [
+      {
+        "identity": {
+          "role": "eval-designer",
+          "worker_id": "proposal-1"
+        },
+        "path": "workers/eval-designer/proposal-1/report.json",
+        "result": "pass",
+        "tool_errors": 2,
+        "usage": {
+          "assistant_turns": 54,
+          "budget_usd": 0.3,
+          "cache_read_cost_usd": 0.032868864000000005,
+          "cache_read_tokens": 1826048,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.056463804000000006,
+          "input_cost_usd": 0.017710740000000006,
+          "input_tokens": 196786,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.005884199999999999,
+          "output_tokens": 32690,
+          "provider_total_tokens": 2055524,
+          "reasoning_tokens": 18624,
+          "thinking_blocks": 37,
+          "tool_calls": 69,
+          "tool_errors": 2,
+          "tool_results": 69,
+          "total_bucket_tokens": 2055524,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "5cee79306e2ce8c12fbd5b8575ff7accfcc5c82f"
+  },
+  "findings": [],
+  "identity": {
+    "eval_id": "task-envcfg",
+    "mode": "eval-design",
+    "run_id": "04-eval-design"
+  },
+  "kind": "phase",
+  "result": "pass",
+  "schema_version": 1,
+  "state": "completed"
+}

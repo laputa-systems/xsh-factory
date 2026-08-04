@@ -1,0 +1,147 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785818570933/phases/01-ticket/workers/engineer/task-envcfg-001/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_process": "nonzero-exit",
+    "reporting": "pass",
+    "required_report": "present",
+    "session_limit_watcher": "failed",
+    "watcher": "pass"
+  },
+  "findings": [
+    {
+      "count": 9,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "role": "engineer",
+    "worker_id": "task-envcfg-001"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785818570933/phases/01-ticket/workers/engineer/task-envcfg-001/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 160,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 1313431
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785818570933/phases/01-ticket/workers/engineer/task-envcfg-001/session.jsonl.bz2",
+      "summary": "(no output)\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 33
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785818570933/phases/01-ticket/workers/engineer/task-envcfg-001/session.jsonl.bz2",
+      "summary": "(no output)\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 50
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785818570933/phases/01-ticket/workers/engineer/task-envcfg-001/session.jsonl.bz2",
+      "summary": "sed: 1: \",+45p\n\": invalid command code ,\n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 59
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785818570933/phases/01-ticket/workers/engineer/task-envcfg-001/session.jsonl.bz2",
+      "summary": "(no output)\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 60
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785818570933/phases/01-ticket/workers/engineer/task-envcfg-001/session.jsonl.bz2",
+      "summary": "(no output)\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 81
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785818570933/phases/01-ticket/workers/engineer/task-envcfg-001/session.jsonl.bz2",
+      "summary": "./showcase/tests/test-jq.xsh:118:  let out2 = run_jq(ctx, \"try error(\\\"boom\\\") catch .\", \"null\")?\n=== check 'fail' is NOT free (confirm collision)===\n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 90
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785818570933/phases/01-ticket/workers/engineer/task-envcfg-001/session.jsonl.bz2",
+      "summary": "(no output)\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 93
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785818570933/phases/01-ticket/workers/engineer/task-envcfg-001/session.jsonl.bz2",
+      "summary": "(no output)\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 112
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785818570933/phases/01-ticket/workers/engineer/task-envcfg-001/session.jsonl.bz2",
+      "summary": "src/runtime/eval.rs:1902:enum LoweredErrorExpr {\n---Simple variant---\nsrc/runtime/eval/lower.rs:9829:            return Some(LoweredErrorExpr::Simple {\n---push_build_row def---\n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 116
+    }
+  ],
+  "tools": [
+    {
+      "count": 162,
+      "name": "bash"
+    },
+    {
+      "count": 4,
+      "name": "edit"
+    },
+    {
+      "count": 3,
+      "name": "grep"
+    },
+    {
+      "count": 1,
+      "name": "ls"
+    },
+    {
+      "count": 5,
+      "name": "read"
+    },
+    {
+      "count": 1,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 160,
+    "budget_usd": 0.25,
+    "cache_read_cost_usd": 0.18593971200000003,
+    "cache_read_tokens": 10329984,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.23855965199999996,
+    "input_cost_usd": 0.039365280000000016,
+    "input_tokens": 437392,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.01325466,
+    "output_tokens": 73637,
+    "provider_total_tokens": 10841013,
+    "reasoning_tokens": 51090,
+    "thinking_blocks": 121,
+    "tool_calls": 176,
+    "tool_errors": 9,
+    "tool_results": 176,
+    "total_bucket_tokens": 10841013,
+    "user_messages": 1
+  }
+}

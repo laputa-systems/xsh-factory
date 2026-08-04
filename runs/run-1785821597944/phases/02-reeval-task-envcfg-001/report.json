@@ -1,0 +1,239 @@
+{
+  "artifacts": [
+    {
+      "kind": "session-directory",
+      "path": "workers/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 73,
+      "budget_failures": 0,
+      "cost_usd": 0.067449708,
+      "tool_errors": 4,
+      "total_bucket_tokens": 2082254.0,
+      "unknown_costs": 0,
+      "workers": 2
+    },
+    "designer": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785821597944/phases/02-reeval-task-envcfg-001/workers/eval-designer/proposal-1/REPORT.md",
+      "present": false,
+      "result": "not-requested",
+      "role": "eval-designer",
+      "valid": true
+    },
+    "director": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785821597944/phases/02-reeval-task-envcfg-001/workers/director/director/REPORT.md",
+      "present": false,
+      "result": "not-requested",
+      "role": "director",
+      "valid": true
+    },
+    "engineer": [],
+    "handbook_lineage": {
+      "approved": "lineage/handbook-approved.md",
+      "candidate": "lineage/handbook-candidate.md"
+    },
+    "manager": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785821597944/phases/02-reeval-task-envcfg-001/workers/eval-manager/task-envcfg/REPORT.md",
+      "present": true,
+      "result": "fail",
+      "role": "eval-manager",
+      "valid": true
+    },
+    "mode": "eval",
+    "narratives": [
+      {
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785821597944/phases/02-reeval-task-envcfg-001/workers/eval-manager/task-envcfg/REPORT.md",
+        "present": true,
+        "result": "fail",
+        "role": "eval-manager",
+        "valid": true
+      }
+    ],
+    "open_tickets": [
+      {
+        "eval_id": "task-envcfg",
+        "id": "task-envcfg-001",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-envcfg-001.md",
+        "status": "Approved."
+      },
+      {
+        "eval_id": "task-envcfg",
+        "id": "task-envcfg-002",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-envcfg-002.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-tags",
+        "id": "task-tags-003",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-tags-003.md",
+        "status": "Open."
+      }
+    ],
+    "required_outputs": {
+      "audit": true,
+      "candidate_handbook": true,
+      "designer_handbook_read": true,
+      "designer_output": true,
+      "handbook_lineage": true,
+      "manager_evidence_read": true,
+      "manager_handbook_read": true,
+      "manager_report": true,
+      "manager_session": true,
+      "required": true,
+      "trial1_process": true,
+      "trial1_report": true,
+      "trial2_process": true,
+      "trial2_report": true,
+      "worker_handbook_read": true
+    },
+    "sessions": [
+      "workers/eval-manager/task-envcfg/session.jsonl.bz2",
+      "workers/eval-worker/task-envcfg-1/session.jsonl.bz2"
+    ],
+    "tool_errors": [
+      {
+        "report": "workers/eval-manager/task-envcfg/report.json",
+        "summary": "total lines: 107\n--- line 57 toolResult (isError=False) ---\nquery: language:core.results\nstatus: exact\n\napi: language.core.results\nkind: language\npurpose: Defines Result values and error families.\ncontract: Expected host failures remain Result data until ? or another explicit boundary propagates them.\neffects: none\ntags: language, results\nexample:\n  let value: Result[Str] = Ok(\"ready\")\n=====search Error=====\nquery: search:Error\nstatus: matches\n\napi: language.core.fallback\nkind: language\npurpose: Defines fallback expressions for recoverable values.\n\napi: language.core.postfix-question\nkind: language\npurpose: Defines postfix ? error propagation.\n=====search error family=====\nquery: search:error\nstatus: matches\n\napi: language.core.fallback\nkind: language\npurpose: Defines fallback expressions for recoverable values.\n\napi: language.core.postfix-question\nTraceback (most recent call last):\n  File \"<stdin>\", line 16, in <module>\nKeyError: slice(None, 400, None)\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 10,
+        "worker": {
+          "role": "eval-manager",
+          "worker_id": "task-envcfg"
+        }
+      },
+      {
+        "report": "workers/eval-worker/task-envcfg-1/report.json",
+        "summary": "query: api:env.get\nstatus: exact\n\napi: module.env.get\nkind: module-function\npurpose: Reads one environment variable as text.\ncontract: Missing variables and invalid host bytes remain distinguishable results.\neffects: env\nsignature: env.get(name: Str) -> Result[Str, Error]\ntags: env, get, lookup, utf8\n---signature---\nxsht api: invalid API query 'signature:env.get_or'; unknown selector kind 'signature'\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 3,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-envcfg-1"
+        }
+      },
+      {
+        "report": "workers/eval-worker/task-envcfg-1/report.json",
+        "summary": "xsht api: invalid API query 'api:language.core.fallback'; expected NAME.MEMBER\n=RESULTS=\nxsht api: invalid API query 'api:language.core.results'; expected NAME.MEMBER\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 16,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-envcfg-1"
+        }
+      },
+      {
+        "report": "workers/eval-worker/task-envcfg-1/report.json",
+        "summary": "warn[lint.needless-annotation]: needless type annotation\n  /work/envcfg.xsh:7:12\n      let _: Int = \"\".parse_int()?\n             --- this type annotation is redundant with the initializer\nhelp: remove needless annotation\nwarn[lint.path-constructor]: prefer p-string interpolation over `Path(...)`\n  /work/envcfg.xsh:10:12\n    fs.write(Path(out), text)?\n             --------- use path string syntax instead\nnote: `Path(...)` remains a cast, but p-strings are the preferred path syntax\nhelp: replace with path string -> fp\"${out}\"\nlint exit=1\n== tests ==\nall-default            mine_code=0 oracle_code=0 mine_created=y oracle_created=y MATCH\nall-set                mine_code=0 oracle_code=0 mine_created=y oracle_created=y MATCH\nport-leadzero          mine_code=0 oracle_code=0 mine_created=y oracle_created=y MATCH\nport-empty             mine_code=3 oracle_code=1 mine_created=y oracle_created=y DIFF:\n--- /tmp/m.cfg\n+++ /tmp/o.cfg\n@@ -1,3 +0,0 @@\n-host=h\n-port=0042\n-debug=false\nport-abc               mine_code=3 oracle_code=1 mine_created=y oracle_created=y DIFF:\n--- /tmp/m.cfg\n+++ /tmp/o.cfg\n@@ -1,3 +0,0 @@\n-host=h\n-port=0042\n-debug=false\nport-neg               mine_code=3 oracle_code=1 mine_created=y oracle_created=y DIFF:\n--- /tmp/m.cfg\n+++ /tmp/o.cfg\n@@ -1,3 +0,0 @@\n-host=h\n-port=0042\n-debug=false\nport-0x                mine_code=3 oracle_code=1 mine_created=y oracle_created=y DIFF:\n--- /tmp/m.cfg\n+++ /tmp/o.cfg\n@@ -1,3 +0,0 @@\n-host=h\n-port=0042\n-debug=false\nhost-empty             mine_code=0 oracle_code=0 mine_created=y oracle_created=y MATCH\ndebug-empty            mine_code=0 oracle_code=0 mine_created=y oracle_created=y MATCH\ndebug-false            mine_code=0 oracle_code=0 mine_created=y oracle_created=y MATCH\nport-space             mine_code=3 oracle_code=1 mine_created=y oracle_created=y DIFF:\n--- /tmp/m.cfg\n+++ /tmp/o.cfg\n@@ -1,3 +0,0 @@\n-host=localhost\n-port=8080\n-debug=false\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 42,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-envcfg-1"
+        }
+      }
+    ],
+    "trials": [
+      {
+        "evidence": {
+          "candidate_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "classification": "pass",
+          "correctness": "pass",
+          "eval_id": "task-envcfg",
+          "handbook_sha256": "97c5d804c42c7742c9edfea4480163828d864279391d391df77aa60ee4a40e83",
+          "oracle_sha256": "594a1118ea571bcfe5b2a8b7239b28924bd32ced928ba9ea5377a2c1b0bd71f6",
+          "passed": true,
+          "protocol": "pass",
+          "restrictions": "pass",
+          "result": "pass",
+          "timing": "pass",
+          "trial_id": "1",
+          "valid": true
+        },
+        "path": "workers/eval-worker/task-envcfg-1/run.json"
+      }
+    ],
+    "workers": [
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-envcfg"
+        },
+        "path": "workers/eval-manager/task-envcfg/report.json",
+        "result": "pass",
+        "tool_errors": 1,
+        "usage": {
+          "assistant_turns": 22,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.015843456,
+          "cache_read_tokens": 880192,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.039842496,
+          "input_cost_usd": 0.020489040000000003,
+          "input_tokens": 227656,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00351,
+          "output_tokens": 19500,
+          "provider_total_tokens": 1127348,
+          "reasoning_tokens": 11511,
+          "thinking_blocks": 18,
+          "tool_calls": 36,
+          "tool_errors": 1,
+          "tool_results": 36,
+          "total_bucket_tokens": 1127348,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-envcfg-1"
+        },
+        "path": "workers/eval-worker/task-envcfg-1/report.json",
+        "result": "pass",
+        "tool_errors": 3,
+        "usage": {
+          "assistant_turns": 51,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.015057792,
+          "cache_read_tokens": 836544,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.027607212,
+          "input_cost_usd": 0.00875574,
+          "input_tokens": 97286,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00379368,
+          "output_tokens": 21076,
+          "provider_total_tokens": 954906,
+          "reasoning_tokens": 14366,
+          "thinking_blocks": 35,
+          "tool_calls": 52,
+          "tool_errors": 3,
+          "tool_results": 52,
+          "total_bucket_tokens": 954906,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "97edb51c621260d61a00034ea7ed0742adacbb80"
+  },
+  "findings": [],
+  "identity": {
+    "eval_id": "task-envcfg",
+    "mode": "eval",
+    "run_id": "02-reeval-task-envcfg-001"
+  },
+  "kind": "phase",
+  "result": "pass",
+  "schema_version": 1,
+  "state": "completed"
+}

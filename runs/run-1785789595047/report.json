@@ -1,0 +1,616 @@
+{
+  "artifacts": [
+    {
+      "kind": "phase-reports",
+      "path": "phases/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 292,
+      "budget_failures": 0,
+      "cost_usd": 0.23603828400000004,
+      "tool_errors": 22,
+      "total_bucket_tokens": 8988762.0,
+      "unknown_costs": 0,
+      "workers": 10
+    },
+    "mode": "organization",
+    "phases": [
+      {
+        "id": "01-ticket",
+        "path": "phases/01-ticket/report.json",
+        "result": "pass",
+        "valid": true
+      },
+      {
+        "id": "02-reeval-task-ecount-001",
+        "path": "phases/02-reeval-task-ecount-001/report.json",
+        "result": "pass",
+        "valid": true
+      },
+      {
+        "id": "02-reeval-task-envcfg-003",
+        "path": "phases/02-reeval-task-envcfg-003/report.json",
+        "result": "pass",
+        "valid": true
+      },
+      {
+        "id": "03-eval",
+        "path": "phases/03-eval/report.json",
+        "result": "pass",
+        "valid": true
+      },
+      {
+        "id": "04-eval-design",
+        "path": "phases/04-eval-design/report.json",
+        "result": "fail",
+        "valid": true
+      }
+    ],
+    "tool_errors": [
+      {
+        "report": "phases/01-ticket/workers/engineer/task-ecount-001/report.json",
+        "summary": "/bin/bash: line 9: ./target/debug/xsh: No such file or directory\n\n\nCommand exited with code 127",
+        "tool": "bash",
+        "turn": 24,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-ecount-001"
+        }
+      },
+      {
+        "report": "phases/01-ticket/workers/engineer/task-ecount-001/report.json",
+        "summary": "   Compiling xsh v0.0.1 (/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785789595047/phases/01-ticket/worktrees/task-ecount-001)\n    Finished `dev` profile [unoptimized] target(s) in 12.44s\nerr[check.unknown-method]: unknown method `byte_len` on List[Int]\n  /tmp/probe.xsh:5:47\n    let edge = g |> each { |grp| print $grp.key $grp.items.byte_len() }\n                                                ^^^^^^^^^^^^^^^^^^^^^ `byte_len` is not defined for List[Int]\n\nerr[check.display-conversion]: value cannot be displayed by print\n  /tmp/probe.xsh:6:23\n    print \"each-return\" $edge\n                        ^^^^^ value cannot be displayed by print\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 25,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-ecount-001"
+        }
+      },
+      {
+        "report": "phases/01-ticket/workers/engineer/task-ecount-001/report.json",
+        "summary": "3 2\n1 2\n2 1\nerr[runtime.error]: lowered return type mismatch\n  /tmp/probe.xsh:1:1\n  proc main() {\n  ^\nruntime traceback\nexecutable: /Users/josh/d/laputa-systems/xsh-factory/runs/run-1785789595047/phases/01-ticket/worktrees/task-ecount-001/target/debug/xsh\noperation: runtime.error\nerror: type-error: lowered return type mismatch\n\n\nCommand exited with code 3",
+        "tool": "bash",
+        "turn": 26,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-ecount-001"
+        }
+      },
+      {
+        "report": "phases/01-ticket/workers/engineer/task-envcfg-003/report.json",
+        "summary": "rg: regex parse error:\n    (?:expected `{` to start block)\n                  ^\nerror: repetition quantifier expects a valid decimal",
+        "tool": "grep",
+        "turn": 3,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-envcfg-003"
+        }
+      },
+      {
+        "report": "phases/01-ticket/workers/engineer/task-envcfg-003/report.json",
+        "summary": "rg: regex parse error:\n    (?:expected `{` to start block)\n                  ^\nerror: repetition quantifier expects a valid decimal",
+        "tool": "grep",
+        "turn": 3,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-envcfg-003"
+        }
+      },
+      {
+        "report": "phases/01-ticket/workers/engineer/task-envcfg-003/report.json",
+        "summary": "ENOENT: no such file or directory, access '/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785789595047/phases/01-ticket/worktrees/task-envcfg-003/src/syntax/parser/parser.rs'",
+        "tool": "read",
+        "turn": 12,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-envcfg-003"
+        }
+      },
+      {
+        "report": "phases/02-reeval-task-ecount-001/workers/eval-worker/task-ecount-1/report.json",
+        "summary": "err[parse.expected-ident]: expected binding name\n  /tmp/probe.xsh:3:7\n    let stream = fs.files(root)?\n        ^^^^^^ expected binding name\n\nerr[parse.expected-expression]: expected expression\n  /tmp/probe.xsh:4:13\n    let all = stream |> collect()\n              ^^^^^^ expected expression\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 20,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-ecount-1"
+        }
+      },
+      {
+        "report": "phases/02-reeval-task-ecount-001/workers/eval-worker/task-ecount-1/report.json",
+        "summary": "err[check.type-mismatch]: type mismatch\n  /tmp/probe.xsh:2:19\n    let root = Path(argv.get(0))\n                    ^^^^^^^^^^^ expected Str, found Result[Str, Error]\n\nerr[check.effect-violation]: `?` requires the `error` effect\n  /tmp/probe.xsh:3:12\n    let st = fs.files(root)?\n             ^^^^^^^^^^^^^^^ `?` requires the `error` effect\n\nerr[check.unresolved-proc-command]: unresolved proc command\n  /tmp/probe.xsh:6:34\n    let files = all |> where { |e| e.kind == \"file\" } |> collect()\n                                   ^^^^^^^^^^^^^^^^ unresolved proc command\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 21,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-ecount-1"
+        }
+      },
+      {
+        "report": "phases/02-reeval-task-ecount-001/workers/eval-worker/task-ecount-1/report.json",
+        "summary": "err[compact.indexed-build]: indexed IR could not encode `full_ir_function_blocker`\n  /tmp/probe.xsh:1:43\n  proc main(...argv: List[Str]) [fs, error] {\n                                            ^ indexed IR could not encode `full_ir_function_blocker`\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 23,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-ecount-1"
+        }
+      },
+      {
+        "report": "phases/02-reeval-task-ecount-001/workers/eval-worker/task-ecount-1/report.json",
+        "summary": "err[compact.indexed-build]: indexed IR could not encode `full_ir_function_blocker`\n  /tmp/probe5.xsh:1:43\n  proc main(...argv: List[Str]) [fs, error] {\n                                            ^ indexed IR could not encode `full_ir_function_blocker`\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 27,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-ecount-1"
+        }
+      },
+      {
+        "report": "phases/02-reeval-task-ecount-001/workers/eval-worker/task-ecount-1/report.json",
+        "summary": "err[compact.indexed-build]: indexed IR could not encode `full_ir_function_blocker`\n  /tmp/probe6.xsh:1:43\n  proc main(...argv: List[Str]) [fs, error] {\n                                            ^ indexed IR could not encode `full_ir_function_blocker`\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 28,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-ecount-1"
+        }
+      },
+      {
+        "report": "phases/02-reeval-task-ecount-001/workers/eval-worker/task-ecount-1/report.json",
+        "summary": "err[compact.indexed-build]: indexed IR could not encode `full_ir_function_blocker`\n  /tmp/probe8.xsh:1:43\n  proc main(...argv: List[Str]) [fs, error] {\n                                            ^ indexed IR could not encode `full_ir_function_blocker`\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 30,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-ecount-1"
+        }
+      },
+      {
+        "report": "phases/02-reeval-task-ecount-001/workers/eval-worker/task-ecount-1/report.json",
+        "summary": "err[runtime.error]: lowered `?` expected Result\n  /tmp/probe9.xsh:1:1\n  proc main(...argv: List[Str]) [fs, error] {\n  ^\nruntime traceback\nexecutable: /usr/local/bin/xsh\noperation: runtime.error\nerror: type-error: lowered `?` expected Result\n\n\nCommand exited with code 3",
+        "tool": "bash",
+        "turn": 31,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-ecount-1"
+        }
+      },
+      {
+        "report": "phases/02-reeval-task-ecount-001/workers/eval-worker/task-ecount-1/report.json",
+        "summary": "err[compact.indexed-build]: indexed IR could not encode `full_ir_function_blocker`\n  /tmp/probe10.xsh:1:43\n  proc main(...argv: List[Str]) [fs, error] {\n                                            ^ indexed IR could not encode `full_ir_function_blocker`\ncheck=2\nerr[compact.indexed-build]: indexed IR could not encode `full_ir_function_blocker`\n  /tmp/probe10.xsh:1:43\n  proc main(...argv: List[Str]) [fs, error] {\n                                            ^ indexed IR could not encode `full_ir_function_blocker`\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 33,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-ecount-1"
+        }
+      },
+      {
+        "report": "phases/02-reeval-task-ecount-001/workers/eval-worker/task-ecount-1/report.json",
+        "summary": "err[check.unknown-method]: unknown method `lower` on Result[Str, Error]\n  /tmp/probe14.xsh:7:22\n      |> map { |parts| parts.get(parts.len() - 1).lower() }\n                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `lower` is not defined for Result[Str, Error]\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 38,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-ecount-1"
+        }
+      },
+      {
+        "report": "phases/02-reeval-task-ecount-001/workers/eval-worker/task-ecount-1/report.json",
+        "summary": "CHECK OK\nwarn[lint.path-constructor]: prefer p-string interpolation over `Path(...)`\n  ecount.xsh:2:14\n    let root = Path(argv.get(0)?)\n               ------------------ use path string syntax instead\nnote: `Path(...)` remains a cast, but p-strings are the preferred path syntax\nhelp: replace with path string -> fp\"${argv.get(0)?}\"\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 47,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-ecount-1"
+        }
+      },
+      {
+        "report": "phases/02-reeval-task-envcfg-003/workers/eval-manager/task-envcfg/report.json",
+        "summary": "rg: regex parse error:\n    (?:expected '{' to start block|unsupported operator|or |and |\\|\\||&&|if a or|if .*or )\n                  ^\nerror: repetition quantifier expects a valid decimal",
+        "tool": "grep",
+        "turn": 3,
+        "worker": {
+          "role": "eval-manager",
+          "worker_id": "task-envcfg"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-worker/task-envcfg-1/report.json",
+        "summary": "err[check.display-conversion]: value cannot be displayed by print\n  /tmp/t.xsh:4:9\n    print $r\n          ^^ value cannot be displayed by print\n---run---\nerr[check.display-conversion]: value cannot be displayed by print\n  /tmp/t.xsh:4:9\n    print $r\n          ^^ value cannot be displayed by print\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 9,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-envcfg-1"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-worker/task-envcfg-1/report.json",
+        "summary": "err[check.unknown-method]: unknown method `len` on Str\n  envcfg.xsh:8:6\n    if leftover.len() == 0 and port.len() > 0 {\n       ^^^^^^^^^^^^^^ `len` is not defined for Str\nnote: available methods include: `byte_len()`, `count_bytes()`, `count_chars()`\n\nerr[check.unknown-method]: unknown method `len` on Str\n  envcfg.xsh:8:30\n    if leftover.len() == 0 and port.len() > 0 {\n                               ^^^^^^^^^^ `len` is not defined for Str\nnote: available methods include: `byte_len()`, `count_bytes()`, `count_chars()`\n=== run valid ===\nerr[check.unknown-method]: unknown method `len` on Str\n  envcfg.xsh:8:6\n    if leftover.len() == 0 and port.len() > 0 {\n       ^^^^^^^^^^^^^^ `len` is not defined for Str\nnote: available methods include: `byte_len()`, `count_bytes()`, `count_chars()`\n\nerr[check.unknown-method]: unknown method `len` on Str\n  envcfg.xsh:8:30\n    if leftover.len() == 0 and port.len() > 0 {\n                               ^^^^^^^^^^ `len` is not defined for Str\nnote: available methods include: `byte_len()`, `count_bytes()`, `count_chars()`\nrc=2\n--- file ---\ncat: can't open '/tmp/out.cfg': No such file or directory\n=== oracle compare ===\ndiff: can't stat '/tmp/out.cfg': No such file or directory\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 32,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-envcfg-1"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-worker/task-envcfg-1/report.json",
+        "summary": "sh: bash: not found\n\n\nCommand exited with code 127",
+        "tool": "bash",
+        "turn": 35,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-envcfg-1"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-worker/task-envcfg-1/report.json",
+        "summary": "check rc=0\n=== valid ===\nrc=0\n00000000: 686f 7374 3d6e 6f64 652d 610a 706f 7274  host=node-a.port\n00000010: 3d39 3030 310a 6465 6275 673d 7472 7565  =9001.debug=true\n00000020: 0a                                       .\n=== invalid port 5x ===\nruntime traceback\nexecutable: /usr/local/bin/xsh\noperation: result.propagate\nerror: parse-int: invalid integer `x`\ncall path:\n  1. proc main at envcfg.xsh:1:1-1:1\nrc=3\nls: /tmp/o.cfg: No such file or directory\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 39,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-envcfg-1"
+        }
+      },
+      {
+        "report": "phases/04-eval-design/workers/eval-designer/proposal-1/report.json",
+        "summary": "            &[\"record\", \"schema\", \"dynamic\"],\n        )),\n        (\"regex\", \"compile\") => Some((\n            \"Compiles a regular expression into a reusable Regex value.\",\n            \"Invalid syntax is reported at compilation and is not deferred to a later match call.\",\n            &[\"regex\", \"parsing\", \"compiled\"],\n        )),\n        (\"set\", \"empty\") => Some((\n            \"Creates an empty string-key set.\",\n            \"The set is represented by a map-backed value and starts without inherited entries.\",\n            &[\"set\", \"collection\"],\n        )),\n        (\"set\", \"from\") => Some((\n            \"Builds a set from a list of strings.\",\n            \"Duplicate values collapse to one membership entry while input order does not become set ordering.\",\n            &[\"set\", \"collection\", \"deduplication\"],\n=== Regex.matches sig ===\n        (\"Digest\", \"hex\") => Some((\"Formats a digest as hexadecimal text.\", \"Formatting is deterministic display/interchange output and does not recalculate the digest.\", &[\"hash\", \"digest\", \"hex\"])),\n        (\"Digest\", \"base64\") => Some((\"Formats a digest as base64 text.\", \"Formatting preserves the digest bytes and does not add a verification step.\", &[\"hash\", \"digest\", \"base64\"])),\n        (\"Regex\", \"matches\") => Some((\"Tests whether a regex matches text.\", \"The compiled expression is reused without changing the input text.\", &[\"regex\", \"matching\"])),\n        (\"Regex\", \"find\") => Some((\"Finds regex matches in text.\", \"Match positions and text are returned as structured values; no replacement occurs.\", &[\"regex\", \"matching\", \"search\"])),\n        (\"Regex\", \"captures\") => Some((\"Extracts regex capture groups.\", \"Capture absence remains distinguishable from an empty capture and the input is not mutated.\", &[\"regex\", \"captures\"])),\n        (\"Regex\", \"replace\") => Some((\"Replaces regex matches in text.\", \"Replacement syntax follows the regex method contract and returns a new string.\", &[\"regex\", \"replace\"])),\n        (\"ProcessHandle\", \"cancel\") => Some((\"Requests cancellation of an owned process handle.\", \"Cancellation changes handle lifecycle and process state; wait or detach remains the caller's responsibility.\", &[\"process\", \"ownership\", \"cancellation\"])),\n        _ => None,\n    };\n=== search current evals using regex ===\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 16,
+        "worker": {
+          "role": "eval-designer",
+          "worker_id": "proposal-1"
+        }
+      }
+    ],
+    "workers": [
+      {
+        "identity": {
+          "role": "director",
+          "worker_id": "director"
+        },
+        "path": "phases/01-ticket/workers/director/director/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 9,
+          "budget_usd": 0.06,
+          "cache_read_cost_usd": 0.00269568,
+          "cache_read_tokens": 149760,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.00669834,
+          "input_cost_usd": 0.0030382200000000003,
+          "input_tokens": 33758,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00096444,
+          "output_tokens": 5358,
+          "provider_total_tokens": 188876,
+          "reasoning_tokens": 1604,
+          "thinking_blocks": 8,
+          "tool_calls": 20,
+          "tool_errors": 0,
+          "tool_results": 20,
+          "total_bucket_tokens": 188876,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "engineer",
+          "worker_id": "task-ecount-001"
+        },
+        "path": "phases/01-ticket/workers/engineer/task-ecount-001/report.json",
+        "result": "pass",
+        "tool_errors": 3,
+        "usage": {
+          "assistant_turns": 32,
+          "budget_usd": 0.25,
+          "cache_read_cost_usd": 0.025099776,
+          "cache_read_tokens": 1394432,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.041231736000000005,
+          "input_cost_usd": 0.01161378,
+          "input_tokens": 129042,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00451818,
+          "output_tokens": 25101,
+          "provider_total_tokens": 1548575,
+          "reasoning_tokens": 12784,
+          "thinking_blocks": 26,
+          "tool_calls": 40,
+          "tool_errors": 3,
+          "tool_results": 40,
+          "total_bucket_tokens": 1548575,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "engineer",
+          "worker_id": "task-envcfg-003"
+        },
+        "path": "phases/01-ticket/workers/engineer/task-envcfg-003/report.json",
+        "result": "pass",
+        "tool_errors": 3,
+        "usage": {
+          "assistant_turns": 62,
+          "budget_usd": 0.25,
+          "cache_read_cost_usd": 0.04332902400000001,
+          "cache_read_tokens": 2407168,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.05908676400000001,
+          "input_cost_usd": 0.01213272,
+          "input_tokens": 134808,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0036250199999999983,
+          "output_tokens": 20139,
+          "provider_total_tokens": 2562115,
+          "reasoning_tokens": 8677,
+          "thinking_blocks": 36,
+          "tool_calls": 68,
+          "tool_errors": 3,
+          "tool_results": 68,
+          "total_bucket_tokens": 2562115,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-ecount"
+        },
+        "path": "phases/02-reeval-task-ecount-001/workers/eval-manager/task-ecount/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 12,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.009234432,
+          "cache_read_tokens": 513024,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.018096462,
+          "input_cost_usd": 0.0066476700000000005,
+          "input_tokens": 73863,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00221436,
+          "output_tokens": 12302,
+          "provider_total_tokens": 599189,
+          "reasoning_tokens": 7316,
+          "thinking_blocks": 12,
+          "tool_calls": 21,
+          "tool_errors": 0,
+          "tool_results": 21,
+          "total_bucket_tokens": 599189,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-ecount-1"
+        },
+        "path": "phases/02-reeval-task-ecount-001/workers/eval-worker/task-ecount-1/report.json",
+        "result": "pass",
+        "tool_errors": 10,
+        "usage": {
+          "assistant_turns": 55,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.022824576,
+          "cache_read_tokens": 1268032,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.029810645999999996,
+          "input_cost_usd": 0.003817529999999999,
+          "input_tokens": 42417,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0031685399999999996,
+          "output_tokens": 17603,
+          "provider_total_tokens": 1328052,
+          "reasoning_tokens": 9710,
+          "thinking_blocks": 46,
+          "tool_calls": 70,
+          "tool_errors": 10,
+          "tool_results": 70,
+          "total_bucket_tokens": 1328052,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-envcfg"
+        },
+        "path": "phases/02-reeval-task-envcfg-003/workers/eval-manager/task-envcfg/report.json",
+        "result": "pass",
+        "tool_errors": 1,
+        "usage": {
+          "assistant_turns": 14,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.005243903999999999,
+          "cache_read_tokens": 291328,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.012034224,
+          "input_cost_usd": 0.004700700000000001,
+          "input_tokens": 52230,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00208962,
+          "output_tokens": 11609,
+          "provider_total_tokens": 355167,
+          "reasoning_tokens": 6461,
+          "thinking_blocks": 13,
+          "tool_calls": 23,
+          "tool_errors": 1,
+          "tool_results": 23,
+          "total_bucket_tokens": 355167,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-envcfg-1"
+        },
+        "path": "phases/02-reeval-task-envcfg-003/workers/eval-worker/task-envcfg-1/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 34,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.01017216,
+          "cache_read_tokens": 565120,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.017001270000000002,
+          "input_cost_usd": 0.00382761,
+          "input_tokens": 42529,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0030015000000000007,
+          "output_tokens": 16675,
+          "provider_total_tokens": 624324,
+          "reasoning_tokens": 11230,
+          "thinking_blocks": 30,
+          "tool_calls": 38,
+          "tool_errors": 0,
+          "tool_results": 38,
+          "total_bucket_tokens": 624324,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-envcfg"
+        },
+        "path": "phases/03-eval/workers/eval-manager/task-envcfg/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 11,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.0053141759999999994,
+          "cache_read_tokens": 295232,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.013259106,
+          "input_cost_usd": 0.004911750000000001,
+          "input_tokens": 54575,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00303318,
+          "output_tokens": 16851,
+          "provider_total_tokens": 366658,
+          "reasoning_tokens": 9019,
+          "thinking_blocks": 10,
+          "tool_calls": 20,
+          "tool_errors": 0,
+          "tool_results": 20,
+          "total_bucket_tokens": 366658,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-envcfg-1"
+        },
+        "path": "phases/03-eval/workers/eval-worker/task-envcfg-1/report.json",
+        "result": "pass",
+        "tool_errors": 4,
+        "usage": {
+          "assistant_turns": 44,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.016322688000000002,
+          "cache_read_tokens": 906816,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.023868198000000004,
+          "input_cost_usd": 0.004504589999999999,
+          "input_tokens": 50051,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0030409200000000008,
+          "output_tokens": 16894,
+          "provider_total_tokens": 973761,
+          "reasoning_tokens": 9218,
+          "thinking_blocks": 35,
+          "tool_calls": 57,
+          "tool_errors": 4,
+          "tool_results": 57,
+          "total_bucket_tokens": 973761,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-designer",
+          "worker_id": "proposal-1"
+        },
+        "path": "phases/04-eval-design/workers/eval-designer/proposal-1/report.json",
+        "result": "pass",
+        "tool_errors": 1,
+        "usage": {
+          "assistant_turns": 19,
+          "budget_usd": 0.3,
+          "cache_read_cost_usd": 0.006571008,
+          "cache_read_tokens": 365056,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.014951538,
+          "input_cost_usd": 0.0054774900000000015,
+          "input_tokens": 60861,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0029030400000000004,
+          "output_tokens": 16128,
+          "provider_total_tokens": 442045,
+          "reasoning_tokens": 14260,
+          "thinking_blocks": 17,
+          "tool_calls": 22,
+          "tool_errors": 1,
+          "tool_results": 22,
+          "total_bucket_tokens": 442045,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "d2d87d2575c45343abfbcfe378f6ade4065043cf"
+  },
+  "findings": [
+    {
+      "id": "04-eval-design",
+      "kind": "phase",
+      "result": "fail"
+    }
+  ],
+  "identity": {
+    "mode": "organization",
+    "run_id": "run-1785789595047"
+  },
+  "kind": "run",
+  "result": "fail",
+  "schema_version": 1,
+  "state": "completed"
+}

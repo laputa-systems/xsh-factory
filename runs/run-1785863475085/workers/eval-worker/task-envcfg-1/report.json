@@ -1,0 +1,129 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785863475085/workers/eval-worker/task-envcfg-1/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_state": "pass",
+    "agent_wall_ms": 638823,
+    "artifact": {
+      "name": "envcfg.xsh",
+      "state": "present"
+    },
+    "budget_state": "pass",
+    "classification": "pass",
+    "evaluator_manifest": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785863475085/workers/eval-worker/task-envcfg-1/run.json",
+    "evaluator_state": "pass",
+    "reporting_state": "pass",
+    "result": "pass",
+    "review": {
+      "state": "present"
+    }
+  },
+  "findings": [
+    {
+      "count": 5,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "role": "eval-worker",
+    "worker_id": "task-envcfg-1"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785863475085/workers/eval-worker/task-envcfg-1/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 51,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 637213
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785863475085/workers/eval-worker/task-envcfg-1/session.jsonl.bz2",
+      "summary": "err[parse.unsupported-boolean-operator]: unsupported operator '||': XSH boolean operators are the word forms 'or'\n  envcfg.xsh:9:23\n      if port_raw == \"\" || non_digits != \"\" {\n                        ^^ use 'or' instead of '||'\n\nerr[parse.expected-token]: expected `{` to start block\n  envcfg.xsh:9:23\n      if port_raw == \"\" || non_digits != \"\" {\n                        ^ expected `{` to start block\n\nerr[parse.expected-expression]: expected expression\n  envcfg.xsh:16:1\n  }\n  ^ expected expression\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 22
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785863475085/workers/eval-worker/task-envcfg-1/session.jsonl.bz2",
+      "summary": "err[check.unresolved-call]: unresolved pure function call\n  envcfg.xsh:10:7\n        fail(\"invalid CFG_PORT\")?\n        ^^^^^^^^^^^^^^^^^^^^^^^^ unresolved pure function call\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 24
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785863475085/workers/eval-worker/task-envcfg-1/session.jsonl.bz2",
+      "summary": "val='': runtime traceback\nsh: syntax error: bad substitution\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 33
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785863475085/workers/eval-worker/task-envcfg-1/session.jsonl.bz2",
+      "summary": "CASE: [] verdict_ok=YES xsh_exit=0 oracle_reject=0\nCASE: [CFG_HOST=node-a CFG_PORT=9001 CFG_DEBUG=true] verdict_ok=YES xsh_exit=0 oracle_reject=0\nCASE: [CFG_HOST= CFG_PORT= CFG_DEBUG=] verdict_ok=YES xsh_exit=3 oracle_reject=1\nCASE: [CFG_HOST=myhost] verdict_ok=YES xsh_exit=0 oracle_reject=0\nCASE: [CFG_PORT=007] verdict_ok=YES xsh_exit=0 oracle_reject=0\nCASE: [CFG_PORT=-5] verdict_ok=YES xsh_exit=3 oracle_reject=1\nCASE: [CFG_PORT=abc] verdict_ok=YES xsh_exit=3 oracle_reject=1\nCASE: [CFG_PORT=12x] verdict_ok=YES xsh_exit=3 oracle_reject=1\nCASE: [CFG_PORT=9 0] verdict_ok=YES xsh_exit=3 oracle_reject=1\nCASE: [CFG_DEBUG=yes] verdict_ok=YES xsh_exit=0 oracle_reject=0\nCASE: [CFG_HOST=h CFG_PORT=1234 CFG_DEBUG=false] verdict_ok=YES xsh_exit=0 oracle_reject=0\nCASE: [CFG_PORT=0] verdict_ok=YES xsh_exit=0 oracle_reject=0\nCASE: [CFG_PORT=99999999999999999999] verdict_ok=YES xsh_exit=0 oracle_reject=0\nCASE: [CFG_DEBUG=] verdict_ok=YES xsh_exit=0 oracle_reject=0\nCASE: [CFG_HOST=sp ace CFG_PORT=08080 CFG_DEBUG=TrUe] verdict_ok=YES xsh_exit=0 oracle_reject=0\n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 39
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785863475085/workers/eval-worker/task-envcfg-1/session.jsonl.bz2",
+      "summary": "FMT:\nLINT:\nwarn[lint.prefer-in]: prefer `in` over `.contains(...)`\n  envcfg.xsh:11:6\n    if names.contains(\"CFG_PORT\") {\n       -------------------------- use membership syntax instead\nhelp: rewrite with `in` -> \"CFG_PORT\" in names\n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 43
+    }
+  ],
+  "tools": [
+    {
+      "count": 42,
+      "name": "bash"
+    },
+    {
+      "count": 2,
+      "name": "edit"
+    },
+    {
+      "count": 3,
+      "name": "read"
+    },
+    {
+      "count": 5,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 52,
+    "budget_usd": 0.5,
+    "cache_read_cost_usd": 0.014933376000000002,
+    "cache_read_tokens": 829632,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.025481645999999993,
+    "input_cost_usd": 0.006762330000000003,
+    "input_tokens": 75137,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.0037859400000000007,
+    "output_tokens": 21033,
+    "provider_total_tokens": 925802,
+    "reasoning_tokens": 12858,
+    "thinking_blocks": 45,
+    "tool_calls": 52,
+    "tool_errors": 5,
+    "tool_results": 52,
+    "total_bucket_tokens": 925802,
+    "user_messages": 1
+  }
+}

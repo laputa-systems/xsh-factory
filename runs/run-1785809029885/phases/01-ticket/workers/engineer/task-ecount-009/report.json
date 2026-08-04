@@ -1,0 +1,111 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785809029885/phases/01-ticket/workers/engineer/task-ecount-009/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_process": "pass",
+    "reporting": "pass",
+    "required_report": "present",
+    "session_limit_watcher": "pass",
+    "watcher": "pass"
+  },
+  "findings": [
+    {
+      "count": 3,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "role": "engineer",
+    "worker_id": "task-ecount-009"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785809029885/phases/01-ticket/workers/engineer/task-ecount-009/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 123,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 935033
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785809029885/phases/01-ticket/workers/engineer/task-ecount-009/session.jsonl.bz2",
+      "summary": "Could not find edits[1] in /Users/josh/d/laputa-systems/xsh-factory/runs/run-1785809029885/phases/01-ticket/worktrees/task-ecount-009/src/runtime/eval/lower.rs. The oldText must match exactly including all whitespace and newlines.",
+      "tool": "edit",
+      "turn": 79
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785809029885/phases/01-ticket/workers/engineer/task-ecount-009/session.jsonl.bz2",
+      "summary": "(no output)\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 81
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785809029885/phases/01-ticket/workers/engineer/task-ecount-009/session.jsonl.bz2",
+      "summary": "Could not find the exact text in /Users/josh/d/laputa-systems/xsh-factory/runs/run-1785809029885/phases/01-ticket/worktrees/task-ecount-009/tests/xsh/stdlib/streams.xsh. The old text must match exactly including all whitespace and newlines.",
+      "tool": "edit",
+      "turn": 92
+    }
+  ],
+  "tools": [
+    {
+      "count": 77,
+      "name": "bash"
+    },
+    {
+      "count": 11,
+      "name": "edit"
+    },
+    {
+      "count": 2,
+      "name": "grep"
+    },
+    {
+      "count": 43,
+      "name": "read"
+    },
+    {
+      "count": 1,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 124,
+    "budget_usd": 0.25,
+    "cache_read_cost_usd": 0.17079552000000006,
+    "cache_read_tokens": 9488640,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.21017412000000005,
+    "input_cost_usd": 0.02928761999999999,
+    "input_tokens": 325418,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.01009098,
+    "output_tokens": 56061,
+    "provider_total_tokens": 9870119,
+    "reasoning_tokens": 29259,
+    "thinking_blocks": 88,
+    "tool_calls": 134,
+    "tool_errors": 3,
+    "tool_results": 134,
+    "total_bucket_tokens": 9870119,
+    "user_messages": 1
+  }
+}

@@ -1,0 +1,72 @@
+{
+  "classification": "pass",
+  "correctness": {
+    "all_exact": true,
+    "cases": [
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 22813375,
+        "exact": true,
+        "name": "public",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 38032958
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 14079125,
+        "exact": true,
+        "name": "hidden_nested",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 39347500
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 25850916,
+        "exact": true,
+        "name": "hidden_dotname",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 49959334
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 26708916,
+        "exact": true,
+        "name": "hidden_no_suffix",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 27020209
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 14248375,
+        "exact": true,
+        "name": "hidden_empty",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 23981916
+      },
+      {
+        "candidate_exit": 3,
+        "candidate_wall_ns": 14606875,
+        "exact": true,
+        "name": "hidden_missing",
+        "oracle_exit": 1,
+        "oracle_wall_ns": 26406208
+      }
+    ],
+    "passed": true
+  },
+  "eval_id": "",
+  "image_id": "not-used-design-cycle",
+  "platform": "linux/arm64",
+  "protocol": {
+    "artifact_present": true,
+    "review_ok": true
+  },
+  "restrictions": {
+    "passed": true
+  },
+  "result": "pass",
+  "timings": {
+    "passed": true
+  },
+  "trial_id": "1"
+}

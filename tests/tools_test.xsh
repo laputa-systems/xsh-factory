@@ -406,7 +406,7 @@ proc test_ticket_cycle_bounds_concurrent_engineers() [fs, error] {
   test.contains(ticket, "spawn_engineer")?
   test.contains(ticket, "engineer_handles")?
   test.contains(ticket, "controller-dispatching engineer worker")?
-  test.contains(director, "Launch all admitted engineers before you wait.")?
+  test.contains(director, "launch each assigned row exactly once")?
   test.contains(organization, "ticket_worker_pass(primary_phase, ticket_id)")?
   test.contains(organization, "remove_run_worktrees")?
   test.contains(organization, "let reeval_ok = ticket_primary_pass and run_child")?
@@ -506,6 +506,29 @@ proc test_controllers_have_no_legacy_projection_outputs() [fs, error] {
   }
 }
 
+proc test_compressed_session_support_round_trips(ctx: TestContext) [fs, process, error] {
+  let root = test.temp_dir(ctx, name: "compressed-session")?
+  let session = fp"${root}/session.jsonl"
+  let archive_path = fp"${session.display()}.bz2"
+  fs.write(session, "{\"type\":\"message\"}\n")?
+  let bzip2 = process.which("bzip2")?
+  test.ok(process.run(process.command_argv(
+    bzip2, [bzip2.display(), "-c", session.display()], stdout: archive_path,
+  ))?.ok, "bzip2 fixture should be created")?
+  fs.remove(session)?
+  test.contains(runtime.session_text(session)?, "message")?
+}
+
+proc test_compressed_session_support_is_documented() [fs, error] {
+  let runtime = fs.read_text(fp"${fs.cwd()?}/factory_runtime.xsh")?
+  let report = fs.read_text(fp"${fs.cwd()?}/tools/session-report.xsh")?
+  let budget = fs.read_text(fp"${fs.cwd()?}/tools/budget-watch.xsh")?
+  test.contains(runtime, "session.jsonl.bz2")?
+  test.contains(runtime, "compress_run_sessions")?
+  test.contains(report, "runtime.session_text")?
+  test.contains(budget, "runtime.session_text")?
+}
+
 proc test_pi_session_persistence_is_jsonl_only() [fs, error] {
   let controller = fs.read_text(fp"${fs.cwd()?}/run-agent.xsh")?
   let eval_worker = fs.read_text(fp"${fs.cwd()?}/evals/eval-worker.xsh")?
@@ -530,7 +553,7 @@ proc test_run_agent_clears_pi_harness_env() [fs, error] {
 
 proc test_eval_worker_prompt_matches_task_image() [fs, error] {
   let prompt = fs.read_text(fp"${fs.cwd()?}/roles/eval-worker.md")?
-  test.contains(prompt, "The Alpine image provides BusyBox `sh`, not `bash`.")?
-  test.contains(prompt, "Use `sh` for shell probes.")?
+  test.contains(prompt, "The task image is Alpine-based and provides BusyBox `sh`, not `bash`; use `sh`")?
+  test.contains(prompt, "avoid bash-only syntax")?
   test.contains(prompt, "`and` and `or`, not shell `&&` and `||`")?
 }
