@@ -40,20 +40,27 @@ proc remove_run_worktrees(runs: Path, xsh_repo: Path) [fs, process, error] -> Re
   return prune.ok
 }
 
-proc remove_run_state(runs: Path) [fs, error] -> Result[Unit] {
+proc remove_run_state(runs: Path, cutoff_ms: Int) [fs, error] -> Result[Int] {
   if ! fs.exists(runs)? {
     fs.mkdir(runs)?
-    return Ok()
+    return 0
   }
+  var removed = 0
   for child in fs.children(runs, stat: false, ordered: true)? {
-    if child.name.starts_with("run-") or child.name == ".cache" or
+    if child.name.starts_with("run-") {
+      let modified = fs.metadata(child.path)?.modified
+      if modified < cutoff_ms {
+        fs.remove(child.path, missing_ok: true)?
+        removed += 1
+      }
+    } else if child.name == ".cache" or
       child.name == "eval-build.lock" or child.name == "factory.lock" or
-      child.name == "organization.lock" or
-      child.name == "ACTIVE" or child.name == "ORGANIZATION-ACTIVE" {
+      child.name == "organization.lock" or child.name == "ACTIVE" or
+      child.name == "ORGANIZATION-ACTIVE" {
       fs.remove(child.path, missing_ok: true)?
     }
   }
-  return Ok()
+  return removed
 }
 
 proc remove_build_staging(factory_dir: Path) [fs, error] -> Result[Unit] {
@@ -71,7 +78,7 @@ proc remove_build_staging(factory_dir: Path) [fs, error] -> Result[Unit] {
   return Ok()
 }
 
-proc main() [fs, process, env, error, io] {
+proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   let factory_dir = env.path("FACTORY_DIR", fs.cwd()?)?
   let runs = fp"${factory_dir}/runs"
   if active_marker_exists(runs)? {
@@ -86,7 +93,13 @@ proc main() [fs, process, env, error, io] {
   if ! remove_run_worktrees(runs, xsh_repo)? {
     abort(1)
   }
-  remove_run_state(runs)?
+  let age_days = if argv.len() > 0 { argv[0].parse_int()? } else { 3 }
+  if age_days < 1 {
+    eprint "run age must be at least one day"
+    abort(2)
+  }
+  let cutoff = time.now() - age_days * 86400
+  let removed = remove_run_state(runs, cutoff)?
   remove_build_staging(factory_dir)?
-  print f"factory state cleared under ${factory_dir.display()}; product branches retained"
+  print f"factory state cleared under ${factory_dir.display()}; removed ${removed} run(s) older than ${age_days} day(s); product branches retained"
 }

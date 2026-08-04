@@ -127,9 +127,11 @@ work stay out of that commit.
 
 ## Reset and test
 
-`make clean` removes generated runs, caches, staged eval binaries, and local
-factory worktree state while retaining tickets, evals, branches, and the
-shared handbook. It refuses to run during an active cycle.
+`make clean` removes runs older than three days, caches, staged eval binaries, and local
+factory worktree state. Pass a different age in days to
+`tools/clean-factory.xsh`; active runs always block cleanup.
+The command retains tickets, evals, branches, and the shared handbook. It
+refuses to run during an active cycle.
 
 Run the cheap native infrastructure suite before spending model budget:
 

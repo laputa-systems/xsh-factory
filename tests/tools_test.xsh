@@ -506,6 +506,14 @@ proc test_controllers_have_no_legacy_projection_outputs() [fs, error] {
   }
 }
 
+proc test_clean_factory_supports_age_pruning() [fs, error] {
+  let clean = fs.read_text(fp"${fs.cwd()?}/tools/clean-factory.xsh")?
+  test.contains(clean, "cutoff_ms")?
+  test.contains(clean, r"removed ${removed} run(s) older than")?
+  test.contains(clean, "age_days < 1")?
+  test.contains(fs.read_text(fp"${fs.cwd()?}/Makefile")?, "clean-factory.xsh 3")?
+}
+
 proc test_compressed_session_support_round_trips(ctx: TestContext) [fs, process, error] {
   let root = test.temp_dir(ctx, name: "compressed-session")?
   let session = fp"${root}/session.jsonl"
