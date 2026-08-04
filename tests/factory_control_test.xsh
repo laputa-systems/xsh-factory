@@ -21,6 +21,16 @@ proc test_untried_eval_policy_is_explicit() [error] {
   test.ok(control.request_allow_measured_eval("- Allow measured eval reuse: `yes`"))?
 }
 
+proc test_eval_evaluator_package_ownership_gate() [error] {
+  test.ok(control.eval_evaluator_package_owned("proc main() { json.write(...) }"))?
+  test.ok(! control.eval_evaluator_package_owned(
+    "let legacy = p\"/usr/local/lib/xsh-factory/evaluate_legacy.xsh\""))?
+  test.ok(! control.eval_evaluator_package_owned(
+    "let common = p\"/usr/local/lib/xsh-factory/evaluate_common.xsh\""))?
+  test.ok(control.eval_evaluator_package_owned(
+    "##! generic evaluate_common.xsh reference\nproc main() {}"))?
+}
+
 proc test_forbidden_subprocess_scan_ignores_comments() [error] {
   test.ok(! control.source_has_forbidden_subprocess(
     "# run a command in prose\nlet note = \"safe\"\n"))?

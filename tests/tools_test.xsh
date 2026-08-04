@@ -532,6 +532,13 @@ proc test_eval_gate_diagnostics_are_persisted() [fs, error] {
   test.contains(evaluator, "_post_required_outputs_audit")?
 }
 
+proc test_task_bigfiles_evaluator_is_package_owned() [fs, error] {
+  let evaluator = fs.read_text(fp"${fs.cwd()?}/evals/task-bigfiles/evaluator.xsh")?
+  test.ok(control.eval_evaluator_package_owned(evaluator))?
+  test.contains(evaluator, "run.json")?
+  test.contains(evaluator, "task-bigfiles")?
+  test.contains(evaluator, "sort -k1,1rn")?
+}
 proc test_eval_dispatch_is_package_owned() [fs, error] {
   let common = fs.read_text(fp"${fs.cwd()?}/evaluate_common.xsh")?
   let executor = fs.read_text(fp"${fs.cwd()?}/eval-executor.xsh")?
@@ -545,6 +552,12 @@ proc test_eval_dispatch_is_package_owned() [fs, error] {
   for eval_id in ["task-ecount", "task-envcfg"] {
     test.ok(fs.exists(fp"${fs.cwd()?}/evals/${eval_id}/evaluator.xsh")?)?
   }
+}
+
+proc test_eval_design_rejects_legacy_evaluator_source() [fs, error] {
+  let controller = fs.read_text(fp"${fs.cwd()?}/run-design.xsh")?
+  test.contains(controller, "eval_evaluator_package_owned")?
+  test.contains(controller, "evaluator_source_ok")?
 }
 
 proc test_eval_design_stages_and_promotes_complete_package() [fs, error] {

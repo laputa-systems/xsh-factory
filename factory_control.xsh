@@ -463,6 +463,17 @@ export pure request_new_eval_count(text: Str) -> Result[Int] {
   return Ok(0)
 }
 
+## Rejects package evaluators that delegate to shared or legacy dispatchers.
+export pure eval_evaluator_package_owned(source: Str) -> Bool {
+  for line in source.lines() {
+    let code = line.split("#").get(0, "")
+    if code.contains("evaluate_legacy.xsh") or code.contains("evaluate_common.xsh") {
+      return false
+    }
+  }
+  return true
+}
+
 ## Only slash-free eval directories may be selected by a cycle request.
 export pure valid_eval_id(eval_id: Str) -> Bool {
   return eval_id != "" and ! eval_id.contains("/") and ! eval_id.contains("..") and

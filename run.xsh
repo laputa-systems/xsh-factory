@@ -171,6 +171,25 @@ proc preflight(
       eprint f"cycle request selected unsupported or missing eval: ${eval_id}"
       return false
     }
+    let evaluator_file = fp"${factory_dir}/evals/${eval_id}/evaluator.xsh"
+    if ! fs.exists(evaluator_file)? {
+      eprint f"eval ${eval_id} is missing its package-owned evaluator.xsh"
+      return false
+    }
+    let evaluator_source = evaluator_file.read_text()?
+    if ! control.eval_evaluator_package_owned(evaluator_source) {
+      eprint f"eval ${eval_id} package evaluator delegates to a legacy/shared dispatcher"
+      return false
+    }
+    let evaluator_check = process.run(process.command_argv(
+      process.which("xsht")?,
+      ["xsht", "check", evaluator_file.display()],
+      cwd: factory_dir,
+    ))?
+    if ! evaluator_check.ok {
+      eprint f"eval ${eval_id} package evaluator failed xsht check"
+      return false
+    }
   }
   if mode == "eval" or mode == "organization" {
     let trial_count = control.request_trial_count(request_text)?

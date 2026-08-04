@@ -211,7 +211,9 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     fs.exists(fp"${proposal_dir}/runtime/task.md")? and
     fs.exists(fp"${proposal_dir}/runtime/artifact.md")?
   let proposal_complete = proposal_ok and fs.exists(fp"${proposal_dir}/evaluator.xsh")?
-  let evaluator_check_ok = if proposal_complete {
+  let evaluator_source_ok = proposal_complete and
+    control.eval_evaluator_package_owned(fs.read_text(fp"${proposal_dir}/evaluator.xsh")?)
+  let evaluator_check_ok = if evaluator_source_ok {
     process.run(process.command_argv(
       "xsht", ["xsht", "check", fp"${proposal_dir}/evaluator.xsh".display()],
       cwd: factory_dir,
