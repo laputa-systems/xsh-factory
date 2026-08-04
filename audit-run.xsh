@@ -340,12 +340,11 @@ proc audit_phase(run_dir: Path, mode: Str, factory_dir: Path) [fs, env, process,
   }
   let approved_lineage_path = if fs.exists(lineage_approved)? { relative_path(run_dir.display(), lineage_approved) } else { "missing" }
   let candidate_lineage_path = if fs.exists(lineage_candidate)? { relative_path(run_dir.display(), lineage_candidate) } else { "missing" }
-  let result = if reports.len() > 0 and manager_ok and director_ok and designer_ok and engineer_ok and
-    trials_ok and lineage_ok and required_outputs_ok and workers.usage.budget_failures == 0 and workers.usage.unknown_costs == 0 {
-    "pass"
-  } else {
-    "fail"
-  }
+  let product_ok = reports.len() > 0 and engineer_ok and trials_ok
+  let evaluator_ok = manager_ok and designer_ok and trials_ok
+  let infrastructure_ok = required_outputs_ok and lineage_ok and
+    workers.usage.budget_failures == 0 and workers.usage.unknown_costs == 0
+  let result = if product_ok and evaluator_ok and infrastructure_ok { "pass" } else { "fail" }
   if reports.len() == 0 { findings = findings.push({kind: "worker-reports", state: "missing"}) }
   let report = {
     schema_version: schema.SCHEMA_VERSION,
@@ -372,6 +371,7 @@ proc audit_phase(run_dir: Path, mode: Str, factory_dir: Path) [fs, env, process,
       required_outputs: required_outputs,
       cost: workers.usage,
       tool_errors: workers.tool_errors,
+      outcomes: schema.outcome(product_ok, evaluator_ok, infrastructure_ok),
     },
     findings: findings,
     artifacts: [

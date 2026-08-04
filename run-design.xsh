@@ -264,10 +264,11 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     "fail"
   }
   let cto_status = runtime.write_cto_report(factory_dir, run_dir, initial_result)?
+  let outcome_note = f"product=${if proposal_complete { "pass" } else { "fail" }}; evaluator=${if evaluator_check_ok { "pass" } else { "fail" }}; infrastructure=${if audit_pass { "pass" } else { "fail" }}"
   let result = if initial_result == "pass" and cto_status { "pass" } else { "fail" }
   if result == "pass" {
     runtime.emit_event(event_template, run_dir, "85-designer-validated", "eval-designer", "validated", 1, "controller", "proposal, reports, reads, cost, and audit passed")?
-    runtime.emit_event(event_template, run_dir, "90-cycle-completed", "eval-design", "completed", 1, "controller", "eval-design report written")?
+    runtime.emit_event(event_template, run_dir, "90-cycle-completed", "eval-design", "completed", 1, "controller", outcome_note)?
     runtime.emit_event(event_template, run_dir, "95-cycle-validated", "eval-design", "validated", 1, "controller", "proposal is ready for CTO review")?
   } else {
     runtime.emit_event(event_template, run_dir, "85-designer-failed", "eval-designer", "failed", 1, "controller", "one or more design outputs failed validation")?

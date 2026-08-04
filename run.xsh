@@ -82,6 +82,13 @@ proc preflight(
   }
 
   let requested_tickets = control.request_tickets(request_text)
+  let eval_contracts = fs.files(fp"${factory_dir}/evals", gitignore: false, hidden: true)?
+    |> where .name == "EVAL.md"
+    |> collect()
+  if eval_contracts.len() > control.max_eval_contracts() {
+    eprint f"eval contract cap exceeded: ${eval_contracts.len()} > ${control.max_eval_contracts()}"
+    return false
+  }
   let candidate_tickets = if requested_tickets.len() > 0 {
     requested_tickets
   } else if mode == "organization" and control.request_ticket_policy(request_text) != "none" {

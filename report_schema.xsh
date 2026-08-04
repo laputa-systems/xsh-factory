@@ -37,6 +37,16 @@ export pure valid(value: Any, expected_kind: Str) -> Bool {
   return valid_report
 }
 
+## Separates product/evaluator success from controller/reporting success.
+export pure outcome(product_ok: Bool, evaluator_ok: Bool, infrastructure_ok: Bool) -> Any {
+  return {
+    product: if product_ok { "pass" } else { "fail" },
+    evaluator: if evaluator_ok { "pass" } else { "fail" },
+    infrastructure: if infrastructure_ok { "pass" } else { "fail" },
+    cycle: if product_ok and evaluator_ok and infrastructure_ok { "pass" } else { "fail" },
+  }
+}
+
 ## Converts a JSON scalar to text for controller diagnostics.
 export pure value_text(value: Any) -> Str {
   match value {

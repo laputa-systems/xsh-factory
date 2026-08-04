@@ -375,11 +375,15 @@ proc run_ticket_cycle(
     runtime.emit_event(event_template, run_dir, "85-cycle-audited", "ticket-implementation",
       "failed", 1, "controller", "deterministic audit artifact written")?
   }
-  let initial_result = if engineer_dispatch_ok and director_status.ok and all_tickets_ok and all_patches_ok and final_worktree_cleanup_ok and director_report_ok and audit_pass { "pass" } else { "fail" }
+  let product_result = if all_tickets_ok and all_patches_ok { "pass" } else { "fail" }
+  let evaluator_result = "not-run"
+  let infrastructure_result = if engineer_dispatch_ok and director_status.ok and final_worktree_cleanup_ok and director_report_ok and audit_pass { "pass" } else { "fail" }
+  let initial_result = if product_result == "pass" and infrastructure_result == "pass" { "pass" } else { "fail" }
   let cto_status = runtime.write_cto_report(factory_dir, run_dir, initial_result)?
+  let outcome_note = f"product=${product_result}; evaluator=${evaluator_result}; infrastructure=${infrastructure_result}"
   let result = if initial_result == "pass" and cto_status { "pass" } else { "fail" }
   if result == "pass" {
-    runtime.emit_event(event_template, run_dir, "90-cycle-completed", "ticket-implementation", "completed", 1, "controller", "structured phase report and review patch written")?
+    runtime.emit_event(event_template, run_dir, "90-cycle-completed", "ticket-implementation", "completed", 1, "controller", outcome_note)?
     runtime.emit_event(event_template, run_dir, "95-cycle-validated", "ticket-implementation", "validated", 1, "controller", "all required review outputs passed")?
   } else {
     runtime.emit_event(event_template, run_dir, "90-cycle-failed", "ticket-implementation", "failed", 1, "controller", "one or more required outputs failed")?

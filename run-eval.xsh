@@ -652,8 +652,12 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     [xsh_path.display(), fp"${factory_dir}/audit-run.xsh", "--", run_dir.display(), "eval"],
     cwd: factory_dir,
   ))?
-  let initial_result = if required { "pass" } else { "fail" }
+  let product_result = if trial1_report_ok and trial2_report_ok { "pass" } else { "fail" }
+  let evaluator_result = if trial1_process_ok and trial2_process_ok and manager_report_ok { "pass" } else { "fail" }
+  let infrastructure_result = if required { "pass" } else { "fail" }
+  let initial_result = if product_result == "pass" and evaluator_result == "pass" and infrastructure_result == "pass" { "pass" } else { "fail" }
   let cto_status = runtime.write_cto_report(factory_dir, run_dir, initial_result)?
+  let outcome_note = f"product=${product_result}; evaluator=${evaluator_result}; infrastructure=${infrastructure_result}"
   let result = if initial_result == "pass" and cto_status { "pass" } else { "fail" }
   if audit_pass {
     runtime.mark_phase_completed(event_template, run_dir, "85-cycle-audited", eval_id,
@@ -663,7 +667,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
       "failed", 1, "controller", "deterministic audit artifact written")?
   }
   if result == "pass" {
-    runtime.emit_event(event_template, run_dir, "90-cycle-completed", eval_id, "completed", 1, "controller", "run report and cost report written")?
+    runtime.emit_event(event_template, run_dir, "90-cycle-completed", eval_id, "completed", 1, "controller", outcome_note)?
     runtime.emit_event(event_template, run_dir, "95-cycle-validated", eval_id, "validated", 1, "controller", "all required outputs passed")?
   } else {
     runtime.emit_event(event_template, run_dir, "90-cycle-failed", eval_id, "failed", 1, "controller", "one or more required outputs failed")?

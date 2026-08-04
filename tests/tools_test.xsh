@@ -172,6 +172,19 @@ proc test_organization_audit_only_admits_direct_phase_children(ctx: TestContext)
   }
 }
 
+proc test_stale_branch_inventory_is_documented() [fs, error] {
+  let runtime = fs.read_text(fp"${fs.cwd()?}/factory_runtime.xsh")?
+  let cto = fs.read_text(fp"${fs.cwd()?}/run-cto.xsh")?
+  test.contains(runtime, "stale_ticket_branches")?
+  test.contains(cto, "Stale branch candidates")?
+}
+
+proc test_eval_cap_is_admission_policy() [fs, error] {
+  let launcher = fs.read_text(fp"${fs.cwd()?}/run.xsh")?
+  test.contains(launcher, "max_eval_contracts()")?
+  test.contains(launcher, "eval contract cap exceeded")?
+}
+
 proc test_cto_report_pins_factory_root() [fs, error] {
   let runtime = fs.read_text(fp"${fs.cwd()?}/factory_runtime.xsh")?
   test.contains(runtime, "env: {FACTORY_DIR: factory_dir.display(), XSH_MODULE_PATH: factory_dir.display()}")?

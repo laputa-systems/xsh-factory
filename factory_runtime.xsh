@@ -713,6 +713,31 @@ proc commit_is_merged(xsh_repo: Path, branch: Str, commit: Str) [process, error]
 }
 
 ## Finds an implementation branch that is still unmerged for one ticket.
+## Inventories branches that are merged, closed, or otherwise stale candidates.
+export proc stale_ticket_branches(xsh_repo: Path, factory_dir: Path) [fs, process, error] -> Result[List[Any]] {
+  var stale: List[Any] = []
+  let refs = run.text "git" "-C" $xsh_repo.display() "for-each-ref" "--format=%(refname:short)" "refs/heads/factory/" ?
+  for line in refs.lines() {
+    let branch = line.trim()
+    if branch == "" { continue }
+    let parts = branch.split("/")
+    if parts.len() < 3 { continue }
+    let ticket_id = parts[1]
+    if ! control.valid_ticket_id(ticket_id) { continue }
+    let ticket_path = fp"${factory_dir}/tickets/${ticket_id}.md"
+    let status = if fs.exists(ticket_path)? { control.ticket_status(ticket_path.read_text()?) } else { "missing" }
+    let merged_status = process.run(process.command_argv(
+      "git", ["git", "-C", xsh_repo.display(), "merge-base", "--is-ancestor", branch, "HEAD"]
+    ))?
+    let merged = merged_status.ok
+    if status == "Merged." or status == "Closed." or merged {
+      stale = stale.push({branch: branch, ticket_id: ticket_id, ticket_status: status, merged: merged})
+    }
+  }
+  return stale
+}
+
+## Finds an implementation branch that is still unmerged for one ticket.
 export proc open_ticket_branch(xsh_repo: Path, ticket_id: Str) [process, error] -> Result[Str] {
   if ! control.valid_ticket_id(ticket_id) {
     return ""

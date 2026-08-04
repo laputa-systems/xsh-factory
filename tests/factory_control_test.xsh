@@ -87,6 +87,9 @@ proc test_role_defaults_are_coded_and_capped() [env, error] {
   test.eq(control.default_cycle_budget(), "1.00")?
   test.eq(control.clamp_cycle_budget("2.00")?, "1.00")?
   test.eq(control.max_concurrent_engineers(), 2)?
+  test.eq(control.max_concurrent_engineers(), 2)?
+  test.eq(control.max_eval_contracts(), 30)?
+  test.eq(control.max_eval_contracts(), 30)?
   for role in ["director", "eval-designer", "eval-manager", "eval-worker", "engineer"] {
     test.eq(control.default_provider(role), "openrouter")?
     if role == "engineer" {

@@ -219,3 +219,10 @@ trailer-verification, idempotency, patch-hash, and cleanup cases live in
   `XSH_MODULE_PATH=. xsht test`. Use synthetic sessions, Git repositories, and
   harmless process doubles; deterministic infrastructure must not consume Pi
   budget.
+
+## Current CTO hardening priorities
+
+Before the next paid cycle, verify the factory's root/phase path boundary,
+keep the checked-in eval portfolio at or below the coded cap of 30, inspect
+stale `factory/*` branches through `run-cto.xsh`, and preserve the outcome
+split in reports: product, evaluator, infrastructure, and overall cycle.

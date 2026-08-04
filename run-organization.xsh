@@ -566,11 +566,15 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   let audit_pass = audit_report_ok and audit_result == "pass"
   let independent_eval_pass_for_result = if selected_ticket == "" { true } else { independent_eval_state == "pass" }
   let design_pass_for_result = design_state == "pass" or design_state == "not-requested"
-  let initial_result = if primary_pass and reeval_pass_for_result and independent_eval_pass_for_result and design_pass_for_result and worktree_cleanup_ok and audit_pass { "pass" } else { "fail" }
+  let product_result = if primary_pass and reeval_pass_for_result { "pass" } else { "fail" }
+  let evaluator_result = if independent_eval_pass_for_result and design_pass_for_result { "pass" } else { "fail" }
+  let infrastructure_result = if worktree_cleanup_ok and audit_pass { "pass" } else { "fail" }
+  let initial_result = if product_result == "pass" and evaluator_result == "pass" and infrastructure_result == "pass" { "pass" } else { "fail" }
   let cto_status = runtime.write_cto_report(factory_dir, run_dir, initial_result)?
+  let outcome_note = f"product=${product_result}; evaluator=${evaluator_result}; infrastructure=${infrastructure_result}"
   let result = if initial_result == "pass" and cto_status { "pass" } else { "fail" }
   runtime.emit_event(event_template, run_dir, if result == "pass" { "90-cycle-completed" } else { "90-cycle-failed" },
-    "organization", if result == "pass" { "completed" } else { "failed" }, 1, "controller", "organization report.json and phase reports written")?
+    "organization", if result == "pass" { "completed" } else { "failed" }, 1, "controller", outcome_note)?
   if result == "pass" {
     runtime.emit_event(event_template, run_dir, "95-cycle-validated", "organization", "validated", 1, "controller", "all required phases passed")?
   }

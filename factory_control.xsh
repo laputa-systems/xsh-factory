@@ -142,6 +142,10 @@ export pure default_cycle_budget() -> Str {
   return "1.00"
 }
 
+## Paid admission limit for the total checked-in eval portfolio.
+export pure max_eval_contracts() -> Int {
+  return 30
+}
 ## Hard ticket-cycle admission limit for concurrently dispatched engineers.
 export pure max_concurrent_engineers() -> Int {
   return 2

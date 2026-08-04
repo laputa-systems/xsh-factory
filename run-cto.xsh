@@ -11,7 +11,12 @@ proc main(...argv: List[Str]) [fs, process, env, error, io] {
     abort(2)
   }
   let tickets = runtime.cto_ticket_inventory(factory_dir, xsh_repo)?
-  let markdown = runtime.cto_inventory_markdown(tickets)
+  var markdown = runtime.cto_inventory_markdown(tickets)
+  let stale = runtime.stale_ticket_branches(xsh_repo, factory_dir)?
+  markdown = markdown + f"\n- Stale branch candidates: ${stale.len()}\n"
+  for branch in stale {
+    markdown = markdown + f"- `${branch.branch}` (${branch.ticket_status}; merged=${branch.merged})\n"
+  }
   if argv.len() == 2 {
     let run_dir = Path(argv[1])
     fs.mkdir(run_dir)?
