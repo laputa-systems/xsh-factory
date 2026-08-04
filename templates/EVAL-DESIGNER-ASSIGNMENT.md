@@ -1,61 +1,57 @@
-## Hard stop rule
-
-After the package files and evaluator syntax check are valid, stop discovery and
-write `REPORT.md` immediately. Do not design a second task, inspect another
-eval's implementation, build a host-local evaluator, or debug a candidate
-program. If a small reference check is not already available, report the
-remaining dry-run gap as `not-ready` within the session budget.
 # Eval-designer assignment
 
 Read `{{FACTORY_DIR}}/NORTH-STAR.md`, `{{FACTORY_DIR}}/FACTORY.md`,
 `{{FACTORY_DIR}}/runtime/handbook.md`,
-`{{FACTORY_DIR}}/../xsh/AGENTS.md` and relevant product docs/source,
-`{{FACTORY_DIR}}/roles/eval-designer.md`, and the cycle request. The
-controller has dispatched exactly one new proposal row. Do not redesign an
-approved eval or invent additional proposals.
+`{{FACTORY_DIR}}/../xsh/AGENTS.md`,
+`{{FACTORY_DIR}}/roles/eval-designer.md`, and the cycle request.
 
-The adjacent XSH checkout is available for unrestricted inspection. Use it to
-verify a targeted language contract, API, diagnostic, or native test pattern
-when the handbook and scaffold do not answer the question. It is a reference,
-not a second exploration project.
-Do not modify that checkout: product changes remain an engineer/CTO decision.
+The controller dispatched one new proposal row. Do not redesign an approved eval
+or invent another proposal.
 
-Use `{{FACTORY_DIR}}/evals/task-tags/EVAL.md` and its `runtime/` directory as
-the minimal structural reference. Keep the task no harder than ecount and
-prefer a small practical systems-administration or programming capability.
-The factory-wide handbook is `{{FACTORY_DIR}}/runtime/handbook.md`; proposed
-evals must not create an eval-local handbook.
+The adjacent XSH checkout is a reference. Do not modify it. Product changes
+require an approved ticket, an isolated engineer worktree, and a CTO decision.
 
-Keep this proposal small and bounded. Read the current cycle request, the
-factory mission/contracts, the shared handbook, the product guide and
-relevant product docs/source, and task-tags before choosing the task. Do not
-scan historical `runs/`, Git history, or factory controllers such as
-`run-eval.xsh` and `evaluate_common.xsh`. Do not write a custom runner, helper
-language, shell wrapper, or Docker orchestration: edit the controller-provided
-task-tags scaffold and make only task-specific edits. Use at most two exact
-`xsht api` queries. After two focused scaffold corrections, stop and report
-`not-ready`; do not spend the remaining session debugging infrastructure.
-Do not build a localized evaluator, negative-control harness, custom oracle runner, or other dry-run infrastructure. Once the package files and evaluator syntax are valid, write the required report immediately and never claim evidence that was not saved under the proposal.
+The task must be no harder than ecount. Use `evals/task-tags/EVAL.md` and its
+`runtime/` directory as the structural reference. Proposed evals must consume
+the shared `{{FACTORY_DIR}}/runtime/handbook.md`.
 
-The controller has already staged the complete task-tags proposal scaffold,
-including `evaluator.xsh`, and a fail-closed `REPORT.md` skeleton. In the first
-part of the session, first replace the scaffold's `task-tags` title and ID with
-a new valid `task-*` ID that is not already present under
-`{{FACTORY_DIR}}/evals/`, and change `Disabled.` to `Draft.`. Do not begin API
-queries or a dry run while `EVAL.md` still identifies `task-tags`; that would
-collide with the retired checked-in eval and cannot be promoted. Then edit
-`EVAL.md`, the runtime task/artifact files, executor, and evaluator. Run only
-the smallest representative dry run. The dry run
-validates a materialized proposal; it is not a substitute for staging one.
-Write the report immediately after the dry run, before any further exploration,
-changing `## Result` to `ready-for-review` only when the proposal and evidence
-are complete. The CTO will review and promote the package after the session, so
-leave the proposal as `Draft.` and finish within the controller's hard turn and
-wall-clock bounds.
+## State machine
 
-Stage the proposal under `{{RUN_DIR}}/proposals/{{WORKER_ID}}/` and preserve
-the scaffolding and dry-run evidence there. Do not mark it Approved and do not
-modify an approved eval. Write `{{RUN_DIR}}/workers/eval-designer/{{WORKER_ID}}/REPORT.md` with:
+### 1. Select the task
+
+Choose one small practical XSH capability. Replace the scaffold's `task-tags`
+ID before API queries or dry-run work. Use a new valid `task-*` ID. Change
+`Disabled.` to `Draft.`.
+
+Do not scan `runs/`, Git history, or factory controllers. Do not write a custom
+runner, helper language, shell wrapper, or Docker orchestration. Use at most two
+exact `xsht api` queries.
+
+### 2. Materialize the package
+
+Edit `EVAL.md`, `runtime/task.md`, `runtime/artifact.md`, `executor.xsh`, and
+`evaluator.xsh` under `{{RUN_DIR}}/proposals/{{WORKER_ID}}/`.
+
+Include the task contract, artifact name, oracle, hidden cases, agent boundary,
+metrics, manager policy, and all required scaffolding. Keep the proposal as
+`Draft.`. Do not modify an approved eval.
+
+### 3. Check the package
+
+After the package files exist, run the smallest available syntax or reference
+check. Fix at most two focused scaffold errors.
+
+If the evaluator is valid after the correction limit, stop discovery. Write the
+report immediately. Do not build a localized evaluator, negative-control
+harness, custom oracle runner, or candidate implementation.
+
+If the package is incomplete, write `not-ready` and name the missing evidence.
+Do not claim dry-run evidence that was not saved under the proposal.
+
+### 4. Write the report
+
+Write `{{RUN_DIR}}/workers/eval-designer/{{WORKER_ID}}/REPORT.md` with exactly
+these headings:
 
 ```markdown
 ## Result
@@ -82,3 +78,7 @@ task-specific hacks, oracle or timing risks, and missing checks
 
 the exact promoted eval path and the evidence for the CTO approval decision
 ```
+
+Use `ready-for-review` only when the package and evidence are complete. Use
+`not-ready` when required evidence is missing. The CTO review gate decides the
+package status after the session.
