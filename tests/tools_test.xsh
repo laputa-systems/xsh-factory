@@ -207,6 +207,7 @@ proc test_cto_briefing_reads_json_not_projection(ctx: TestContext) [fs, process,
   test.ok(status.ok, "CTO compiler should consume structured reports")?
   let text = fs.read_text(output)?
   test.contains(text, "Structured run or phase report")?
+  test.contains(text, "## Outcome dimensions")?
   test.contains(text, "workers/eval-worker/task-tags-1/report.json")?
   test.contains(text, "Execution: `fail`; classification: `worker_failed`")?
   test.contains(text, "- Result: `pass`")?

@@ -6,6 +6,13 @@ This is the deterministic first-pass briefing for the CTO. The structured
 ## Result
 
 {{RESULT}}
+## Result
+
+{{RESULT}}
+
+## Outcome dimensions
+
+{{OUTCOMES}}
 
 ## Operating context
 

@@ -80,6 +80,14 @@ proc worker_block(run_dir: Path, report: Path, template: Str) [fs, error] -> Res
   ])
 }
 
+pure outcome_block(data: Any) -> Str {
+  let outcomes = json.get(data, ["outcomes"], null)
+  let product = text(json.get(outcomes, ["product"], "not recorded"), "not recorded")
+  let evaluator = text(json.get(outcomes, ["evaluator"], "not recorded"), "not recorded")
+  let infrastructure = text(json.get(outcomes, ["infrastructure"], "not recorded"), "not recorded")
+  return f"- Product: `${product}`\n- Evaluator: `${evaluator}`\n- Infrastructure: `${infrastructure}`"
+}
+
 proc eval_review_block(run_dir: Path, reviews: List[Path]) [fs, error] -> Result[Str] {
   if reviews.len() == 0 {
     return "No CTO eval review was recorded."
@@ -285,6 +293,7 @@ proc main(...argv: List[Str]) [fs, env, error, io] {
     {key: "RESULT", value: result},
     {key: "MODE", value: text(json.get(identity, ["mode"], "unknown"))},
     {key: "REQUEST", value: if fs.exists(request_path)? { relative_path(run_dir, request_path) } else { "missing" }},
+    {key: "OUTCOMES", value: outcome_block(data)},
     {key: "REPORT_SCHEMA", value: relative_path(run_dir, root_report)},
     {key: "PHASES", value: phase_blocks(run_dir, phase_reports, phase_template)?},
     {key: "WORKERS", value: workers},
