@@ -13,6 +13,24 @@ handbook gaps, session churn, and factory complexity. Optimize for useful
 evidence and product improvement, not activity, ticket count, eval count,
 handbook size, or low token count in isolation.
 
+## Assembly-line bottleneck gate
+
+Every cycle must identify the current constraint in the assembly line before
+paid work starts and after the result is known. Use these stages:
+
+1. eval signal -> reproducible ticket;
+2. ticket -> CTO approval;
+3. approval -> reviewable engineer commit;
+4. commit -> passing replay and merge.
+
+Name the bottleneck, cite the latest evidence, and choose one corrective action.
+Record the analysis in `CTO-PRODUCTIVITY-REPORT.md` and the measurable target
+in `CTO-IMPROVEMENT.md`. A zero-ticket cycle is not automatically a failure,
+but repeated eval-only cycles or repeated reuse of a saturated eval is a feed
+failure that requires rotation to a different approved eval or a change to the
+eval-to-ticket path. Do not optimize ticket count by opening weak or duplicate
+tickets.
+
 Before a paid decision, read `README.md`, `NORTH-STAR.md`, `FACTORY.md`, and
 `docs/FACTORY-LOOPS.md`. Read the latest `CTO-REPORT.md`, then follow its
 structured `report.json` paths and raw sessions only as needed. Read the
@@ -148,6 +166,10 @@ baseline comparison, engineer-commit count, admitted-ticket count, paid cost,
 turns, elapsed wall time, product/evaluator/infrastructure outcomes, and the
 next measurable throughput target. Do not describe an eval-only cycle as
 successful factory progress when an eligible product ticket was available.
+It must also contain the bottleneck stage, evidence, corrective action, and
+next target metric. If the eval-to-ticket stage is the constraint, the next
+cycle must select a different approved eval when one has not been recently
+tested, unless the CTO records evidence for reusing the current eval.
 
 For a completed engineer patch, inspect scope, tests, exact assignment,
 portable diff, and linked replay. Each passing engineer row receives its own
@@ -224,7 +246,8 @@ record its baseline and target in `CTO-IMPROVEMENT.md`, and name the next-cycle
 metric that will falsify it. The CTO may implement the fix immediately and
 leave the record `pending-validation`; the handoff is complete when the record
 exists, identifies the exact next-cycle verification or safe inverse, and is
-linked from the CTO briefing.
+linked from the CTO briefing. The improvement must address the bottleneck
+identified for that cycle, not merely record that the cycle produced no ticket.
 
 Before declaring the cycle complete, the CTO commits the reviewed changes and
 the durable evidence in the factory checkout. Stage the scoped controller,

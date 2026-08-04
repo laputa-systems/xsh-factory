@@ -18,7 +18,7 @@ eval-design phase runs alongside the primary phase.
 
 ## Active evals
 
-- `task-envcfg`
+- `task-bigfiles`
 
 ## Trial plan
 
@@ -34,6 +34,13 @@ eval-design phase runs alongside the primary phase.
 
 - Dispatch tickets present at cycle start: `yes`
 - Dispatch newly created tickets in this cycle: `no`
+
+## Bottleneck review
+
+- Required: identify the current assembly-line bottleneck before dispatch.
+- Required: compare eval signal, ticket approval, engineer delivery, and
+  replay/merge against the latest `CTO-PRODUCTIVITY-REPORT.md`.
+- Required: choose one corrective action and a measurable next-cycle target.
 
 ## Ticket policy
 

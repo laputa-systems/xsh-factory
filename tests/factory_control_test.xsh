@@ -228,12 +228,14 @@ proc test_standard_cycle_uses_diverse_active_eval() [fs, error] {
   let request = fs.read_text(fp"${fs.cwd()?}/cycle-organization.md")?
   let task_tags = fs.read_text(fp"${fs.cwd()?}/evals/task-tags/EVAL.md")?
   let improvement = fs.read_text(fp"${fs.cwd()?}/templates/CTO-IMPROVEMENT.md")?
+  let productivity = fs.read_text(fp"${fs.cwd()?}/templates/CTO-PRODUCTIVITY-REPORT.md")?
   let ledger = fs.read_text(fp"${fs.cwd()?}/runtime/handbook-ledger.md")?
   let launcher = fs.read_text(fp"${fs.cwd()?}/run.xsh")?
   let organization = fs.read_text(fp"${fs.cwd()?}/run-organization.xsh")?
   let runtime_source = fs.read_text(fp"${fs.cwd()?}/factory_runtime.xsh")?
   let cto_runner = fs.read_text(fp"${fs.cwd()?}/run-cto.xsh")?
-  test.contains(request, "`task-envcfg`")?
+  test.contains(request, "`task-bigfiles`")?
+  test.contains(request, "## Bottleneck review")?
   test.ok(! request.contains("`task-tags`"))?
   test.ok(control.eval_is_disabled(task_tags))?
   test.contains(task_tags, "special exception")?
@@ -254,8 +256,10 @@ proc test_standard_cycle_uses_diverse_active_eval() [fs, error] {
   test.contains(cto, "Admission is an explicit CTO decision")?
   test.contains(cto, "Throughput invariant")?
   test.contains(cto, "Factory-efficiency gate")?
+  test.contains(cto, "Assembly-line bottleneck gate")?
   test.contains(cto, "CTO-PRODUCTIVITY-REPORT.md")?
   test.contains(improvement, "## Throughput requirement")?
+  test.contains(productivity, "## Assembly-line bottleneck")?
   test.contains(request, "Throughput gate: when a quality-approved ticket is admitted")?
   test.contains(request, "Admission invariant: approve eligible Open tickets before invoking `run.xsh`")?
   let cycle_template = fs.read_text(fp"${fs.cwd()?}/templates/cycle-request.md")?

@@ -19,6 +19,13 @@ cost, assistant turns, wall time, and product/evaluator/infrastructure outcomes.
 Be critical: state whether throughput improved, stagnated, or regressed, and
 separate genuine product throughput from evaluator-only activity.
 
+## Assembly-line bottleneck
+
+Name the constrained stage: eval signal, ticket approval, engineer delivery,
+or replay/merge. Cite the evidence, state the corrective action, and name the
+next measurable target. If the cycle was eval-only, explain whether the feed
+failed to produce a ticket or whether every ticket was correctly blocked.
+
 ## Evidence
 
 Link the run-level `report.json`, phase reports, engineer reports and commits,
@@ -32,4 +39,4 @@ state the concrete factory change and the next measurable target.
 ## Next-cycle target
 
 Name the metric and threshold that will determine whether the next cycle is
-more productive.
+more productive and whether the bottleneck moved.

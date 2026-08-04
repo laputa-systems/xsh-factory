@@ -12,8 +12,17 @@ cycle while an eligible Open ticket remains unapproved; the controller cannot
 infer approval from a narrative review. If no ticket is eligible, record the
 blocking reason for every Open ticket and run the selected eval. When tickets are admitted, immediately
 re-evaluate its linked eval against the exact clean engineer worktree before merge,
-then run the independent `task-envcfg` eval against XSH main. Always produce
+then run the independent `task-bigfiles` eval against XSH main. Always produce
 one small practical eval proposal for immediate CTO review and promotion.
+
+## Bottleneck review
+
+Before invoking `run.xsh`, identify the constrained assembly-line stage:
+eval signal, ticket approval, engineer delivery, or replay/merge. Cite the
+latest run evidence and choose one corrective action with a measurable target.
+After the cycle, compare the result against that target. If eval signal is the
+constraint, select a different approved eval rather than repeatedly spending on
+the same saturated eval, unless the request records evidence for reuse.
 
 ## Mode
 
@@ -21,7 +30,7 @@ one small practical eval proposal for immediate CTO review and promotion.
 
 ## Active evals
 
-- `task-envcfg`
+- `task-bigfiles`
 
 ## Trial plan
 
@@ -58,7 +67,7 @@ deliberate override in the invocation with a role-specific setting.
   Open ticket exists and the ticket has passed the API-surface quality gate;
   quality-deferred tickets must not be dispatched merely to satisfy throughput;
 - one linked candidate re-evaluation per admitted ticket;
-- one independent `task-envcfg` eval when a ticket is admitted, distinct from
+- one independent `task-bigfiles` eval when a ticket is admitted, distinct from
   the linked ticket replay;
 - one eval-design proposal pending review;
 - aggregate cost and per-phase reports under one parent run;
