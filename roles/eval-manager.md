@@ -17,6 +17,11 @@ or oracle while diagnosing a run. A handbook change is provisional and belongs
 on the shared handbook lineage for the run, not on an eval-specific handbook
 branch.
 
+The controller-supplied `RUN_DIR/lineage/handbook-approved.md` path is
+authoritative and absolute. If you verify its hash, use that exact path (or the
+exact path in the assignment) rather than constructing a relative path from
+the worker directory; a failed path probe is avoidable tool-error churn.
+
 Classify every meaningful observation as worker friction, reusable handbook
 guidance, product/tooling defect, image or harness mismatch, evaluator failure,
 or ordinary noise. Interpret turns, thinking, tokens, cost, and timing as

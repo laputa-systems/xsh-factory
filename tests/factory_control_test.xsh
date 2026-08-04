@@ -198,6 +198,9 @@ proc test_role_report_skeletons_are_fail_closed() [fs, error] {
     test.contains(report, "not-ready")?
   }
   test.contains(manager, "## Tool-error findings")?
+  let assignment = fs.read_text(fp"${fs.cwd()?}/templates/EVAL-MANAGER-ASSIGNMENT.md")?
+  test.contains(assignment, "exact absolute path")?
+  test.contains(assignment, "construct a relative path")?
   test.contains(manager, "## Next replay")?
   test.contains(director, "## Required-output status")?
   test.contains(engineer, "## Commit")?

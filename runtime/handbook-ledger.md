@@ -107,3 +107,14 @@ The candidate combines the already-deferred boolean word-form lesson with an
 `in` membership lint preference. The current trial passed, but the worker had
 one sample and the candidate is not needed to compare prompt revisions. Keep
 the approved handbook unchanged and require replay before promotion.
+
+## Explicit CTO disposition — 2026-08-04
+
+| Candidate SHA-256 | Disposition |
+| --- | --- |
+| `e6f210b0f8f1fa2a605a5d30c145635b13e5e7743fd97974f2dbdce0f115d81b` | deferred pending the merged `fail` API/product replay; not promoted |
+
+The `task-envcfg` cycle reproduced the already-tracked `fail` discoverability
+gap on the pre-API-registration build. The candidate warning is superseded by
+the merged API registration at XSH commit `2d423c1`; keep the approved handbook
+unchanged until a post-merge replay shows whether any warning remains useful.
