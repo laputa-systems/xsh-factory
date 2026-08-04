@@ -85,3 +85,14 @@ The boolean-operator sentence is valid and remains visible in the originating
 lineage, but the source run explicitly required a second conditional-writing
 eval and the linked diagnostics-ticket replay before promotion. The next CTO
 may promote it after that falsification evidence exists.
+
+## Explicit CTO disposition — 2026-08-04
+
+| Candidate SHA-256 | Disposition |
+| --- | --- |
+| `b217df0fd5ac8e2a4428d1e1060c228f50a2cad3e236cc51800e8e62a868b096` | deferred pending a matched cross-run replay; not promoted |
+
+The candidate adds a reusable warning about binding names that shadow standard
+modules. The source trial passed, but the candidate was observed in one
+`task-envcfg` session. Keep the approved handbook unchanged during the prompt
+efficiency comparison and revisit this candidate after cross-run evidence.
