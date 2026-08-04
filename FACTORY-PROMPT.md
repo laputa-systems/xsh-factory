@@ -45,7 +45,6 @@ Classify each passage before you edit it.
 - Preserve passive voice for intentional states and protocol transitions.
 - Avoid present perfect tense and dangling `-ing` clauses.
 - Use complete grammar and do not use contractions.
-- Do not use semicolons. Write two sentences.
 - Use American English spelling unless the repository requires another form.
 - Replace `e.g.` with `for example` and `i.e.` with `that is`.
 - Delete filler such as `simply`, `just`, `robust`, and `powerful`.

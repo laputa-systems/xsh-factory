@@ -36,16 +36,17 @@ Run the standard organization request:
 XSH_MODULE_PATH=. xsh run.xsh cycle-organization.md
 ```
 
-Before launch, the CTO reviews every remaining `Open.` ticket for evidence,
-duplication, scope, and acceptance criteria. It reconciles merged tickets and
-admits up to two approved implementations,
-starts safe independent phases concurrently, replays a successful ticket
-against its linked eval, runs a different independent active eval, and may
-produce, review, and promote one new eval proposal. With no approved
-ticket, the selected eval becomes the primary phase.
+Before launch, the CTO reviews every remaining `Open.` ticket. The CTO checks
+evidence, duplication, scope, and acceptance criteria.
+The controller reconciles merged tickets and admits up to two implementations.
+It starts safe independent phases concurrently.
+It replays successful tickets against linked evals.
+It runs a different independent active eval.
+It can produce, review, and promote one eval proposal.
+With no approved ticket, the selected eval becomes the primary phase.
 
-Use the deterministic CTO inventory before an organization request when
-reviewing ticket state:
+When reviewing ticket state, use the deterministic CTO inventory before an
+organization request:
 
 ```sh
 ```
@@ -60,10 +61,9 @@ The organization controller also persists the same inventory as
 `CTO-TICKET-INVENTORY.md` and `CTO-TICKET-INVENTORY.json` in every run before
 ticket admission.
 
-If an approved ticket already has an unmerged factory branch, the organization
-controller reuses that exact branch for the linked replay instead of dispatching
-another engineer. It captures a portable patch, then removes only the temporary
-detached worktree after replay.
+If an approved ticket has an unmerged factory branch, the organization
+controller reuses that branch for the linked replay. It captures a portable
+patch, then removes the temporary detached worktree.
 
 Run a focused eval, ticket implementation, or design phase with its request:
 
