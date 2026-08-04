@@ -110,12 +110,12 @@ pure percentile_int(values: List[Int], percent: Int) -> Int {
   return values[((values.len() - 1) * percent) / 100]
 }
 
-pure median_float(values: List[Int]) -> Int {
+pure median_metric(values: List[Int]) -> Int {
   if values.len() == 0 { return 0 }
   return values[values.len() / 2]
 }
 
-pure percentile_float(values: List[Int], percent: Int) -> Int {
+pure percentile_metric(values: List[Int], percent: Int) -> Int {
   if values.len() == 0 { return 0 }
   return values[((values.len() - 1) * percent) / 100]
 }
@@ -145,8 +145,8 @@ pure row(eval_id: Str, run_id: Str, samples: List[Sample]) -> Any {
     passed: passed,
     median_turns: median_int(turns |> sort-by .),
     p90_turns: percentile_int(turns |> sort-by ., 90),
-    median_tokens: median_float(tokens),
-    p90_tokens: percentile_float(tokens, 90),
+    median_tokens: median_metric(tokens),
+    p90_tokens: percentile_metric(tokens, 90),
     median_tool_errors: median_int(errors |> sort-by .),
     median_wall_ms: median_int(wall |> sort-by .),
     provider_retries: retries,
