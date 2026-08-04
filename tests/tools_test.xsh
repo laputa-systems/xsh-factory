@@ -177,6 +177,7 @@ proc test_stale_branch_inventory_is_documented() [fs, error] {
   let cto = fs.read_text(fp"${fs.cwd()?}/run-cto.xsh")?
   test.contains(runtime, "stale_ticket_branches")?
   test.contains(cto, "Stale branch candidates")?
+  test.contains(runtime, "retire_stale_ticket_branches")?
 }
 
 proc test_eval_cap_is_admission_policy() [fs, error] {

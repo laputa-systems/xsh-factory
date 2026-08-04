@@ -727,7 +727,28 @@ proc commit_is_merged(xsh_repo: Path, branch: Str, commit: Str) [process, error]
   return commit_is_ancestor(xsh_repo, commit)? or commit_is_patch_applied(xsh_repo, branch, commit)?
 }
 
-## Finds an implementation branch that is still unmerged for one ticket.
+## Retires only branches proven merged for Closed/Merged tickets.
+## This is explicit maintenance, never automatic cycle admission behavior.
+export proc retire_stale_ticket_branches(xsh_repo: Path, factory_dir: Path) [fs, process, error] -> Result[Int] {
+  let candidates = stale_ticket_branches(xsh_repo, factory_dir)?
+  var retired = 0
+  for candidate in candidates {
+    if candidate.ticket_status != "Merged." and candidate.ticket_status != "Closed." {
+      continue
+    }
+    if ! candidate.merged {
+      continue
+    }
+    let status = process.run(process.command_argv(
+      "git", ["git", "-C", xsh_repo.display(), "branch", "-D", candidate.branch]
+    ))?
+    if status.ok {
+      retired += 1
+    }
+  }
+  return retired
+}
+
 ## Inventories branches that are merged, closed, or otherwise stale candidates.
 export proc stale_ticket_branches(xsh_repo: Path, factory_dir: Path) [fs, process, error] -> Result[List[Any]] {
   var stale: List[Any] = []
