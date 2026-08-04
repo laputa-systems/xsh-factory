@@ -124,6 +124,14 @@ export proc stage_cto_improvement(factory_dir: Path, run_dir: Path) [fs, error] 
   return Ok()
 }
 
+## Stages the mandatory organization-cycle productivity review.
+export proc stage_cto_productivity_report(factory_dir: Path, run_dir: Path) [fs, error] -> Result[Unit] {
+  let target = fp"${run_dir}/CTO-PRODUCTIVITY-REPORT.md"
+  if ! fs.exists(target)? {
+    fs.copy(fp"${factory_dir}/templates/CTO-PRODUCTIVITY-REPORT.md", target, overwrite: true)?
+  }
+  return Ok()
+}
 ## Writes the deterministic first-pass briefing used by the CTO.
 export proc write_cto_report(
   factory_dir: Path,

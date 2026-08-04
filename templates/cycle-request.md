@@ -40,6 +40,7 @@ eval-design phase runs alongside the primary phase.
 - Review all open tickets before selection: `yes`
 - Select the first two approved tickets after review: `yes`
 - Approve eligible Open tickets before controller invocation: `required`
+- Require at least one engineer implementation commit: `yes`
 
 ## Role overrides
 
@@ -59,4 +60,6 @@ environment override in the invocation, using names such as
 - a `## North-star impact` section in each narrative role report;
 - one `CTO-IMPROVEMENT.md` factory-wide improvement handoff with a measurable
   next-cycle validation or revert condition;
+- one `CTO-PRODUCTIVITY-REPORT.md` with a critical throughput/efficiency
+  comparison against the prior cycle;
 - a `CTO-REPORT.md` briefing generated from the structured reports.

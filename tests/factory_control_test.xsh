@@ -239,8 +239,13 @@ proc test_standard_cycle_uses_diverse_active_eval() [fs, error] {
   test.contains(cto, "The CTO decides whether to merge or apply")?
   test.contains(cto, "Admission is an explicit CTO decision")?
   test.contains(cto, "Throughput invariant")?
+  test.contains(cto, "Factory-efficiency gate")?
+  test.contains(cto, "CTO-PRODUCTIVITY-REPORT.md")?
+  test.contains(improvement, "## Throughput requirement")?
+  test.contains(request, "Throughput gate: the cycle must produce at least one reviewable engineer implementation commit")?
   test.contains(request, "Admission invariant: approve eligible Open tickets before invoking `run.xsh`")?
   let cycle_template = fs.read_text(fp"${fs.cwd()?}/templates/cycle-request.md")?
+  test.contains(cycle_template, "Require at least one engineer implementation commit")?
   test.contains(cycle_template, "Approve eligible Open tickets before controller invocation")?
   test.contains(cycle_template, "Never leave an")?
   test.contains(cycle_template, "eligible ticket Open")?

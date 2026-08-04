@@ -13,6 +13,13 @@ applies the safe inverse.
 Describe the concrete factory-wide code, prompt, controller, test, or policy
 change and link the exact paths.
 
+## Throughput requirement
+
+State whether the cycle produced at least one reviewable engineer
+implementation commit. If not, classify the cycle as a throughput failure and
+describe the corrective factory change; a passing eval-only cycle does not
+satisfy this requirement when an eligible product ticket existed.
+
 ## Baseline metric
 
 State the prior-cycle measurement and evidence path.

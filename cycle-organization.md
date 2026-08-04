@@ -38,6 +38,7 @@ one small practical eval proposal for immediate CTO review and promotion.
 - Review all open tickets before selection: `yes`
 - Select the first two approved tickets after review: `yes`
 - Admission invariant: approve eligible Open tickets before invoking `run.xsh`; do not silently fall back to eval-only work
+- Throughput gate: the cycle must produce at least one reviewable engineer implementation commit; otherwise classify the cycle as a throughput failure and record corrective action
 
 ## Role overrides
 
@@ -55,4 +56,6 @@ deliberate override in the invocation with a role-specific setting.
 - aggregate cost and per-phase reports under one parent run;
 - one `CTO-IMPROVEMENT.md` factory-wide improvement handoff with a next-cycle
   validation or revert condition;
+- one `CTO-PRODUCTIVITY-REPORT.md` comparing throughput and efficiency with the
+  prior cycle;
 - no worker-selected tickets, evals, merges, or approvals.

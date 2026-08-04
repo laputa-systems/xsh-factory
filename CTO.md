@@ -124,6 +124,20 @@ fall back to an eval-only primary phase. A cycle with zero engineer rows is
 intentional only when every Open ticket has a recorded blocking reason or no
 approved ticket is available after the review pass.
 
+Factory-efficiency gate: the CTO must be actively critical of throughput,
+cycle latency, paid spend, engineer utilization, and evidence produced per
+cycle. A completed organization cycle is not good enough merely because its
+reports pass. It must produce at least one reviewable engineer implementation
+commit, either from a newly dispatched engineer or an explicitly reconciled
+existing engineer branch. If the cycle produces no engineer implementation
+commit, classify it as a throughput failure, state why the admission decision
+failed, and record a concrete corrective change in `CTO-IMPROVEMENT.md`.
+Every organization cycle must also leave a `CTO-PRODUCTIVITY-REPORT.md` with
+baseline comparison, engineer-commit count, admitted-ticket count, paid cost,
+turns, elapsed wall time, product/evaluator/infrastructure outcomes, and the
+next measurable throughput target. Do not describe an eval-only cycle as
+successful factory progress when an eligible product ticket was available.
+
 For a completed engineer patch, inspect scope, tests, exact assignment,
 portable diff, and linked replay. Each passing engineer row receives its own
 linked replay; a sibling ticket failure does not suppress it. The CTO decides whether to merge or apply

@@ -486,6 +486,11 @@ proc test_cto_handoff_is_staged_for_every_run(ctx: TestContext) [fs, error] {
   test.ok(fs.exists(handoff)?)?
   test.contains(fs.read_text(handoff)?, "pending-validation")?
   test.contains(fs.read_text(handoff)?, "## Revert condition")?
+  test.contains(fs.read_text(handoff)?, "## Revert condition")?
+  runtime.stage_cto_productivity_report(factory, root)?
+  let productivity = fp"${root}/CTO-PRODUCTIVITY-REPORT.md"
+  test.ok(fs.exists(productivity)?)?
+  test.contains(fs.read_text(productivity)?, "## Engineer-commit gate")?
 }
 
 proc test_eval_executor_is_documented_as_controller_not_role() [fs, error] {
