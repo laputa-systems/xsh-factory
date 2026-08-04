@@ -290,15 +290,28 @@ proc run_ticket_cycle(
       fs.exists(engineer_report)? and ! fs.exists(fp"${worker_dir}/REPORT-MISSING")? and
       control.engineer_report_contract_ok(fs.read_text(engineer_report)?)
     let branch = run.text "git" "-C" $worktree.display() "branch" "--show-current" ?
-    let head = run.text "git" "-C" $worktree.display() "rev-parse" "HEAD" ?
+    var head = run.text "git" "-C" $worktree.display() "rev-parse" "HEAD" ?
     let status = run.text "git" "-C" $worktree.display() "status" "--porcelain" ?
     let branch_ok = branch.trim() == f"factory/${ticket_id}/${stamp}"
     let commit_ok = head.trim() != xsh_commit.trim()
     let clean = status.trim() == ""
     let ticket_ok = fs.exists(session)? and report_ok and north_star_read_ok and handbook_read_ok and branch_ok and commit_ok and clean
+    let provenance_head = if ticket_ok {
+      runtime.amend_engineer_commit(
+        worktree, head.trim(), factory_dir, run_dir, worker_report, session,
+        ticket_id, branch.trim(), xsh_commit.trim()
+      )?
+    } else {
+      ""
+    }
+    let provenance_ok = ticket_ok and provenance_head != "" and
+      runtime.update_engineer_report_commit(engineer_report, provenance_head)?
+    if provenance_ok {
+      head = provenance_head
+    }
     let patch_path = fp"${patch_root}/${ticket_id}.diff"
     let patch_stderr = fp"${patch_root}/${ticket_id}.stderr"
-    let patch_ok = if ticket_ok {
+    let patch_ok = if provenance_ok {
       runtime.write_engineer_patch(worktree, xsh_commit.trim(), head.trim(), patch_path, patch_stderr)?
     } else {
       false
@@ -314,7 +327,7 @@ proc run_ticket_cycle(
     } else {
       "cleanup-failed"
     }
-    let final_ticket_ok = ticket_ok and patch_ok and
+    let final_ticket_ok = provenance_ok and patch_ok and
       (retain_worktree or worktree_action == "removed-after-patch")
     if ! final_ticket_ok { all_tickets_ok = false }
     if ! patch_ok { all_patches_ok = false }

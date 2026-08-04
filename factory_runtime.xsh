@@ -207,6 +207,111 @@ export proc promote_eval_proposal(
   return true
 }
 
+## Amends a validated engineer commit with deterministic factory provenance.
+## The caller must verify the report, branch, commit, and clean worktree first.
+## Updates the controller-owned engineer report after commit amendment.
+export proc update_engineer_report_commit(report_path: Path, commit_hash: Str) [fs, error] -> Result[Bool] {
+  if ! fs.exists(report_path)? {
+    return false
+  }
+  let report = report_path.read_text()?
+  if control.report_field(report, "Commit") == "" {
+    return false
+  }
+  let updated = control.replace_section(report, "Commit", "## Commit\n\n" + commit_hash.trim())
+  fs.write_atomic(report_path, updated)?
+  return control.engineer_report_contract_ok(updated)
+}
+
+## Amends a validated engineer commit with deterministic factory provenance.
+## The caller must verify the report, branch, commit, and clean worktree first.
+export proc amend_engineer_commit(
+  worktree: Path,
+  head_commit: Str,
+  factory_dir: Path,
+  run_dir: Path,
+  report_path: Path,
+  session_path: Path,
+  ticket_id: Str,
+  branch: Str,
+  base_commit: Str,
+) [fs, process, error] -> Result[Str] {
+  let current_head = run.text "git" "-C" $worktree.display() "rev-parse" "HEAD" ?
+  let worktree_status = run.text "git" "-C" $worktree.display() "status" "--porcelain" ?
+  if current_head.trim() != head_commit.trim() or worktree_status.trim() != "" {
+    return Ok("")
+  }
+  let existing_message = (run.text "git" "-C" $worktree.display() "log" "-1" "--format=%B" $head_commit.trim() ?).trim()
+  if existing_message.contains("Factory-Provenance-Version:") {
+    return Ok(head_commit.trim())
+  }
+  if ! fs.exists(report_path)? or ! fs.exists(session_path)? {
+    return Ok("")
+  }
+  let report = json.read(report_path)?
+  let usage = json.get(report, ["usage"], null)
+  let models = json.get(report, ["models"], [])
+  let model_ref = match models {
+    values is List[Any] => if values.len() > 0 { report_value(values[0]) } else { "unknown" }
+    _ => "unknown",
+  }
+  let model_parts = model_ref.split("/", maxsplit: 1)
+  let provider = if model_parts.len() > 1 { model_parts[0] } else { "unknown" }
+  let model = if model_parts.len() > 1 { model_ref.byte_slice(provider.byte_len() + 1, model_ref.byte_len() - provider.byte_len() - 1) } else { model_ref }
+  let session_sha = hash.sha256(session_path)?.hex()
+  let relative_report = control.factory_relative_path(factory_dir.display(), report_path)
+  let relative_session = control.factory_relative_path(factory_dir.display(), session_path)
+  let relative_run = control.factory_relative_path(factory_dir.display(), run_dir)
+  var trailers: List[Str] = [
+    f"Factory-Provenance-Version: 1",
+    f"Factory-Run: ${relative_run}",
+    "Factory-Role: engineer",
+    f"Factory-Ticket: ${ticket_id}",
+    f"Factory-Branch: ${branch}",
+    f"Factory-Base-Commit: ${base_commit.trim()}",
+    f"Factory-Source-Commit: ${head_commit.trim()}",
+    f"Factory-Provider: ${provider}",
+    f"Factory-Model: ${model}",
+    f"Factory-Assistant-Turns: ${report_value(json.get(usage, ["assistant_turns"], 0))}",
+    f"Factory-Tool-Calls: ${report_value(json.get(usage, ["tool_calls"], 0))}",
+    f"Factory-Tool-Errors: ${report_value(json.get(usage, ["tool_errors"], 0))}",
+    f"Factory-Thinking-Blocks: ${report_value(json.get(usage, ["thinking_blocks"], 0))}",
+    f"Factory-Reasoning-Tokens: ${report_value(json.get(usage, ["reasoning_tokens"], "unknown"))}",
+    f"Factory-Token-Buckets: ${report_value(json.get(usage, ["total_bucket_tokens"], 0))}",
+    f"Factory-Input-Tokens: ${report_value(json.get(usage, ["input_tokens"], 0))}",
+    f"Factory-Output-Tokens: ${report_value(json.get(usage, ["output_tokens"], 0))}",
+    f"Factory-Cache-Read-Tokens: ${report_value(json.get(usage, ["cache_read_tokens"], 0))}",
+    f"Factory-Cache-Write-Tokens: ${report_value(json.get(usage, ["cache_write_tokens"], 0))}",
+    f"Factory-Cost-USD: ${report_value(json.get(usage, ["cost_usd"], "unknown"))}",
+    f"Factory-Session-Wall-Ms: ${report_value(json.get(report, ["timing", "session_span_ms"], 0))}",
+    f"Factory-Session-SHA256: ${session_sha}",
+    f"Factory-Worker-Report: ${relative_report}",
+    f"Factory-Session: ${relative_session}",
+  ]
+  var git_args: List[Str] = [
+    "git", "-C", worktree.display(), "commit", "--amend", "--no-edit", "--no-verify",
+  ]
+  for trailer in trailers {
+    git_args = git_args.push("--trailer").push(trailer)
+  }
+  let status = process.run(process.command_argv("git", git_args))?
+  if ! status.ok {
+    return Ok("")
+  }
+  let amended_head = run.text "git" "-C" $worktree.display() "rev-parse" "HEAD" ?
+  return Ok(amended_head.trim())
+}
+
+pure report_value(value: Any) -> Str {
+  match value {
+    s is Str => return s
+    i is Int => return f"${i}"
+    f is Float => return f.format(precision: 9)
+    b is Bool => return if b { "true" } else { "false" }
+    _ => return "unknown"
+  }
+}
+
 ## Captures the committed engineer change as a portable patch before any worktree cleanup.
 export proc write_engineer_patch(
   worktree: Path,

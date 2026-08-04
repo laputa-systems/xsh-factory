@@ -79,3 +79,140 @@ Use the current Pi role names: `CTO`, `director`, `eval-designer`,
 `eval-manager`, `eval-worker`, and `engineer`. `eval-executor.xsh` is
 controller-owned infrastructure, not a role or employee. Older references to
 “automator” or “xsh-swe” are legacy terminology, not new role names.
+
+## Factory infrastructure codemap
+
+The factory is an XSH control plane around two repositories. This map is the
+navigation contract for controller work; use it to find an owner before
+grepping broadly.
+
+### Repository boundary and durable state
+
+- `NORTH-STAR.md` is the product mission and rationale briefing shared by all
+  roles. `FACTORY.md` defines orchestration invariants and authority. `README.md`
+  documents operator commands. `CTO.md` defines the bounded CTO inspection,
+  decision, cycle, and closeout loop.
+- `../xsh` is the product repository. Factory controllers create isolated
+  worktrees there, but the factory checkout owns admission, assignments,
+  reports, patches, tickets, eval packages, and run evidence.
+- `runtime/handbook.md` is the approved rolling agent handbook;
+  `runtime/handbook-ledger.md` records candidate dispositions. `tickets/*.md`
+  are the checked-in product observations and lifecycle records. `evals/*/`
+  are package-owned eval contracts, tasks, artifacts, executors, and
+  evaluators. `runs/run-*/` is generated evidence and must not be included in
+  factory close commits.
+
+### Top-level dispatch and cycle controllers
+
+- `run.xsh` is the only top-level launcher. It performs preflight, admission,
+  locks, aggregate-budget setup, signal cleanup, and dispatches exactly one
+  mode controller.
+- `run-organization.xsh` composes the bounded organization graph: approved
+  ticket implementation, linked replay, independent eval, and optional eval
+  design. It owns overlap and waits on process handles; it does not ask agents
+  to select work.
+- `run-ticket.xsh` creates clean XSH worktrees, renders immutable engineer
+  assignments, dispatches engineer rows through `run-agent.xsh`, validates
+  reports/branches/commits/worktrees, amends validated engineer commits with
+  provenance, and captures portable patches.
+- `run-ticket-reuse.xsh` validates an already-existing factory branch in a
+  detached worktree for an organization replay; it is not a second engineer
+  dispatch path.
+- `run-eval.xsh` builds the local XSH image/runtime, dispatches eval workers
+  through `eval-executor.xsh`, and then dispatches the eval-manager. It owns
+  trial admission and evaluator manifests, not qualitative diagnosis.
+- `run-design.xsh` dispatches one eval-designer and gates materialization,
+  evaluator syntax checks, CTO review, and promotion into `evals/`.
+- `run-cto.xsh` is deterministic ticket inventory/reconciliation input for the
+  CTO; it does not launch paid work.
+
+### Shared runtime, contracts, and process boundaries
+
+- `factory_control.xsh` contains pure policy and parsing: role defaults,
+  provider/model/budget/turn/wall ceilings, request parsing, ticket/eval
+  lifecycle predicates, report-template validation, assignment checks, and
+  template substitution. Change policy here before changing a controller.
+- `factory_runtime.xsh` contains effectful shared operations: process/PID
+  registration and cancellation, locks, event-ledger writes, CTO handoffs,
+  eval promotion, ticket reconciliation, worktree/patch cleanup, handbook
+  lineage checks, exact session-read checks, and engineer commit provenance.
+- `report_schema.xsh` is the single machine-report envelope validator for
+  `worker`, `phase`, and `run` reports. Do not add role-specific machine
+  projections; preserve metrics in `report.json` and raw session JSONL.
+- `audit-run.xsh` compiles controller outputs into a phase/run report.
+  `factory_report.xsh` and `tools/cto-report.xsh` render human navigation
+  views from structured evidence; the views are not state.
+- `run-agent.xsh` is the one Pi process boundary. It creates the worker
+  directory, invokes Pi with role settings, persists `session.jsonl`, runs
+  session/budget watchers, and normalizes the worker report. Never launch Pi
+  directly.
+- `tools/session-report.xsh` parses Pi JSONL into worker metrics: assistant
+  turns, token buckets, provider totals, reasoning tokens when reported,
+  thinking blocks, cost, stop reasons, tool counts, tool errors, and session
+  span. Engineer commit trailers are derived from this normalized report plus
+  the hashed raw session, not from narrative prose.
+- `tools/session-watch.xsh`, `tools/budget-watch.xsh`, and
+  `tools/cycle-budget-watch.xsh` enforce worker and aggregate shutdown bounds.
+  `tools/cleanup-run.xsh` and `tools/clean-factory.xsh` are cleanup operators;
+  they must preserve branches, tickets, and evidence according to their scope.
+
+### Roles, prompts, and report ownership
+
+- `roles/engineer.md` implements one controller-assigned product ticket in one
+  isolated worktree. `templates/ENGINEER-ASSIGNMENT.md` is the immutable
+  assignment contract and `templates/ENGINEER-REPORT.md` is the qualitative
+  output contract. The engineer commits product code; the controller amends
+  that commit only after report, branch, commit, and clean-worktree checks pass.
+- `roles/director.md` and `templates/DIRECTOR-{REQUEST,REPORT}.md` cover
+  ticket-cycle reconciliation only. The director never chooses tickets or
+  launches duplicate engineer rows.
+- `roles/eval-worker.md`, `roles/eval-manager.md`, and
+  `roles/eval-designer.md` pair with their assignment/report templates. Workers
+  produce isolated artifacts, managers interpret evidence and may stage
+  handbook/ticket candidates, and designers propose at most one eval package.
+- `roles/pi-session-briefing.md` is shared session guidance. The handbook and
+  north-star reads are proved from raw sessions by controller-side path checks.
+- `templates/` contains human-authored prompts, assignments, lifecycle
+  requests, report skeletons, postmortems, tickets, and CTO handoffs. Generated
+  Markdown must not be embedded in controller source.
+
+### Eval package and evidence flow
+
+- Each approved `evals/task-*/EVAL.md` owns its task contract, restrictions,
+  oracle, evaluator, metrics, and manager policy. `executor.xsh` is package
+  selection/scaffolding; `evaluator.xsh` is the package-owned correctness and
+  restriction boundary. `evaluate_common.xsh` is shared mechanics only and
+  must not accumulate task-specific dispatch logic.
+- `eval-executor.xsh` is controller infrastructure, not a Pi role. It launches
+  the isolated worker, runs the selected package evaluator, and preserves
+  `session.jsonl`, worker `report.json`, evaluator `run.json`, and artifacts.
+- The evidence hierarchy is raw `session.jsonl` -> normalized worker
+  `report.json` -> phase `report.json` -> run `report.json`, with employee
+  `REPORT.md` and `CTO-REPORT.md` as qualitative/navigation layers.
+  `events.jsonl` is the canonical lifecycle/process-output ledger.
+
+### Engineer provenance path
+
+`run-ticket.xsh` first verifies `report.json`, required reads, expected branch,
+new `HEAD`, and an empty product worktree. Only then it calls
+`factory_runtime.amend_engineer_commit`. That helper reads the normalized
+worker report, hashes the raw `session.jsonl`, and invokes Git's
+`commit --amend --no-edit --trailer` once. It returns the amended hash; the
+controller updates the controller-owned engineer report, captures the patch
+from base to amended `HEAD`, and only then permits cleanup/replay. The
+`Factory-Source-Commit` trailer preserves the pre-amend hash, while the final
+report and patch use the amended hash. The provenance test and synthetic Git
+worktree fixture live in `tests/tools_test.xsh`.
+
+### Native test map
+
+- `tests/factory_control_test.xsh` covers pure policy, request parsing,
+  admission, lifecycle, ticket inventory, handbook gates, and role ceilings.
+- `tests/tools_test.xsh` covers report normalization, tool-error retention,
+  process/event behavior, budget and cleanup consequences, worktree/patch
+  boundaries, organization reuse, eval promotion, and engineer provenance
+  amendment.
+- The nearest hard judge for factory changes is
+  `XSH_MODULE_PATH=. xsht test`. Use synthetic sessions, Git repositories, and
+  harmless process doubles; deterministic infrastructure must not consume Pi
+  budget.

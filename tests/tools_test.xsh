@@ -227,6 +227,67 @@ proc test_aggregate_budget_breach_writes_postmortem_and_stops(ctx: TestContext) 
   test.contains(fs.read_text(postmortem)?, "Factory cycle postmortem")?
 }
 
+proc test_engineer_provenance_amend(ctx: TestContext) [fs, process, error] {
+  let root = test.temp_dir(ctx, name: "engineer-provenance")?
+  let factory = fp"${root}/factory"
+  let product = fp"${root}/product"
+  let run_dir = fp"${factory}/runs/run-1"
+  let worker_dir = fp"${run_dir}/workers/engineer/task-a"
+  let worktree = fp"${root}/worktree"
+  fs.mkdir(fp"${worker_dir}")?
+  fs.mkdir(product)?
+  fs.mkdir(worktree.parent())?
+  fs.write(fp"${factory}/marker", "factory")?
+  let git = process.which("git")?
+  test.ok(command_ok(git, ["git", "-C", product.display(), "init", "-q", "-b", "main"])?)?
+  test.ok(command_ok(git, ["git", "-C", product.display(), "config", "user.email", "factory@test"])?)?
+  test.ok(command_ok(git, ["git", "-C", product.display(), "config", "user.name", "Factory Test"])?)?
+  fs.write(fp"${product}/README", "base\n")?
+  test.ok(command_ok(git, ["git", "-C", product.display(), "add", "README"])?)?
+  test.ok(command_ok(git, ["git", "-C", product.display(), "commit", "-qm", "base"])?)?
+  let base = run.text "git" "-C" $product.display() "rev-parse" "HEAD" ?
+  test.ok(command_ok(git, ["git", "-C", product.display(), "worktree", "add", "-q", "-b", "factory/task-a/run-1", worktree.display(), base.trim()])?)?
+  fs.write(fp"${worktree}/README", "base\nchanged\n")?
+  test.ok(command_ok(git, ["git", "-C", worktree.display(), "add", "README"])?)?
+  test.ok(command_ok(git, ["git", "-C", worktree.display(), "commit", "-qm", "change"])?)?
+  let head = run.text "git" "-C" $worktree.display() "rev-parse" "HEAD" ?
+  fs.write(fp"${worker_dir}/session.jsonl", "session evidence\n")?
+  fs.write(fp"${worker_dir}/report.json", json.encode({
+    models: ["openrouter/openai/gpt-5.6-luna"],
+    session: fp"${worker_dir}/session.jsonl".display(),
+    usage: {
+      assistant_turns: 81, tool_calls: 152, tool_errors: 11,
+      thinking_blocks: 27, reasoning_tokens: 13963,
+      total_bucket_tokens: 7348813, input_tokens: 243, output_tokens: 27898,
+      cache_read_tokens: 7198079, cache_write_tokens: 122593,
+      cost_usd: 0.104068015,
+    },
+    timing: {session_span_ms: 695496},
+  })? + "\n")?
+  let amended = runtime.amend_engineer_commit(
+    worktree, head.trim(), factory, run_dir,
+    fp"${worker_dir}/report.json", fp"${worker_dir}/session.jsonl",
+    "task-a", "factory/task-a/run-1", base.trim()
+  )?
+  test.ok(amended != head.trim())?
+  let message = run.text "git" "-C" $worktree.display() "log" "-1" "--format=%B" ?
+  test.contains(message, "Factory-Provenance-Version: 1")?
+  test.contains(message, "Factory-Model: openai/gpt-5.6-luna")?
+  test.contains(message, "Factory-Assistant-Turns: 81")?
+  test.contains(message, "Factory-Cost-USD: 0.104068015")?
+  test.contains(message, "Factory-Session-SHA256:")?
+  test.contains(message, "Factory-Worker-Report: runs/run-1/workers/engineer/task-a/report.json")?
+  test.ok(! message.contains("Factory-Source-Commit: " + amended))?
+  test.ok(command_ok(git, ["git", "-C", worktree.display(), "status", "--porcelain"])?)?
+  let second = runtime.amend_engineer_commit(
+    worktree, amended, factory, run_dir,
+    fp"${worker_dir}/report.json", fp"${worker_dir}/session.jsonl",
+    "task-a", "factory/task-a/run-1", base.trim()
+  )?
+  test.eq(second, amended)?
+  test.ok(runtime.remove_clean_worktree(product, worktree)?)?
+}
+
 proc test_engineer_patch_survives_worktree_cleanup(ctx: TestContext) [fs, process, error] {
   let root = test.temp_dir(ctx, name: "patch-cleanup")?
   let product = fp"${root}/product"
