@@ -153,9 +153,20 @@ proc preflight(
 
   if mode == "eval" or mode == "organization" or mode == "eval-design" {
     let eval_id = control.request_eval(request_text)
+    if mode == "organization" and eval_id == "" {
+      eprint "organization request must select an eval"
+      return false
+    }
     let eval_path = fp"${factory_dir}/evals/${eval_id}/EVAL.md"
     let eval_exists = fs.exists(eval_path)?
     let eval_disabled = eval_exists and control.eval_is_disabled(eval_path.read_text()?)
+    if mode == "organization" and ! control.request_allow_measured_eval(request_text) {
+      let next_untried = runtime.next_untried_approved_eval(factory_dir)?
+      if next_untried != "" and eval_id != next_untried {
+        eprint f"organization request must select next untried approved eval ${next_untried}; selected ${eval_id}"
+        return false
+      }
+    }
     if ! control.valid_eval_id(eval_id) or ! eval_exists or eval_disabled {
       eprint f"cycle request selected unsupported or missing eval: ${eval_id}"
       return false

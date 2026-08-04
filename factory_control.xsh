@@ -864,3 +864,11 @@ export pure engineer_assignment_ok(
     assignment.contains("<!-- CONTROLLER_TICKET_SNAPSHOT_END -->") and
     assignment.contains("Do not search for open tickets")
 }
+
+## Parses whether a cycle requires an untried approved eval.
+export pure request_allow_measured_eval(text: Str) -> Bool {
+  for line in text.lines() {
+    if line.trim() == "- Allow measured eval reuse: `yes`" { return true }
+  }
+  return false
+}

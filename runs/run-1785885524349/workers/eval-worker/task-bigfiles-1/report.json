@@ -1,0 +1,120 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785885524349/workers/eval-worker/task-bigfiles-1/session.jsonl"
+    }
+  ],
+  "execution": {
+    "agent_state": "pass",
+    "agent_wall_ms": 269552,
+    "artifact": {
+      "name": "bigfiles.xsh",
+      "state": "present"
+    },
+    "budget_state": "pass",
+    "classification": "evaluator_failed",
+    "evaluator_manifest": "",
+    "evaluator_state": "fail",
+    "reporting_state": "pass",
+    "result": "fail",
+    "review": {
+      "state": "present"
+    }
+  },
+  "findings": [
+    {
+      "count": 1,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "eval_id": "task-bigfiles",
+    "role": "eval-worker",
+    "run_id": "run-1785885524349",
+    "worker_id": "task-bigfiles-1"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "provider_telemetry": {
+    "event_turns": 53,
+    "events_path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785885524349/workers/eval-worker/task-bigfiles-1/session.jsonl.events.jsonl",
+    "output_tokens_per_second": 0,
+    "present": true,
+    "provider_errors": [],
+    "response_elapsed_ms": 0,
+    "retry_count": 0,
+    "retry_delay_ms": 0,
+    "retry_errors": [],
+    "retry_failures": 0,
+    "retry_successes": 0
+  },
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785885524349/workers/eval-worker/task-bigfiles-1/session.jsonl",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 52,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 267951
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785885524349/workers/eval-worker/task-bigfiles-1/session.jsonl",
+      "summary": "err[lex.unexpected-character]: unexpected character\n  p.xsh:5:20\n        Ok { let v = $0; print \"OK\" $v }\n                     ^ not valid in source\n\nerr[parse.expected-token]: expected `=>` in match arm\n  p.xsh:5:10\n        Ok { let v = $0; print \"OK\" $v }\n           ^ expected `=>` in match arm\n\nerr[parse.expected-token]: expected `=>` in match arm\n  p.xsh:6:11\n        Err { print \"ERR\" }\n            ^ expected `=>` in match arm\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 12
+    }
+  ],
+  "tools": [
+    {
+      "count": 52,
+      "name": "bash"
+    },
+    {
+      "count": 2,
+      "name": "edit"
+    },
+    {
+      "count": 4,
+      "name": "read"
+    },
+    {
+      "count": 2,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 53,
+    "budget_usd": 0.5,
+    "cache_read_cost_usd": 0.018014976,
+    "cache_read_tokens": 1000832,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.026490456,
+    "input_cost_usd": 0.005634180000000002,
+    "input_tokens": 62602,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.0028412999999999997,
+    "output_tokens": 15785,
+    "provider_total_tokens": 1079219,
+    "reasoning_tokens": 9718,
+    "thinking_blocks": 42,
+    "tool_calls": 60,
+    "tool_errors": 1,
+    "tool_results": 60,
+    "total_bucket_tokens": 1079219,
+    "user_messages": 1
+  }
+}

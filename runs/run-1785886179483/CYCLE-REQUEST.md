@@ -32,6 +32,10 @@ the same saturated eval, unless the request records evidence for reuse.
 - The controller must select the lexicographically first untried Approved eval
   when one exists. Set reuse to `yes` only with a written CTO rationale.
 
+- Allow measured eval reuse: `no`
+- The controller must select the lexicographically first untried Approved eval
+  when one exists. Set reuse to `yes` only with a written CTO rationale.
+
 ## Active evals
 
 - `task-bigfiles`

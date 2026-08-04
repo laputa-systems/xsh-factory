@@ -1,0 +1,167 @@
+{
+  "artifacts": [
+    {
+      "kind": "session-directory",
+      "path": "workers/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 53,
+      "budget_failures": 0,
+      "cost_usd": 0.026490456,
+      "tool_errors": 1,
+      "total_bucket_tokens": 1079219.0,
+      "unknown_costs": 0,
+      "workers": 1
+    },
+    "designer": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785885524349/workers/eval-designer/proposal-1/REPORT.md",
+      "present": false,
+      "result": "missing",
+      "role": "eval-designer",
+      "valid": false
+    },
+    "director": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785885524349/workers/director/director/REPORT.md",
+      "present": false,
+      "result": "not-requested",
+      "role": "director",
+      "valid": true
+    },
+    "engineer": [],
+    "handbook_lineage": {
+      "approved": "lineage/handbook-approved.md",
+      "candidate": "missing"
+    },
+    "manager": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785885524349/workers/eval-manager/task-bigfiles/REPORT.md",
+      "present": false,
+      "result": "missing",
+      "role": "eval-manager",
+      "valid": false
+    },
+    "mode": "eval",
+    "narratives": [],
+    "open_tickets": [
+      {
+        "eval_id": "task-envcfg",
+        "id": "task-envcfg-001",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-envcfg-001.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-tags",
+        "id": "task-tags-003",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-tags-003.md",
+        "status": "Open."
+      }
+    ],
+    "outcomes": {
+      "cycle": "fail",
+      "evaluator": "fail",
+      "infrastructure": "fail",
+      "product": "fail"
+    },
+    "required_outputs": null,
+    "sessions": [
+      "workers/eval-designer/proposal-1/session.jsonl",
+      "workers/eval-worker/task-bigfiles-1/session.jsonl"
+    ],
+    "tool_errors": [
+      {
+        "report": "workers/eval-worker/task-bigfiles-1/report.json",
+        "summary": "err[lex.unexpected-character]: unexpected character\n  p.xsh:5:20\n        Ok { let v = $0; print \"OK\" $v }\n                     ^ not valid in source\n\nerr[parse.expected-token]: expected `=>` in match arm\n  p.xsh:5:10\n        Ok { let v = $0; print \"OK\" $v }\n           ^ expected `=>` in match arm\n\nerr[parse.expected-token]: expected `=>` in match arm\n  p.xsh:6:11\n        Err { print \"ERR\" }\n            ^ expected `=>` in match arm\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 12,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-bigfiles-1"
+        }
+      }
+    ],
+    "trials": [],
+    "workers": [
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-bigfiles-1"
+        },
+        "path": "workers/eval-worker/task-bigfiles-1/report.json",
+        "result": "pass",
+        "tool_errors": 1,
+        "usage": {
+          "assistant_turns": 53,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.018014976,
+          "cache_read_tokens": 1000832,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.026490456,
+          "input_cost_usd": 0.005634180000000002,
+          "input_tokens": 62602,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0028412999999999997,
+          "output_tokens": 15785,
+          "provider_total_tokens": 1079219,
+          "reasoning_tokens": 9718,
+          "thinking_blocks": 42,
+          "tool_calls": 60,
+          "tool_errors": 1,
+          "tool_results": 60,
+          "total_bucket_tokens": 1079219,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "a67599b7865707d0ddbfdaf04bd1620f511556b8"
+  },
+  "findings": [
+    {
+      "expected": 1,
+      "kind": "trial-count",
+      "observed": 0
+    },
+    {
+      "kind": "missing-evaluator-manifest"
+    },
+    {
+      "kind": "manager-report",
+      "state": {
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785885524349/workers/eval-manager/task-bigfiles/REPORT.md",
+        "present": false,
+        "result": "missing",
+        "role": "eval-manager",
+        "valid": false
+      }
+    },
+    {
+      "kind": "designer-report",
+      "state": {
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785885524349/workers/eval-designer/proposal-1/REPORT.md",
+        "present": false,
+        "result": "missing",
+        "role": "eval-designer",
+        "valid": false
+      }
+    },
+    {
+      "kind": "handbook-lineage",
+      "state": "missing"
+    }
+  ],
+  "identity": {
+    "eval_id": "task-bigfiles",
+    "mode": "eval",
+    "run_id": "run-1785885524349"
+  },
+  "kind": "phase",
+  "result": "fail",
+  "schema_version": 1,
+  "state": "completed"
+}

@@ -11,7 +11,14 @@ proc test_cycle_request_parsing() [error] {
   test.eq(control.request_tickets(request), ["task-tags-001", "task-tags-002"])?
   test.eq(control.request_trial_count(request)?, 1)?
   test.eq(control.request_new_eval_count(request)?, 1)?
+  test.ok(! control.request_allow_measured_eval(request))?
+  test.ok(control.request_allow_measured_eval(request + "\n- Allow measured eval reuse: `yes`\n"))?
   test.eq(control.request_ticket_policy(request), "explicit")?
+}
+
+proc test_untried_eval_policy_is_explicit() [error] {
+  test.ok(! control.request_allow_measured_eval("# Cycle\n"))?
+  test.ok(control.request_allow_measured_eval("- Allow measured eval reuse: `yes`"))?
 }
 
 proc test_forbidden_subprocess_scan_ignores_comments() [error] {
@@ -234,6 +241,7 @@ proc test_standard_cycle_uses_diverse_active_eval() [fs, error] {
   let runtime_source = fs.read_text(fp"${fs.cwd()?}/factory_runtime.xsh")?
   let cto_runner = fs.read_text(fp"${fs.cwd()?}/run-cto.xsh")?
   test.contains(request, "`task-bigfiles`")?
+  test.contains(request, "Allow measured eval reuse")?
   test.contains(fs.read_text(fp"${fs.cwd()?}/tools/eval-trends.xsh")?, "median_turns")?
   test.contains(request, "## Bottleneck review")?
   test.ok(! request.contains("`task-tags`"))?
@@ -278,6 +286,7 @@ proc test_standard_cycle_uses_diverse_active_eval() [fs, error] {
   test.contains(launcher, "unresolved_handbook_candidates")?
   test.contains(launcher, "run-cto.xsh")?
   test.contains(organization, "first_approved_tickets")?
+  test.contains(fs.read_text(fp"${fs.cwd()?}/run.xsh")?, "next_untried_approved_eval")?
   test.contains(organization, "cto_unreviewed_open_tickets")?
   test.contains(organization, "write_cto_inventory")?
   test.contains(cto_runner, "cto_ticket_inventory")?

@@ -1,6 +1,7 @@
 ##! Shared process-boundary helpers for every factory cycle mode.
 
 use factory_control as control
+use report_schema as schema
 
 error RuntimeError = InvalidTransition(subject: Str, current: Str, next: Str) : InvalidData
 
@@ -587,6 +588,54 @@ export proc disable_eval(
     fs.write_atomic(eval_path, updated)?
   }
   return true
+}
+
+pure worker_report_eval_id(report: Any, path_value: Path) -> Str {
+  let identity = json.get(report, ["identity"], null)
+  let explicit = schema.value_text(json.get(identity, ["eval_id"], ""))
+  if explicit != "" { return explicit }
+  let parts = path_value.display().split("/")
+  var after_worker = false
+  for part in parts {
+    if after_worker { return part.replace("-1", "").replace("-2", "") }
+    if part == "eval-worker" { after_worker = true }
+  }
+  return ""
+}
+
+proc eval_trial_count(factory_dir: Path, eval_id: Str) [fs, error] -> Result[Int] {
+  let runs = fp"${factory_dir}/runs"
+  if ! fs.exists(runs)? { return 0 }
+  var count = 0
+  for entry in fs.walk(runs, gitignore: false, hidden: true) |> where .kind == "file" {
+    if entry.name != "report.json" or ! entry.path.display().contains("/workers/eval-worker/") { continue }
+    let report = json.read(entry.path)?
+    if worker_report_eval_id(report, entry.path) == eval_id { count += 1 }
+  }
+  return count
+}
+
+## Returns approved evals with no persisted eval-worker report.
+export proc untried_approved_evals(factory_dir: Path) [fs, error] -> Result[List[Str]] {
+  let eval_dir = fp"${factory_dir}/evals"
+  var untried: List[Str] = []
+  if ! fs.exists(eval_dir)? { return untried }
+  let contracts = fs.files(eval_dir, gitignore: false, hidden: true)
+    |> where .name == "EVAL.md"
+    |> sort-by .path.display()
+    |> collect()
+  for contract in contracts {
+    let eval_id = contract.path.parent().name()
+    if control.ticket_status(contract.path.read_text()?) != "Approved." { continue }
+    if eval_trial_count(factory_dir, eval_id)? == 0 { untried = untried.push(eval_id) }
+  }
+  return untried
+}
+
+## Returns the deterministic next approved eval requiring its first trial.
+export proc next_untried_approved_eval(factory_dir: Path) [fs, error] -> Result[Str] {
+  let untried = untried_approved_evals(factory_dir)?
+  return if untried.len() == 0 { "" } else { untried[0] }
 }
 
 ## Selects the first explicitly approved tickets for an organization cycle.

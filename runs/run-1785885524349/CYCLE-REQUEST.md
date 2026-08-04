@@ -25,7 +25,6 @@ constraint, select a different approved eval rather than repeatedly spending on
 the same saturated eval, unless the request records evidence for reuse.
 
 ## Mode
-
 ## Eval admission
 
 - Allow measured eval reuse: `no`

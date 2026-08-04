@@ -20,6 +20,25 @@ proc run_session_report(root: Path, session: Path, output: Path) [fs, process, e
   return status.ok
 }
 
+proc test_untried_approved_eval_selection(ctx: TestContext) [fs, error] {
+  let root = test.temp_dir(ctx, name: "untried-eval-selection")?
+  fs.mkdir(fp"${root}/evals/task-a")?
+  fs.mkdir(fp"${root}/evals/task-b")?
+  fs.mkdir(fp"${root}/evals/task-c")?
+  fs.write(fp"${root}/evals/task-a/EVAL.md", "# Eval task-a\n\n## Status\n\nApproved.\n")?
+  fs.write(fp"${root}/evals/task-b/EVAL.md", "# Eval task-b\n\n## Status\n\nApproved.\n")?
+  fs.write(fp"${root}/evals/task-c/EVAL.md", "# Eval task-c\n\n## Status\n\nDraft.\n")?
+  fs.mkdir(fp"${root}/runs/run-1/workers/eval-worker/task-b-1")?
+  json.write(fp"${root}/runs/run-1/workers/eval-worker/task-b-1/report.json", {
+    schema_version: 1,
+    kind: "worker",
+    identity: {role: "eval-worker", worker_id: "task-b-1", eval_id: "task-b", run_id: "run-1"},
+    state: "completed", result: "pass", findings: [], artifacts: [],
+  }, pretty: true)?
+  test.eq(runtime.untried_approved_evals(root)?, ["task-a"]) ?
+  test.eq(runtime.next_untried_approved_eval(root)?, "task-a")?
+}
+
 proc test_eval_trends_aggregates_historical_worker_reports(ctx: TestContext) [fs, process, error] {
   let root = test.temp_dir(ctx, name: "eval-trends")?
   let factory = fs.cwd()?
