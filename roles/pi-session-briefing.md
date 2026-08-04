@@ -1,66 +1,52 @@
 # Pi session reporting briefing
 
-Read `NORTH-STAR.md` before interpreting a run. Session metrics are evidence
-for the XSH improvement mission, not a reward function by themselves.
+Read `NORTH-STAR.md` before interpreting a run. Session metrics support the
+XSH improvement mission. They are not a reward function.
 
-The session JSONL is the canonical record. Do not re-research Pi's source or
-HTML exporter before interpreting a run.
+The session JSONL is canonical.
+Do not re-research Pi source or the HTML exporter before interpreting a run.
 
-Start with the current controller outputs: the phase or run `report.json`,
-the role worker `report.json` and `REPORT.md`, and `run.json` when the claim concerns an
-eval. Search older runs or implementation source only when those current
-artifacts disagree or leave a concrete field unexplained. One targeted
-reproduction is usually enough to distinguish a real defect from noise.
+## Evidence order
 
-When using `xsht api`, the query syntax is `KIND:VALUE`. Use exact queries such
-as `language:stream.group-by`, `module:tui.left_pad`, or `method:List.join`.
-Do not spend turns trying `api:...`, dotted `language.core...` guesses, or
-invented method signatures; record an API-discovery gap and continue from the
-canonical handbook and source contract.
+Start with the current phase or run `report.json`, worker `report.json`,
+`REPORT.md`, and `run.json` when the claim concerns an eval.
 
-Each assistant message may contain text, thinking, and tool-call blocks. A
-`toolResult` message belongs to the preceding tool call and may have
-`isError: true`. Count assistant turns separately from tool calls and tool
-results. A session can finish with a normal stop or with a failed/cancelled
-worker; use the wrapper status and final report as well as the transcript.
+Search older runs or implementation source only when current artifacts disagree
+or leave a concrete field unexplained. One targeted reproduction usually
+separates a defect from noise.
 
-Usage fields are provider-reported per assistant response:
+Use exact `KIND:VALUE` queries with `xsht api`.
+Examples include `language:stream.group-by` and `module:tui.left_pad`.
+Another example is `method:List.join`.
+Do not try `api:...`, dotted core queries, or invented method signatures.
 
-- `input`, `output`, `cacheRead`, and `cacheWrite` are token buckets;
-- `reasoning` is an optional provider-reported thinking-token count. It is a
-  subset of `output`, so never add it to output or total tokens;
-- `totalTokens` is Pi's provider-reported total for that usage record. The
-  report also calculates a bucket total (`input + output + cacheRead +
-  cacheWrite`) and exposes both so a mismatch is visible;
-- `cost.input`, `cost.output`, `cost.cacheRead`, `cost.cacheWrite`, and
-  `cost.total` are provider-reported dollar fields. Missing fields remain
-  unknown rather than being presented as zero;
-- Pi does not derive exact thinking-token counts from the thinking text. When
-  the provider omits `reasoning`, the report must say that reasoning tokens
-  are unavailable. Thinking-block count and transcript text are qualitative
-  evidence, not a token estimate.
+## Session evidence
 
-Thinking blocks are qualitative evidence about what the worker considered, not
-proof that its explanation is correct. Correlate them with tool errors,
-checks, artifacts, evaluator output, and the final result. The worker
-`report.json` records the thinking-block count; raw thinking remains in the
-canonical session JSONL when a manager needs to inspect it.
+Count assistant turns separately from tool calls and tool results. A `toolResult`
+belongs to the preceding tool call. Use the wrapper status and final report for
+failed or cancelled workers.
 
-The worker session span measures the Pi conversation. The evaluator's
-candidate/oracle timing measures the submitted program. Do not conflate those
-two clocks. A short program can have noisy process-launch timing even when the
-agent session was long.
+Provider usage reports four buckets: `input`, `output`, `cacheRead`, and
+`cacheWrite`.
+Provider reasoning is optional and is a subset of `output`. Never add it to
+output or total tokens. Missing provider costs remain unknown, not zero.
 
-The manager should classify evidence as agent friction, reusable handbook
-guidance, product/tooling defect, image or harness mismatch, evaluator failure,
-or ordinary stochastic noise. Ask whether the observation advances the
-north-star objective and whether it generalizes beyond the task. Only open a
-product ticket when one strong reproducible observation supports a general
-change.
+Pi does not derive exact thinking-token counts from thinking text. Thinking-block
+counts and transcript text are qualitative evidence. The worker report records
+the count.
 
-Tool errors, repeated reads, failed API queries, and long idle spans are
-efficiency evidence. They are not automatically product failures. Compare them
-with the role's required paths and current controller outputs; when the same
-friction recurs, the manager should name the smallest prompt, handbook, or
-controller change that would remove it and the replay that will test that
-hypothesis.
+The worker session span measures the conversation. Candidate-oracle timing
+measures the submitted program. Do not combine those clocks.
+
+## Manager guidance
+
+Classify evidence as agent friction, reusable handbook guidance, product defect,
+harness mismatch, evaluator failure, or ordinary noise. Ask whether the
+observation advances the north-star objective and generalizes beyond the task.
+Open a product ticket only when one strong reproducible observation supports a
+general change.
+
+Tool errors, repeated reads, failed API queries, and idle spans are efficiency
+evidence. They are not automatically product failures. When the same friction
+recurs, name the smallest prompt, handbook, or controller change and the replay
+that will test it.

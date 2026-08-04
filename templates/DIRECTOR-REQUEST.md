@@ -18,14 +18,13 @@ Do not modify the approved shared handbook, approved evals, or the XSH main
 branch. Ticket branches remain pending CTO review; eval proposals and newly
 created tickets wait for the next CTO-approved transition.
 
-The controller has staged a fail-closed report skeleton at
+The controller staged a fail-closed report at
 `{{RUN_DIR}}/workers/director/director/REPORT.md`. Open it before inspecting
-children and keep `## Result` as `not-ready` until all rows and required
-outputs are reconciled. When all rows finish, inspect their session reports
-and narrative reports. Write the staged report incrementally before the final
-response; re-read it for the required headings and child paths. State the
-report path and result in the final response instead of pasting the report. The report must
-have exactly these headings:
+children. Keep `## Result` as `not-ready` until every row and output is
+reconciled. Inspect session and narrative reports after all rows finish.
+Write the report incrementally. Re-read it before finishing.
+State its path and result instead of pasting it. The report must have exactly
+these headings:
 
 ```markdown
 ## Result
