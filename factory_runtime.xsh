@@ -3,16 +3,6 @@
 use factory_control as control
 
 error RuntimeError = InvalidTransition(subject: Str, current: Str, next: Str) : InvalidData
-type EngineerProvenance = {
-  source_commit: Str,
-  amended_commit: Str,
-  report_sha256: Str,
-  session_sha256: Str,
-  assignment_sha256: Str,
-  patch_sha256: Str,
-  provider: Str,
-  model: Str,
-}
 
 type MergeEvidence = {
   merged: Bool,
