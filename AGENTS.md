@@ -194,15 +194,18 @@ grepping broadly.
 ### Engineer provenance path
 
 `run-ticket.xsh` first verifies `report.json`, required reads, expected branch,
-new `HEAD`, and an empty product worktree. Only then it calls
-`factory_runtime.amend_engineer_commit`. That helper reads the normalized
-worker report, hashes the raw `session.jsonl`, and invokes Git's
-`commit --amend --no-edit --trailer` once. It returns the amended hash; the
-controller updates the controller-owned engineer report, captures the patch
-from base to amended `HEAD`, and only then permits cleanup/replay. The
-`Factory-Source-Commit` trailer preserves the pre-amend hash, while the final
-report and patch use the amended hash. The provenance test and synthetic Git
-worktree fixture live in `tests/tools_test.xsh`.
+new `HEAD`, and an empty product worktree. It captures the portable patch and
+its SHA-256, then calls `factory_runtime.amend_engineer_commit`. That helper
+reads the normalized worker report, hashes the report and raw `session.jsonl`,
+receives the assignment and patch hashes, invokes Git's
+`commit --amend --no-edit --trailer` once, and independently verifies the
+expected trailers by reading them back from Git. The controller updates the
+controller-owned engineer report, emits a provenance event containing the
+amended commit and all input hashes, and only then permits cleanup/replay.
+`Factory-Source-Commit` preserves the pre-amend hash; the final report and
+patch use the amended hash. Synthetic missing-evidence, dirty-worktree,
+trailer-verification, idempotency, patch-hash, and cleanup cases live in
+`tests/tools_test.xsh`.
 
 ### Native test map
 

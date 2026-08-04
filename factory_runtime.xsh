@@ -325,18 +325,16 @@ export proc amend_engineer_commit(
   }
   let amended_head = run.text "git" "-C" $worktree.display() "rev-parse" "HEAD" ?
   let amended = amended_head.trim()
-  let verified_trailers = run.text "git" "-C" $worktree.display() "show" "-s" "--format=%(trailers)" $amended ?
-  for expected in [
+  let expected = [
     "Factory-Provenance-Version: 1",
     f"Factory-Source-Commit: ${head_commit.trim()}",
     f"Factory-Report-SHA256: ${report_sha}",
     f"Factory-Assignment-SHA256: ${assignment_sha}",
     f"Factory-Patch-SHA256: ${patch_sha}",
     f"Factory-Session-SHA256: ${session_sha}",
-  ] {
-    if ! verified_trailers.contains(expected) {
-      return Ok("")
-    }
+  ]
+  if ! provenance_trailers_ok(worktree, amended, expected)? {
+    return Ok("")
   }
   return Ok(amended)
 }
