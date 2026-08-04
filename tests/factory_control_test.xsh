@@ -95,6 +95,8 @@ proc test_role_defaults_are_coded_and_capped() [env, error] {
     test.ok(control.default_max_turns(role) != "")?
   }
   test.eq(control.default_max_turns("eval-designer"), "64")?
+  test.eq(control.default_budget("engineer"), "0.35")?
+  test.eq(control.default_max_turns("engineer"), "220")?
   test.eq(control.default_max_wall_seconds("director"), "1800")?
   test.eq(control.default_max_wall_seconds("eval-designer"), "720")?
   test.eq(control.default_max_wall_seconds("eval-manager"), "900")?

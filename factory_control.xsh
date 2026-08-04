@@ -90,7 +90,7 @@ export pure default_budget(role: Str) -> Str {
   if role == "eval-designer" { return "0.30" }
   if role == "eval-manager" { return "0.15" }
   if role == "eval-worker" { return "0.50" }
-  if role == "engineer" { return "0.25" }
+  if role == "engineer" { return "0.35" }
   return ""
 }
 
@@ -100,7 +100,7 @@ export pure default_max_turns(role: Str) -> Str {
   if role == "eval-designer" { return "64" }
   if role == "eval-manager" { return "40" }
   if role == "eval-worker" { return "160" }
-  if role == "engineer" { return "160" }
+  if role == "engineer" { return "220" }
   return ""
 }
 

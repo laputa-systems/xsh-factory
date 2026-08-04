@@ -2,7 +2,35 @@
 
 ## Status
 
-Open.
+Closed.
+
+## CTO closeout
+
+- Close cycle: `runs/run-1785818570933`.
+- Decision: Closed as `too difficult` after the assigned engineer reached the
+  coded 160-turn session limit without a commit, clean worktree, portable
+  patch, or completed report.
+- Evidence: `runs/run-1785818570933/phases/01-ticket/workers/engineer/task-envcfg-001/report.json`;
+  the controller recorded `SESSION-LIMIT` and the linked replay was not
+  admitted because no reviewable implementation existed.
+- Reopen condition: a future CTO review may re-materialize this diagnosis as
+  an approved ticket after the engineer allowance is validated and the
+  implementation scope is still current.
+
+## CTO review
+
+- Review cycle: `pre-cycle-17858185373`
+- Decision: Approved for this organization cycle.
+- Basis: The deliberate-validation failure workaround was independently
+  reproduced by both `task-envcfg` workers, is a general structured-error gap,
+  and has focused acceptance criteria plus a linked replay. It is distinct
+  from the deferred handbook-only boolean/operator guidance.
+- Assignment boundary: Add the smallest canonical deliberate-error primitive
+  that propagates through `?`; preserve existing validator semantics and add
+  focused native coverage and canonical product documentation. Do not address
+  boolean operators, module-shadow guidance, or unrelated env APIs.
+
+## Merge record
 
 ## Budget breach
 
