@@ -18,6 +18,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     abort(2)
   }
   let worker_dir = env.path("FACTORY_EVAL_WORKER_DIR")?
+  let run_dir = env.path("FACTORY_RUN_DIR", fp"${factory_dir}/runs/unknown")?
   let work_dir = fp"${worker_dir}/work"
   let docker = env.get_or("DOCKER", "docker")?
   let platform = env.get_or("FACTORY_PLATFORM", "linux/arm64")?
@@ -193,7 +194,9 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   let report_path = fp"${worker_dir}/report.json"
   if fs.exists(report_path)? {
     let session_report = json.read(report_path)?
-    let enriched = json.set(session_report, ["execution"], {
+    let with_identity = json.set(session_report, ["identity", "eval_id"], eval_id)?
+    let with_run = json.set(with_identity, ["identity", "run_id"], run_dir.name())?
+    let enriched = json.set(with_run, ["execution"], {
       result: result,
       classification: classification,
       agent_state: agent_state,

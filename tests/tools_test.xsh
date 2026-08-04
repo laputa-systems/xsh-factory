@@ -20,6 +20,37 @@ proc run_session_report(root: Path, session: Path, output: Path) [fs, process, e
   return status.ok
 }
 
+proc test_eval_trends_aggregates_historical_worker_reports(ctx: TestContext) [fs, process, error] {
+  let root = test.temp_dir(ctx, name: "eval-trends")?
+  let factory = fs.cwd()?
+  let report_dir = fp"${root}/runs/run-1/workers/eval-worker/task-bigfiles-1"
+  fs.mkdir(report_dir)?
+  json.write(fp"${report_dir}/report.json", {
+    schema_version: 1,
+    kind: "worker",
+    identity: {role: "eval-worker", worker_id: "task-bigfiles-1", eval_id: "task-bigfiles"},
+    state: "completed",
+    result: "pass",
+    usage: {assistant_turns: 10, total_bucket_tokens: 100.0, tool_errors: 1, cost_usd: 0.01},
+    timing: {session_span_ms: 1000},
+    provider_telemetry: {retry_count: 0, provider_errors: []},
+    execution: {classification: "pass"},
+    findings: [],
+    artifacts: [],
+  }, pretty: true)?
+  let xsh = process.which("xsh")?
+  let output = fp"${root}/output.txt"
+  let status = process.run(process.command_argv(
+    xsh, [xsh.display(), fp"${factory}/tools/eval-trends.xsh", "--", "--factory-dir", root.display()],
+    cwd: factory, stdout: output, env: {XSH_MODULE_PATH: factory.display(), FACTORY_DIR: factory.display()},
+  ))?
+  test.ok(status.ok, "eval trend tool should summarize a fixture report")?
+  let text = output.read_text()?
+  test.contains(text, "task-bigfiles")?
+  test.contains(text, "10")?
+  test.contains(text, "100")?
+}
+
 proc test_session_report_is_structured_and_counts_thinking(ctx: TestContext) [fs, process, error] {
   let root = test.temp_dir(ctx, name: "structured-session")?
   let session = fp"${root}/session.jsonl"
@@ -490,7 +521,9 @@ proc test_eval_dispatch_is_package_owned() [fs, error] {
   test.ok(! common.contains("task-envcfg"))?
   test.contains(common, "FACTORY_EVAL_EVALUATOR")?
   test.contains(executor, "evaluator.xsh")?
-  for eval_id in ["task-tags", "task-ecount", "task-envcfg"] {
+  test.contains(executor, "identity", "eval_id")?
+  test.contains(executor, "identity", "run_id")?
+  for eval_id in ["task-ecount", "task-envcfg"] {
     test.ok(fs.exists(fp"${fs.cwd()?}/evals/${eval_id}/evaluator.xsh")?)?
   }
 }
@@ -505,10 +538,12 @@ proc test_eval_design_stages_and_promotes_complete_package() [fs, error] {
   test.contains(controller, "84-cto-reviewed")?
   test.contains(controller, "evaluator_check_ok")?
   test.contains(assignment, "new valid `task-*` ID")?
+  test.contains(assignment, "approved eval's `EVAL.md`")?
   test.contains(assignment, "State machine")?
   test.contains(assignment, "Write the report")?
   test.contains(assignment, "Do not build a localized evaluator")?
-  test.contains(role, "Replace the scaffold's `task-tags` title and ID first")?
+  test.contains(role, "Replace the scaffold's source eval title and ID first")?
+  test.contains(role, "Use an approved eval package")?
   test.contains(role, "State machine")?
   test.contains(role, "When the evaluator is valid, stop discovery")?
   test.contains(role, "Do not build a localized evaluator")?

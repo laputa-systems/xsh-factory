@@ -71,6 +71,13 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   fs.mkdir(proposal_dir)?
   fs.mkdir(fp"${proposal_dir}/runtime")?
   fs.mkdir(fp"${worker_root}/eval-designer/${worker_id}")?
+  let scaffold_source = env.get_or("FACTORY_EVAL_SCAFFOLD", "task-bigfiles")?
+  let scaffold_manifest = fp"${factory_dir}/evals/${scaffold_source}/EVAL.md"
+  if ! fs.exists(scaffold_manifest)? or control.eval_is_disabled(scaffold_manifest.read_text()?) {
+    eprint f"eval-design scaffold is missing or disabled: ${scaffold_source}"
+    abort(2)
+  }
+  let scaffold_dir = fp"${factory_dir}/evals/${scaffold_source}"
   for scaffold in [
     "EVAL.md",
     "executor.xsh",
@@ -79,7 +86,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     "runtime/task.md",
     "runtime/artifact.md",
   ] {
-    fs.copy(fp"${factory_dir}/evals/task-tags/${scaffold}",
+    fs.copy(fp"${scaffold_dir}/${scaffold}",
       fp"${proposal_dir}/${scaffold}", overwrite: true)?
   }
   fs.copy(fp"${factory_dir}/templates/EVAL-DESIGNER-REPORT.md", designer_report, overwrite: true)?

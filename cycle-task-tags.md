@@ -1,9 +1,10 @@
-# Cycle request: task-tags seed
+# Retired cycle request: task-tags seed
 
 ## Objective
 
-Run the smallest complete CTO path against the practical task-tags eval. The
-controller runs the isolated task-tags executor, then launches the eval-manager
+This historical request is retained for provenance only. The task-tags eval
+was retired after the trend review; do not run this request. The original
+controller ran the isolated task-tags executor, then launched the eval-manager
 and eval-designer in parallel-safe phases, followed by a director review.
 Preserve every session, the evaluator manifest, and a per-worker and per-role
 cost report.
@@ -14,7 +15,7 @@ the north-star objective.
 
 ## Active evals
 
-- `task-tags`
+- `task-bigfiles`
 
 ## Mode
 
@@ -47,7 +48,7 @@ Use the defaults codified by `run.xsh` and `run-agent.xsh`.
 
 ## Required outputs
 
-- task-tags executor pass;
+- historical task-tags executor evidence;
 - director, eval-manager, eval-worker, and eval-designer Pi sessions under one run directory;
 - raw `session.jsonl` and structured `report.json` for each session;
 - the evaluator `run.json` with correctness and timing evidence;

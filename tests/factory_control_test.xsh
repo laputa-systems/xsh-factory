@@ -226,7 +226,6 @@ proc test_role_report_skeletons_are_fail_closed() [fs, error] {
 
 proc test_standard_cycle_uses_diverse_active_eval() [fs, error] {
   let request = fs.read_text(fp"${fs.cwd()?}/cycle-organization.md")?
-  let task_tags = fs.read_text(fp"${fs.cwd()?}/evals/task-tags/EVAL.md")?
   let improvement = fs.read_text(fp"${fs.cwd()?}/templates/CTO-IMPROVEMENT.md")?
   let productivity = fs.read_text(fp"${fs.cwd()?}/templates/CTO-PRODUCTIVITY-REPORT.md")?
   let ledger = fs.read_text(fp"${fs.cwd()?}/runtime/handbook-ledger.md")?
@@ -235,10 +234,11 @@ proc test_standard_cycle_uses_diverse_active_eval() [fs, error] {
   let runtime_source = fs.read_text(fp"${fs.cwd()?}/factory_runtime.xsh")?
   let cto_runner = fs.read_text(fp"${fs.cwd()?}/run-cto.xsh")?
   test.contains(request, "`task-bigfiles`")?
+  test.contains(fs.read_text(fp"${fs.cwd()?}/tools/eval-trends.xsh")?, "median_turns")?
   test.contains(request, "## Bottleneck review")?
   test.ok(! request.contains("`task-tags`"))?
-  test.ok(control.eval_is_disabled(task_tags))?
-  test.contains(task_tags, "special exception")?
+  test.ok(! fs.exists(fp"${fs.cwd()?}/evals/task-tags/EVAL.md")?)
+  test.contains(fs.read_text(fp"${fs.cwd()?}/evals/RETIREMENTS.md")?, "task-tags")?
   test.contains(improvement, "## Baseline metric")?
   test.contains(improvement, "## Revert condition")?
   test.contains(improvement, "not awaiting another approval")?
@@ -257,6 +257,7 @@ proc test_standard_cycle_uses_diverse_active_eval() [fs, error] {
   test.contains(cto, "Throughput invariant")?
   test.contains(cto, "Factory-efficiency gate")?
   test.contains(cto, "Assembly-line bottleneck gate")?
+  test.contains(cto, "Eval-strength gate")?
   test.contains(cto, "CTO-PRODUCTIVITY-REPORT.md")?
   test.contains(improvement, "## Throughput requirement")?
   test.contains(productivity, "## Assembly-line bottleneck")?

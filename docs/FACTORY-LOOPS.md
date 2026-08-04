@@ -60,11 +60,24 @@ failure does not suppress another ticket's replay. Reconciliation then updates
 the linked `TICKET.md` to `Merged.`; the linked manager replay decides whether
 the change should remain.
 
+## Eval-strength loop: `tools/eval-trends.xsh`
+
+The CTO uses `tools/eval-trends.xsh` before reusing or retiring an eval. It
+aggregates persisted eval-worker reports by eval and run, including turns,
+tokens, tool errors, wall time, and provider retry/error counts. These are
+agent-effort signals, not intrinsic task-difficulty scores. Compare them with
+correctness, durable tickets, handbook candidates, and replay status.
+
+An eval may be retained as a cheap regression sentinel even when its worker
+sessions are short. Retire it only when the trend shows low information value,
+no required replay depends on it, and the CTO records the evidence and a
+replacement portfolio role.
+
 ## Design loop: eval-designer
 
 The designer proposes at most one small practical systems-administration or
-programming eval per bounded cycle. `task-tags` is the minimal structural
-example; `task-ecount` is the current difficulty upper bound. A proposal must
+programming eval per bounded cycle. `task-bigfiles` is the current structural
+reference; `task-ecount` remains the difficulty upper bound. A proposal must
 include the task, oracle, evaluator, restrictions, runtime scaffolding, cost
 expectation, and a dry run. The controller immediately gives the materialized
 package to the CTO review gate and promotes it into `evals/` whether that gate

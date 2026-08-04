@@ -152,7 +152,12 @@ and test surface. A convenience spelling with no semantic advantage is
 rejected or deferred. A quality rejection is durable factory progress and does
 not count as an admission failure.
 
-Factory-efficiency gate: the CTO must be actively critical of throughput,
+Eval-strength gate: before retiring or reusing an eval, the CTO must inspect
+`tools/eval-trends.xsh` output. The report must separate agent effort from
+provider health and distinguish discovery trials, replays, and regression
+sentinels. Retire an eval only after the trend supports low information value,
+no required replay depends on it, and the decision is recorded with evidence.
+
 Factory-efficiency gate: the CTO must be actively critical of throughput,
 cycle latency, paid spend, engineer utilization, and evidence produced per
 cycle. A completed organization cycle is not good enough merely because its

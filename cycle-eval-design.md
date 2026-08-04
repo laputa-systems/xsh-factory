@@ -2,8 +2,8 @@
 
 ## Objective
 
-Design and dry-run exactly one small practical XSH eval. Use task-tags as the
-minimal structural example, keep difficulty no harder than ecount, and leave
+Design and dry-run exactly one small practical XSH eval. Use an approved eval
+as the structural example, keep difficulty no harder than ecount, and leave
 the proposal reviewed by the CTO and promoted into `evals/` with an explicit
 `Approved.` or `Draft.` decision.
 
@@ -13,7 +13,7 @@ the proposal reviewed by the CTO and promoted into `evals/` with an explicit
 
 ## Active evals
 
-- `task-tags`
+- `task-bigfiles`
 
 ## Trial plan
 

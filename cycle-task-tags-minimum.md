@@ -1,11 +1,12 @@
-# Cycle request: task-tags minimum report-path proof
+# Retired cycle request: task-tags minimum report-path proof
 
 ## Objective
 
-Run one cheap task-tags trial and its manager/director review through the
-structured reporting path. Do not create an eval proposal or dispatch an
-engineer. This request is the minimum paid proof of the executor, report
-schema, lifecycle ledger, and CTO briefing.
+This historical request is retained for provenance only. The task-tags eval
+was retired after the trend review; do not run this request. The original
+request ran one cheap task-tags trial and its manager/director review through
+the structured reporting path. It was the minimum paid proof of the executor,
+report schema, lifecycle ledger, and CTO briefing.
 
 ## Mode
 
@@ -13,7 +14,7 @@ schema, lifecycle ledger, and CTO briefing.
 
 ## Active evals
 
-- `task-tags`
+- `task-bigfiles`
 
 ## Trial plan
 

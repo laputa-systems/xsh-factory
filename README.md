@@ -68,9 +68,9 @@ patch, then removes the temporary detached worktree.
 Run a focused eval, ticket implementation, or design phase with its request:
 
 ```sh
-XSH_MODULE_PATH=. xsh run.xsh cycle-task-tags.md
-XSH_MODULE_PATH=. xsh run.xsh cycle-task-tags-minimum.md
-XSH_MODULE_PATH=. xsh run.xsh cycle-ticket-task-tags-001.md
+XSH_MODULE_PATH=. xsh run.xsh cycle-organization.md
+XSH_MODULE_PATH=. xsh tools/eval-trends.xsh -- --factory-dir . --format table
+XSH_MODULE_PATH=. xsh run.xsh cycle-ticket-task-tags-001.md  # historical only; task-tags is retired
 XSH_MODULE_PATH=. xsh run.xsh cycle-eval-design.md
 ```
 
@@ -93,7 +93,15 @@ runs/run-<id>/CTO-REPORT.md                       human navigation briefing
 runs/run-<id>/CTO-EVAL-REVIEW.md                  immediate CTO eval review
 runs/run-<id>/CTO-IMPROVEMENT.md                  measurable CTO handoff
 evals/<new-id>/                                   promoted package and CTO status.
+
+To inspect historical eval-worker strength without spending model budget:
+
+```sh
+XSH_MODULE_PATH=. xsh tools/eval-trends.xsh -- --factory-dir . --format table
 ```
+
+Use `--format json` for machine-readable analysis and `--eval ID` to focus on
+one package. The report separates worker effort from provider retry/error data.
 
 Read `CTO-REPORT.md` first, then follow the report paths it names. The
 structured schema and field meanings are in
@@ -103,7 +111,6 @@ file. Pi's raw JSONL remains available for exact inspection. New evals provide
 a package-owned `evaluator.xsh`; adding one must not modify
 `evaluate_common.xsh`.
 
-Every completed cycle must leave one measurable factory-wide improvement in
 Every completed cycle must leave one measurable factory-wide improvement in
 Every organization cycle must also leave `CTO-PRODUCTIVITY-REPORT.md`, and
 provider health must be separated from agent efficiency using the captured Pi

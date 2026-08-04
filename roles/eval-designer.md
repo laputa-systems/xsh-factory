@@ -30,10 +30,10 @@ Use the XSH checkout as a reference. Do not modify it.
 Choose one practical systems-administration or programming capability.
 Keep it no harder than ecount. State the north-star hypothesis and lesson.
 
-Use `evals/task-tags/EVAL.md` and its `runtime/` directory as the structure
+Use an approved eval package and its `runtime/` directory as the structure
 reference. Do not scan `runs/`, Git history, or factory controllers.
 
-Replace the scaffold's `task-tags` title and ID first. Use a new valid `task-*`
+Replace the scaffold's source eval title and ID first. Use a new valid `task-*`
 ID. Change `Disabled.` to `Draft.`. Do this before API queries or dry-run work.
 
 ### 2. Materialize the package

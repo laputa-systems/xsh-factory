@@ -11,7 +11,7 @@ or invent another proposal.
 The adjacent XSH checkout is a reference. Do not modify it. Product changes
 require an approved ticket, an isolated engineer worktree, and a CTO decision.
 
-The task must be no harder than ecount. Use `evals/task-tags/EVAL.md` and its
+The task must be no harder than ecount. Use an approved eval's `EVAL.md` and
 `runtime/` directory as the structural reference. Proposed evals must consume
 the shared `{{FACTORY_DIR}}/runtime/handbook.md`.
 
@@ -19,9 +19,9 @@ the shared `{{FACTORY_DIR}}/runtime/handbook.md`.
 
 ### 1. Select the task
 
-Choose one small practical XSH capability. Replace the scaffold's `task-tags`
-ID before API queries or dry-run work. Use a new valid `task-*` ID. Change
-`Disabled.` to `Draft.`.
+Choose one small practical XSH capability. Replace the scaffold's source eval
+title and ID before API queries or dry-run work. Use a new valid `task-*` ID.
+Change `Disabled.` to `Draft.`.
 
 Do not scan `runs/`, Git history, or factory controllers. Do not write a custom
 runner, helper language, shell wrapper, or Docker orchestration. Use at most two

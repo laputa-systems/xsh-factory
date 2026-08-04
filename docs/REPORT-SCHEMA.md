@@ -36,7 +36,9 @@ Every report contains:
 ```
 
 `identity` names the run, phase, role, worker, eval, or ticket relevant to the
-boundary. `findings` are structured observations or failures. `artifacts`
+boundary. Eval-worker reports include `identity.eval_id` and, when available,
+`identity.run_id` so historical effort can be grouped without path inference.
+`findings` are structured observations or failures. `artifacts`
 contains typed paths and optional hashes.
 
 Worker reports add `session`, `usage`, `timing`, `models`, `stop_reasons`,

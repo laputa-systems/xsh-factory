@@ -21,6 +21,17 @@ Open.
   correctly refused its linked replay once the retired eval was surfaced.
 - Next evidence: Re-home the ticket under an active eval or add a dedicated
   active parser eval before approving another paid implementation cycle.
+- Next evidence: Re-home the ticket under an active eval or add a dedicated
+  active parser eval before approving another paid implementation cycle.
+
+## CTO decision — eval retirement
+
+- Review cycle: `eval-trends` retirement review.
+- Decision: Deferred indefinitely; the linked eval was retired.
+- Basis: Historical worker evidence contained one seed trial at 18 assistant
+  turns with zero tool errors and no current discovery role. The ticket still
+  preserves its historical evidence, but it cannot be admitted until it is
+  re-homed under an active parser eval.
 
 ## Budget breach
 

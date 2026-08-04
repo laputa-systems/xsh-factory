@@ -46,6 +46,7 @@ engineer never chooses a ticket. There is one process launcher,
   role files. Structured facts belong in JSON.
 
 - Worker reports preserve Pi provider-health telemetry separately from
+  Worker reports preserve Pi provider-health telemetry separately from
   agent-efficiency metrics. Capture structured retry events and client-observed
   timing when available; missing provider telemetry is `unknown`, not evidence
   of normal provider health. Provider switching is not an organization-cycle
@@ -55,6 +56,8 @@ engineer never chooses a ticket. There is one process launcher,
   validation. Pi roles own interpretation, diagnosis, and recommendations.
 - Fail closed at boundaries: validate paths, exact assignments, commits,
   report schema, handbook lineage, image identity, budgets, and required reads.
+- Historical eval strength is measured by `tools/eval-trends.xsh` from worker
+  reports; its output separates provider health from agent effort.
 - Every behavior that can be tested without Pi gets an xsht native test.
   Synthetic sessions, fake commands, and harmless process doubles are the
   default. Do not spend model budget to test deterministic infrastructure.
