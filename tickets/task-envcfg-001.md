@@ -2,7 +2,21 @@
 
 ## Status
 
-Open.
+Approved.
+
+## CTO decision — throughput cycle
+
+- Review cycle: pending next organization run.
+- Decision: Approved for engineer dispatch and linked pre-merge replay.
+- Basis: The prior deferral condition is resolved: `task-envcfg-002` registered
+  `fail` in the canonical API reference at XSH commit `2d423c1`, which is an
+  ancestor of current XSH `HEAD` (`434080d`). The ticket remains a
+  reproducible, scoped product defect with an active linked eval and explicit
+  acceptance criteria.
+- Assignment boundary: implement only the smallest deliberate-error primitive
+  contract from this ticket; preserve validator semantics and add focused
+  tests/docs. Do not broaden into boolean operators, module-shadow guidance,
+  or unrelated environment APIs.
 
 ## CTO decision
 
