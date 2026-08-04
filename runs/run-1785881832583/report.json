@@ -1,0 +1,230 @@
+{
+  "artifacts": [
+    {
+      "kind": "phase-reports",
+      "path": "phases/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 97,
+      "budget_failures": 0,
+      "cost_usd": 0.11347398,
+      "tool_errors": 7,
+      "total_bucket_tokens": 4849204.0,
+      "unknown_costs": 0,
+      "workers": 3
+    },
+    "mode": "organization",
+    "outcomes": {
+      "cycle": "fail",
+      "evaluator": "fail",
+      "infrastructure": "pass",
+      "product": "fail"
+    },
+    "phases": [
+      {
+        "id": "01-eval",
+        "path": "phases/01-eval/report.json",
+        "result": "pass",
+        "valid": true
+      },
+      {
+        "id": "02-eval-design",
+        "path": "phases/02-eval-design/report.json",
+        "result": "fail",
+        "valid": true
+      }
+    ],
+    "tool_errors": [
+      {
+        "report": "phases/01-eval/workers/eval-worker/task-envcfg-1/report.json",
+        "summary": "err[check.standard-module-shadow]: name `path` shadows the standard module `path`\n  /tmp/p6.xsh:2:3\n    let path = Path(argv[0])\n    ^^^^^^^^^^^^^^^^^^^^^^^^ name `path` shadows the standard module `path`\ncheck=2\n=== valid ===\nerr[check.standard-module-shadow]: name `path` shadows the standard module `path`\n  /tmp/p6.xsh:2:3\n    let path = Path(argv[0])\n    ^^^^^^^^^^^^^^^^^^^^^^^^ name `path` shadows the standard module `path`\nexit=2\ncat: can't open '/tmp/out.cfg': No such file or directory\n=== absent defaults ===\nerr[check.standard-module-shadow]: name `path` shadows the standard module `path`\n  /tmp/p6.xsh:2:3\n    let path = Path(argv[0])\n    ^^^^^^^^^^^^^^^^^^^^^^^^ name `path` shadows the standard module `path`\nexit=2\ncat: can't open '/tmp/out.cfg': No such file or directory\n=== bad port ===\nerr[check.standard-module-shadow]: name `path` shadows the standard module `path`\n  /tmp/p6.xsh:2:3\n    let path = Path(argv[0])\n    ^^^^^^^^^^^^^^^^^^^^^^^^ name `path` shadows the standard module `path`\nexit=2\nls: /tmp/bad.cfg: No such file or directory\n=== empty port ===\nerr[check.standard-module-shadow]: name `path` shadows the standard module `path`\n  /tmp/p6.xsh:2:3\n    let path = Path(argv[0])\n    ^^^^^^^^^^^^^^^^^^^^^^^^ name `path` shadows the standard module `path`\nexit=2\nls: /tmp/bad.cfg: No such file or directory\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 14,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-envcfg-1"
+        }
+      },
+      {
+        "report": "phases/01-eval/workers/eval-worker/task-envcfg-1/report.json",
+        "summary": "check=0\n=== valid ===\nexit=0\nhost=node-a\nport=9001\ndebug=true\n=== absent defaults ===\nexit=0\nhost=localhost\nport=8080\ndebug=false\n=== bad port ===\nruntime traceback\nexecutable: /usr/local/bin/xsh\noperation: result.propagate\nerror: env-missing: environment value is unset\ncall path:\n  1. proc main at /tmp/p6.xsh:1:1-1:1\nexit=3\nls: /tmp/bad.cfg: No such file or directory\n=== empty port ===\nruntime traceback\nexecutable: /usr/local/bin/xsh\noperation: result.propagate\nerror: env-missing: environment value is unset\ncall path:\n  1. proc main at /tmp/p6.xsh:1:1-1:1\nexit=3\nls: /tmp/bad.cfg: No such file or directory\n=== plus port (should fail per oracle) ===\nruntime traceback\nexecutable: /usr/local/bin/xsh\noperation: result.propagate\nerror: env-missing: environment value is unset\ncall path:\n  1. proc main at /tmp/p6.xsh:1:1-1:1\nexit=3\nls: /tmp/bad.cfg: No such file or directory\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 15,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-envcfg-1"
+        }
+      },
+      {
+        "report": "phases/01-eval/workers/eval-worker/task-envcfg-1/report.json",
+        "summary": "CHECK OK\nFMT OK\nwarn[lint.path-constructor]: prefer p-string interpolation over `Path(...)`\n  envcfg.xsh:2:13\n    let out = Path(argv[0])\n              ------------- use path string syntax instead\nnote: `Path(...)` remains a cast, but p-strings are the preferred path syntax\nhelp: replace with path string -> fp\"${argv[0]}\"\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 17,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-envcfg-1"
+        }
+      },
+      {
+        "report": "phases/01-eval/workers/eval-worker/task-envcfg-1/report.json",
+        "summary": "ALL OK\n=== valid ===\nexit=0\nMATCH\n=== absent ===\nexit=0\nhost=localhost\nport=8080\ndebug=false\n=== empty host/debug, port default via env unset ===\nexit=0\nhost=\nport=8080\ndebug=\n=== bad port no file ===\nruntime traceback\nexecutable: /usr/local/bin/xsh\noperation: result.propagate\nerror: env-missing: environment value is unset\ncall path:\n  1. proc main at envcfg.xsh:1:1-1:1\nexit=3\nls: /tmp/bad.cfg: No such file or directory\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 19,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-envcfg-1"
+        }
+      },
+      {
+        "report": "phases/02-eval-design/workers/eval-designer/proposal-1/report.json",
+        "summary": "=== evaluator protocol ===\n./evals/.dist/evaluate_legacy.xsh\n./evals/.dist/evaluate_common.xsh\n./eval-executor.xsh\n./evaluate_legacy.xsh\n./evaluate_common.xsh\n---\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 5,
+        "worker": {
+          "role": "eval-designer",
+          "worker_id": "proposal-1"
+        }
+      },
+      {
+        "report": "phases/02-eval-design/workers/eval-designer/proposal-1/report.json",
+        "summary": "sed: -I or -i may not be used with stdin\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 31,
+        "worker": {
+          "role": "eval-designer",
+          "worker_id": "proposal-1"
+        }
+      },
+      {
+        "report": "phases/02-eval-design/workers/eval-designer/proposal-1/report.json",
+        "summary": "sed: -I or -i may not be used with stdin\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 33,
+        "worker": {
+          "role": "eval-designer",
+          "worker_id": "proposal-1"
+        }
+      }
+    ],
+    "workers": [
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-envcfg"
+        },
+        "path": "phases/01-eval/workers/eval-manager/task-envcfg/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 15,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.009243648,
+          "cache_read_tokens": 513536,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.016184988,
+          "input_cost_usd": 0.004758299999999999,
+          "input_tokens": 52870,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00218304,
+          "output_tokens": 12128,
+          "provider_total_tokens": 578534,
+          "reasoning_tokens": 7053,
+          "thinking_blocks": 11,
+          "tool_calls": 25,
+          "tool_errors": 0,
+          "tool_results": 25,
+          "total_bucket_tokens": 578534,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-envcfg-1"
+        },
+        "path": "phases/01-eval/workers/eval-worker/task-envcfg-1/report.json",
+        "result": "pass",
+        "tool_errors": 4,
+        "usage": {
+          "assistant_turns": 26,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.0061666559999999995,
+          "cache_read_tokens": 342592,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.010567655999999996,
+          "input_cost_usd": 0.00224262,
+          "input_tokens": 24918,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0021583800000000005,
+          "output_tokens": 11991,
+          "provider_total_tokens": 379501,
+          "reasoning_tokens": 6338,
+          "thinking_blocks": 22,
+          "tool_calls": 27,
+          "tool_errors": 4,
+          "tool_results": 27,
+          "total_bucket_tokens": 379501,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-designer",
+          "worker_id": "proposal-1"
+        },
+        "path": "phases/02-eval-design/workers/eval-designer/proposal-1/report.json",
+        "result": "pass",
+        "tool_errors": 3,
+        "usage": {
+          "assistant_turns": 56,
+          "budget_usd": 0.3,
+          "cache_read_cost_usd": 0.067015296,
+          "cache_read_tokens": 3723072,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.086721336,
+          "input_cost_usd": 0.01055142,
+          "input_tokens": 117238,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00915462,
+          "output_tokens": 50859,
+          "provider_total_tokens": 3891169,
+          "reasoning_tokens": 30627,
+          "thinking_blocks": 50,
+          "tool_calls": 73,
+          "tool_errors": 3,
+          "tool_results": 73,
+          "total_bucket_tokens": 3891169,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "a67599b7865707d0ddbfdaf04bd1620f511556b8"
+  },
+  "findings": [
+    {
+      "id": "02-eval-design",
+      "kind": "phase",
+      "result": "fail"
+    }
+  ],
+  "identity": {
+    "mode": "organization",
+    "run_id": "run-1785881832583"
+  },
+  "kind": "run",
+  "result": "fail",
+  "schema_version": 1,
+  "state": "completed"
+}

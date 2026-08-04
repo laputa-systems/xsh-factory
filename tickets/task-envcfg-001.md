@@ -4,6 +4,18 @@
 
 Open.
 
+## CTO decision — pre-cycle review
+
+- Review cycle: pre-cycle organization request.
+- Decision: Deferred; do not approve or dispatch.
+- Basis: The current product checkout reverted the prior convenience
+  `fail(message)` implementation. The ticket's API-surface review found no
+  semantic novelty beyond existing `Err`/`Result` machinery, so the quality
+  gate is not satisfied. The linked `task-envcfg` eval remains live, but a
+  live eval alone does not justify this API addition.
+- Next evidence: a materially different, type-directed or otherwise
+  semantically novel design must be proposed and reviewed before admission.
+
 ## CTO decision — rejected API addition
 
 - Review cycle: `post-cycle-1785876949561`.

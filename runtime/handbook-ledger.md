@@ -125,3 +125,14 @@ unchanged until a post-merge replay shows whether any warning remains useful.
 | --- | --- |
 | `b67607ea2dc717d2430ea3a82de6cf2e16a0b54a94ef59595aa00b8a715933e0` | deferred pending a replay that consumes the candidate handbook; not promoted |
 | `a7033f98f53404ae6b368f7310ed3b269ef14628cd3b4eeb3cbbd2b07ea3993a` | deferred pending cross-eval replay; not promoted |
+
+## Explicit CTO disposition — 2026-08-04
+
+| Candidate SHA-256 | Disposition |
+| --- | --- |
+| `f798afbe919db07698e6d7c18eabb0c8a992a116906d0beaf94fd9af15b0a007` | deferred pending matched cross-run replay; not promoted |
+
+The `task-envcfg` source trial observed standard-module shadowing once and
+produced a candidate warning. The trial passed, but the evidence is
+single-session and the candidate needs a matched replay before changing the
+approved handbook. Keep `runtime/handbook.md` unchanged.

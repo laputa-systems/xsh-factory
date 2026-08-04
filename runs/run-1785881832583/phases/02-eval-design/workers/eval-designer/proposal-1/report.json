@@ -1,0 +1,116 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785881832583/phases/02-eval-design/workers/eval-designer/proposal-1/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_process": "nonzero-exit",
+    "reporting": "pass",
+    "required_report": "present",
+    "session_limit_watcher": "failed",
+    "watcher": "pass"
+  },
+  "findings": [
+    {
+      "count": 3,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "role": "eval-designer",
+    "worker_id": "proposal-1"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "provider_telemetry": {
+    "event_turns": 56,
+    "events_path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785881832583/phases/02-eval-design/workers/eval-designer/proposal-1/session.jsonl.bz2.events.jsonl",
+    "output_tokens_per_second": 0,
+    "present": true,
+    "provider_errors": [],
+    "response_elapsed_ms": 0,
+    "retry_count": 0,
+    "retry_delay_ms": 0,
+    "retry_errors": [],
+    "retry_failures": 0,
+    "retry_successes": 0
+  },
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785881832583/phases/02-eval-design/workers/eval-designer/proposal-1/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 56,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 719150
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785881832583/phases/02-eval-design/workers/eval-designer/proposal-1/session.jsonl.bz2",
+      "summary": "=== evaluator protocol ===\n./evals/.dist/evaluate_legacy.xsh\n./evals/.dist/evaluate_common.xsh\n./eval-executor.xsh\n./evaluate_legacy.xsh\n./evaluate_common.xsh\n---\n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 5
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785881832583/phases/02-eval-design/workers/eval-designer/proposal-1/session.jsonl.bz2",
+      "summary": "sed: -I or -i may not be used with stdin\n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 31
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785881832583/phases/02-eval-design/workers/eval-designer/proposal-1/session.jsonl.bz2",
+      "summary": "sed: -I or -i may not be used with stdin\n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 33
+    }
+  ],
+  "tools": [
+    {
+      "count": 59,
+      "name": "bash"
+    },
+    {
+      "count": 2,
+      "name": "edit"
+    },
+    {
+      "count": 6,
+      "name": "read"
+    },
+    {
+      "count": 6,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 56,
+    "budget_usd": 0.3,
+    "cache_read_cost_usd": 0.067015296,
+    "cache_read_tokens": 3723072,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.086721336,
+    "input_cost_usd": 0.01055142,
+    "input_tokens": 117238,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.00915462,
+    "output_tokens": 50859,
+    "provider_total_tokens": 3891169,
+    "reasoning_tokens": 30627,
+    "thinking_blocks": 50,
+    "tool_calls": 73,
+    "tool_errors": 3,
+    "tool_results": 73,
+    "total_bucket_tokens": 3891169,
+    "user_messages": 1
+  }
+}

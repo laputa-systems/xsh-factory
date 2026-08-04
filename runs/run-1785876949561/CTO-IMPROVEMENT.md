@@ -2,11 +2,10 @@
 
 ## Status
 
-pending-validation
+validated
 
-`pending-validation` means the CTO has already implemented this change. It is
-not awaiting another approval; the next cycle verifies the named metric or
-applies the safe inverse.
+The named verification passed; the retained guard is not awaiting further
+approval.
 
 ## Change
 
@@ -63,8 +62,9 @@ capturing a reproducer. If the next replay still fails the exact manager read
 gate, fix session evidence matching or the manager assignment before admitting
 paid work; do not promote the handbook candidate on narrative evidence alone.
 
-## Next-cycle disposition
+## Validation evidence
 
-The next CTO must replace `pending-validation` with `validated` or `reverted`
-after running the named verification, and link the evidence before admitting
-paid work.
+`XSH_MODULE_PATH=. xsht test` passed all 55 native tests, including
+`test_reconciliation_ignores_retired_branch_reference`. The current
+`XSH_MODULE_PATH=. xsh run-cto.xsh` inventory completed without a retired-branch
+reconciliation error. The guard remains; no revert is warranted.

@@ -4,6 +4,14 @@
 
 Open.
 
+## CTO decision — pre-cycle review
+
+- Review cycle: pre-cycle organization request.
+- Decision: Deferred; do not approve or dispatch.
+- Basis: The linked `task-tags` eval is `Disabled.` and cannot provide a
+  valid replay gate. Re-home the ticket under a live eval or add a dedicated
+  active parser eval before approval.
+
 ## CTO review
 
 - Review cycle: `post-cycle-1785804030340` (2026-08-03)
