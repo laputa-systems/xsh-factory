@@ -313,10 +313,15 @@ proc audit_phase(run_dir: Path, mode: Str, factory_dir: Path) [fs, env, process,
   let director_ok = if mode == "ticket-implementation" { boolean(json.get(director_state, ["present"], false)) and boolean(json.get(director_state, ["valid"], false)) } else { true }
   let designer_ok = ! designer_required or (boolean(json.get(designer_state, ["present"], false)) and boolean(json.get(designer_state, ["valid"], false)))
   let engineer_ok = if mode == "ticket-implementation" { engineer_states.len() > 0 } else { true }
+  let required_outputs_path = fp"${run_dir}/required-outputs.json"
+  let required_outputs_present = fs.exists(required_outputs_path)?
+  let required_outputs = if required_outputs_present { json.read(required_outputs_path)? } else { null }
+  let required_outputs_ok = ! required_outputs_present or boolean(json.get(required_outputs, ["required"], false))
   if ! manager_ok { findings = findings.push({kind: "manager-report", state: manager_state}) }
   if ! director_ok { findings = findings.push({kind: "director-report", state: director_state}) }
   if ! designer_ok { findings = findings.push({kind: "designer-report", state: designer_state}) }
   if ! engineer_ok { findings = findings.push({kind: "engineer-report", state: "missing"}) }
+  if ! required_outputs_ok { findings = findings.push({kind: "required-outputs", state: "failed"}) }
 
   let lineage_dir = fp"${run_dir}/lineage"
   let lineage_approved = fp"${lineage_dir}/handbook-approved.md"
@@ -336,7 +341,7 @@ proc audit_phase(run_dir: Path, mode: Str, factory_dir: Path) [fs, env, process,
   let approved_lineage_path = if fs.exists(lineage_approved)? { relative_path(run_dir.display(), lineage_approved) } else { "missing" }
   let candidate_lineage_path = if fs.exists(lineage_candidate)? { relative_path(run_dir.display(), lineage_candidate) } else { "missing" }
   let result = if reports.len() > 0 and manager_ok and director_ok and designer_ok and engineer_ok and
-    trials_ok and lineage_ok and workers.usage.budget_failures == 0 and workers.usage.unknown_costs == 0 {
+    trials_ok and lineage_ok and required_outputs_ok and workers.usage.budget_failures == 0 and workers.usage.unknown_costs == 0 {
     "pass"
   } else {
     "fail"
@@ -364,6 +369,7 @@ proc audit_phase(run_dir: Path, mode: Str, factory_dir: Path) [fs, env, process,
         approved: approved_lineage_path,
         candidate: candidate_lineage_path,
       },
+      required_outputs: required_outputs,
       cost: workers.usage,
       tool_errors: workers.tool_errors,
     },

@@ -132,6 +132,22 @@ proc test_audit_compiles_one_phase_report(ctx: TestContext) [fs, process, error]
   test.ok(! fs.exists(fp"${root}/COST.md")?)?
 }
 
+proc test_audit_preserves_controller_required_output_failure(ctx: TestContext) [fs, process, error] {
+  let root = test.temp_dir(ctx, name: "audit-required-output-gate")?
+  let factory = fs.cwd()?
+  write_eval_phase_fixture(root, factory)?
+  json.write(fp"${root}/required-outputs.json", {required: false, manager_report: false}, pretty: true)?
+  let xsh = process.which("xsh")?
+  let status = process.run(process.command_argv(
+    xsh, [xsh.display(), fp"${factory}/audit-run.xsh", "--", root.display(), "eval"],
+    cwd: factory, env: {FACTORY_DIR: factory.display(), XSH_MODULE_PATH: factory.display(), FACTORY_XSH_COMMIT: "fixture"},
+  ))?
+  test.ok(status.ok, "audit compiler should write a report even when the gate fails")?
+  let report = json.read(fp"${root}/report.json")?
+  test.eq(json.get(report, ["result"], ""), "fail")?
+  test.eq(json.get(report, ["data", "required_outputs", "required"], true), false)?
+}
+
 proc test_organization_audit_only_admits_direct_phase_children(ctx: TestContext) [fs, process, error] {
   let root = test.temp_dir(ctx, name: "audit-organization")?
   let factory = fs.cwd()?
