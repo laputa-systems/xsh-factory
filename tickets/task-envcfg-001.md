@@ -2,21 +2,22 @@
 
 ## Status
 
-Approved.
+Open.
 
 ## CTO decision — throughput cycle
 
 - Review cycle: pending next organization run.
-- Decision: Approved for engineer dispatch and linked pre-merge replay.
-- Basis: The prior deferral condition is resolved: `task-envcfg-002` registered
-  `fail` in the canonical API reference at XSH commit `2d423c1`, which is an
-  ancestor of current XSH `HEAD` (`434080d`). The ticket remains a
-  reproducible, scoped product defect with an active linked eval and explicit
-  acceptance criteria.
-- Assignment boundary: implement only the smallest deliberate-error primitive
-  contract from this ticket; preserve validator semantics and add focused
-  tests/docs. Do not broaden into boolean operators, module-shadow guidance,
-  or unrelated environment APIs.
+- Decision: Rejected for dispatch in this cycle; retain `Open.` pending a
+  candidate branch that includes both the runtime primitive and API registry.
+- Basis: The existing implementation branch `91e0eaa` omits the already merged
+  API registration `2d423c1`; its linked replay passed the evaluator but failed
+  the ticket's required discovery/adoption gate. Dispatching a duplicate
+  engineer would not be productive while that branch remains the reusable
+  implementation and the controller's reuse path cannot combine two branches.
+- Next evidence: create a bounded replay/candidate branch based on current XSH
+  `HEAD` (which contains `2d423c1`) and require `xsht api search:fail`, adoption
+  of `fail(...)?`, and all ten evaluator cases before changing this ticket to
+  `Approved.` again.
 
 ## CTO decision
 
