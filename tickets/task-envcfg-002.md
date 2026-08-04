@@ -2,7 +2,7 @@
 
 ## Status
 
-Approved.
+Merged.
 
 ## CTO review
 
@@ -22,10 +22,10 @@ None.
 
 ## Merge record
 
-- Implementation branch: `{{IMPLEMENTATION_BRANCH}}`
-- Implementation commit: `{{IMPLEMENTATION_COMMIT}}`
-- Detected at XSH commit: `{{DETECTED_XSH_COMMIT}}`
-- Implementation run: `{{IMPLEMENTATION_RUN}}`
+- Implementation branch: `factory/task-envcfg-002/1785826089064`
+- Implementation commit: `2d423c166b9c06aee44b9f4e720554ebeee1216b`
+- Detected at XSH commit: `2d423c166b9c06aee44b9f4e720554ebeee1216b`
+- Implementation run: `/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785826088406/phases/01-ticket`
 
 ## Source eval and manager
 

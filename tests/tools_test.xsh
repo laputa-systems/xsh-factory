@@ -172,6 +172,11 @@ proc test_organization_audit_only_admits_direct_phase_children(ctx: TestContext)
   }
 }
 
+proc test_cto_report_pins_factory_root() [fs, error] {
+  let runtime = fs.read_text(fp"${fs.cwd()?}/factory_runtime.xsh")?
+  test.contains(runtime, "env: {FACTORY_DIR: factory_dir.display(), XSH_MODULE_PATH: factory_dir.display()}")?
+}
+
 proc test_cto_briefing_reads_json_not_projection(ctx: TestContext) [fs, process, error] {
   let root = test.temp_dir(ctx, name: "cto-briefing")?
   let factory = fs.cwd()?

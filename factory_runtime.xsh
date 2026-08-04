@@ -140,6 +140,7 @@ export proc write_cto_report(
       "--output", output.display(),
       "--result", result],
     cwd: factory_dir,
+    env: {FACTORY_DIR: factory_dir.display(), XSH_MODULE_PATH: factory_dir.display()},
   ))?
   return status.ok and fs.exists(output)?
 }
