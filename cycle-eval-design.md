@@ -2,9 +2,9 @@
 
 ## Objective
 
-Design and dry-run exactly one small practical XSH eval. Use an approved eval
-as the structural example, keep difficulty no harder than ecount, and leave
-the proposal reviewed by the CTO and promoted into `evals/` with an explicit
+Design and dry-run exactly one substantive practical XSH eval. Use an approved
+eval as the structural example, require at least ecount-level composition, and
+leave the proposal reviewed by the CTO and promoted into `evals/` with an explicit
 `Approved.` or `Draft.` decision.
 
 ## Mode
@@ -13,7 +13,7 @@ the proposal reviewed by the CTO and promoted into `evals/` with an explicit
 
 ## Active evals
 
-- `task-bigfiles`
+- `task-groupsum`
 
 ## Trial plan
 
@@ -22,6 +22,13 @@ the proposal reviewed by the CTO and promoted into `evals/` with an explicit
 ## New eval proposals
 
 - Count: `1`
+
+## Difficulty gate
+
+- Require at least two independent XSH data transformations or stateful
+- aggregation, one meaningful failure control, and hidden cases that punish a
+- one-liner or hard-coded answer.
+- Reject scalar/line projection tasks and trivial single-field extraction.
 
 ## Approved tickets
 

@@ -14,7 +14,7 @@ Measure a practical systems-administration / data-glue workflow that no
 approved eval covers: merging two keyed plain-text files on a shared first
 field and emitting a deterministic, byte-exact three-column report with a
 left-only sentinel. Existing evals read and rewrite a single file
-(`task-propsort`, `task-col2`, `task-total`), aggregate one file into a keyed
+(`task-propsort`, `task-total`), aggregate one file into a keyed
 summary (`task-groupsum`, `task-logstat`), or do a single typed record lookup
 (`task-iniget`). None joins two independent keyed files into one combined
 output — the classic `awk`/`join` "map a right table onto a left table" glue

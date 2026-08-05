@@ -33,8 +33,10 @@ eval-design phase runs alongside the primary phase.
 ## New eval proposals
 
 - Count: `1`
-- Difficulty: no harder than ecount; prefer a small practical programming or
-  systems-administration task.
+- Difficulty: at least `ecount` difficulty: require at least two independent
+- XSH data transformations or stateful aggregation, a meaningful failure
+- control, and hidden cases that distinguish composition from a one-liner.
+- Do not propose scalar/line projection tasks such as copying one field.
 
 ## Open-ticket work
 
@@ -70,7 +72,7 @@ environment override in the invocation, using names such as
   ticket when tickets are available;
 - one independent active eval when a ticket is available, otherwise one active
   eval as the primary phase;
-- one eval-design proposal pending review;
+- one substantive eval-design proposal meeting the difficulty gate pending review;
 - structured worker reports and raw Pi sessions;
 - a run-level `report.json` covering every worker;
 - a `## North-star impact` section in each narrative role report;

@@ -125,8 +125,10 @@ tool; use XSH to compose the host-facing work around them.
   discoveries when writing real XSH.
 - **Learnability:** a concise handbook that teaches reusable concepts and
   idioms, rather than accumulating task-specific recipes.
-- **Practicality:** reliable solutions to small systems-administration and
-  programming tasks, with ecount as the current upper bound on difficulty.
+- **Practicality:** reliable solutions to substantive systems-administration
+  and programming tasks. Ecount is the minimum composition bar for new evals,
+  not a ceiling; evals should exercise multiple transformations, stateful
+  aggregation, or meaningful cross-boundary behavior.
 - **AI efficiency:** agents reach a correct, clear solution with less
   unnecessary exploration, turns, and thinking. Lower token use is evidence of
   fluency only when correctness and clarity remain intact.
@@ -148,7 +150,7 @@ would make the language harder to understand elsewhere.
 
 Every cycle should connect a capability hypothesis to evidence:
 
-1. An eval-designer chooses a small, practical behavior worth probing.
+1. An eval-designer chooses a substantive, compositional behavior worth probing.
 2. The eval-executor measures correctness, protocol completion, candidate versus
    oracle timing where applicable, and the coding session that produced it.
 3. The eval-manager separates reusable handbook guidance and product defects

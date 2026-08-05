@@ -11,8 +11,8 @@ no approved eval covers: reading several line-oriented input files and emitting
 each distinct line of their concatenation exactly once in first-occurrence
 (priority) order. `task-tags` transforms argv values, `task-ecount` counts
 extensions, `task-envcfg` renders a config from environment scalars,
-`task-setdiff` computes a *sorted* set difference of two files, `task-col2`
-extracts a field, and `task-total` aggregates numbers; none concatenates
+`task-setdiff` computes a *sorted* set difference of two files, and
+`task-total` aggregates numbers; none concatenates
 multiple files and deduplicates while preserving canonical input order.
 `task-uniqcat` fills that gap with the classic sysadmin shape "merge and
 dedup several config / host / package lists, keeping the first (highest

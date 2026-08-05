@@ -253,7 +253,7 @@ task. They may help edit a file or inspect an oracle, but using a utility from
 inside the XSH solution is a separate design choice and may be forbidden. Do
 not search for hidden source, repository examples, or implementation details.
 The intended path is this handbook, xsht api discovery, xsht feedback, and a
-small XSH program.
+substantive XSH program.
 
 ## Environment and configuration
 

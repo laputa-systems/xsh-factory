@@ -9,7 +9,17 @@ Approved.
 Measure a practical filesystem-oriented systems-glue workflow: traversing a
 root with XSH APIs, extracting and counting extension values, matching a
 byte-exact external oracle, and respecting a no-subprocess boundary. Ecount is
-the current upper bound on acceptable eval difficulty.
+the minimum composition bar for new evals; new proposals must not be simpler
+than this task.
+
+## Difficulty reference
+
+This eval is the minimum bar for new proposals: filesystem traversal plus
+extension extraction, normalization, keyed counting, deterministic sorting, an
+exact-output oracle, and a no-subprocess restriction. A new eval must combine
+at least two independent transformations or stateful aggregation and must add
+a meaningful failure or cross-boundary invariant; a scalar or one-field
+projection is below the bar.
 
 ## North-star hypothesis
 

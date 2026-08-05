@@ -11,7 +11,14 @@ or invent another proposal.
 The adjacent XSH checkout is a reference. Do not modify it. Product changes
 require an approved ticket, an isolated engineer worktree, and a CTO decision.
 
-The task must be no harder than ecount. Use an approved eval's `EVAL.md` and
+The task must meet or exceed ecount-level composition. Add a `## Difficulty
+justification` section to `EVAL.md` naming the two independent transformations
+or stateful aggregation, meaningful failure control, hidden cases that defeat
+one-liners or hard-coded answers, and why the task is at least ecount-level.
+The task must combine at least two independent XSH data transformations or
+stateful aggregation, include a meaningful failure control, and use hidden cases that punish
+one-liners or hard-coded answers. Do not propose scalar/line projection tasks
+or trivial single-field extraction. Use an approved eval's `EVAL.md` and
 `runtime/` directory as the structural reference. Proposed evals must consume
 the shared `{{FACTORY_DIR}}/runtime/handbook.md`.
 
@@ -19,7 +26,8 @@ the shared `{{FACTORY_DIR}}/runtime/handbook.md`.
 
 ### 1. Select the task
 
-Choose one small practical XSH capability. Replace the scaffold's source eval
+Choose one substantive practical XSH capability. Replace the scaffold's source
+eval
 title and ID before API queries or dry-run work. Use a new valid `task-*` ID.
 Change `Disabled.` to `Draft.`.
 

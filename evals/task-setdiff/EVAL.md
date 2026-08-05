@@ -16,7 +16,8 @@ XSH text APIs, treating each file as a set of unique lines, and emitting the
 set difference (`lines in file A that are not in file B`) as a
 byte-exact, sorted stdout contract. `task-tags` transforms argv values,
 `task-ecount` traverses the filesystem, `task-envcfg` renders a config file
-from scalar environment variables, `task-col2` extracts a field per line,
+from scalar environment variables, other approved evals extract structured
+records,
 `task-dupcheck` hashes and groups files, and `task-jsonfilter` crosses a JSON
 boundary; none builds sets / deduplicates a line stream and none reports a
 deterministic set difference. `task-setdiff` fills that gap with the classic

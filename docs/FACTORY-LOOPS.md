@@ -75,9 +75,12 @@ replacement portfolio role.
 
 ## Design loop: eval-designer
 
-The designer proposes at most one small practical systems-administration or
-programming eval per bounded cycle. `task-bigfiles` is the current structural
-reference; `task-ecount` remains the difficulty upper bound. A proposal must
+The designer proposes at most one substantive practical systems-administration
+or programming eval per bounded cycle. `task-bigfiles` and `task-groupsum` are
+structural references; proposals must meet or exceed ecount-level composition.
+An eval must combine at least two independent XSH data transformations or
+stateful aggregation, include a meaningful failure control, and use hidden
+cases that punish one-liners or hard-coded answers. A proposal must
 include the task, oracle, evaluator, restrictions, runtime scaffolding, cost
 expectation, and a dry run. The controller immediately gives the materialized
 package to the CTO review gate and promotes it into `evals/` whether that gate

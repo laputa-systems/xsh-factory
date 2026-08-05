@@ -69,7 +69,7 @@ anywhere in the program. The failure is entirely an artifact of comment text.
 The same naive check (`source.contains("process.")`, `"spawn "`, `"run "`) is
 replicated in the factory evaluator for this eval and several others:
 `evals/task-envcfg` (via `evaluate_legacy.xsh`), `task-tags` and `task-ecount`
-(same `evaluate_legacy.xsh`), `task-col2`, `task-dupcheck`, `task-jsonfilter`.
+(same `evaluate_legacy.xsh`), `task-dupcheck`, `task-jsonfilter`.
 
 ## Evidence
 
@@ -123,7 +123,7 @@ more specific token boundary for each forbidden name.
 ## CTO implementation pending replay
 
 The CTO applied the smallest shared fix in `factory_control.xsh` and replaced
-the repeated evaluator scans in `evaluate_legacy.xsh`, `evals/task-col2`,
+the repeated evaluator scans in `evaluate_legacy.xsh`,
 `evals/task-dupcheck`, and `evals/task-jsonfilter`. The native regression
 `test_forbidden_subprocess_scan_ignores_comments` proves that `run ` in a `#`
 comment is ignored while `process.run(...)` and `spawn` remain forbidden.

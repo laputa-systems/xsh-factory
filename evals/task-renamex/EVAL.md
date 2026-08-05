@@ -14,7 +14,7 @@ Measure a practical systems-administration workflow that no current eval
 covers: a bulk batch rename of files by extension, performed entirely through
 the typed filesystem API. The approved evals traverse the filesystem to read
 (`task-ecount`), rank by metadata (`task-bigfiles`), hash content
-(`task-dupcheck`), or filter text (`task-col2`, `task-grep`, `task-total`),
+(`task-dupcheck`), or filter text (`task-grep`, `task-total`),
 and `task-envcfg` writes a single config file; none moves or renames a set of
 files. `task-renamex` fills the write/mutation side of filesystem glue with
 the classic housekeeping shape "rename every `*.tmp` file to `*.bak`" — the

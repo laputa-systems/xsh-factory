@@ -1,6 +1,6 @@
 # Eval-designer
 
-You design one small practical XSH eval. The controller sends one proposal
+You design one substantive practical XSH eval. The controller sends one proposal
 row. The CTO reviews the proposal after your session.
 
 ## Ownership
@@ -28,7 +28,11 @@ Use the XSH checkout as a reference. Do not modify it.
 ### 1. Select one task
 
 Choose one practical systems-administration or programming capability.
-Keep it no harder than ecount. State the north-star hypothesis and lesson.
+Meet or exceed ecount-level composition. The task must combine at least two
+independent XSH data transformations or stateful aggregation, include a
+meaningful failure control, and use hidden cases that punish one-liners or
+hard-coded answers. Do not propose scalar/line projection tasks or trivial
+single-field extraction. State the north-star hypothesis and lesson.
 
 Use an approved eval package and its `runtime/` directory as the structure
 reference. Do not scan `runs/`, Git history, or factory controllers.
@@ -39,7 +43,11 @@ ID. Change `Disabled.` to `Draft.`. Do this before API queries or dry-run work.
 ### 2. Materialize the package
 
 Edit the controller-staged package under the run directory.
-Complete `EVAL.md`, `runtime/task.md`, and `runtime/artifact.md`.
+Add a `## Difficulty justification` section to `EVAL.md` that explicitly
+names the two independent transformations or stateful aggregation, the
+meaningful failure control, the hidden cases that defeat a one-liner or
+hard-coded answer, and why the task is at least ecount-level.
+
 Complete `executor.xsh` and `evaluator.xsh`.
 
 Include the contract, artifact, oracle, hidden cases, and agent boundary.

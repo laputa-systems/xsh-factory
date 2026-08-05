@@ -21,6 +21,14 @@ proc test_untried_eval_policy_is_explicit() [error] {
   test.ok(control.request_allow_measured_eval("- Allow measured eval reuse: `yes`"))?
 }
 
+proc test_eval_difficulty_contract_gate() [error] {
+  let valid = "## Eval task-rich\n\n## Difficulty justification\n\nThis task combines two independent data transformations and stateful aggregation, includes a meaningful failure control, and uses hidden cases that defeat a one-liner or hard-coded answer.\n"
+  let weak = "## Eval task-trivial\n\n## Difficulty justification\n\nThis is a simple one-liner.\n"
+  test.ok(control.eval_difficulty_contract_ok(valid))?
+  test.ok(! control.eval_difficulty_contract_ok(weak))?
+  test.ok(! control.eval_difficulty_contract_ok("## Eval task-missing\n"))?
+}
+
 proc test_eval_evaluator_package_ownership_gate() [error] {
   test.ok(control.eval_evaluator_package_owned("proc main() { json.write(...) }"))?
   test.ok(! control.eval_evaluator_package_owned(

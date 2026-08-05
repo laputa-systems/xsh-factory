@@ -11,7 +11,7 @@ file's text through XSH APIs, streaming its lines, filtering by a byte-exact
 literal substring match, annotating each hit with its 1-based line number, and
 producing a byte-exact `N:text` stdout contract. This is the classic
 sysadmin/log-diagnosis shape "replace `grep -nF` with a typed XSH program",
-distinct from the verbatim field extraction of `task-col2`, the set difference
+distinct from simpler field projection, the set difference
 of `task-setdiff`, and the numeric aggregation of `task-total`.
 
 ## North-star hypothesis

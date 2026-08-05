@@ -843,6 +843,18 @@ export pure director_report_contract_ok(report: Str) -> Bool {
     ["Cycle", "Children", "Required-output status", "North-star impact"])
 }
 
+## Validates the explicit composition and evidence gate for new eval proposals.
+export pure eval_difficulty_contract_ok(text: Str) -> Bool {
+  let section = section_text(text, "Difficulty justification")
+  if section == "" {
+    return false
+  }
+  return section.contains("two independent") and
+    (section.contains("stateful aggregation") or section.contains("data transformations")) and
+    section.contains("failure control") and section.contains("hidden") and
+    (section.contains("one-liner") or section.contains("hard-coded"))
+}
+
 ## Validates the concise report written by an eval-designer.
 export pure designer_report_contract_ok(report: Str) -> Bool {
   return report_contract_ok(report,

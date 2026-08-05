@@ -12,9 +12,9 @@ cycle while an eligible Open ticket remains unapproved; the controller cannot
 infer approval from a narrative review. If no ticket is eligible, record the
 blocking reason for every Open ticket and run the selected eval. When tickets are admitted, immediately
 re-evaluate its linked eval against the exact clean engineer worktree before merge,
-then run the independent `task-col2` eval against XSH main. The approved
+then run an independent approved eval against XSH main. The approved
 `task-bigfiles` eval remains the linked replay. Always produce
-one small practical eval proposal for immediate CTO review and promotion.
+one substantive eval proposal meeting the difficulty gate for immediate CTO review and promotion.
 
 ## Bottleneck review
 
@@ -37,8 +37,8 @@ the same saturated eval, unless the request records evidence for reuse.
 
 ## Active evals
 
-- `task-col2`
 - `task-bigfiles`
+- `task-groupsum`
 
 ## Trial plan
 
@@ -47,8 +47,10 @@ the same saturated eval, unless the request records evidence for reuse.
 ## New eval proposals
 
 - Count: `1`
-- Difficulty: no harder than ecount; prefer a small practical programming or
-  systems-administration task.
+- Difficulty: at least `ecount` difficulty: require at least two independent
+- XSH data transformations or stateful aggregation, a meaningful failure
+- control, and hidden cases that distinguish composition from a one-liner.
+- Do not propose scalar/line projection tasks such as copying one field.
 
 ## Ticket policy
 
@@ -75,9 +77,9 @@ deliberate override in the invocation with a role-specific setting.
   Open ticket exists and the ticket has passed the API-surface quality gate;
   quality-deferred tickets must not be dispatched merely to satisfy throughput;
 - one linked candidate re-evaluation per admitted ticket;
-- one independent `task-bigfiles` eval when a ticket is admitted, distinct from
+- one independent approved eval when a ticket is admitted, distinct from
   the linked ticket replay;
-- one eval-design proposal pending review;
+- one substantive eval-design proposal meeting the difficulty gate pending review;
 - aggregate cost and per-phase reports under one parent run;
 - one `CTO-IMPROVEMENT.md` factory-wide improvement handoff with a next-cycle
   validation or revert condition;

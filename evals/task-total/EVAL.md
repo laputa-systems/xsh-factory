@@ -12,7 +12,7 @@ parsing signed decimal integers from text, accumulating a count and a sum with
 immutable-update discipline, and producing a byte-exact two-line summary while
 failing cleanly on malformed input. This is a small reporting/accounting task
 (the kind a sysadmin faces when totaling sizes, counts, or amounts) distinct
-from the verbatim column-copy of `task-col2` and the filesystem walk of
+from simpler verbatim field extraction and the filesystem walk of
 `task-ecount`.
 
 ## North-star hypothesis

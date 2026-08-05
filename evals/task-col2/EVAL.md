@@ -2,7 +2,25 @@
 
 ## Status
 
-Approved.
+Disabled.
+
+## CTO retirement
+
+- Review cycle: CTO portfolio review following `run-1785888999833`.
+- Decision: Retired from paid admission as an intentionally low-difficulty
+  sentinel; do not dispatch new trials or create tickets from this eval.
+- Basis: the worker reached a correct one-file, one-field projection in 13
+  turns with only two recoverable errors, and the independent trial failed at
+  evaluator packaging before producing a manifest. The task exercises no
+  stateful aggregation, cross-record invariant, or multi-boundary composition,
+  so it is a poor source of durable product signal and weak tickets.
+- Replacement: prefer the approved `task-colsum`, `task-groupsum`,
+  `task-manifest`, or `task-findexec` portfolio members, subject to the new
+  difficulty gate in the designer contract.
+- Evidence: `runs/run-1785888999833/phases/03-eval/report.json` and
+  `runs/run-1785888999833/phases/03-eval/workers/eval-manager/task-col2/REPORT.md`.
+- History: retain this contract and its run evidence for audit; `Disabled.`
+  makes the package unavailable to paid admission.
 
 ## Budget breach
 
@@ -18,7 +36,7 @@ cover command-line value transforms (task-tags), filesystem traversal and
 counting (task-ecount), and environment-to-file configuration (task-envcfg);
 the pending proposals (task-logroll, task-nhead, task-jsonpick) cover rotation,
 head-like output, and JSON. None reads a file's text content and transforms it
-line by line with a standard text method. `task-col2` fills that gap with the
+line by line with a standard text method. The retired `task-col2` package filled that gap with the
 classic sysadmin/log-processing shape "replace `awk '{print $2}'` with a
 typed XSH program."
 

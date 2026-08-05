@@ -14,7 +14,7 @@ Measure a practical systems-administration aggregation workflow that no
 approved eval covers: reading a whitespace-delimited two-field file, parsing a
 decimal integer, accumulating a numeric total per distinct key through an XSH
 Map, and emitting the per-key totals in sorted key order. Existing evals read
-text and extract columns (`task-col2`, `task-propsort`, `task-grep`,
+text and extract columns (`task-propsort`, `task-grep`,
 `task-total`), count occurrences of a fixed field (`task-logstat`), or do a
 single record lookup (`task-iniget`); none requires building an arbitrary-key
 Map of accumulated numbers and then emitting a sorted keyed summary. This is

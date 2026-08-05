@@ -210,7 +210,8 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     fs.exists(fp"${proposal_dir}/executor.xsh")? and fs.exists(fp"${proposal_dir}/evaluate.xsh")? and
     fs.exists(fp"${proposal_dir}/runtime/task.md")? and
     fs.exists(fp"${proposal_dir}/runtime/artifact.md")?
-  let proposal_complete = proposal_ok and fs.exists(fp"${proposal_dir}/evaluator.xsh")?
+  let proposal_complete = proposal_ok and fs.exists(fp"${proposal_dir}/evaluator.xsh")? and
+    control.eval_difficulty_contract_ok(fs.read_text(fp"${proposal_dir}/EVAL.md")?)
   let evaluator_source_ok = proposal_complete and
     control.eval_evaluator_package_owned(fs.read_text(fp"${proposal_dir}/evaluator.xsh")?)
   let evaluator_check_ok = if evaluator_source_ok {
