@@ -2,7 +2,11 @@
 
 ## Status
 
-pending-validation
+validated
+
+## Validation evidence
+
+`XSH_MODULE_PATH=. xsht test` passed all 62 tests. `XSH_MODULE_PATH=. xsh run-cto.xsh` and `runs/run-1785893827191/report.json` confirmed that the corrected rotation selected the live approved `task-colsum` eval and produced a valid worker `run.json`; the request did not select the disabled `task-col2` package.
 
 ## Change
 

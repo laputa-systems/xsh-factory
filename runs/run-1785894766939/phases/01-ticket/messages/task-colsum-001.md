@@ -1,16 +1,42 @@
+# Controller-assigned engineer ticket
+
+This is an immutable controller assignment for one implementation worker.
+The controller, not the worker, selected the ticket, snapshot, worktree, and
+branch.
+
+## Assignment authority
+
+- Ticket ID: `task-colsum-001`
+- Ticket snapshot: `/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785894766939/phases/01-ticket/tickets/task-colsum-001.md`
+- Ticket snapshot SHA-256: `842852e90f92f3a17d5f3fcc64bcce2575eb5528e06a6edeaece614c1be9a380`
+- Dedicated XSH worktree: `/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785894766939/phases/01-ticket/worktrees/task-colsum-001`
+- Branch: `factory/task-colsum-001/1785894767724`
+- XSH base commit: `e5d29c7ec8b4411dc749fd3e44bf472d641ad9f4`
+- engineer report: `/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785894766939/phases/01-ticket/workers/engineer/task-colsum-001/REPORT.md`
+- Factory root: `/Users/josh/d/laputa-systems/xsh-factory`
+- Run evidence root: `/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785894766939/phases/01-ticket`
+
+You are an implementation worker, not a ticket selector. Implement only the
+ticket identified above and inlined below. Do not search for open tickets,
+choose another ticket, or broaden this assignment. Do not create or modify a
+ticket assignment. If the ticket ID, worktree, branch, or snapshot is missing
+or conflicts with the runner's `FACTORY_TICKET_ID` or `FACTORY_WORKDIR`, stop
+and report the assignment problem; do not guess.
+
+The snapshot path is retained for provenance. The inlined snapshot below is
+the controller's authoritative task input, so no ticket-discovery read is
+required. Relative links in that snapshot resolve from the factory root above,
+not from the XSH product worktree; use exact paths under that root if linked
+evidence needs to be consulted.
+
+## Ticket snapshot
+
+<!-- CONTROLLER_TICKET_SNAPSHOT_BEGIN -->
 # Ticket task-colsum-001
 
 ## Status
 
-Merged.
-
-## CTO decision — post-cycle review
-
-- Review cycle: `run-1785894766939`.
-- Decision: Merge accepted; implementation is now present at XSH `HEAD`.
-- Evidence: engineer commit `5f46267067991d5af1d988732e5c2f6f5de5ad04`; linked `task-colsum` replay passed all nine cases without the sentinel conversion; XSH checkout is clean at that commit.
-- Remaining validation: the new `error.fail` spelling itself was not exercised by the linked replay, so retain the follow-up cross-eval requirement in `task-colsum-002`/the next cycle. The product merge is not reverted on that basis; the acceptance behavior already has a valid `first()?` idiom.
-
+Approved.
 
 ## CTO decision — next organization cycle
 
@@ -26,10 +52,10 @@ None.
 
 ## Merge record
 
-- Implementation branch: `factory/task-colsum-001/1785894767724`
-- Implementation commit: `5f46267067991d5af1d988732e5c2f6f5de5ad04`
-- Detected at XSH commit: `5f46267067991d5af1d988732e5c2f6f5de5ad04`
-- Implementation run: `runs/run-1785894766939/phases/01-ticket`
+- Implementation branch: `{{IMPLEMENTATION_BRANCH}}`
+- Implementation commit: `{{IMPLEMENTATION_COMMIT}}`
+- Detected at XSH commit: `{{DETECTED_XSH_COMMIT}}`
+- Implementation run: `{{IMPLEMENTATION_RUN}}`
 
 ## Source eval and manager
 
@@ -52,7 +78,7 @@ was forced to abuse a typed conversion — `let _ = "__missing_header__".parse_i
 
 ## Evidence
 
-- Worker session: `/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785893827191/phases/01-eval/workers/eval-worker/task-colsum-1/session.jsonl` (candidate written turn ~39; runtime `parse-int: invalid integer` used as the deliberate fail path).
+- Worker session: `/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785893827191/phases/01-eval/workers/eval-worker/task-colsum-1/session.jsonl.bz2.bz2` (candidate written turn ~39; runtime `parse-int: invalid integer` used as the deliberate fail path).
 - Submitted artifact `/work/colsum.xsh` contains the `".parse_int()?"` hack for the not-found branch.
 - Worker review `review.md` explicitly flags: "There is no general, idiomatic way to raise a deliberate validation error with a message... A dedicated fail/error-raise form would make such control flow explicit."
 - Evaluator `run.json`: both failure controls pass (nonzero exit, empty stdout) only because of this workaround.
@@ -131,3 +157,68 @@ The linked `task-colsum` eval-manager replay (same manager run path) will
 accept or reject the merged change by confirming the failure controls still
 pass and that the submitted solution no longer routes a deliberate rejection
 through `parse_int`.
+
+<!-- CONTROLLER_TICKET_SNAPSHOT_END -->
+
+## Factory context required before coding
+
+The factory documents below are outside the XSH worktree. Before coding, use
+the `read` tool on each exact absolute path. This is required so the session
+JSONL proves that the worker consumed the current factory guidance:
+
+- North star: `/Users/josh/d/laputa-systems/xsh-factory/NORTH-STAR.md`
+- Shared handbook: `/Users/josh/d/laputa-systems/xsh-factory/runtime/handbook.md`
+
+Then use the `read` tool on the product worktree's exact guidance files:
+
+- Product agent guide: `/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785894766939/phases/01-ticket/worktrees/task-colsum-001/AGENTS.md`
+- XSH rationale: `/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785894766939/phases/01-ticket/worktrees/task-colsum-001/docs/CHAPTER-01-why-xsh.md`
+
+## Implementation contract
+
+Work only in `/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785894766939/phases/01-ticket/worktrees/task-colsum-001` on branch `factory/task-colsum-001/1785894767724`. Do not edit XSH main, the
+factory main tree, or the ticket diagnosis. Make the smallest general XSH
+language, tooling, test, or canonical-documentation change supported by the
+ticket. Run the narrowest relevant checks, commit the product change on this
+branch, and leave the worktree clean.
+
+The controller has staged a fail-closed `not-ready` report at
+`/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785894766939/phases/01-ticket/workers/engineer/task-colsum-001/REPORT.md`. Complete that file in place; do not spend turns
+reconstructing its headings. Keep `## Result` as `not-ready` until the
+acceptance checks, commit, and clean-worktree validation are complete.
+
+Write `/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785894766939/phases/01-ticket/workers/engineer/task-colsum-001/REPORT.md` with these exact headings:
+
+```markdown
+## Result
+
+ready-for-review
+
+## Branch
+
+<branch name>
+
+## Commit
+
+<commit hash>
+
+## Files changed
+
+<short list>
+
+## Tests
+
+<commands and results>
+
+## North-star impact
+
+<how this improves XSH or agent use>
+
+## Remaining risks
+
+<known limitations, or None.>
+```
+
+Change `## Result` to `ready-for-review` only when the branch is committed, the worktree is
+clean, and the relevant checks passed. Do not merge the branch or update the
+ticket status; the deterministic controller records it for CTO review.

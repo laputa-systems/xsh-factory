@@ -1,0 +1,168 @@
+diff --git a/docs/SPEC.md b/docs/SPEC.md
+index 01e771d..9c16373 100644
+--- a/docs/SPEC.md
++++ b/docs/SPEC.md
+@@ -106,7 +106,9 @@ transformed.
+ propagates, `??` recovers, `match` handles. Nothing can throw without the
+ caller seeing `?` in the code. The error kind is a plain string, not a class
+ hierarchy. Code that looks clean either handles errors or explicitly
+-propagates them.
++propagates them. `error.fail(message)` constructs a `Result[Unit, Error]` with
++kind `validation`; it is the explicit spelling for an expected validation
++failure and requires the enclosing proc's `error` effect when propagated.
+ 
+ **Greppable by default.** XSH code must be searchable with ordinary text
+ tools. This means no sigils that change meaning based on context, no implicit
+@@ -185,7 +187,7 @@ The implemented v1 surface includes:
+   defaulted parameters, plus default and rest parameters.
+ - Expression-style pure and proc calls, plus fully qualified standard-module
+   command calls for effectful APIs returning `Result[Unit]`.
+-- `Ok(value)`, `Err(value)`, `Result`, postfix `?`,
++- `Ok(value)`, `Err(value)`, `Result`, `error.fail(message)`, postfix `?`,
+   right-associative `??` fallback, `Result.context(...)`, and implicit
+   `Ok(value)` wrapping for `Result[T]` tail values.
+ - User-defined tag union types with exhaustiveness checking: `type Level = Info | Warn | Error(Str)`.
+diff --git a/src/runtime/eval.rs b/src/runtime/eval.rs
+index 0456fa5..b69bc08 100644
+--- a/src/runtime/eval.rs
++++ b/src/runtime/eval.rs
+@@ -1583,6 +1583,10 @@ enum BuildExprRow {
+         force: Option<BuildExprId>,
+         span: Span,
+     },
++    Fail {
++        message: BuildExprId,
++        span: Span,
++    },
+     Ok(BuildExprId),
+     Err(BuildExprId),
+     // Boxed: `LoweredErrorExpr::Structured` inlines two `String`s plus two
+diff --git a/src/runtime/eval/indexed/full.rs b/src/runtime/eval/indexed/full.rs
+index bfeeacd..05e9af7 100644
+--- a/src/runtime/eval/indexed/full.rs
++++ b/src/runtime/eval/indexed/full.rs
+@@ -184,6 +184,7 @@ pub(in crate::runtime::eval) enum FullTag {
+     ExprProcessCommandArgv,
+     ExprProcessCommandBuilder,
+     ExprAbort,
++    ExprFail,
+     ExprOk,
+     ExprErr,
+     ExprError,
+@@ -2566,8 +2567,8 @@ fn instruction_effects(tags: &[FullTag]) -> u32 {
+                         | EFFECT_HOST
+                         | EFFECT_TRACE
+                 }
+-                FullTag::ExprAbort => {
+-                    EFFECT_SIGNAL | EFFECT_CANCELLATION | EFFECT_PROPAGATE | EFFECT_TRACE
++                FullTag::ExprAbort | FullTag::ExprFail => {
++                    EFFECT_PROPAGATE | EFFECT_TRACE
+                 }
+                 FullTag::ExprDynamicCall => EFFECT_DYNAMIC_CALL | EFFECT_TRACE,
+                 FullTag::ExprCall | FullTag::ExprSelfCall | FullTag::ExprDirectPureCall => {
+@@ -6829,6 +6830,10 @@ impl_node_codec! {
+             force,
+             span,
+         },
++        BuildExprRow::Fail { message, span } => ExprFail {
++            message: BuildExprId,
++            span: Span,
++        } => BuildExprRow::Fail { message, span },
+         BuildExprRow::Ok(value) => ExprOk {
+             value: BuildExprId,
+         } => BuildExprRow::Ok(value),
+diff --git a/src/runtime/eval/lower.rs b/src/runtime/eval/lower.rs
+index fc7815c..fc47a73 100644
+--- a/src/runtime/eval/lower.rs
++++ b/src/runtime/eval/lower.rs
+@@ -8391,6 +8391,27 @@ impl CompactLowerConstructProbe<'_, '_> {
+                     ));
+                 }
+                 if let ArenaExprKind::Ident(module) = self.program.arena.expr(base).kind {
++                    if module.as_str() == "error" && name.as_str() == "fail" {
++                        let [ArenaCallArg {
++                            kind: ArenaCallArgKind::Positional(message),
++                        }] = args_vec.as_slice()
++                        else {
++                            return None;
++                        };
++                        return Some(push_build_row!(
++                            self,
++                            expr,
++                            BuildExprRow::Fail {
++                                message: self.lower_expr(
++                                    *message,
++                                    slots,
++                                    current_function,
++                                    item_slot,
++                                )?,
++                                span,
++                            }
++                        ));
++                    }
+                     if module == "Path" && name == "parse_bytes" {
+                         let positional = positional_call_args(&args_vec)?;
+                         if positional.len() == 1 {
+diff --git a/src/runtime/eval/lowered_run/indexed_run.rs b/src/runtime/eval/lowered_run/indexed_run.rs
+index 2bd9c39..d91530f 100644
+--- a/src/runtime/eval/lowered_run/indexed_run.rs
++++ b/src/runtime/eval/lowered_run/indexed_run.rs
+@@ -5591,6 +5591,27 @@ impl Evaluator {
+                 };
+                 return Err(RuntimeError::abort(status, force).with_span(span));
+             }
++            FullTag::ExprFail => {
++                let message = indexed_raw(&mut payload, call_span)?;
++                let span = indexed_decode::<Span>(&mut payload, execution, call_span)?;
++                indexed_finish(payload, call_span)?;
++                let message = match self.eval_indexed_expr(execution, message, slots, span)? {
++                    ControlFlow::Continue(value) => match lowered_str_value(&value) {
++                        Some(message) => message.to_string(),
++                        None => {
++                            return Err(RuntimeError::new(
++                                "type-error",
++                                format!("error.fail expected Str, found {}", value.type_name()),
++                            )
++                            .with_span(span));
++                        }
++                    },
++                    ControlFlow::Break(value) => return Ok(ControlFlow::Break(value)),
++                };
++                return Ok(ControlFlow::Continue(LoweredValue::ResultErr(Box::new(
++                    error_constructor("validation", message),
++                ))));
++            }
+             FullTag::ExprOk => {
+                 let value = indexed_raw(&mut payload, call_span)?;
+                 indexed_finish(payload, call_span)?;
+diff --git a/src/sema/check/call.rs b/src/sema/check/call.rs
+index b77943d..eda3a66 100644
+--- a/src/sema/check/call.rs
++++ b/src/sema/check/call.rs
+@@ -229,6 +229,10 @@ impl Checker {
+         if let ArenaExprKind::Field { base, name } = callee_kind {
+             let base_kind = arena.arena.expr(base).kind;
+             if let ArenaExprKind::Ident(module) = base_kind {
++                if module.as_str() == "error" && name.as_str() == "fail" {
++                    self.check_expr_arg_list_arena(arena, source, args, &[Type::Str], span);
++                    return Type::Result(Box::new(Type::Unit), Box::new(Type::Error));
++                }
+                 if self.error_families.contains_key(&module) {
+                     return self.check_error_variant_constructor_arena(
+                         arena, source, module, name, args, span,
+diff --git a/tests/xsh/stdlib/test.xsh b/tests/xsh/stdlib/test.xsh
+index a3b6b74..0aabba8 100644
+--- a/tests/xsh/stdlib/test.xsh
++++ b/tests/xsh/stdlib/test.xsh
+@@ -3,6 +3,11 @@ proc test_test_helpers() [error] {
+   test.error_kind(test.fail("covered failure"), "test-fail")?
+ }
+ 
++proc test_error_fail_constructs_validation_result() [error] {
++  let failure = error.fail("header is missing")
++  test.error_kind(failure, "validation")?
++}
++
+ proc test_run_script_captures_status_env_args_and_bytes(ctx: TestContext) [error] {
+   let ok = test.run_script(
+     ctx,

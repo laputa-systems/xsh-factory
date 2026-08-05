@@ -1,0 +1,255 @@
+{
+  "artifacts": [
+    {
+      "kind": "session-directory",
+      "path": "workers/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 38,
+      "budget_failures": 0,
+      "cost_usd": 0.03713652,
+      "tool_errors": 5,
+      "total_bucket_tokens": 1412071.0,
+      "unknown_costs": 0,
+      "workers": 2
+    },
+    "designer": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785894766939/phases/03-eval/workers/eval-designer/proposal-1/REPORT.md",
+      "present": false,
+      "result": "not-requested",
+      "role": "eval-designer",
+      "valid": true
+    },
+    "director": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785894766939/phases/03-eval/workers/director/director/REPORT.md",
+      "present": false,
+      "result": "not-requested",
+      "role": "director",
+      "valid": true
+    },
+    "engineer": [],
+    "handbook_lineage": {
+      "approved": "lineage/handbook-approved.md",
+      "candidate": "lineage/handbook-candidate.md"
+    },
+    "manager": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785894766939/phases/03-eval/workers/eval-manager/task-dupcheck/REPORT.md",
+      "present": true,
+      "result": "fail",
+      "role": "eval-manager",
+      "valid": true
+    },
+    "mode": "eval",
+    "narratives": [
+      {
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785894766939/phases/03-eval/workers/eval-manager/task-dupcheck/REPORT.md",
+        "present": true,
+        "result": "fail",
+        "role": "eval-manager",
+        "valid": true
+      }
+    ],
+    "open_tickets": [
+      {
+        "eval_id": "task-colsum",
+        "id": "task-colsum-001",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-colsum-001.md",
+        "status": "Approved."
+      },
+      {
+        "eval_id": "evals/task-dupcheck",
+        "id": "task-dupcheck-001",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-dupcheck-001.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-envcfg",
+        "id": "task-envcfg-001",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-envcfg-001.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-tags",
+        "id": "task-tags-003",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-tags-003.md",
+        "status": "Open."
+      }
+    ],
+    "outcomes": {
+      "cycle": "fail",
+      "evaluator": "fail",
+      "infrastructure": "fail",
+      "product": "fail"
+    },
+    "required_outputs": {
+      "audit": false,
+      "candidate_handbook": true,
+      "designer_handbook_read": true,
+      "designer_output": true,
+      "handbook_lineage": true,
+      "manager_evidence_read": true,
+      "manager_handbook_read": true,
+      "manager_report": true,
+      "manager_session": true,
+      "required": false,
+      "trial1_process": false,
+      "trial1_report": true,
+      "trial2_process": true,
+      "trial2_report": true,
+      "worker_handbook_read": true
+    },
+    "sessions": [
+      "workers/eval-manager/task-dupcheck/session.jsonl.bz2.bz2",
+      "workers/eval-worker/task-dupcheck-1/session.jsonl.bz2.bz2"
+    ],
+    "tool_errors": [
+      {
+        "report": "workers/eval-manager/task-dupcheck/report.json",
+        "summary": "task-bigfiles-001.md\ntask-colsum-001.md\ntask-ecount-001.md\ntask-ecount-002.md\ntask-ecount-003.md\ntask-ecount-004.md\ntask-ecount-005.md\ntask-ecount-006.md\ntask-ecount-007.md\ntask-ecount-008.md\ntask-ecount-009.md\ntask-envcfg-001.md\ntask-envcfg-002.md\ntask-envcfg-003.md\ntask-envcfg-004.md\ntask-envcfg-005.md\ntask-envcfg-006.md\ntask-envcfg-007.md\ntask-tags-001.md\ntask-tags-002.md\ntask-tags-003.md\n=== does task-dupcheck-001 exist? ===\nls: tickets/task-dupcheck-001.md: No such file or directory\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 14,
+        "worker": {
+          "role": "eval-manager",
+          "worker_id": "task-dupcheck"
+        }
+      },
+      {
+        "report": "workers/eval-worker/task-dupcheck-1/report.json",
+        "summary": "api: module.fs.files\nkind: module-function\npurpose: Produces lazy structured filesystem entries.\n\napi: module.fs.filesystem_stats\nkind: module-function\n--\npurpose: Removes files and empty parents listed by a manifest.\n\napi: module.fs.rename\nkind: module-function\npurpose: Renames a path with an explicit overwrite policy.\n\n--\napi: module.fs.walk\nkind: module-function\npurpose: Produces lazy structured filesystem entries.\n\napi: module.fs.world_writable\nkind: module-function\n===\nerr[parse.expected-token]: expected `)` after call arguments\n  /tmp/probe.xsh:3:37\n    let files = fs.files(root, hidden = true)?\n                                      ^ expected `)` after call arguments\n\nerr[parse.expected-terminator]: expected statement terminator\n  /tmp/probe.xsh:3:37\n    let files = fs.files(root, hidden = true)?\n                                      ^ expected statement terminator\n\nerr[parse.expected-expression]: expected expression\n  /tmp/probe.xsh:3:37\n    let files = fs.files(root, hidden = true)?\n                                      ^ expected expression\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 5,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-dupcheck-1"
+        }
+      },
+      {
+        "report": "workers/eval-worker/task-dupcheck-1/report.json",
+        "summary": "err[check.effect-violation]: `?` requires the `error` effect\n  /tmp/probe2.xsh:3:15\n    let files = fs.files(root, false, false, [], true)?\n                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `?` requires the `error` effect\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 7,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-dupcheck-1"
+        }
+      },
+      {
+        "report": "workers/eval-worker/task-dupcheck-1/report.json",
+        "summary": "err[check.unresolved-proc-command]: unresolved proc command\n  dupcheck.xsh:14:19\n      |> map { |it| it.digest + \"  \" + it.path }\n                    ^^^^^^^^^^^^^^^^^^^^^^^^^^ unresolved proc command\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 10,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-dupcheck-1"
+        }
+      },
+      {
+        "report": "workers/eval-worker/task-dupcheck-1/report.json",
+        "summary": "warn[lint.path-constructor]: prefer p-string interpolation over `Path(...)`\n  dupcheck.xsh:2:14\n    let root = Path(argv.get(0, \"\"))\n               --------------------- use path string syntax instead\nnote: `Path(...)` remains a cast, but p-strings are the preferred path syntax\nhelp: replace with path string -> fp\"${argv.get(0, \"\")}\"\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 13,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-dupcheck-1"
+        }
+      }
+    ],
+    "trials": [],
+    "workers": [
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-dupcheck"
+        },
+        "path": "workers/eval-manager/task-dupcheck/report.json",
+        "result": "pass",
+        "tool_errors": 1,
+        "usage": {
+          "assistant_turns": 18,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.018137088000000003,
+          "cache_read_tokens": 1007616,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.029454948,
+          "input_cost_usd": 0.008486280000000004,
+          "input_tokens": 94292,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00283158,
+          "output_tokens": 15731,
+          "provider_total_tokens": 1117639,
+          "reasoning_tokens": 9802,
+          "thinking_blocks": 16,
+          "tool_calls": 28,
+          "tool_errors": 1,
+          "tool_results": 28,
+          "total_bucket_tokens": 1117639,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-dupcheck-1"
+        },
+        "path": "workers/eval-worker/task-dupcheck-1/report.json",
+        "result": "pass",
+        "tool_errors": 4,
+        "usage": {
+          "assistant_turns": 20,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.004833791999999999,
+          "cache_read_tokens": 268544,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.007681572,
+          "input_cost_usd": 0.00181206,
+          "input_tokens": 20134,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00103572,
+          "output_tokens": 5754,
+          "provider_total_tokens": 294432,
+          "reasoning_tokens": 2238,
+          "thinking_blocks": 15,
+          "tool_calls": 28,
+          "tool_errors": 4,
+          "tool_results": 28,
+          "total_bucket_tokens": 294432,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "e5d29c7ec8b4411dc749fd3e44bf472d641ad9f4"
+  },
+  "findings": [
+    {
+      "expected": 1,
+      "kind": "trial-count",
+      "observed": 0
+    },
+    {
+      "kind": "missing-evaluator-manifest"
+    },
+    {
+      "kind": "required-outputs",
+      "state": "failed"
+    }
+  ],
+  "identity": {
+    "eval_id": "task-dupcheck",
+    "mode": "eval",
+    "run_id": "03-eval"
+  },
+  "kind": "phase",
+  "result": "fail",
+  "schema_version": 1,
+  "state": "completed"
+}

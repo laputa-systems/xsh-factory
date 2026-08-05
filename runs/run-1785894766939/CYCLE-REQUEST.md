@@ -31,14 +31,14 @@ the same saturated eval, unless the request records evidence for reuse.
 
 ## Eval admission
 
-- Allow measured eval reuse: `yes`
+- Allow measured eval reuse: `no`
 - The controller must select the lexicographically first untried Approved eval
   when one exists. Set reuse to `yes` only with a written CTO rationale.
 
 ## Active evals
 
-- `task-histogram`
-- `task-bigfiles`
+- `task-dupcheck`
+- `task-colsum`
 
 ## Trial plan
 

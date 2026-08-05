@@ -1,0 +1,147 @@
+{
+  "artifacts": [
+    {
+      "kind": "session-directory",
+      "path": "workers/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 39,
+      "budget_failures": 0,
+      "cost_usd": 0.035472528,
+      "tool_errors": 1,
+      "total_bucket_tokens": 1476838.0,
+      "unknown_costs": 0,
+      "workers": 1
+    },
+    "designer": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785894766939/phases/04-eval-design/workers/eval-designer/proposal-1/REPORT.md",
+      "present": true,
+      "result": "ready-for-review",
+      "role": "eval-designer",
+      "valid": true
+    },
+    "director": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785894766939/phases/04-eval-design/workers/director/director/REPORT.md",
+      "present": false,
+      "result": "missing",
+      "role": "director",
+      "valid": false
+    },
+    "engineer": [],
+    "handbook_lineage": {
+      "approved": "missing",
+      "candidate": "missing"
+    },
+    "manager": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785894766939/phases/04-eval-design/workers/eval-manager/task-dupcheck/REPORT.md",
+      "present": false,
+      "result": "missing",
+      "role": "eval-manager",
+      "valid": false
+    },
+    "mode": "eval-design",
+    "narratives": [
+      {
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785894766939/phases/04-eval-design/workers/eval-designer/proposal-1/REPORT.md",
+        "present": true,
+        "result": "ready-for-review",
+        "role": "eval-designer",
+        "valid": true
+      }
+    ],
+    "open_tickets": [
+      {
+        "eval_id": "task-colsum",
+        "id": "task-colsum-001",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-colsum-001.md",
+        "status": "Approved."
+      },
+      {
+        "eval_id": "task-envcfg",
+        "id": "task-envcfg-001",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-envcfg-001.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-tags",
+        "id": "task-tags-003",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-tags-003.md",
+        "status": "Open."
+      }
+    ],
+    "outcomes": {
+      "cycle": "pass",
+      "evaluator": "pass",
+      "infrastructure": "pass",
+      "product": "pass"
+    },
+    "required_outputs": null,
+    "sessions": [
+      "workers/eval-designer/proposal-1/session.jsonl.bz2"
+    ],
+    "tool_errors": [
+      {
+        "report": "workers/eval-designer/proposal-1/report.json",
+        "summary": "BUDGET-BREACH.md\nCTO-EMPLOYEE.md\nCTO-EVAL-REVIEW.md\nCTO-IMPROVEMENT.md\nCTO-PHASE.md\nCTO-PRODUCTIVITY-REPORT.md\nCTO-REPORT.md\nCTO-TOOL-ERROR.md\nCTO-TOTAL.md\nCTO-WORKER.md\ncycle-request.md\nDIRECTOR-REPORT.md\nDIRECTOR-REQUEST.md\nENGINEER-ASSIGNMENT.md\nENGINEER-REPORT.md\nEVAL-DESIGNER-ASSIGNMENT.md\nEVAL-DESIGNER-REPORT.md\nEVAL-MANAGER-ASSIGNMENT.md\nEVAL-MANAGER-REPORT.md\nEVAL-TRIAL.md\nEVAL.md\nORGANIZATION-PHASE-REQUEST.md\nPOSTMORTEM.md\nTICKET.md\nWORKER.md\n---\n== templates/*review* ==\n== templates/review.md ==\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 15,
+        "worker": {
+          "role": "eval-designer",
+          "worker_id": "proposal-1"
+        }
+      }
+    ],
+    "trials": [],
+    "workers": [
+      {
+        "identity": {
+          "role": "eval-designer",
+          "worker_id": "proposal-1"
+        },
+        "path": "workers/eval-designer/proposal-1/report.json",
+        "result": "pass",
+        "tool_errors": 1,
+        "usage": {
+          "assistant_turns": 39,
+          "budget_usd": 0.3,
+          "cache_read_cost_usd": 0.024979968,
+          "cache_read_tokens": 1387776,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.035472528,
+          "input_cost_usd": 0.0055386,
+          "input_tokens": 61540,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.004953959999999999,
+          "output_tokens": 27522,
+          "provider_total_tokens": 1476838,
+          "reasoning_tokens": 15320,
+          "thinking_blocks": 33,
+          "tool_calls": 45,
+          "tool_errors": 1,
+          "tool_results": 45,
+          "total_bucket_tokens": 1476838,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "e5d29c7ec8b4411dc749fd3e44bf472d641ad9f4"
+  },
+  "findings": [],
+  "identity": {
+    "eval_id": "task-dupcheck",
+    "mode": "eval-design",
+    "run_id": "04-eval-design"
+  },
+  "kind": "phase",
+  "result": "pass",
+  "schema_version": 1,
+  "state": "completed"
+}

@@ -169,3 +169,27 @@ provides falsifying evidence.
 The linked replay candidate refines the option-before-block guidance and adds
 the `!expr` negation spelling. The replay passed, but the manager explicitly
 requires post-merge and cross-eval evidence before promotion.
+
+## Explicit CTO disposition — run-1785893827191
+
+| Candidate SHA-256 | Disposition |
+| --- | --- |
+| `1a0947d69748eee9f546a19743aa3a76f780f7c8a6d2f4302a5621cd85426efc` | deferred pending matched replay; not promoted |
+
+The `task-colsum` candidate records one-trial Int-to-text/f-string guidance. The trial passed, but it is a single-session hypothesis and the candidate itself requests replay through another exact-output eval before promotion. Keep the approved handbook unchanged.
+
+## Explicit CTO disposition — run-1785894766939
+
+| Candidate SHA-256 | Disposition |
+| --- | --- |
+| `d518acbe39c324e0402b1f13e5692309c3f960e52f98d3662ddf90b3c86ebe15` | deferred pending cross-eval stream replay; not promoted |
+
+The linked replay candidate recommends explicit absent-value terminals or `error.fail` instead of sentinel conversion and records pipeline-sugar friction. The product replay passed, but the candidate requests an additional fail-on-condition and stream replay; keep the approved handbook unchanged until that evidence exists.
+
+## Explicit CTO disposition — run-1785896401695
+
+| Candidate SHA-256 | Disposition |
+| --- | --- |
+| `3b56a781606faa1ae0eb811af09d10094080152dae78d9f057cca7de101e126b` | approved baseline unchanged |
+
+Both phase candidates in this run are byte-identical to the approved handbook. No new handbook content was staged; the pipeline guidance belongs to the merged product contract and requires a future cross-eval replay before any handbook change.

@@ -1,0 +1,184 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785896401695/phases/01-ticket/workers/engineer/task-colsum-002/session.jsonl.bz2.bz2"
+    }
+  ],
+  "execution": {
+    "agent_process": "pass",
+    "reporting": "pass",
+    "required_report": "present",
+    "session_limit_watcher": "pass",
+    "watcher": "pass"
+  },
+  "findings": [
+    {
+      "count": 13,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "role": "engineer",
+    "worker_id": "task-colsum-002"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/openai/gpt-5.6-luna"
+  ],
+  "provider_telemetry": {
+    "event_turns": 86,
+    "events_path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785896401695/phases/01-ticket/workers/engineer/task-colsum-002/session.jsonl.bz2.bz2.events.jsonl",
+    "output_tokens_per_second": 0,
+    "present": true,
+    "provider_errors": [],
+    "response_elapsed_ms": 0,
+    "retry_count": 0,
+    "retry_delay_ms": 0,
+    "retry_errors": [],
+    "retry_failures": 0,
+    "retry_successes": 0
+  },
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785896401695/phases/01-ticket/workers/engineer/task-colsum-002/session.jsonl.bz2.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 85,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 612216
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785896401695/phases/01-ticket/workers/engineer/task-colsum-002/session.jsonl.bz2.bz2",
+      "summary": "rg: regex parse error:\n    (?:push_pipeline|Pipeline {)\n                               ^\nerror: repetition quantifier expects a valid decimal",
+      "tool": "grep",
+      "turn": 7
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785896401695/phases/01-ticket/workers/engineer/task-colsum-002/session.jsonl.bz2.bz2",
+      "summary": "Offset 1100 is beyond end of file (666 lines total)",
+      "tool": "read",
+      "turn": 7
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785896401695/phases/01-ticket/workers/engineer/task-colsum-002/session.jsonl.bz2.bz2",
+      "summary": "rg: regex parse error:\n    (?:Expr::Pipeline|Pipeline { input)\n                                 ^\nerror: repetition quantifier expects a valid decimal",
+      "tool": "grep",
+      "turn": 11
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785896401695/phases/01-ticket/workers/engineer/task-colsum-002/session.jsonl.bz2.bz2",
+      "summary": "rg: regex parse error:\n    (?:Call { callee)\n              ^\nerror: repetition quantifier expects a valid decimal",
+      "tool": "grep",
+      "turn": 14
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785896401695/phases/01-ticket/workers/engineer/task-colsum-002/session.jsonl.bz2.bz2",
+      "summary": "rg: regex parse error:\n    (?:Call { callee)\n              ^\nerror: repetition quantifier expects a valid decimal",
+      "tool": "grep",
+      "turn": 17
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785896401695/phases/01-ticket/workers/engineer/task-colsum-002/session.jsonl.bz2.bz2",
+      "summary": "Offset 1580 is beyond end of file (1507 lines total)",
+      "tool": "read",
+      "turn": 18
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785896401695/phases/01-ticket/workers/engineer/task-colsum-002/session.jsonl.bz2.bz2",
+      "summary": "Validation failed for tool \"read\":\n  - path: must have required properties path\n\nReceived arguments:\n{\n  \"cmd\": \"true\"\n}",
+      "tool": "read",
+      "turn": 20
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785896401695/phases/01-ticket/workers/engineer/task-colsum-002/session.jsonl.bz2.bz2",
+      "summary": "Validation failed for tool \"edit\":\n  - edits: must have required properties edits\n\nReceived arguments:\n{\n  \"path\": \"/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785896401695/phases/01-ticket/worktrees/task-colsum-002/src/syntax/arena.rs\",\n  \"offset\": 1780,\n  \"limit\": 90\n}",
+      "tool": "edit",
+      "turn": 28
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785896401695/phases/01-ticket/workers/engineer/task-colsum-002/session.jsonl.bz2.bz2",
+      "summary": "   Compiling libc v0.2.186\n    Checking cfg-if v1.0.4\n   Compiling crossbeam-utils v0.8.21\n    Checking pin-project-lite v0.2.17\n    Checking bitflags v2.13.0\n   Compiling rustix v1.1.4\n    Checking futures-core v0.3.32\n    Checking parking v2.2.1\n    Checking futures-io v0.3.32\n   Compiling shlex v2.0.1\n    Checking fastrand v2.4.1\n   Compiling find-msvc-tools v0.1.9\n    Checking value-bag v1.13.1\n    Checking once_cell v1.21.4\n   Compiling proc-macro2 v1.0.106\n   Compiling fs_extra v1.3.0\n   Compiling dunce v1.0.5\n    Checking futures-lite v2.6.1\n   Compiling io-lifetimes v3.0.1\n    Checking log v0.4.33\n   Compiling io-lifetimes v2.0.4\n   Compiling quote v1.0.46\n   Compiling unicode-ident v1.0.24\n   Compiling io-extras v0.19.0\n   Compiling aws-lc-rs v1.17.0\n    Checking concurrent-queue v2.5.0\n    Checking atomic-waker v1.1.2\n    Checking typenum v1.20.1\n    Checking zeroize v1.9.0\n   Compiling cap-primitives v4.0.2\n    Checking slab v0.4.12\n    Checking errno v0.3.14\n   Compiling jobserver v0.1.34\n    Checking event-listener v5.4.1\n    Checking maybe-owned v0.3.4\n    Checking ambient-authority v0.0.2\n   Compiling cap-std v4.0.2\n   Compiling cc v1.2.66\n    Checking itoa v1.0.18\n    Checking ipnet v2.12.0\n   Compiling autocfg v1.5.1\n    Checking memchr v2.8.1\n    Checking event-listener-strategy v0.5.4\n   Compiling syn v2.0.118\n    Checking rustls-pki-types v1.15.0\n    Checking bytes v1.11.1\n   Compiling async-io v2.6.0\n    Checking hybrid-array v0.4.12\n   Compiling crc32fast v1.5.0\n    Checking foldhash v0.2.0\n    Checking async-task v4.7.1\n    Checking untrusted v0.9.0\n    Checking hashbrown v0.17.1\n    Checking adler2 v2.0.1\n    Checking http v1.5.0\n   Compiling getrandom v0.4.2\n    Checking core-foundation-sys v0.8.7\n   Compiling cmake v0.1.58\n    Checking const-oid v0.10.2\n    Checking simd-adler32 v0.3.9\n    Checking crypto-common v0.2.2\n    Checking block-buffer v0.12.0\n   Compiling rustls v0.23.41\n    Checking miniz_oxide v0.8.9\n    Checking async-executor v1.14.0\n    Checking aho-corasick v1.1.4\n    Checking async-channel v2.5.0\n    Checking piper v0.2.5\n    Checking tracing-core v0.1.36\n   Compiling aws-lc-sys v0.41.0\n   Compiling httparse v1.10.1\n    Checking equivalent v1.0.2\n    Checking zlib-rs v0.6.3\n    Checking subtle v2.6.1\n    Checking regex-syntax v0.8.11\n    Checking indexmap v2.14.0\n    Checking tracing v0.1.44\n    Checking digest v0.11.3\n    Checking blocking v1.6.2\n    Checking http-body v1.1.0\n    Checking security-framework-sys v2.17.0\n    Checking fs-set-times v0.20.3\n    Checking polling v3.11.0\n    Checking core-foundation v0.10.1\n    Checking async-lock v3.4.2\n    Checking cpufeatures v0.3.0\n    Checking fnv v1.0.7\n   Compiling thiserror v2.0.18\n    Checking regex-automata v0.4.14\n    Checking compression-core v0.4.32\n    Checking smallvec v1.15.2\n    Checking try-lock v0.2.5\n    Checking event-listener v2.5.3\n   Compiling zmij v1.0.21\n    Checking futures-sink v0.3.33\n    Checking flate2 v1.1.9\n    Checking option-ext v0.2.0\n    Checking async-channel v1.9.0\n    Checking h2-futures v0.4.15 (https://github.com/joshuarli/h2-futures-lite?rev=732e8770cc6bbf998c573844f62e0afaccec3192#732e8770)\n    Checking async-global-executor v2.4.1\n    Checking dirs-sys v0.5.0\n    Checking compression-codecs v0.4.38\n    Checking want v0.3.1\n    Checking security-framework v3.7.0\n    Checking crossbeam-epoch v0.9.18\n    Checking kv-log-macro v1.0.7\n    Checking futures-channel v0.3.32\n   Compiling miniserde v0.1.45\n   Compiling cap-fs-ext v4.0.2\n    Checking pin-utils v0.1.0\n    Checking same-file v1.0.6\n   Compiling xsh-registry v0.0.1 (/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785896401695/phases/01-ticket/worktrees/task-colsum-002/crates/xsh-registry)\n    Checking async-std v1.13.2\n    Checking walkdir v2.5.0\n    Checking crossbeam-deque v0.8.6\n    Checking async-compression v0.4.42\n    Checking directories v6.0.0\n    Checking cap-net-ext v4.0.2\n    Checking sha2 v0.11.0\n   Compiling thiserror-impl v2.0.18\n   Compiling pin-project-internal v1.1.13\n   Compiling mini-internal v0.1.45\n    Checking uuid v1.23.3\n    Checking bstr v1.12.1\n    Checking http-body-util v0.1.4\n    Checking rustls-pemfile v2.2.0\n    Checking filetime v0.2.29\n    Checking crossbeam-channel v0.5.15\n    Checking rustc-hash v2.1.3\n    Checking libbz2-rs-sys v0.2.5\n    Checking async-tar v0.6.1 (https://github.com/dignifiedquire/async-tar.git?rev=109365969684b9cfdbe2696d5185b4ebcfb29b4c#10936596)\n    Checking globset v0.4.18\n    Checking lzma-rust2 v0.16.5\n    Checking cap-tempfile v4.0.2\n    Checking ignore v0.4.25\n    Checking hyper v1.11.0 (https://github.com/joshuarli/hyper-futures-lite?rev=c99b20ce178251a962289977fdfa2474e2564f8e#c99b20ce)\n    Checking bzip2 v0.6.1\n    Checking cap-directories v4.0.2\n    Checking sha1 v0.11.0\n    Checking tempfile v3.27.0\n    Checking pin-project v1.1.13\n   Compiling xsh v0.0.1 (/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785896401695/phases/01-ticket/worktrees/task-colsum-002)\n    Checking md-5 v0.11.0\n    Checking diffy v0.5.0\n    Checking astral_async_zip v0.0.20\n    Checking jiff v0.2.31\n    Checking data-encoding v2.11.0\n    Checking regex-lite v0.1.9\n    Checking rustls-webpki v0.103.13\n    Checking futures-rustls v0.26.0\n    Checking rustls-platform-verifier v0.7.0\n    Checking xsh-net v0.0.1 (/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785896401695/phases/01-ticket/worktrees/task-colsum-002/crates/xsh-net)\nerror: expected identifier, found keyword `mut`\n  --> src/syntax/parser/expr.rs:73:60\n   |\n73 |             Some(ArenaPendingPipeline::Structured { input, mut stages }),\n   |                  --------------------------------          ^^^ expected identifier, found keyword\n   |                  |\n   |                  while parsing this struct\n\nerror: expected one of `,`, `.`, `?`, `}`, or an operator, found `=>`\n  --> src/syntax/parser/expr.rs:75:11\n   |\n75 |         ) => {\n   |           ^^ expected one of `,`, `.`, `?`, `}`, or an operator\n\nwarning: unused import: `ArenaPipeStage`\n --> src/syntax/parser/expr.rs:9:39\n  |\n9 |     ArenaCallArgInput, ArenaExprKind, ArenaPipeStage, ArenaPipeStageKind, ArenaProgramBuilder,\n  |                                       ^^^^^^^^^^^^^^\n  |\n  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default\n\nwarning: `xsh` (lib) generated 1 warning\nerror: could not compile `xsh` (lib) due to 2 previous errors; 1 warning emitted\n\n\nCommand exited with code 101",
+      "tool": "bash",
+      "turn": 30
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785896401695/phases/01-ticket/workers/engineer/task-colsum-002/session.jsonl.bz2.bz2",
+      "summary": "Path not found: /Users/josh/d/laputa-systems/xsh-factory/runs/run-1785896401695/phases/run-1785896401695/phases/01-ticket/worktrees/task-colsum-002/src/sema/check/method.rs",
+      "tool": "grep",
+      "turn": 39
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785896401695/phases/01-ticket/workers/engineer/task-colsum-002/session.jsonl.bz2.bz2",
+      "summary": "edits[3] and edits[4] overlap in /Users/josh/d/laputa-systems/xsh-factory/runs/run-1785896401695/phases/01-ticket/worktrees/task-colsum-002/src/syntax/parser/expr.rs. Merge them into one edit or target disjoint regions.",
+      "tool": "edit",
+      "turn": 69
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785896401695/phases/01-ticket/workers/engineer/task-colsum-002/session.jsonl.bz2.bz2",
+      "summary": "   Compiling xsh v0.0.1 (/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785896401695/phases/01-ticket/worktrees/task-colsum-002)\nerror[E0425]: cannot find type `ArenaPipeStage` in this scope\n    --> src/syntax/parser/expr.rs:32:21\n     |\n  32 |         stages: Vec<ArenaPipeStage>,\n     |                     ^^^^^^^^^^^^^^\n     |\n    ::: src/syntax/arena.rs:5130:1\n     |\n5130 | pub enum ArenaPipeStageKind {\n     | --------------------------- similarly named enum `ArenaPipeStageKind` defined here\n     |\nhelp: an enum with a similar name exists\n     |\n  32 |         stages: Vec<ArenaPipeStageKind>,\n     |                                   ++++\nhelp: consider importing this struct\n     |\n   3 + use crate::syntax::arena::ArenaPipeStage;\n     |\n\nerror[E0004]: non-exhaustive patterns: `ArenaPendingPipeline::Pipeline { .. }` not covered\n  --> src/syntax/parser/expr.rs:42:15\n   |\n42 |         match self {\n   |               ^^^^ pattern `ArenaPendingPipeline::Pipeline { .. }` not covered\n   |\nnote: `ArenaPendingPipeline` defined here\n  --> src/syntax/parser/expr.rs:28:6\n   |\n28 | enum ArenaPendingPipeline {\n   |      ^^^^^^^^^^^^^^^^^^^^\n29 |     Value { input: ExprId },\n30 |     Pipeline {\n   |     -------- not covered\n   = note: the matched value is of type `ArenaPendingPipeline`\nhelp: ensure that all possible cases are being handled by adding a match arm with a wildcard pattern or an explicit pattern as shown\n   |\n46 ~             },\n47 +             ArenaPendingPipeline::Pipeline { .. } => todo!()\n   |\n\nSome errors have detailed explanations: E0004, E0425.\nFor more information about an error, try `rustc --explain E0004`.\nerror: could not compile `xsh` (lib) due to 2 previous errors\n\n\nCommand exited with code 101",
+      "tool": "bash",
+      "turn": 71
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785896401695/phases/01-ticket/workers/engineer/task-colsum-002/session.jsonl.bz2.bz2",
+      "summary": "    Finished `test` profile [unoptimized] target(s) in 0.21s\n     Running tests/integration.rs (target/debug/deps/integration-a9fb25f311776fb0)\n\nrunning 99 tests\ntest syntax::arena_accessors_decode_compact_frontend_shapes ... ok\ntest syntax::bare_command_fixture_is_proc_command ... ok\ntest syntax::braced_command_interpolation_is_accepted ... ok\ntest syntax::cst_groups_delimiters_and_maps_ast_spans ... ok\ntest syntax::cst_preserves_source_text_tokens_and_trivia ... ok\ntest syntax::embedded_and_quoted_dollar_command_interpolation_is_accepted ... ok\ntest syntax::formatter_breaks_long_call_chains_between_calls ... ok\ntest syntax::formatter_canonicalizes_proc_effect_order ... ok\ntest syntax::formatter_escapes_literal_dollar_interpolation_markers ... ok\ntest syntax::formatter_fixture_covers_comments_commands_blocks_and_records ... ok\ntest syntax::formatter_indents_broken_call_arguments_in_nested_blocks ... ok\ntest syntax::formatter_indents_nested_blocks_under_pipeline_stages ... ok\ntest syntax::formatter_indents_single_multiline_record_call_args_in_nested_contexts ... ok\ntest syntax::formatter_is_idempotent_on_example_catalog ... ok\ntest syntax::formatter_is_idempotent_on_package_corpus ... ok\ntest syntax::formatter_keeps_command_call_args_bare_without_stealing_propagate_flag ... ok\ntest syntax::formatter_keeps_path_method_receivers_quoted ... ok\ntest syntax::formatter_keeps_single_multiline_literal_call_compact ... ok\ntest syntax::formatter_preserves_ergonomic_sugar_pass_forms ... ok\ntest syntax::formatter_preserves_grouped_run_invocation_shape ... ok\ntest syntax::formatter_preserves_indented_multiline_format_strings ... ok\ntest syntax::formatter_preserves_intentional_top_level_blank_lines ... ok\ntest syntax::formatter_preserves_multiline_call_argument_lists ... ok\ntest syntax::formatter_preserves_multiline_comprehensions ... ok\ntest syntax::formatter_preserves_multiline_match_expressions ... ok\ntest syntax::formatter_preserves_nested_comment_blocks_without_duplicate_comments ... ok\ntest syntax::formatter_preserves_readable_multiline_package_shapes ... ok\ntest syntax::formatter_preserves_signal_hook_comments ... ok\ntest syntax::formatter_preserves_string_concatenation ... ok\ntest syntax::formatter_preserves_trailing_statement_comments ... ok\ntest syntax::formatter_pretty_corpus_has_stable_golden_shape ... ok\ntest syntax::formatter_reuses_parsed_program_without_changing_output ... ok\ntest syntax::formatter_separates_multiline_pipeline_statements ... ok\ntest syntax::formatter_skips_next_statement_after_fmt_skip_comment ... ok\ntest syntax::formatter_uses_two_space_pipeline_continuation_indent ... ok\ntest syntax::formatter_wraps_long_constructs_at_default_width ... ok\ntest syntax::formatter_wraps_long_if_and_match_expressions_in_safe_contexts ... ok\ntest syntax::lexer_fixture_covers_valid_and_invalid_inputs ... ok\ntest syntax::nested_command_word_interpolation_is_accepted ... ok\ntest syntax::parser_accepts_assignment_targets ... ok\ntest syntax::parser_accepts_builder_task_and_generic_entry_shapes ... ok\ntest syntax::parser_accepts_byte_pipeline_and_redirections ... ok\ntest syntax::parser_accepts_call_and_index_chains_in_command_args ... ok\ntest syntax::parser_accepts_chained_string_concatenation ... ok\ntest syntax::parser_accepts_compact_sugar_forms ... ok\ntest syntax::parser_accepts_env_assignments_blocks_and_membership ... ok\ntest syntax::parser_accepts_ergonomic_sugar_pass_forms ... ok\ntest syntax::parser_accepts_foundation_shapes ... ok\ntest syntax::parser_accepts_grouped_multiline_run_invocation ... ok\ntest syntax::parser_accepts_hyphenated_module_names_in_use_declarations ... ok\ntest syntax::parser_accepts_keyword_expressions_mid_expression ... ok\ntest syntax::parser_accepts_nested_interpolation_boundaries_from_shared_scanner ... ok\ntest syntax::parser_accepts_nominal_error_declarations_and_patterns ... ok\ntest syntax::parser_accepts_path_literals_and_expr_env_blocks ... ok\ntest syntax::parser_accepts_raw_triple_and_nested_fmt_strings ... ok\ntest syntax::parser_accepts_run_capture_records ... ok\ntest syntax::parser_accepts_stage_11_and_12_shapes ... ok\ntest syntax::parser_accepts_stage_13_module_exports_and_aliases ... ok\ntest syntax::parser_accepts_string_concatenation_operator ... ok\ntest syntax::parser_accepts_structured_pipeline_stages ... ok\ntest syntax::parser_accepts_word_form_boolean_operators ... ok\ntest syntax::parser_allows_multiline_list ... ok\ntest syntax::parser_allows_multiline_parenthesized_expression ... ok\ntest syntax::parser_allows_multiline_record ... ok\ntest syntax::parser_allows_multiline_tag_union ... ok\ntest syntax::parser_allows_multiline_tag_union_with_paren_variants ... ok\ntest syntax::parser_and_desugar_accept_pipeline_call_shorthand ... FAILED\ntest syntax::parser_and_formatter_accept_float_literals ... ok\ntest syntax::parser_and_formatter_accept_map_comprehensions ... ok\ntest syntax::parser_and_formatter_accept_module_contract_types ... ok\ntest syntax::parser_and_formatter_accept_signal_hooks ... ok\ntest syntax::parser_and_formatter_accept_type_patterns ... ok\ntest syntax::parser_and_formatter_preserve_require_type_syntax ... ok\ntest syntax::parser_and_formatter_preserve_retry_blocks ... ok\ntest syntax::parser_and_formatter_preserve_spawn_wait_forms ... ok\ntest syntax::parser_breaks_expression_when_newline_not_followed_by_operator ... ok\ntest syntax::parser_continues_binary_op_with_leading_operator_on_next_line ... ok\ntest syntax::parser_continues_binary_op_with_trailing_operator_on_previous_line ... ok\ntest syntax::parser_continues_chained_comparisons_across_newlines ... ok\ntest syntax::parser_fixture_covers_baseline_shapes ... ok\ntest syntax::parser_formatter_golden_covers_current_surface_syntax ... ok\ntest syntax::parser_formatter_roundtrip_property_over_baseline_snippets ... ok\ntest syntax::parser_keeps_bare_paths_contextual_with_division ... ok\ntest syntax::parser_keeps_byte_pipeline_and_structured_pipeline_distinct ... ok\ntest syntax::parser_marks_builtin_and_cpumax_run_segments ... ok\ntest syntax::parser_marks_only_block_tail_plain_identifiers_as_tail_candidates ... ok\ntest syntax::parser_rejects_bracketed_map_comprehension_keys ... ok\ntest syntax::parser_rejects_stale_surface_syntax ... ok\ntest syntax::parser_reports_malformed_signal_hook_syntax ... ok\ntest syntax::parser_reports_unsupported_c_style_boolean_operators_constructively ... ok\ntest syntax::parser_retains_module_and_export_doc_comment_spans ... ok\ntest syntax::parser_seals_structured_pipeline_before_wrapping_in_value_expr_stage ... ok\ntest syntax::parser_treats_old_schema_helper_name_as_plain_call ... ok\ntest syntax::pipeline_value_calls_accept_plain_receivers_result_tails_and_named_blocks ... ok\ntest syntax::proc_without_signature_fixture_is_rejected ... ok\ntest syntax::quoted_command_interpolation_spans_use_source_offsets ... ok\ntest syntax::reserved_keywords_and_proc_identifiers_are_not_expression_names ... ok\ntest syntax::run_command_fixture_preserves_argv_boundary ... ok\ntest syntax::standalone_dollar_command_interpolation_is_accepted ... ok\n\nfailures:\n\n---- syntax::parser_and_desugar_accept_pipeline_call_shorthand stdout ----\n\nthread 'syntax::parser_and_desugar_accept_pipeline_call_shorthand' (8395781) panicked at tests/syntax.rs:1001:9:\nexpected mixed pipeline surface\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\n\nfailures:\n    syntax::parser_and_desugar_accept_pipeline_call_shorthand\n\ntest result: FAILED. 98 passed; 1 failed; 0 ignored; 0 measured; 376 filtered out; finished in 0.04s\n\nerror: test failed, to rerun pass `--test integration`\n\n\nCommand exited with code 101",
+      "tool": "bash",
+      "turn": 74
+    }
+  ],
+  "tools": [
+    {
+      "count": 28,
+      "name": "bash"
+    },
+    {
+      "count": 18,
+      "name": "edit"
+    },
+    {
+      "count": 55,
+      "name": "grep"
+    },
+    {
+      "count": 47,
+      "name": "read"
+    },
+    {
+      "count": 1,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 86,
+    "budget_usd": 0.35,
+    "cache_read_cost_usd": 0.14183283999999996,
+    "cache_read_tokens": 14183284,
+    "cache_write_cost_usd": 0.026460125,
+    "cache_write_tokens": 211681,
+    "cost_usd": 0.18637396500000003,
+    "input_cost_usd": 0.000025800000000000027,
+    "input_tokens": 258,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.018055200000000004,
+    "output_tokens": 30092,
+    "provider_total_tokens": 14425315,
+    "reasoning_tokens": 14571,
+    "thinking_blocks": 29,
+    "tool_calls": 149,
+    "tool_errors": 13,
+    "tool_results": 149,
+    "total_bucket_tokens": 14425315,
+    "user_messages": 1
+  }
+}

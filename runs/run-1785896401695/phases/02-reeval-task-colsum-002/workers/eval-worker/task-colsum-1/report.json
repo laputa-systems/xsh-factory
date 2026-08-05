@@ -1,0 +1,122 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785896401695/phases/02-reeval-task-colsum-002/workers/eval-worker/task-colsum-1/session.jsonl.bz2.bz2"
+    }
+  ],
+  "execution": {
+    "agent_state": "pass",
+    "agent_wall_ms": 59573,
+    "artifact": {
+      "name": "colsum.xsh",
+      "state": "present"
+    },
+    "budget_state": "pass",
+    "classification": "pass",
+    "evaluator_manifest": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785896401695/phases/02-reeval-task-colsum-002/workers/eval-worker/task-colsum-1/run.json",
+    "evaluator_state": "pass",
+    "reporting_state": "pass",
+    "result": "pass",
+    "review": {
+      "state": "present"
+    }
+  },
+  "findings": [
+    {
+      "count": 2,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "eval_id": "task-colsum",
+    "role": "eval-worker",
+    "run_id": "02-reeval-task-colsum-002",
+    "worker_id": "task-colsum-1"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "provider_telemetry": {
+    "event_turns": 24,
+    "events_path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785896401695/phases/02-reeval-task-colsum-002/workers/eval-worker/task-colsum-1/session.jsonl.bz2.bz2.events.jsonl",
+    "output_tokens_per_second": 0,
+    "present": true,
+    "provider_errors": [],
+    "response_elapsed_ms": 0,
+    "retry_count": 0,
+    "retry_delay_ms": 0,
+    "retry_errors": [],
+    "retry_failures": 0,
+    "retry_successes": 0
+  },
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785896401695/phases/02-reeval-task-colsum-002/workers/eval-worker/task-colsum-1/session.jsonl.bz2.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 23,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 58119
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785896401695/phases/02-reeval-task-colsum-002/workers/eval-worker/task-colsum-1/session.jsonl.bz2.bz2",
+      "summary": "err[check.try-context]: `?` requires a Result-returning context\n  /tmp/t1.xsh:2:14\n    let text = fs.read_text(p\"data.csv\")?\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^ `?` requires a Result-returning context\n\nerr[check.try-context]: `?` requires a Result-returning context\n  /tmp/t1.xsh:4:16\n    let header = lines.get(0)?\n                 ^^^^^^^^^^^^^ `?` requires a Result-returning context\n\nerr[check.display-conversion]: value cannot be displayed by print\n  /tmp/t1.xsh:7:9\n    print $cols.get(0)?\n          ^^^^^^^^^^^^ value cannot be displayed by print\n\nerr[check.try-result]: `?` can be applied only to Result values\n  /tmp/t1.xsh:7:3\n    print $cols.get(0)?\n    ^^^^^^^^^^^^^^^^^^^ `?` can be applied only to Result values\n\nerr[check.display-conversion]: value cannot be displayed by print\n  /tmp/t1.xsh:8:9\n    print $cols.get(1)?\n          ^^^^^^^^^^^^ value cannot be displayed by print\n\nerr[check.try-result]: `?` can be applied only to Result values\n  /tmp/t1.xsh:8:3\n    print $cols.get(1)?\n    ^^^^^^^^^^^^^^^^^^^ `?` can be applied only to Result values\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 8
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785896401695/phases/02-reeval-task-colsum-002/workers/eval-worker/task-colsum-1/session.jsonl.bz2.bz2",
+      "summary": "err[check.display-conversion]: value cannot be displayed by print\n  /tmp/t2.xsh:7:9\n    print $cols.get(0)?\n          ^^^^^^^^^^^^ value cannot be displayed by print\n\nerr[check.try-result]: `?` can be applied only to Result values\n  /tmp/t2.xsh:7:3\n    print $cols.get(0)?\n    ^^^^^^^^^^^^^^^^^^^ `?` can be applied only to Result values\n\nerr[check.display-conversion]: value cannot be displayed by print\n  /tmp/t2.xsh:8:9\n    print $cols.get(1)?\n          ^^^^^^^^^^^^ value cannot be displayed by print\n\nerr[check.try-result]: `?` can be applied only to Result values\n  /tmp/t2.xsh:8:3\n    print $cols.get(1)?\n    ^^^^^^^^^^^^^^^^^^^ `?` can be applied only to Result values\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 9
+    }
+  ],
+  "tools": [
+    {
+      "count": 29,
+      "name": "bash"
+    },
+    {
+      "count": 1,
+      "name": "edit"
+    },
+    {
+      "count": 3,
+      "name": "read"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 24,
+    "budget_usd": 0.5,
+    "cache_read_cost_usd": 0.0047600640000000005,
+    "cache_read_tokens": 264448,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.007770923999999999,
+    "input_cost_usd": 0.0017339399999999996,
+    "input_tokens": 19266,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.0012769200000000002,
+    "output_tokens": 7094,
+    "provider_total_tokens": 290808,
+    "reasoning_tokens": 3188,
+    "thinking_blocks": 22,
+    "tool_calls": 33,
+    "tool_errors": 2,
+    "tool_results": 33,
+    "total_bucket_tokens": 290808,
+    "user_messages": 1
+  }
+}

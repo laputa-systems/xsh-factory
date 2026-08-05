@@ -2,15 +2,7 @@
 
 ## Status
 
-Merged.
-
-## CTO decision — post-cycle review
-
-- Review cycle: `run-1785894766939`.
-- Decision: Merge accepted; implementation is now present at XSH `HEAD`.
-- Evidence: engineer commit `5f46267067991d5af1d988732e5c2f6f5de5ad04`; linked `task-colsum` replay passed all nine cases without the sentinel conversion; XSH checkout is clean at that commit.
-- Remaining validation: the new `error.fail` spelling itself was not exercised by the linked replay, so retain the follow-up cross-eval requirement in `task-colsum-002`/the next cycle. The product merge is not reverted on that basis; the acceptance behavior already has a valid `first()?` idiom.
-
+Approved.
 
 ## CTO decision — next organization cycle
 
@@ -26,10 +18,10 @@ None.
 
 ## Merge record
 
-- Implementation branch: `factory/task-colsum-001/1785894767724`
-- Implementation commit: `5f46267067991d5af1d988732e5c2f6f5de5ad04`
-- Detected at XSH commit: `5f46267067991d5af1d988732e5c2f6f5de5ad04`
-- Implementation run: `runs/run-1785894766939/phases/01-ticket`
+- Implementation branch: `{{IMPLEMENTATION_BRANCH}}`
+- Implementation commit: `{{IMPLEMENTATION_COMMIT}}`
+- Detected at XSH commit: `{{DETECTED_XSH_COMMIT}}`
+- Implementation run: `{{IMPLEMENTATION_RUN}}`
 
 ## Source eval and manager
 
@@ -52,7 +44,7 @@ was forced to abuse a typed conversion — `let _ = "__missing_header__".parse_i
 
 ## Evidence
 
-- Worker session: `/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785893827191/phases/01-eval/workers/eval-worker/task-colsum-1/session.jsonl` (candidate written turn ~39; runtime `parse-int: invalid integer` used as the deliberate fail path).
+- Worker session: `/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785893827191/phases/01-eval/workers/eval-worker/task-colsum-1/session.jsonl.bz2.bz2` (candidate written turn ~39; runtime `parse-int: invalid integer` used as the deliberate fail path).
 - Submitted artifact `/work/colsum.xsh` contains the `".parse_int()?"` hack for the not-found branch.
 - Worker review `review.md` explicitly flags: "There is no general, idiomatic way to raise a deliberate validation error with a message... A dedicated fail/error-raise form would make such control flow explicit."
 - Evaluator `run.json`: both failure controls pass (nonzero exit, empty stdout) only because of this workaround.
