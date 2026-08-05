@@ -286,6 +286,41 @@ proc test_reconciliation_ignores_retired_branch_reference(ctx: TestContext) [fs,
   test.ok(status.ok, "reconciliation must ignore missing historical branches")?
 }
 
+proc test_retired_eval_closes_and_archives_ticket(ctx: TestContext) [fs, process, error] {
+  let root = test.temp_dir(ctx, name: "retired-eval-ticket-lifecycle")?
+  let factory = fs.cwd()?
+  let product = fp"${root}/product"
+  fs.mkdir(fp"${root}/tickets")?
+  fs.mkdir(fp"${root}/templates")?
+  fs.mkdir(fp"${root}/evals")?
+  fs.copy(fp"${factory}/templates/TICKET.md", fp"${root}/templates/TICKET.md", overwrite: true)?
+  fs.copy(fp"${factory}/templates/TICKET-RETIRED-EVAL-DISPOSITION.md", fp"${root}/templates/TICKET-RETIRED-EVAL-DISPOSITION.md", overwrite: true)?
+  fs.write(fp"${root}/evals/RETIREMENTS.md", "# Retired evals\n\n## task-tags\n\nRetired for fixture.\n")?
+  fs.mkdir(product)?
+  let git = process.which("git")?
+  test.ok(command_ok(git, ["git", "-C", product.display(), "init", "-q", "-b", "main"])?)?
+  test.ok(command_ok(git, ["git", "-C", product.display(), "config", "user.email", "factory@test"])?)?
+  test.ok(command_ok(git, ["git", "-C", product.display(), "config", "user.name", "Factory Test"])?)?
+  fs.write(fp"${product}/README", "base\n")?
+  test.ok(command_ok(git, ["git", "-C", product.display(), "add", "README"])?)?
+  test.ok(command_ok(git, ["git", "-C", product.display(), "commit", "-qm", "base"])?)?
+  test.ok(command_ok(git, ["git", "-C", product.display(), "branch", "factory/task-tags-003/1"])?)?
+  let ticket = fs.read_text(fp"${factory}/templates/TICKET.md")?.replace("- Eval:", "- Eval: `task-tags`")
+  fs.write(fp"${root}/tickets/task-tags-003.md", ticket)?
+
+  let closed = runtime.close_tickets_for_retired_evals(root)?
+  test.eq(closed, ["task-tags-003"])?
+  let closed_ticket = fs.read_text(fp"${root}/tickets/task-tags-003.md")?
+  test.eq(control.ticket_status(closed_ticket), "Closed.")?
+  test.contains(closed_ticket, "controller-owned director reconciliation")?
+  test.contains(closed_ticket, "evals/RETIREMENTS.md")?
+
+  test.eq(runtime.archive_retired_ticket_branches(product, root)?, 1)?
+  let branches = run.text "git" "-C" $product.display() "branch" "--format=%(refname:short)" ?
+  test.contains(branches, "archive/retired/task-tags-003/1")?
+  test.ok(! branches.contains("factory/task-tags-003/1"))?
+}
+
 proc test_stale_branch_inventory_is_documented() [fs, error] {
   let runtime = fs.read_text(fp"${fs.cwd()?}/factory/runtime.xsh")?
   let cto = fs.read_text(fp"${fs.cwd()?}/factory/tools/cto.xsh")?
@@ -589,6 +624,8 @@ proc test_eval_dispatch_is_package_owned() [fs, error] {
   test.contains(evaluate, "/run/evaluator.xsh")?
   test.ok(! evaluate.contains("factory/tools"))?
   test.contains(executor, "evaluator.xsh")?
+  test.contains(executor, "dst=/run/factory,readonly")?
+  test.contains(executor, "XSH_MODULE_PATH=/run")?
   test.contains(executor, "use factory.control as control")?
   let ticket_controller = fs.read_text(fp"${fs.cwd()?}/factory/controllers/ticket.xsh")?
   test.contains(ticket_controller, "CTO owns factory changes")?

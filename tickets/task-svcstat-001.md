@@ -2,7 +2,7 @@
 
 ## Status
 
-Open.
+Closed.
 
 ## Change target
 
@@ -10,6 +10,17 @@ Open.
 
 This is a historical factory finding. The CTO owns its implementation; it is
 not eligible for engineer dispatch.
+
+## CTO disposition — factory implementation
+
+- Review cycle: `cto-2026-08-05`
+- Decision: Closed after the CTO verified exactly one `/run/evaluator.xsh`
+  mount and added explicit shared-module provisioning in
+  `factory/entrypoints/eval-executor.xsh`.
+- Validation: Native factory tests pass; a fresh paid replay remains the
+  acceptance evidence for the package's eight-case manifest.
+- Next action: replay `task-svcstat` through the normal controller and inspect
+  its populated `run.json` before trusting the harness repair.
 
 ## CTO review
 

@@ -2,11 +2,22 @@
 
 ## Status
 
-Open.
+Closed.
 
 ## Change target
 
 - `product`
+
+## CTO disposition — semantic-novelty rejection
+
+- Review cycle: `cto-2026-08-05`
+- Decision: Closed; reject the proposed API addition.
+- Basis: the proposal adds no semantic capability beyond the existing
+  deliberate-error/`Result` machinery and fails the API-surface semantic-
+  novelty gate. No engineer dispatch or replay is authorized from this ticket.
+- Reopen condition: a materially different design must compare the existing
+  mechanism, desugaring, declared error families, and registry/test cost.
+
 ## CTO review
 
 - Review cycle: pre-cycle-1.

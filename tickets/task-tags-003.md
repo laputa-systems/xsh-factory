@@ -2,7 +2,7 @@
 
 ## Status
 
-Open.
+Closed.
 
 ## Change target
 
@@ -180,3 +180,11 @@ XSH commit using the current approved handbook lineage, check that the
 phantom signature-location diagnostic no longer appears for invalid
 interpolation content, and record acceptance or rejection in that run's
 manager report.
+
+## Lifecycle disposition
+
+- Decision: `Closed.`
+- Reason: linked eval `task-tags` is retired and is not an admission or replay gate.
+- Reconciled by: controller-owned director reconciliation.
+- Evidence: `evals/RETIREMENTS.md`
+- Next action: reopen only with a new active eval and a fresh CTO review.

@@ -854,6 +854,90 @@ export proc write_cto_inventory(
   return Ok()
 }
 
+## Returns whether an eval is explicitly retired from the active portfolio.
+## A missing package is retired only when the retirement ledger records it;
+## an unknown missing package remains a lifecycle error for CTO review.
+export proc eval_is_retired(factory_dir: Path, eval_id: Str) [fs, error] -> Result[Bool] {
+  if ! control.valid_eval_id(eval_id) {
+    return false
+  }
+  let contract = fp"${factory_dir}/evals/${eval_id}/EVAL.md"
+  if fs.exists(contract)? {
+    return control.eval_is_disabled(contract.read_text()?)
+  }
+  let ledger = fp"${factory_dir}/evals/RETIREMENTS.md"
+  if ! fs.exists(ledger)? {
+    return false
+  }
+  return ledger.read_text()?.contains(f"## ${eval_id}\n")
+}
+
+## Closes active tickets whose linked eval has an explicit retirement record.
+## This is deterministic lifecycle reconciliation; it never changes terminal
+## tickets and does not make a product judgment.
+export proc close_tickets_for_retired_evals(factory_dir: Path) [fs, error] -> Result[List[Str]] {
+  let ticket_dir = fp"${factory_dir}/tickets"
+  let disposition_template = fp"${factory_dir}/templates/TICKET-RETIRED-EVAL-DISPOSITION.md"
+  if ! fs.exists(ticket_dir)? {
+    return []
+  }
+  if ! fs.exists(disposition_template)? {
+    return Err(RuntimeError.InvalidTransition(
+      subject: "ticket-template",
+      current: "missing-retired-eval-disposition",
+      next: "reconcile",
+    ))
+  }
+  let template = disposition_template.read_text()?
+  var closed: List[Str] = []
+  for entry in fs.files(ticket_dir, gitignore: false, hidden: true) |> sort-by .path.display() {
+    if ! entry.name.ends_with(".md") { continue }
+    let ticket_id = entry.name.replace(".md", "")
+    let ticket_text = entry.path.read_text()?
+    let status = control.ticket_status(ticket_text)
+    if status != "Open." and status != "Approved." and status != "Accepted." { continue }
+    let eval_id = control.ticket_eval(ticket_text)
+    if ! eval_is_retired(factory_dir, eval_id)? { continue }
+    let evidence = if fs.exists(fp"${factory_dir}/evals/${eval_id}/EVAL.md")? {
+      f"evals/${eval_id}/EVAL.md"
+    } else {
+      "evals/RETIREMENTS.md"
+    }
+    let disposition = control.fill_template(template, [
+      {key: "EVAL_ID", value: eval_id},
+      {key: "EVAL_EVIDENCE", value: evidence},
+    ])
+    var updated = control.replace_ticket_status(ticket_text, "Closed.")
+    updated = control.replace_ticket_section(updated, "Lifecycle disposition", disposition)
+    if updated != ticket_text {
+      fs.write_atomic(entry.path, updated)?
+      closed = closed.push(ticket_id)
+    }
+  }
+  return closed
+}
+
+## Archives active factory branches for tickets closed because their eval was
+## retired. The commit remains reachable, but the branch leaves dispatch.
+export proc archive_retired_ticket_branches(xsh_repo: Path, factory_dir: Path) [fs, process, error] -> Result[Int] {
+  let candidates = stale_ticket_branches(xsh_repo, factory_dir)?
+  var archived = 0
+  for candidate in candidates {
+    if candidate.ticket_status != "Closed." { continue }
+    let ticket_path = fp"${factory_dir}/tickets/${candidate.ticket_id}.md"
+    if ! fs.exists(ticket_path)? { continue }
+    if ! eval_is_retired(factory_dir, control.ticket_eval(ticket_path.read_text()?))? { continue }
+    let branch_parts = candidate.branch.split("/")
+    let suffix = branch_parts.get(2, "branch")
+    let target = f"archive/retired/${candidate.ticket_id}/${suffix}"
+    let status = process.run(process.command_argv(
+      "git", ["git", "-C", xsh_repo.display(), "branch", "-m", candidate.branch, target]
+    ))?
+    if status.ok { archived += 1 }
+  }
+  return archived
+}
+
 proc commit_is_ancestor(xsh_repo: Path, commit: Str) [process, error] -> Result[Bool] {
   if commit == "" {
     return false

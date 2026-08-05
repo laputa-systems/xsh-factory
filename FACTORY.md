@@ -161,6 +161,13 @@ recorded implementation and changes only that `TICKET.md` status to `Merged.`
 when the merge is proven. A linked manager replay can then accept or reject the
 product change with evidence.
 
+Before each CTO inventory, director lifecycle reconciliation closes an active
+ticket only when its linked eval is explicitly retired (`Disabled.` or recorded
+in `evals/RETIREMENTS.md`). It writes the reason and evidence into the ticket,
+then archives any associated `factory/<ticket>/...` branch under
+`archive/retired/`. Missing or unrecorded evals remain blocking evidence for
+CTO review; they are never silently removed.
+
 ## Budgets and shutdown
 
 Role settings are coded in `factory/control.xsh`; all roles have independent

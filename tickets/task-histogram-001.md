@@ -2,11 +2,21 @@
 
 ## Status
 
-Open.
+Closed.
 
 ## Change target
 
 - `product`
+
+## CTO disposition — duplicate capability
+
+- Review cycle: `cto-2026-08-05`
+- Decision: Closed; reject the proposed `require` surface.
+- Basis: it duplicates the existing deliberate-error capability already
+  represented by `error.fail`/`Result` and adds no semantic novelty.
+- Next action: use the existing capability in the linked eval; reopen only if
+  a fresh replay demonstrates a requirement it cannot express.
+
 ## CTO review
 
 - Review cycle: pre-cycle-1.

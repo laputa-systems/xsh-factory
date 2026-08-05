@@ -229,6 +229,11 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   let _organization_lock = fs.lock(fp"${factory_dir}/runs/organization.lock", nonblocking: true)?
   fs.mkdir(run_dir)?
   defer runtime.cleanup_run_worktrees(xsh_repo, run_dir)?
+  let retired_tickets = runtime.close_tickets_for_retired_evals(factory_dir)?
+  let archived_retired_branches = runtime.archive_retired_ticket_branches(xsh_repo, factory_dir)?
+  if retired_tickets.len() > 0 or archived_retired_branches > 0 {
+    eprint f"director lifecycle reconciliation closed ${retired_tickets.len()} retired-eval ticket(s) and archived ${archived_retired_branches} branch(es)"
+  }
   runtime.write_cto_inventory(factory_dir, run_dir, xsh_repo)?
   let ticket_inventory = runtime.cto_ticket_inventory(factory_dir, xsh_repo)?
   let unreviewed_tickets = runtime.cto_unreviewed_open_tickets(ticket_inventory)

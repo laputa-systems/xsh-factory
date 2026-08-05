@@ -31,6 +31,13 @@ Your job is to review one bounded factory cycle. Resolve the XSH main commit
 once, preserve its value in the run report, and use isolated worktrees for any
 engineer work.
 
+The controller performs director lifecycle reconciliation before writing the
+CTO inventory: active tickets linked to an explicitly retired eval are closed
+with a durable disposition, and their `factory/<ticket>/...` branches are
+archived under `archive/retired/`. This preserves ticket and commit evidence
+while removing retired work from active dispatch; do not recreate or reopen
+such a ticket during the cycle.
+
 Use the shared runner for every child Pi session. Never invoke bare `pi`:
 
 ```sh

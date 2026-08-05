@@ -2,7 +2,7 @@
 
 ## Status
 
-Open.
+Closed.
 
 ## Change target
 
@@ -10,6 +10,17 @@ Open.
 
 This is a historical factory finding. The CTO owns its implementation; it is
 not eligible for engineer dispatch.
+
+## CTO disposition — factory implementation
+
+- Review cycle: `cto-2026-08-05`
+- Decision: Closed after the CTO implemented the shared evaluator module
+  provisioning fix in `factory/entrypoints/eval-executor.xsh`.
+- Validation: Native factory tests pass; a fresh paid replay remains the
+  acceptance evidence for the package's eight-case manifest.
+- Next action: replay `task-dupcheck` through the normal controller before
+  trusting the harness repair.
+
 ## CTO review
 
 - Review cycle: post-cycle-1785947947500.

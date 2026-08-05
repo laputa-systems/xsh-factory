@@ -66,6 +66,10 @@ XSH_MODULE_PATH=. xsh factory/tools/cto.xsh
 The CTO inventory also reports stale factory branches and their ticket status;
 use that evidence before retiring any branch.
 
+Before the inventory is persisted, director reconciliation closes tickets whose
+linked eval is explicitly retired and archives their active factory branches
+under `archive/retired/`, preserving the ticket and commit evidence.
+
 The organization controller also persists the same inventory as
 `CTO-TICKET-INVENTORY.md` and `CTO-TICKET-INVENTORY.json` in every run before
 ticket admission.
