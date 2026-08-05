@@ -1,0 +1,15 @@
+{
+  "correctness": {
+    "exact": true
+  },
+  "eval_id": "task-findexec",
+  "protocol": {
+    "artifact_present": true,
+    "review_ok": true
+  },
+  "restrictions": {
+    "passed": true
+  },
+  "result": "pass",
+  "trial_id": "1"
+}

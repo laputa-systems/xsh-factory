@@ -1,0 +1,146 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785960825554/phases/01-eval/workers/eval-worker/task-findexec-1/session.jsonl.bz2.bz2"
+    }
+  ],
+  "execution": {
+    "agent_state": "pass",
+    "agent_wall_ms": 258938,
+    "artifact": {
+      "name": "findexec.xsh",
+      "state": "present"
+    },
+    "budget_state": "pass",
+    "classification": "pass",
+    "evaluator_manifest": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785960825554/phases/01-eval/workers/eval-worker/task-findexec-1/run.json",
+    "evaluator_state": "pass",
+    "reporting_state": "pass",
+    "result": "pass",
+    "review": {
+      "state": "present"
+    }
+  },
+  "findings": [
+    {
+      "count": 6,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "eval_id": "task-findexec",
+    "role": "eval-worker",
+    "run_id": "01-eval",
+    "worker_id": "task-findexec-1"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "provider_telemetry": {
+    "event_turns": 34,
+    "events_path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785960825554/phases/01-eval/workers/eval-worker/task-findexec-1/session.jsonl.bz2.bz2.events.jsonl",
+    "output_tokens_per_second": 0,
+    "present": true,
+    "provider_errors": [],
+    "response_elapsed_ms": 0,
+    "retry_count": 0,
+    "retry_delay_ms": 0,
+    "retry_errors": [],
+    "retry_failures": 0,
+    "retry_successes": 0
+  },
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785960825554/phases/01-eval/workers/eval-worker/task-findexec-1/session.jsonl.bz2.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 33,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 257558
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785960825554/phases/01-eval/workers/eval-worker/task-findexec-1/session.jsonl.bz2.bz2",
+      "summary": "--- absolute ---\nerr[parse.unsupported-boolean-operator]: unsupported operator '&&': XSH boolean operators are the word forms 'and'\n  /work/findexec.xsh:4:37\n      |> where { |e| e.kind == \"file\" && e.owner_executable }\n                                      ^^ use 'and' instead of '&&'\n\nerr[parse.unsupported-boolean-operator]: unsupported operator '&&': XSH boolean operators are the word forms 'and'\n  /work/findexec.xsh:4:37\n      |> where { |e| e.kind == \"file\" && e.owner_executable }\n                                      ^^ use 'and' instead of '&&'\n\nerr[parse.expected-terminator]: expected statement terminator\n  /work/findexec.xsh:4:37\n      |> where { |e| e.kind == \"file\" && e.owner_executable }\n                                      ^ expected statement terminator\n\nerr[parse.expected-expression]: expected expression\n  /work/findexec.xsh:4:37\n      |> where { |e| e.kind == \"file\" && e.owner_executable }\n                                      ^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  /work/findexec.xsh:5:5\n      |> map { |e| e.path }\n      ^^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  /work/findexec.xsh:6:5\n      |> sort()\n      ^^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  /work/findexec.xsh:7:5\n      |> each { |p| print (p.display()) }\n      ^^ expected expression\n\nerr[parse.expected-token]: expected `}` to close block\n  /work/findexec.xsh:9:1\n  \n  ^ expected `}` to close block\n--- relative ---\nerr[parse.unsupported-boolean-operator]: unsupported operator '&&': XSH boolean operators are the word forms 'and'\n  /work/findexec.xsh:4:37\n      |> where { |e| e.kind == \"file\" && e.owner_executable }\n                                      ^^ use 'and' instead of '&&'\n\nerr[parse.unsupported-boolean-operator]: unsupported operator '&&': XSH boolean operators are the word forms 'and'\n  /work/findexec.xsh:4:37\n      |> where { |e| e.kind == \"file\" && e.owner_executable }\n                                      ^^ use 'and' instead of '&&'\n\nerr[parse.expected-terminator]: expected statement terminator\n  /work/findexec.xsh:4:37\n      |> where { |e| e.kind == \"file\" && e.owner_executable }\n                                      ^ expected statement terminator\n\nerr[parse.expected-expression]: expected expression\n  /work/findexec.xsh:4:37\n      |> where { |e| e.kind == \"file\" && e.owner_executable }\n                                      ^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  /work/findexec.xsh:5:5\n      |> map { |e| e.path }\n      ^^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  /work/findexec.xsh:6:5\n      |> sort()\n      ^^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  /work/findexec.xsh:7:5\n      |> each { |p| print (p.display()) }\n      ^^ expected expression\n\nerr[parse.expected-token]: expected `}` to close block\n  /work/findexec.xsh:9:1\n  \n  ^ expected `}` to close block\n--- trailing slash ---\nerr[parse.unsupported-boolean-operator]: unsupported operator '&&': XSH boolean operators are the word forms 'and'\n  /work/findexec.xsh:4:37\n      |> where { |e| e.kind == \"file\" && e.owner_executable }\n                                      ^^ use 'and' instead of '&&'\n\nerr[parse.unsupported-boolean-operator]: unsupported operator '&&': XSH boolean operators are the word forms 'and'\n  /work/findexec.xsh:4:37\n      |> where { |e| e.kind == \"file\" && e.owner_executable }\n                                      ^^ use 'and' instead of '&&'\n\nerr[parse.expected-terminator]: expected statement terminator\n  /work/findexec.xsh:4:37\n      |> where { |e| e.kind == \"file\" && e.owner_executable }\n                                      ^ expected statement terminator\n\nerr[parse.expected-expression]: expected expression\n  /work/findexec.xsh:4:37\n      |> where { |e| e.kind == \"file\" && e.owner_executable }\n                                      ^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  /work/findexec.xsh:5:5\n      |> map { |e| e.path }\n      ^^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  /work/findexec.xsh:6:5\n      |> sort()\n      ^^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  /work/findexec.xsh:7:5\n      |> each { |p| print (p.display()) }\n      ^^ expected expression\n\nerr[parse.expected-token]: expected `}` to close block\n  /work/findexec.xsh:9:1\n  \n  ^ expected `}` to close block\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 9
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785960825554/phases/01-eval/workers/eval-worker/task-findexec-1/session.jsonl.bz2.bz2",
+      "summary": "api: module.path.absolute\npurpose: Makes a path absolute using the evaluator's current working directory.\n---all Path methods---\n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 12
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785960825554/phases/01-eval/workers/eval-worker/task-findexec-1/session.jsonl.bz2.bz2",
+      "summary": "err[check.try-result]: `?` can be applied only to Result values\n  findexec.xsh:11:9\n          e.path.relative_to(cwd)?\n          ^^^^^^^^^^^^^^^^^^^^^^^^ `?` can be applied only to Result values\n\nerr[check.map-tail]: map requires a tail value\n  findexec.xsh:7:8\n      |> map { |e|\n         ^^^^^^^^^ map requires a tail value\n\nerr[check.stream-sort]: sort items must be Int, Str, Bool, Path, or a record of supported items\n  findexec.xsh:14:8\n      |> sort()\n         ^^^^^^ sort items must be Int, Str, Bool, Path, or a record of supported items\n---diff abs---\nerr[check.try-result]: `?` can be applied only to Result values\n  findexec.xsh:11:9\n          e.path.relative_to(cwd)?\n          ^^^^^^^^^^^^^^^^^^^^^^^^ `?` can be applied only to Result values\n\nerr[check.map-tail]: map requires a tail value\n  findexec.xsh:7:8\n      |> map { |e|\n         ^^^^^^^^^ map requires a tail value\n\nerr[check.stream-sort]: sort items must be Int, Str, Bool, Path, or a record of supported items\n  findexec.xsh:14:8\n      |> sort()\n         ^^^^^^ sort items must be Int, Str, Bool, Path, or a record of supported items\n--- /tmp/exp_abs.txt\n+++ /tmp/out_abs.txt\n@@ -1,5 +0,0 @@\n-/work/testroot/.hidden.sh\n-/work/testroot/.hiddendir/d.sh\n-/work/testroot/a.sh\n-/work/testroot/e.sh\n-/work/testroot/sub/c.sh\n---diff rel---\nerr[check.try-result]: `?` can be applied only to Result values\n  findexec.xsh:11:9\n          e.path.relative_to(cwd)?\n          ^^^^^^^^^^^^^^^^^^^^^^^^ `?` can be applied only to Result values\n\nerr[check.map-tail]: map requires a tail value\n  findexec.xsh:7:8\n      |> map { |e|\n         ^^^^^^^^^ map requires a tail value\n\nerr[check.stream-sort]: sort items must be Int, Str, Bool, Path, or a record of supported items\n  findexec.xsh:14:8\n      |> sort()\n         ^^^^^^ sort items must be Int, Str, Bool, Path, or a record of supported items\n--- /tmp/exp_rel.txt\n+++ /tmp/out_rel.txt\n@@ -1,5 +0,0 @@\n-testroot/.hidden.sh\n-testroot/.hiddendir/d.sh\n-testroot/a.sh\n-testroot/e.sh\n-testroot/sub/c.sh\n---diff rel trailing---\nerr[check.try-result]: `?` can be applied only to Result values\n  findexec.xsh:11:9\n          e.path.relative_to(cwd)?\n          ^^^^^^^^^^^^^^^^^^^^^^^^ `?` can be applied only to Result values\n\nerr[check.map-tail]: map requires a tail value\n  findexec.xsh:7:8\n      |> map { |e|\n         ^^^^^^^^^ map requires a tail value\n\nerr[check.stream-sort]: sort items must be Int, Str, Bool, Path, or a record of supported items\n  findexec.xsh:14:8\n      |> sort()\n         ^^^^^^ sort items must be Int, Str, Bool, Path, or a record of supported items\n--- /tmp/exp_rest.txt\n+++ /tmp/out_rest.txt\n@@ -1,5 +0,0 @@\n-testroot/.hidden.sh\n-testroot/.hiddendir/d.sh\n-testroot/a.sh\n-testroot/e.sh\n-testroot/sub/c.sh\n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 18
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785960825554/phases/01-eval/workers/eval-worker/task-findexec-1/session.jsonl.bz2.bz2",
+      "summary": "err[check.map-tail]: map requires a tail value\n  findexec.xsh:7:8\n      |> map { |e|\n         ^^^^^^^^^ map requires a tail value\n\nerr[check.stream-sort]: sort items must be Int, Str, Bool, Path, or a record of supported items\n  findexec.xsh:14:8\n      |> sort()\n         ^^^^^^ sort items must be Int, Str, Bool, Path, or a record of supported items\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 19
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785960825554/phases/01-eval/workers/eval-worker/task-findexec-1/session.jsonl.bz2.bz2",
+      "summary": "err[check.map-tail]: map requires a tail value\n  /tmp/iftest.xsh:3:22\n    let r = [1,2,3] |> map { |n|\n                       ^^^^^^^^^ map requires a tail value\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 21
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785960825554/phases/01-eval/workers/eval-worker/task-findexec-1/session.jsonl.bz2.bz2",
+      "summary": "FMT OK\nwarn[lint.path-constructor]: prefer p-string interpolation over `Path(...)`\n  findexec.xsh:5:20\n    let _ = fs.files(Path(root_arg), hidden: true)\n                     -------------- use path string syntax instead\nnote: `Path(...)` remains a cast, but p-strings are the preferred path syntax\nhelp: replace with path string -> fp\"${root_arg}\"\nwarn[lint.redundant-path-display]: redundant `.display()` on a Path value\n  findexec.xsh:15:13\n        print p.display()\n              ----------- Path values display automatically in command arguments\nhelp: use `$` shorthand -> $p\n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 26
+    }
+  ],
+  "tools": [
+    {
+      "count": 33,
+      "name": "bash"
+    },
+    {
+      "count": 3,
+      "name": "read"
+    },
+    {
+      "count": 4,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 34,
+    "budget_usd": 0.5,
+    "cache_read_cost_usd": 0.013321727999999998,
+    "cache_read_tokens": 740096,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.018455958,
+    "input_cost_usd": 0.0027861299999999995,
+    "input_tokens": 30957,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.0023481,
+    "output_tokens": 13045,
+    "provider_total_tokens": 784098,
+    "reasoning_tokens": 7569,
+    "thinking_blocks": 29,
+    "tool_calls": 40,
+    "tool_errors": 6,
+    "tool_results": 40,
+    "total_bucket_tokens": 784098,
+    "user_messages": 1
+  }
+}

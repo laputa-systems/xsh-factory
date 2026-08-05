@@ -241,3 +241,14 @@ The `task-findexec` candidate records a useful filesystem path-return
 contract, but it is single-trial guidance. The evaluator contract has now
 been repaired and the candidate remains unpromoted until a matched replay
 provides falsifying evidence.
+
+## Explicit CTO disposition — run-1785960825554
+
+| Candidate SHA-256 | Disposition |
+| --- | --- |
+| `aef69dd11420b141a3935620d983b6f80d2cca82c426a26556ebb36f8a4582b2` | deferred pending matched replay; not promoted |
+
+The candidate restates the boolean word-form rule already
+captured in earlier deferred candidates. The fresh run passed, but it remains
+unpromoted until the required matched predicate-heavy replay establishes
+whether the guidance generalizes beyond this eval.

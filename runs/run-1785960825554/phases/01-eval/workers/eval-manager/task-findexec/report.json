@@ -1,0 +1,116 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785960825554/phases/01-eval/workers/eval-manager/task-findexec/session.jsonl.bz2.bz2"
+    }
+  ],
+  "execution": {
+    "agent_process": "pass",
+    "dispatch_claim": "e44b961c2f27c962f7c4eb8fe89d62f4928868436c9cb85c5f62c4526754c426",
+    "dispatch_id": "eval-manager-task-findexec",
+    "message_sha256": "e44b961c2f27c962f7c4eb8fe89d62f4928868436c9cb85c5f62c4526754c426",
+    "reporting": "pass",
+    "required_report": "present",
+    "session_limit_watcher": "pass",
+    "system_prompt_sha256": "a5ab31790989af39c06a7fec953a65b5b782b1be43779a76401f77f02f7995f3",
+    "watcher": "pass"
+  },
+  "findings": [
+    {
+      "count": 1,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "role": "eval-manager",
+    "worker_id": "task-findexec"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "provider_telemetry": {
+    "event_turns": 14,
+    "events_path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785960825554/phases/01-eval/workers/eval-manager/task-findexec/session.jsonl.bz2.bz2.events.jsonl",
+    "output_tokens_per_second": 0,
+    "present": true,
+    "provider_errors": [],
+    "response_elapsed_ms": 0,
+    "retry_count": 0,
+    "retry_delay_ms": 0,
+    "retry_errors": [],
+    "retry_failures": 0,
+    "retry_successes": 0
+  },
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785960825554/phases/01-eval/workers/eval-manager/task-findexec/session.jsonl.bz2.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 13,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 381988
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785960825554/phases/01-eval/workers/eval-manager/task-findexec/session.jsonl.bz2.bz2",
+      "summary": "3:## Result\n7:## Effort metrics\n19:## Usage and cost\n36:## Thinking evidence\n50:## Tool-error findings\n80:## Timing evidence\n90:## Observation classification\n116:## Handbook decision\n131:## Tickets created\n138:## Post-merge decisions\n144:## Next replay\n153:## North-star impact\n--- candidate diff vs approved ---\nsed: ../lineage/../lineage/../../lineage/handbook-approved.md: No such file or directory\n64c64,66\n< List[T], Map[T], and Result[T]. Records have named fields, accessed with dot\n---\n> List[T], Map[T], and Result[T]. Boolean combination uses the word forms\n> `and` and `or`; C-style symbol operators such as `&&` and `||` are rejected at\n> parse time. Records have named fields, accessed with dot\n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 13
+    }
+  ],
+  "tools": [
+    {
+      "count": 5,
+      "name": "bash"
+    },
+    {
+      "count": 1,
+      "name": "edit"
+    },
+    {
+      "count": 3,
+      "name": "ls"
+    },
+    {
+      "count": 12,
+      "name": "read"
+    },
+    {
+      "count": 2,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 14,
+    "budget_usd": 0.15,
+    "cache_read_cost_usd": 0.006501888,
+    "cache_read_tokens": 361216,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.017266158,
+    "input_cost_usd": 0.008684730000000002,
+    "input_tokens": 96497,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.00207954,
+    "output_tokens": 11553,
+    "provider_total_tokens": 469266,
+    "reasoning_tokens": 5548,
+    "thinking_blocks": 11,
+    "tool_calls": 23,
+    "tool_errors": 1,
+    "tool_results": 23,
+    "total_bucket_tokens": 469266,
+    "user_messages": 1
+  }
+}
