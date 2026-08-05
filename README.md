@@ -39,10 +39,10 @@ XSH worktree or dispatching an engineer.
 
 ## Start a cycle
 
-Run the standard organization request:
+Run the standard organization request template:
 
 ```sh
-XSH_MODULE_PATH=. xsh run.xsh cycle-organization.md
+XSH_MODULE_PATH=. xsh run.xsh templates/ORGANIZATION-REQUEST.md
 ```
 
 Before launch, the CTO reviews every remaining `Open.` ticket. The CTO checks
@@ -55,7 +55,7 @@ It can produce, review, and promote one eval proposal.
 With no approved ticket, the selected eval becomes the primary phase.
 
 When reviewing ticket state, use the deterministic CTO inventory before an
-organization request:
+organization request template:
 
 ```sh
 ```
@@ -74,16 +74,18 @@ If an approved ticket has an unmerged factory branch, the organization
 controller reuses that branch for the linked replay. It captures a portable
 patch, then removes the temporary detached worktree.
 
-Run a focused eval, ticket implementation, or design phase with its request:
+Run a focused eval, ticket implementation, or design phase with its request
+template:
 
 ```sh
-XSH_MODULE_PATH=. xsh run.xsh cycle-organization.md
+XSH_MODULE_PATH=. xsh run.xsh templates/ORGANIZATION-REQUEST.md
 XSH_MODULE_PATH=. xsh factory/tools/eval-trends.xsh -- --factory-dir . --format table
-XSH_MODULE_PATH=. xsh run.xsh cycle-ticket-task-tags-001.md  # historical only; task-tags is retired
-XSH_MODULE_PATH=. xsh run.xsh cycle-eval-design.md
+XSH_MODULE_PATH=. xsh run.xsh templates/ORGANIZATION-REQUEST.md
 ```
 
-Never launch Pi directly. `run.xsh` performs preflight, owns cancellation,
+Never launch Pi directly. Request templates live under `templates/`; the
+controller copies each immutable request into its run directory. `run.xsh`
+performs preflight, owns cancellation,
 and delegates every Pi process through `factory/entrypoints/run-agent.xsh`.
 
 ## Inspect a run

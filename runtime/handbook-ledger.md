@@ -209,3 +209,24 @@ The histogram worker's grouped-key `sort-by` guidance was not promoted because t
 | `a537a12ca4d6bf49d71787c5cf2fedcc1fcf5dbd4452e8df783d106cef284f01` | deferred pending cross-eval arithmetic replay; not promoted |
 
 The candidate records the reusable integer-division rule (`/` truncates for non-negative Int values; `//` is not an operator). The source trial passed, but the manager requested replay through another arithmetic eval before changing the shared handbook.
+
+## Explicit CTO disposition — run-1785949651175
+
+| Candidate SHA-256 | Disposition |
+| --- | --- |
+| `079e1f989d60d158191ded5d44a33d70a668665abbba5f45f8e77bef9e5ab666` | deferred pending matched replay; not promoted |
+
+The `task-svcstat` worker's boolean-operator candidate is a single-trial
+hypothesis. The approved handbook remains unchanged until a matched replay in
+a second conditional-writing eval establishes that the guidance generalizes.
+
+## Explicit CTO disposition — run-1785958228987
+
+| Candidate SHA-256 | Disposition |
+| --- | --- |
+| `4542f413f8d314ec90005700608fce925b93e418cfbc445c4b3d811bad5e0912` | deferred pending evaluator repair and matched replay; not promoted |
+
+The `task-findexec` worker produced a correct artifact and a general boolean
+operator observation, but the package evaluator failed before a manifest with
+`missing-field: status`. Preserve the candidate without changing the shared
+handbook until the evaluator is repaired and the claim is replayed.

@@ -255,7 +255,7 @@ proc test_role_report_skeletons_are_fail_closed() [fs, error] {
 }
 
 proc test_standard_cycle_uses_diverse_active_eval() [fs, error] {
-  let request = fs.read_text(fp"${fs.cwd()?}/cycle-organization.md")?
+  let request = fs.read_text(fp"${fs.cwd()?}/templates/ORGANIZATION-REQUEST.md")?
   let improvement = fs.read_text(fp"${fs.cwd()?}/templates/CTO-IMPROVEMENT.md")?
   let productivity = fs.read_text(fp"${fs.cwd()?}/templates/CTO-PRODUCTIVITY-REPORT.md")?
   let ledger = fs.read_text(fp"${fs.cwd()?}/runtime/handbook-ledger.md")?
@@ -263,7 +263,7 @@ proc test_standard_cycle_uses_diverse_active_eval() [fs, error] {
   let organization = fs.read_text(fp"${fs.cwd()?}/factory/controllers/organization.xsh")?
   let runtime_source = fs.read_text(fp"${fs.cwd()?}/factory/runtime.xsh")?
   let cto_runner = fs.read_text(fp"${fs.cwd()?}/factory/tools/cto.xsh")?
-  test.contains(request, "`task-bigfiles`")?
+  test.contains(request, "## Active evals\n\n- `task-findexec`")?
   test.contains(request, "Allow measured eval reuse")?
   test.contains(fs.read_text(fp"${fs.cwd()?}/factory/tools/eval-trends.xsh")?, "median_turns")?
   test.contains(request, "## Bottleneck review")?
@@ -295,7 +295,7 @@ proc test_standard_cycle_uses_diverse_active_eval() [fs, error] {
   test.contains(cto, "CTO-PRODUCTIVITY-REPORT.md")?
   test.contains(improvement, "## Throughput requirement")?
   test.contains(productivity, "## Assembly-line bottleneck")?
-  test.contains(request, "Throughput gate: when a quality-approved ticket is admitted")?
+  test.contains(request, "No `cycle-*.md` files are kept")?
   test.contains(request, "Admission invariant: approve eligible Open tickets before invoking `run.xsh`")?
   let cycle_template = fs.read_text(fp"${fs.cwd()?}/templates/cycle-request.md")?
   test.contains(cycle_template, "Require at least one engineer implementation commit")?
@@ -306,6 +306,8 @@ proc test_standard_cycle_uses_diverse_active_eval() [fs, error] {
   test.ok(! factory.contains("user authority"))?
   test.ok(! factory.contains("user approves"))?
   test.contains(launcher, "templates/CTO-IMPROVEMENT.md")?
+  test.contains(launcher, "paths.real_within")?
+  test.contains(launcher, "cycle request must be a template")?
   test.contains(launcher, "candidate_tickets")?
   test.contains(launcher, "first_approved_tickets")?
   test.contains(launcher, "cto_unreviewed_open_tickets")?

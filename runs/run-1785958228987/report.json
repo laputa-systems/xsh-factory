@@ -1,0 +1,152 @@
+{
+  "artifacts": [
+    {
+      "kind": "phase-reports",
+      "path": "phases/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 36,
+      "budget_failures": 0,
+      "cost_usd": 0.023187366,
+      "tool_errors": 3,
+      "total_bucket_tokens": 673695.0,
+      "unknown_costs": 0,
+      "workers": 2
+    },
+    "mode": "organization",
+    "outcomes": {
+      "cycle": "fail",
+      "evaluator": "fail",
+      "infrastructure": "pass",
+      "product": "fail"
+    },
+    "phases": [
+      {
+        "id": "01-eval",
+        "path": "phases/01-eval/report.json",
+        "result": "fail",
+        "valid": true
+      }
+    ],
+    "tool_errors": [
+      {
+        "report": "phases/01-eval/workers/eval-manager/task-findexec/report.json",
+        "summary": "3:## Result\n19:## Effort metrics\n33:## Usage and cost\n46:## Thinking evidence\n59:## Tool-error findings\n81:## Timing evidence\n92:## Observation classification\n122:## Handbook decision\n142:## Tickets created\n150:## Post-merge decisions\n156:## Next replay\n168:## North-star impact\n--- candidate diff vs approved ---\n69a70,74\n> Boolean conditions are composed with the word-form operators `and` and `or`\n> (`e.kind == \"file\" and e.owner_executable`); the C-style `&&` and `||` are\n> rejected at parse time with a message that suggests the word form, so reach\n> for the word operators rather than the shell/C form.\n> \n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 13,
+        "worker": {
+          "role": "eval-manager",
+          "worker_id": "task-findexec"
+        }
+      },
+      {
+        "report": "phases/01-eval/workers/eval-worker/task-findexec-1/report.json",
+        "summary": "err[parse.unsupported-boolean-operator]: unsupported operator '&&': XSH boolean operators are the word forms 'and'\n  findexec.xsh:4:37\n      |> where { |e| e.kind == \"file\" && e.owner_executable }\n                                      ^^ use 'and' instead of '&&'\n\nerr[parse.expected-terminator]: expected statement terminator\n  findexec.xsh:4:37\n      |> where { |e| e.kind == \"file\" && e.owner_executable }\n                                      ^ expected statement terminator\n\nerr[parse.expected-expression]: expected expression\n  findexec.xsh:4:37\n      |> where { |e| e.kind == \"file\" && e.owner_executable }\n                                      ^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  findexec.xsh:5:5\n      |> sort-by { |e| e.path }\n      ^^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  findexec.xsh:6:5\n      |> each { |e| print e.path.display() }\n      ^^ expected expression\n\nerr[parse.expected-token]: expected `}` to close block\n  findexec.xsh:8:1\n  \n  ^ expected `}` to close block\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 9,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-findexec-1"
+        }
+      },
+      {
+        "report": "phases/01-eval/workers/eval-worker/task-findexec-1/report.json",
+        "summary": "Found 2 occurrences of the text in /work/review.md. The text must be unique. Please provide more context to make it unique.",
+        "tool": "edit",
+        "turn": 20,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-findexec-1"
+        }
+      }
+    ],
+    "workers": [
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-findexec"
+        },
+        "path": "phases/01-eval/workers/eval-manager/task-findexec/report.json",
+        "result": "pass",
+        "tool_errors": 1,
+        "usage": {
+          "assistant_turns": 14,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.006441984,
+          "cache_read_tokens": 357888,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.018085284,
+          "input_cost_usd": 0.00935586,
+          "input_tokens": 103954,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00228744,
+          "output_tokens": 12708,
+          "provider_total_tokens": 474550,
+          "reasoning_tokens": 8072,
+          "thinking_blocks": 11,
+          "tool_calls": 28,
+          "tool_errors": 1,
+          "tool_results": 28,
+          "total_bucket_tokens": 474550,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-findexec-1"
+        },
+        "path": "phases/01-eval/workers/eval-worker/task-findexec-1/report.json",
+        "result": "pass",
+        "tool_errors": 2,
+        "usage": {
+          "assistant_turns": 22,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.0032728320000000007,
+          "cache_read_tokens": 181824,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.005102082,
+          "input_cost_usd": 0.00128853,
+          "input_tokens": 14317,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00054072,
+          "output_tokens": 3004,
+          "provider_total_tokens": 199145,
+          "reasoning_tokens": 748,
+          "thinking_blocks": 12,
+          "tool_calls": 23,
+          "tool_errors": 2,
+          "tool_results": 23,
+          "total_bucket_tokens": 199145,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "1cf4ad3d7ee5fde9b3160b11d8073cbd7ce5e7c4"
+  },
+  "findings": [
+    {
+      "id": "01-eval",
+      "kind": "phase",
+      "result": "fail"
+    }
+  ],
+  "identity": {
+    "mode": "organization",
+    "run_id": "run-1785958228987"
+  },
+  "kind": "run",
+  "result": "fail",
+  "schema_version": 1,
+  "state": "completed"
+}

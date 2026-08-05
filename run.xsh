@@ -3,6 +3,7 @@
 use factory.control as control
 use factory.runtime as runtime
 use factory.request as typed_request
+use factory.paths as paths
 use factory.types as typed_types
 
 on SIGINT --pre-cancel=0ms [fs, process, env, error] {
@@ -22,6 +23,11 @@ proc preflight(
   request_text: Str,
   mode: Str,
 ) [fs, process, env, error, io] -> Result[Bool] {
+  let templates_root = fp"${factory_dir}/templates"
+  if ! fs.exists(request)? or ! paths.real_within(templates_root, request)? {
+    eprint f"cycle request must be a template under ${templates_root.display()}: ${request.display()}"
+    return false
+  }
   if ! fs.exists(request)? {
     eprint f"cycle request does not exist: ${request.display()}"
     return false
@@ -251,6 +257,11 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   }
   let factory_dir = env.path("FACTORY_DIR", fs.cwd()?)?
   let request = Path(argv[0])
+  let request_allowed = paths.real_within(fp"${factory_dir}/templates", request)?
+  if ! request_allowed {
+    eprint f"cycle request must be a template under ${factory_dir}/templates: ${request.display()}"
+    abort(2)
+  }
   if ! fs.exists(request)? {
     eprint f"cycle request does not exist: ${request.display()}"
     abort(2)

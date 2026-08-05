@@ -189,7 +189,10 @@ the patch against the common ancestor and owns temporary worktree cleanup.
 
 ### 4. Choose one narrow cycle
 
-Use `cycle-organization.md` when the standard path is appropriate:
+Use `templates/ORGANIZATION-REQUEST.md` when the standard path is appropriate.
+The source is a request template; the immutable cycle request belongs under
+the controller-created `runs/run-<id>/CYCLE-REQUEST.md`, not at repository top
+level:
 
 - with an approved ticket: implement it, run its linked replay, run one
   different independent active eval, and produce, review, and promote one

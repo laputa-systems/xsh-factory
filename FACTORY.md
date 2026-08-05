@@ -110,7 +110,10 @@ human-authored inputs or judgments. They are not machine-to-machine state.
 
 ## Cycle boundaries
 
-`run.xsh` admits one explicit mode after preflight:
+`run.xsh` admits one explicit mode after preflight. Operators pass a request
+template from `templates/`; no `cycle-*.md` files are kept at repository top
+level. The selected request is copied into the appropriate run directory as
+`CYCLE-REQUEST.md`, where it is durable cycle evidence:
 
 - `eval`: build the local XSH/xsht distribution, run one or two pure eval
   trials through `factory/entrypoints/eval-executor.xsh`, then dispatch the manager and optional

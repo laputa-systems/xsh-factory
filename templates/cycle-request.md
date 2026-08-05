@@ -1,3 +1,9 @@
+# Cycle request template
+
+Store cycle request templates under `templates/`. The controller copies the
+selected immutable request into `runs/run-<id>/CYCLE-REQUEST.md`; do not keep
+`cycle-*.md` request documents at repository top level.
+
 # Cycle request
 
 ## Objective

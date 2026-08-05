@@ -90,7 +90,10 @@ stay out of active cycles.
 
 ## Organization loop
 
-`run.xsh` is a signal-safe dispatcher. It performs preflight, holds the
+`run.xsh` is a signal-safe dispatcher. Operators pass a request template under
+`templates/`; `run.xsh` copies that request into the appropriate run directory
+as `CYCLE-REQUEST.md` before paid children start. No top-level `cycle-*.md`
+request documents are retained. It performs preflight, holds the
 top-level admission boundary, and invokes one mode controller. Controllers
 wait on process handles and use lifecycle callbacks after child exit; agents
 do not poll each other and do not drive the state machine.
