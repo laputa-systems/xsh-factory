@@ -2,7 +2,7 @@
 
 ## Status
 
-Merged.
+Approved.
 
 ## CTO review
 
@@ -25,10 +25,10 @@ None.
 
 ## Merge record
 
-- Implementation branch: `factory/task-bigfiles-001/1785889000406`
-- Implementation commit: `e5d29c7ec8b4411dc749fd3e44bf472d641ad9f4`
-- Detected at XSH commit: `e5d29c7ec8b4411dc749fd3e44bf472d641ad9f4`
-- Implementation run: `runs/run-1785888999833/phases/01-ticket`
+- Implementation branch: `{{IMPLEMENTATION_BRANCH}}`
+- Implementation commit: `{{IMPLEMENTATION_COMMIT}}`
+- Detected at XSH commit: `{{DETECTED_XSH_COMMIT}}`
+- Implementation run: `{{IMPLEMENTATION_RUN}}`
 
 ## Source eval and manager
 
@@ -53,7 +53,7 @@ signature disagrees with the accepted call syntax.
 
 ## Evidence
 
-- Executor session: `runs/run-1785887678360/workers/eval-worker/task-bigfiles-1/session.jsonl` — `sort-by ... --desc` produces `err[check.unresolved-name]` (twice); the flags-before-block form passes `xsht check`.
+- Executor session: `runs/run-1785887678360/workers/eval-worker/task-bigfiles-1/session.jsonl.bz2.bz2` — `sort-by ... --desc` produces `err[check.unresolved-name]` (twice); the flags-before-block form passes `xsht check`.
 - Executor report: `runs/run-1785887678360/workers/eval-worker/task-bigfiles-1/report.json` — 27 assistant turns, 34 tool calls, 18 thinking blocks, reasoning 2319 tokens.
 - Worker `review.md` `## xsht friction` documents the flag-placement discovery and the misaligning API signature.
 - Evaluator manifest: `runs/run-1785887678360/workers/eval-worker/task-bigfiles-1/run.json` — all nine cases byte-exact; the solution is correct.

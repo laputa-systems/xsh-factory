@@ -136,3 +136,36 @@ The `task-envcfg` source trial observed standard-module shadowing once and
 produced a candidate warning. The trial passed, but the evidence is
 single-session and the candidate needs a matched replay before changing the
 approved handbook. Keep `runtime/handbook.md` unchanged.
+
+## Explicit CTO disposition — pre-cycle organization request
+
+| Candidate SHA-256 | Disposition |
+| --- | --- |
+| `96634c8a5b07ead167b1cb0e2bbffa367bd14d4bd2258990ee073061654f5e7d` | deferred pending linked `task-bigfiles` replay and a second stream-stage eval; not promoted |
+
+The candidate records the named-option-before-block rule from the
+`task-bigfiles` worker. It is useful, but the source cycle explicitly called
+for replay before promotion. Keep the approved handbook unchanged until the
+linked product replay and an independent stream-stage eval provide that
+evidence.
+
+## Explicit CTO disposition — run-1785888600805
+
+| Candidate SHA-256 | Disposition |
+| --- | --- |
+| `92ef0ee8ddb324bf22a15d9c2df67a6dd7ffc4d922cb5c06314fb7cdfc9b2954` | deferred pending strict-decimal replay; not promoted |
+
+The `task-bigfiles` manager candidate records a reusable strict-decimal
+validation idiom. The source trial passed, but the manager requires replay
+before promotion. Keep the approved handbook unchanged until that replay
+provides falsifying evidence.
+
+## Explicit CTO disposition — run-1785888999833
+
+| Candidate SHA-256 | Disposition |
+| --- | --- |
+| `3541dd94e5b3544bf8cdfc59178f9384572b66cc0d3d17c49345affb382edb92` | deferred pending post-merge replay and a second descending-stream eval; not promoted |
+
+The linked replay candidate refines the option-before-block guidance and adds
+the `!expr` negation spelling. The replay passed, but the manager explicitly
+requires post-merge and cross-eval evidence before promotion.

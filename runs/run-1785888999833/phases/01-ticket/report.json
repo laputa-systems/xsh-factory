@@ -1,0 +1,202 @@
+{
+  "artifacts": [
+    {
+      "kind": "session-directory",
+      "path": "workers/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 26,
+      "budget_failures": 0,
+      "cost_usd": 0.021205344,
+      "tool_errors": 1,
+      "total_bucket_tokens": 809868.0,
+      "unknown_costs": 0,
+      "workers": 2
+    },
+    "designer": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785888999833/phases/01-ticket/workers/eval-designer/proposal-1/REPORT.md",
+      "present": false,
+      "result": "not-requested",
+      "role": "eval-designer",
+      "valid": true
+    },
+    "director": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785888999833/phases/01-ticket/workers/director/director/REPORT.md",
+      "present": true,
+      "result": "pass",
+      "role": "director",
+      "valid": true
+    },
+    "engineer": [
+      {
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785888999833/phases/01-ticket/workers/director/director/REPORT.md",
+        "present": true,
+        "result": "pass",
+        "role": "director",
+        "valid": true
+      },
+      {
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785888999833/phases/01-ticket/workers/engineer/task-bigfiles-001/REPORT.md",
+        "present": true,
+        "result": "ready-for-review",
+        "role": "engineer",
+        "valid": true
+      }
+    ],
+    "handbook_lineage": {
+      "approved": "missing",
+      "candidate": "missing"
+    },
+    "manager": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785888999833/phases/01-ticket/workers/eval-manager/task-bigfiles/REPORT.md",
+      "present": false,
+      "result": "missing",
+      "role": "eval-manager",
+      "valid": false
+    },
+    "mode": "ticket-implementation",
+    "narratives": [
+      {
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785888999833/phases/01-ticket/workers/director/director/REPORT.md",
+        "present": true,
+        "result": "pass",
+        "role": "director",
+        "valid": true
+      },
+      {
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785888999833/phases/01-ticket/workers/engineer/task-bigfiles-001/REPORT.md",
+        "present": true,
+        "result": "ready-for-review",
+        "role": "engineer",
+        "valid": true
+      }
+    ],
+    "open_tickets": [
+      {
+        "eval_id": "task-bigfiles",
+        "id": "task-bigfiles-001",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-bigfiles-001.md",
+        "status": "Approved."
+      },
+      {
+        "eval_id": "task-envcfg",
+        "id": "task-envcfg-001",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-envcfg-001.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-tags",
+        "id": "task-tags-003",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-tags-003.md",
+        "status": "Open."
+      }
+    ],
+    "outcomes": {
+      "cycle": "pass",
+      "evaluator": "pass",
+      "infrastructure": "pass",
+      "product": "pass"
+    },
+    "required_outputs": null,
+    "sessions": [
+      "workers/director/director/session.jsonl.bz2.bz2",
+      "workers/engineer/task-bigfiles-001/session.jsonl.bz2.bz2"
+    ],
+    "tool_errors": [
+      {
+        "report": "workers/engineer/task-bigfiles-001/report.json",
+        "summary": "rg: regex parse error:\n    (?:sort-by(block)\n    ^\nerror: unclosed group",
+        "tool": "grep",
+        "turn": 4,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-bigfiles-001"
+        }
+      }
+    ],
+    "trials": [],
+    "workers": [
+      {
+        "identity": {
+          "role": "director",
+          "worker_id": "director"
+        },
+        "path": "workers/director/director/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 9,
+          "budget_usd": 0.06,
+          "cache_read_cost_usd": 0.004466304,
+          "cache_read_tokens": 248128,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.009441324,
+          "input_cost_usd": 0.004160700000000001,
+          "input_tokens": 46230,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0008143199999999999,
+          "output_tokens": 4524,
+          "provider_total_tokens": 298882,
+          "reasoning_tokens": 1518,
+          "thinking_blocks": 8,
+          "tool_calls": 20,
+          "tool_errors": 0,
+          "tool_results": 20,
+          "total_bucket_tokens": 298882,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "engineer",
+          "worker_id": "task-bigfiles-001"
+        },
+        "path": "workers/engineer/task-bigfiles-001/report.json",
+        "result": "pass",
+        "tool_errors": 1,
+        "usage": {
+          "assistant_turns": 17,
+          "budget_usd": 0.35,
+          "cache_read_cost_usd": 0.00468577,
+          "cache_read_tokens": 468577,
+          "cache_write_cost_usd": 0.0048267499999999994,
+          "cache_write_tokens": 38614,
+          "cost_usd": 0.011764020000000002,
+          "input_cost_usd": 5.0999999999999995e-6,
+          "input_tokens": 51,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0022464,
+          "output_tokens": 3744,
+          "provider_total_tokens": 510986,
+          "reasoning_tokens": 1538,
+          "thinking_blocks": 12,
+          "tool_calls": 40,
+          "tool_errors": 1,
+          "tool_results": 40,
+          "total_bucket_tokens": 510986,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "a67599b7865707d0ddbfdaf04bd1620f511556b8"
+  },
+  "findings": [],
+  "identity": {
+    "eval_id": "task-bigfiles",
+    "mode": "ticket-implementation",
+    "run_id": "01-ticket"
+  },
+  "kind": "phase",
+  "result": "pass",
+  "schema_version": 1,
+  "state": "completed"
+}
