@@ -28,7 +28,7 @@ Engineers default to `openai/gpt-5.6-luna`; the other roles default to
 `deepseek/deepseek-v4-flash-0731`, all with high thinking.
 Provider, model, thinking, tools, turn, wall, and dollar ceilings are
 individually configurable with `FACTORY_<ROLE>_*` variables. The coded role
-budgets and aggregate cycle cap are in `factory_control.xsh`. The default
+budgets and aggregate cycle cap are in `factory/control.xsh`. The default
 session wall limits are 12 minutes for eval designers, 15 minutes for eval
 managers, and 30 minutes for eval workers and engineers; dollar and aggregate
 caps remain hard limits. Ticket-implementation cycles may dispatch up to two
@@ -60,7 +60,7 @@ organization request:
 ```sh
 ```
 ```sh
-XSH_MODULE_PATH=. xsh run-cto.xsh
+XSH_MODULE_PATH=. xsh factory/tools/cto.xsh
 ```
 
 The CTO inventory also reports stale factory branches and their ticket status;
@@ -78,13 +78,13 @@ Run a focused eval, ticket implementation, or design phase with its request:
 
 ```sh
 XSH_MODULE_PATH=. xsh run.xsh cycle-organization.md
-XSH_MODULE_PATH=. xsh tools/eval-trends.xsh -- --factory-dir . --format table
+XSH_MODULE_PATH=. xsh factory/tools/eval-trends.xsh -- --factory-dir . --format table
 XSH_MODULE_PATH=. xsh run.xsh cycle-ticket-task-tags-001.md  # historical only; task-tags is retired
 XSH_MODULE_PATH=. xsh run.xsh cycle-eval-design.md
 ```
 
 Never launch Pi directly. `run.xsh` performs preflight, owns cancellation,
-and delegates every Pi process through `run-agent.xsh`.
+and delegates every Pi process through `factory/entrypoints/run-agent.xsh`.
 
 ## Inspect a run
 
@@ -106,7 +106,7 @@ evals/<new-id>/                                   promoted package and CTO statu
 To inspect historical eval-worker strength without spending model budget:
 
 ```sh
-XSH_MODULE_PATH=. xsh tools/eval-trends.xsh -- --factory-dir . --format table
+XSH_MODULE_PATH=. xsh factory/tools/eval-trends.xsh -- --factory-dir . --format table
 ```
 
 Use `--format json` for machine-readable analysis and `--eval ID` to focus on
@@ -118,7 +118,7 @@ structured schema and field meanings are in
 the worker `tool_errors` array; there is no separate tool-error Markdown
 file. Pi's raw JSONL remains available for exact inspection. New evals provide
 a package-owned `evaluator.xsh`; adding one must not modify
-`evaluate_common.xsh`.
+the package's own `evaluator.xsh`.
 
 Every completed cycle must leave one measurable factory-wide improvement in
 Every organization cycle must also leave `CTO-PRODUCTIVITY-REPORT.md`, and
@@ -156,7 +156,7 @@ is required.
 
 `make clean` removes runs older than three days, caches, staged eval binaries, and local
 factory worktree state. Pass a different age in days to
-`tools/clean-factory.xsh`; active runs always block cleanup.
+`factory/tools/clean-factory.xsh`; active runs always block cleanup.
 The command retains tickets, evals, branches, and the shared handbook. It
 refuses to run during an active cycle.
 

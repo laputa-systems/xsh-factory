@@ -63,7 +63,7 @@ and the executor marked the trial `evaluator_state: fail` /
 
 ## Evidence
 
-- Executor mount list: `eval-executor.xsh` lines 147–148 both bind
+- Executor mount list: `the factory evaluator process boundary` lines 147–148 both bind
   `${evaluator_file}` to `/run/evaluator.xsh,readonly` — a duplicated mount
   entry in the same `eval_mounts` array.
 - Worker session: `runs/run-1785947947500/phases/03-eval/workers/eval-worker/task-svcstat-1/session.jsonl`
@@ -97,10 +97,10 @@ replayed `task-svcstat` trial (beyond this one) actually yields a populated
 
 ## Proposed XSH change
 
-No XSH language change. This is a factory harness fix in `eval-executor.xsh`:
+No XSH language change. This is a factory harness fix in `the factory evaluator process boundary`:
 remove the duplicated `--mount … dst=/run/evaluator.xsh,readonly` entry so
 `/run/evaluator.xsh` is mounted exactly once (and the package-owned
-`evaluator.xsh` is still visible to `evaluate_common.xsh` via the
+`evaluator.xsh` is still visible to `the shared evaluator dispatcher` via the
 `FACTORY_EVAL_EVALUATOR` contract).
 
 ## API-surface justification
@@ -111,8 +111,8 @@ container mount list.
 
 ## Proposed XSH change
 
-Correct `eval-executor.xsh` so `eval_mounts` mounts the evaluator file to
-`/run/evaluator.xsh` exactly once, matching the generic `evaluate_common.xsh`
+Correct `the factory evaluator process boundary` so `eval_mounts` mounts the evaluator file to
+`/run/evaluator.xsh` exactly once, matching the generic `the shared evaluator dispatcher`
 contract that reads it via `env.path("FACTORY_EVAL_EVALUATOR", p"/run/evaluator.xsh")`.
 
 ## Acceptance criteria
@@ -122,7 +122,7 @@ contract that reads it via `env.path("FACTORY_EVAL_EVALUATOR", p"/run/evaluator.
   cases (public + 7 hidden, including the malformed failure control) and
   byte-exact stdout comparison plus per-case candidate/oracle timing.
 - The generic evaluator admission still binds the package-owned `evaluator.xsh`
-  at `/run/evaluator.xsh` and finds it from `evaluate_common.xsh`.
+  at `/run/evaluator.xsh` and finds it from `the shared evaluator dispatcher`.
 
 ## Scope and non-goals
 

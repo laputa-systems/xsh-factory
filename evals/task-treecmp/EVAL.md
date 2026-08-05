@@ -234,7 +234,7 @@ create a ticket for an ordinary short-task miss or evaluator noise. A handbook
 change must name the concept it teaches and be replayed before it is trusted.
 On approval, stage `evals/task-treecmp/` with this scaffolding, including its
 package-owned `evaluator.xsh`. The generic evaluator protocol stages and
-mounts that script; do not add a task branch to `evaluate_common.xsh`.
+mounts that script; do not add a task branch to `the shared evaluator dispatcher`.
 
 ## Staged dry run
 
@@ -257,10 +257,3 @@ package is not admitted to paid work until the CTO promotes it into
 `evals/task-treecmp/` and sets it `Approved.`.
 
 ## CTO review
-
-- Result: `accepted`
-- Promotion: `promoted`
-- Package: `complete`
-- Missing package files: `None.`
-- Status: `Approved.`
-- Source run: `runs/run-1785900054828/phases/04-eval-design`

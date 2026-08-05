@@ -128,7 +128,7 @@ handbook guidance or a product issue only when it is generalizable; do not
 create a ticket for an ordinary short-task miss or evaluator noise. A handbook
 change must name the concept it teaches and be replayed before it is trusted.
 The proposal is promoted into `evals/task-manifest/` with a package-owned
-`evaluator.xsh`; new evals do not add a task branch to `evaluate_common.xsh`.
+`evaluator.xsh`; new evals do not add a task branch to `the shared evaluator dispatcher`.
 
 ## Staged dry run
 
@@ -144,7 +144,7 @@ classification. The agent half (a live Pi worker) was not exercised because it
 requires a paid agent session and a Pi auth file; the agent path is inherited
 unchanged from the approved base image. The first paid trial remains the
 integration check for the evaluator manifest (the controller-owned
-`evaluate_common.xsh` dispatcher is not modified for this eval).
+`the shared evaluator dispatcher` dispatcher is not modified for this eval).
 
 ## CTO review
 

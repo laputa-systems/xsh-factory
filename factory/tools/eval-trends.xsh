@@ -1,6 +1,6 @@
 ##! Summarize historical eval-worker effort by eval and run.
 
-use report_schema as schema
+use factory.schema as schema
 
 type Sample = {
   eval_id: Str,

@@ -1,13 +1,13 @@
 ##! Print or persist the deterministic CTO pre-cycle inventory.
 
-use factory_runtime as runtime
+use factory.runtime as runtime
 
 proc main(...argv: List[Str]) [fs, process, env, error, io] {
   let factory_dir = env.path("FACTORY_DIR", fs.cwd()?)?
   let xsh_repo = env.path("FACTORY_XSH_REPO", fp"${factory_dir}/../xsh")?
   if argv.len() > 2 or (argv.len() == 1 and argv[0] != "--run-dir") or
     (argv.len() == 2 and argv[0] != "--run-dir") {
-    eprint "usage: xsh run-cto.xsh [--run-dir RUN_DIR]"
+    eprint "usage: xsh factory/tools/cto.xsh [--run-dir RUN_DIR]"
     abort(2)
   }
   let tickets = runtime.cto_ticket_inventory(factory_dir, xsh_repo)?

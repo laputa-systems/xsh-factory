@@ -165,7 +165,7 @@ evaluator noise. A handbook change must name the concept it teaches and be
 replayed before it is trusted. On approval, stage `evals/task-revrank/` with
 this scaffolding, including its package-owned `evaluator.xsh`. The generic
 evaluator protocol stages and mounts that script; do not add a task branch to
-`evaluate_common.xsh`.
+`the shared evaluator dispatcher`.
 
 ## Difficulty justification
 

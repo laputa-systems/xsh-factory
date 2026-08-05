@@ -1,10 +1,10 @@
 ##! Package-owned evaluator for task-manifest.
 ##!
-##! New evals do not add a task branch to evaluate_common.xsh or
-##! evaluate_legacy.xsh; this script carries the full case/oracle logic and is
+##! New evals do not add a task branch to the shared evaluator dispatcher or
+##! the retired evaluator fallback; this script carries the full case/oracle logic and is
 ##! staged and mounted by the generic evaluator protocol.
 
-use factory_control as control
+use factory.control as control
 
 type Case = {
   name: Str,

@@ -269,7 +269,7 @@ export pure factory_image_tag(
   xsh_commit: Str,
   factory_control_sha: Str,
   factory_runtime_sha: Str,
-  evaluate_common_sha: Str,
+  factory_schema_sha: Str,
   eval_worker_sha: Str,
   base_dockerfile_sha: Str,
   toolchain_dockerfile_sha: Str,
@@ -283,7 +283,7 @@ export pure factory_image_tag(
     "xsh=" + xsh_commit,
     "factory-control=" + factory_control_sha,
     "factory-runtime=" + factory_runtime_sha,
-    "evaluate-common=" + evaluate_common_sha,
+    "factory-schema=" + factory_schema_sha,
     "eval-worker=" + eval_worker_sha,
     "base-dockerfile=" + base_dockerfile_sha,
     "toolchain-dockerfile=" + toolchain_dockerfile_sha,
@@ -476,11 +476,11 @@ export pure request_new_eval_count(text: Str) -> Result[Int] {
   return Ok(0)
 }
 
-## Rejects package evaluators that delegate to shared or legacy dispatchers.
+## Rejects package evaluators that delegate to a host-side evaluator dispatcher.
 export pure eval_evaluator_package_owned(source: Str) -> Bool {
   for line in source.lines() {
     let code = line.split("#").get(0, "")
-    if code.contains("evaluate_legacy.xsh") or code.contains("evaluate_common.xsh") {
+    if code.contains("/usr/local/lib/xsh-factory") or code.contains("FACTORY_EVAL_EVALUATOR") {
       return false
     }
   }

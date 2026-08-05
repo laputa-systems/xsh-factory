@@ -4,7 +4,7 @@ use factory.types as types
 use factory.graph as graph
 use factory.evidence as evidence
 use factory.reports as reports
-use report_schema as schema
+use factory.schema as schema
 
 proc test_evidence_refs_are_run_scoped_and_required() [error] {
   let ref = evidence.make_ref("run-1", "node-a", "worker-report", Path("/run-1"), Path("/run-1/workers/a/report.json"), "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", true, "present")?

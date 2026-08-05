@@ -1,5 +1,5 @@
 ##! Task-wordfreq evaluator package implementation.
-##! Self-contained: the generic evaluate_common.xsh runs this script by path,
+##! Self-contained: the generic the shared evaluator dispatcher runs this script by path,
 ##! so it owns all task-specific case logic, oracle, and run.json emission.
 ##! It deliberately does not `use` factory_control: the eval container mounts
 ##! this script at /run/evaluator.xsh without XSH_MODULE_PATH, so any module

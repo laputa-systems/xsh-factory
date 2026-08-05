@@ -1,6 +1,6 @@
 ##! Task-uniqcat evaluator package implementation (self-contained; new evals
-##! must not edit the shared evaluate_legacy.xsh compatibility module).
-use factory_control as control
+##! must not edit the shared the retired evaluator fallback compatibility module).
+use factory.control as control
 
 proc copy_results(artifact: Str) [fs, error] -> Result[Unit] {
   # /session and /export are two views of the same host worker directory.

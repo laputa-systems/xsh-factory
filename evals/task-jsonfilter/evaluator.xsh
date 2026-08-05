@@ -1,6 +1,6 @@
 ##! Package-owned evaluator for task-jsonfilter.
 
-use factory_control as control
+use factory.control as control
 
 type Case = {name: Str, document: Str, missing: Bool, expect_fail: Bool}
 

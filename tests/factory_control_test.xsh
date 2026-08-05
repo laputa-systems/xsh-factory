@@ -1,8 +1,8 @@
 ##! Native tests for factory contracts and lifecycle state.
 
-use factory_control as control
-use factory_runtime as runtime
-use report_schema as schema
+use factory.control as control
+use factory.runtime as runtime
+use factory.schema as schema
 
 proc test_cycle_request_parsing() [error] {
   let request = "# Cycle\n\n## Mode\n\n- `organization`\n\n## Active evals\n\n- `task-tags`\n\n## Trial plan\n\n- Count: `1`\n\n## New eval proposals\n\n- Count: `1`\n\n## Approved tickets\n\n- `task-tags-001`\n- `task-tags-002`\n"
@@ -32,11 +32,9 @@ proc test_eval_difficulty_contract_gate() [error] {
 proc test_eval_evaluator_package_ownership_gate() [error] {
   test.ok(control.eval_evaluator_package_owned("proc main() { json.write(...) }"))?
   test.ok(! control.eval_evaluator_package_owned(
-    "let legacy = p\"/usr/local/lib/xsh-factory/evaluate_legacy.xsh\""))?
+    "let dispatcher = p\"/usr/local/lib/xsh-factory/factory/dispatcher.xsh\""))?
   test.ok(! control.eval_evaluator_package_owned(
-    "let common = p\"/usr/local/lib/xsh-factory/evaluate_common.xsh\""))?
-  test.ok(control.eval_evaluator_package_owned(
-    "##! generic evaluate_common.xsh reference\nproc main() {}"))?
+    "let dispatcher = env.get_or(\"FACTORY_EVAL_EVALUATOR\", \"\")?"))?
 }
 
 proc test_forbidden_subprocess_scan_ignores_comments() [error] {
@@ -250,7 +248,7 @@ proc test_role_report_skeletons_are_fail_closed() [fs, error] {
   test.contains(manager, "## Next replay")?
   test.contains(director, "## Required-output status")?
   test.contains(engineer, "## Commit")?
-  let runner = fs.read_text(fp"${root}/run-agent.xsh")?
+  let runner = fs.read_text(fp"${root}/factory/entrypoints/run-agent.xsh")?
   test.contains(runner, "EVAL-MANAGER-REPORT.md")?
   test.contains(runner, "DIRECTOR-REPORT.md")?
   test.contains(runner, "ENGINEER-REPORT.md")?
@@ -262,12 +260,12 @@ proc test_standard_cycle_uses_diverse_active_eval() [fs, error] {
   let productivity = fs.read_text(fp"${fs.cwd()?}/templates/CTO-PRODUCTIVITY-REPORT.md")?
   let ledger = fs.read_text(fp"${fs.cwd()?}/runtime/handbook-ledger.md")?
   let launcher = fs.read_text(fp"${fs.cwd()?}/run.xsh")?
-  let organization = fs.read_text(fp"${fs.cwd()?}/run-organization.xsh")?
-  let runtime_source = fs.read_text(fp"${fs.cwd()?}/factory_runtime.xsh")?
-  let cto_runner = fs.read_text(fp"${fs.cwd()?}/run-cto.xsh")?
+  let organization = fs.read_text(fp"${fs.cwd()?}/factory/controllers/organization.xsh")?
+  let runtime_source = fs.read_text(fp"${fs.cwd()?}/factory/runtime.xsh")?
+  let cto_runner = fs.read_text(fp"${fs.cwd()?}/factory/tools/cto.xsh")?
   test.contains(request, "`task-bigfiles`")?
   test.contains(request, "Allow measured eval reuse")?
-  test.contains(fs.read_text(fp"${fs.cwd()?}/tools/eval-trends.xsh")?, "median_turns")?
+  test.contains(fs.read_text(fp"${fs.cwd()?}/factory/tools/eval-trends.xsh")?, "median_turns")?
   test.contains(request, "## Bottleneck review")?
   test.ok(! request.contains("`task-tags`"))?
   test.ok(! fs.exists(fp"${fs.cwd()?}/evals/task-tags/EVAL.md")?)
@@ -312,7 +310,7 @@ proc test_standard_cycle_uses_diverse_active_eval() [fs, error] {
   test.contains(launcher, "first_approved_tickets")?
   test.contains(launcher, "cto_unreviewed_open_tickets")?
   test.contains(launcher, "unresolved_handbook_candidates")?
-  test.contains(launcher, "run-cto.xsh")?
+  test.contains(launcher, "factory/tools/cto.xsh")?
   test.contains(organization, "first_approved_tickets")?
   test.contains(fs.read_text(fp"${fs.cwd()?}/run.xsh")?, "next_untried_approved_eval")?
   test.contains(organization, "cto_unreviewed_open_tickets")?
@@ -408,8 +406,8 @@ proc test_engineer_assignment_is_controller_bound() [error] {
 
 proc test_eval_image_inputs_are_local() [fs, error] {
   let dockerfile = fs.read_text(fp"${fs.cwd()?}/evals/Dockerfile.base")?
-  let controller = fs.read_text(fp"${fs.cwd()?}/run-eval.xsh")?
-  let executor = fs.read_text(fp"${fs.cwd()?}/eval-executor.xsh")?
+  let controller = fs.read_text(fp"${fs.cwd()?}/factory/controllers/eval.xsh")?
+  let executor = fs.read_text(fp"${fs.cwd()?}/factory/entrypoints/eval-executor.xsh")?
   test.contains(dockerfile, ".dist/xsh")?
   test.contains(dockerfile, ".dist/xsht")?
   test.contains(dockerfile, "pi-headless-bun-musl-static/releases/download/pi-3aeca83d-bun-1.4.0-linux-arm64-musl/pi")?

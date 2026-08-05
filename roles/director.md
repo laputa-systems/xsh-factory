@@ -40,7 +40,7 @@ xsh "$FACTORY_RUN_AGENT" -- <role> <id> <system-prompt> <message-file>
 ```
 
 The inherited environment contains `FACTORY_DIR`, `FACTORY_RUN_DIR`,
-`FACTORY_RUN_AGENT`, and `FACTORY_XSH_REPO`. `run-agent.xsh` selects the
+`FACTORY_RUN_AGENT`, and `FACTORY_XSH_REPO`. `factory/entrypoints/run-agent.xsh` selects the
 provider, model, thinking level, tools, and budget from the role-specific
 `FACTORY_<ROLE>_*` variables. Do not invent a second launcher or invoke Pi
 directly.

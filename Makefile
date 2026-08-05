@@ -1,4 +1,4 @@
 .PHONY: clean
 
 clean:
-	@XSH_MODULE_PATH=. xsh tools/clean-factory.xsh 3
+	@XSH_MODULE_PATH=. xsh factory/tools/clean-factory.xsh 3

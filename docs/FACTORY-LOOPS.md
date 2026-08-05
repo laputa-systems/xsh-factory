@@ -4,10 +4,10 @@ The north star is to make XSH a practical, easy-to-learn, token-efficient
 systems-glue language that coding agents can use reliably. The loops have
 different authorities and outputs.
 
-## Inner loop: `eval-executor.xsh` controller
+## Inner loop: `factory/entrypoints/eval-executor.xsh` controller
 
 The executor is pure controller infrastructure, not a Pi role or employee. For
-one assigned eval and handbook snapshot, `eval-executor.xsh`:
+one assigned eval and handbook snapshot, `factory/entrypoints/eval-executor.xsh`:
 
 1. creates the worker workspace;
 2. launches the eval-worker in Docker;
@@ -60,9 +60,9 @@ failure does not suppress another ticket's replay. Reconciliation then updates
 the linked `TICKET.md` to `Merged.`; the linked manager replay decides whether
 the change should remain.
 
-## Eval-strength loop: `tools/eval-trends.xsh`
+## Eval-strength loop: `factory/tools/eval-trends.xsh`
 
-The CTO uses `tools/eval-trends.xsh` before reusing or retiring an eval. It
+The CTO uses `factory/tools/eval-trends.xsh` before reusing or retiring an eval. It
 aggregates persisted eval-worker reports by eval and run, including turns,
 tokens, tool errors, wall time, and provider retry/error counts. These are
 agent-effort signals, not intrinsic task-difficulty scores. Compare them with
@@ -144,7 +144,7 @@ with a channel and captured content. Sibling stdout/stderr files are optional
 forensic copies.
 
 `report.json` is the machine contract at every controller boundary. The
-schema is implemented in `report_schema.xsh` and described in
+schema is implemented in `factory/schema.xsh` and described in
 [`REPORT-SCHEMA.md`](REPORT-SCHEMA.md). Compressed `session.jsonl.bz2` files
 retain canonical raw Pi evidence. The runtime transparently reads them.
 `REPORT.md` is one qualitative employee judgment. `CTO-REPORT.md`

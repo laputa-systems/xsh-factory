@@ -153,7 +153,7 @@ rejected or deferred. A quality rejection is durable factory progress and does
 not count as an admission failure.
 
 Eval-strength gate: before retiring or reusing an eval, the CTO must inspect
-`tools/eval-trends.xsh` output. The report must separate agent effort from
+`factory/tools/eval-trends.xsh` output. The report must separate agent effort from
 provider health and distinguish discovery trials, replays, and regression
 sentinels. Retire an eval only after the trend supports low information value,
 no required replay depends on it, and the decision is recorded with evidence.

@@ -1,8 +1,8 @@
 ##! Native tests for structured reports, shutdown, and patch boundaries.
 
-use factory_control as control
-use factory_runtime as runtime
-use report_schema as schema
+use factory.control as control
+use factory.runtime as runtime
+use factory.schema as schema
 
 proc command_ok(command: Path, args: List[Str]) [process, error] -> Result[Bool] {
   return process.run(process.command_argv(command, args))?.ok
@@ -12,7 +12,7 @@ proc run_session_report(root: Path, session: Path, output: Path) [fs, process, e
   let xsh = process.which("xsh")?
   let status = process.run(process.command_argv(
     xsh,
-    [xsh.display(), fp"${fs.cwd()?}/tools/session-report.xsh", "--", "worker",
+    [xsh.display(), fp"${fs.cwd()?}/factory/tools/session.xsh", "--", "worker",
       "--session", session.display(), "--output", output.display(),
       "--role", "eval-worker", "--worker-id", "fixture", "--budget-usd", "0.50"],
     env: {FACTORY_DIR: fs.cwd()?.display(), XSH_MODULE_PATH: fs.cwd()?.display()},
@@ -60,7 +60,7 @@ proc test_eval_trends_aggregates_historical_worker_reports(ctx: TestContext) [fs
   let xsh = process.which("xsh")?
   let output = fp"${root}/output.txt"
   let status = process.run(process.command_argv(
-    xsh, [xsh.display(), fp"${factory}/tools/eval-trends.xsh", "--", "--factory-dir", root.display()],
+    xsh, [xsh.display(), fp"${factory}/factory/tools/eval-trends.xsh", "--", "--factory-dir", root.display()],
     cwd: factory, stdout: output, env: {XSH_MODULE_PATH: factory.display(), FACTORY_DIR: factory.display()},
   ))?
   test.ok(status.ok, "eval trend tool should summarize a fixture report")?
@@ -195,7 +195,7 @@ proc test_audit_compiles_one_phase_report(ctx: TestContext) [fs, process, error]
   write_eval_phase_fixture(root, factory)?
   let xsh = process.which("xsh")?
   let status = process.run(process.command_argv(
-    xsh, [xsh.display(), fp"${factory}/audit-run.xsh", "--", root.display(), "eval"],
+    xsh, [xsh.display(), fp"${factory}/factory/tools/audit.xsh", "--", root.display(), "eval"],
     cwd: factory, env: {FACTORY_DIR: factory.display(), XSH_MODULE_PATH: factory.display(), FACTORY_XSH_COMMIT: "fixture"},
   ))?
   test.ok(status.ok, "audit compiler should produce a phase report")?
@@ -215,7 +215,7 @@ proc test_audit_preserves_controller_required_output_failure(ctx: TestContext) [
   json.write(fp"${root}/required-outputs.json", {required: false, manager_report: false}, pretty: true)?
   let xsh = process.which("xsh")?
   let status = process.run(process.command_argv(
-    xsh, [xsh.display(), fp"${factory}/audit-run.xsh", "--", root.display(), "eval"],
+    xsh, [xsh.display(), fp"${factory}/factory/tools/audit.xsh", "--", root.display(), "eval"],
     cwd: factory, env: {FACTORY_DIR: factory.display(), XSH_MODULE_PATH: factory.display(), FACTORY_XSH_COMMIT: "fixture"},
   ))?
   test.ok(status.ok, "audit compiler should write a report even when the gate fails")?
@@ -234,7 +234,7 @@ proc test_organization_audit_only_admits_direct_phase_children(ctx: TestContext)
   }, pretty: true)?
   let xsh = process.which("xsh")?
   let status = process.run(process.command_argv(
-    xsh, [xsh.display(), fp"${factory}/audit-run.xsh", "--", root.display(), "organization"],
+    xsh, [xsh.display(), fp"${factory}/factory/tools/audit.xsh", "--", root.display(), "organization"],
     cwd: factory, env: {FACTORY_DIR: factory.display(), XSH_MODULE_PATH: factory.display(), FACTORY_XSH_COMMIT: "fixture"},
   ))?
   test.ok(status.ok, "organization audit should accept the direct phase")?
@@ -268,14 +268,14 @@ proc test_reconciliation_ignores_retired_branch_reference(ctx: TestContext) [fs,
   let ticket = fs.read_text(fp"${root}/tickets/task-a.md")?.replace("- Eval:", "- Eval: task-envcfg")
   fs.write(fp"${root}/tickets/task-a.md", ticket)?
   let helper = fp"${root}/helper.xsh"
-  fs.write(helper, "use factory_runtime as runtime\nproc main() [fs, process, env, error, io] { let repo = env.path(\"FACTORY_XSH_REPO\")?; let _ = runtime.reconcile_tickets(fs.cwd()?, repo, run.text \"git\" \"-C\" $repo.display() \"rev-parse\" \"HEAD\" ?)? }\n")?
+  fs.write(helper, "use factory.runtime as runtime\nproc main() [fs, process, env, error, io] { let repo = env.path(\"FACTORY_XSH_REPO\")?; let _ = runtime.reconcile_tickets(fs.cwd()?, repo, run.text \"git\" \"-C\" $repo.display() \"rev-parse\" \"HEAD\" ?)? }\n")?
   let status = process.run(process.command_argv(process.which("xsh")?, ["xsh", helper.display()], cwd: root, env: {FACTORY_XSH_REPO: product.display(), XSH_MODULE_PATH: factory.display()}))?
   test.ok(status.ok, "reconciliation must ignore missing historical branches")?
 }
 
 proc test_stale_branch_inventory_is_documented() [fs, error] {
-  let runtime = fs.read_text(fp"${fs.cwd()?}/factory_runtime.xsh")?
-  let cto = fs.read_text(fp"${fs.cwd()?}/run-cto.xsh")?
+  let runtime = fs.read_text(fp"${fs.cwd()?}/factory/runtime.xsh")?
+  let cto = fs.read_text(fp"${fs.cwd()?}/factory/tools/cto.xsh")?
   test.contains(runtime, "stale_ticket_branches")?
   test.contains(cto, "Stale branch candidates")?
   test.contains(cto, "retire_stale_ticket_branches")?
@@ -289,7 +289,7 @@ proc test_eval_cap_is_admission_policy() [fs, error] {
 }
 
 proc test_cto_report_pins_factory_root() [fs, error] {
-  let runtime = fs.read_text(fp"${fs.cwd()?}/factory_runtime.xsh")?
+  let runtime = fs.read_text(fp"${fs.cwd()?}/factory/runtime.xsh")?
   test.contains(runtime, "env: {FACTORY_DIR: factory_dir.display(), XSH_MODULE_PATH: factory_dir.display()}")?
 }
 
@@ -304,7 +304,7 @@ proc test_cto_briefing_reads_json_not_projection(ctx: TestContext) [fs, process,
   let output = fp"${root}/CTO-REPORT.md"
   let xsh = process.which("xsh")?
   let status = process.run(process.command_argv(
-    xsh, [xsh.display(), fp"${factory}/tools/cto-report.xsh", "--", "--run-dir", root.display(), "--output", output.display(), "--result", "pass"],
+    xsh, [xsh.display(), fp"${factory}/factory/tools/cto-report.xsh", "--", "--run-dir", root.display(), "--output", output.display(), "--result", "pass"],
     cwd: factory, env: {FACTORY_DIR: factory.display(), XSH_MODULE_PATH: factory.display()},
   ))?
   test.ok(status.ok, "CTO compiler should consume structured reports")?
@@ -336,7 +336,7 @@ proc test_aggregate_budget_breach_writes_postmortem_and_stops(ctx: TestContext) 
   let child = spawn process.command_argv("sh", ["sh", "-c", "sleep 5"])?
   let xsh = process.which("xsh")?
   let status = process.run(process.command_argv(
-    xsh, [xsh.display(), fp"${fs.cwd()?}/tools/cycle-budget-watch.xsh", "--",
+    xsh, [xsh.display(), fp"${fs.cwd()?}/factory/tools/cycle-budget-watch.xsh", "--",
       "--run-dir", root.display(), "--pid", f"${child.pid}", "--budget-usd", "0.50",
       "--marker", marker.display(), "--stop", stop.display(), "--postmortem", postmortem.display()],
     env: {FACTORY_DIR: fs.cwd()?.display(), XSH_MODULE_PATH: fs.cwd()?.display()},
@@ -350,8 +350,8 @@ proc test_aggregate_budget_breach_writes_postmortem_and_stops(ctx: TestContext) 
 }
 
 proc test_structured_provenance_event_exists() [fs, error] {
-  let runtime = fs.read_text(fp"${fs.cwd()?}/factory_runtime.xsh")?
-  let ticket = fs.read_text(fp"${fs.cwd()?}/run-ticket.xsh")?
+  let runtime = fs.read_text(fp"${fs.cwd()?}/factory/runtime.xsh")?
+  let ticket = fs.read_text(fp"${fs.cwd()?}/factory/controllers/ticket.xsh")?
   test.contains(runtime, "emit_structured_event")?
   test.contains(ticket, "amended_commit")?
 }
@@ -482,8 +482,8 @@ proc test_run_worktree_cleanup_removes_dirty_worktrees_preserves_branch(ctx: Tes
 }
 
 proc test_organization_reuses_existing_branch_without_duplicate_dispatch() [fs, error] {
-  let organization = fs.read_text(fp"${fs.cwd()?}/run-organization.xsh")?
-  let reuse = fs.read_text(fp"${fs.cwd()?}/run-ticket-reuse.xsh")?
+  let organization = fs.read_text(fp"${fs.cwd()?}/factory/controllers/organization.xsh")?
+  let reuse = fs.read_text(fp"${fs.cwd()?}/factory/controllers/reuse.xsh")?
   let launcher = fs.read_text(fp"${fs.cwd()?}/run.xsh")?
   test.contains(organization, "run_reuse_phase")?
   # Reuse mode must not gate the linked replay on a non-existent engineer
@@ -496,9 +496,9 @@ proc test_organization_reuses_existing_branch_without_duplicate_dispatch() [fs, 
 }
 
 proc test_ticket_cycle_bounds_concurrent_engineers() [fs, error] {
-  let ticket = fs.read_text(fp"${fs.cwd()?}/run-ticket.xsh")?
+  let ticket = fs.read_text(fp"${fs.cwd()?}/factory/controllers/ticket.xsh")?
   let director = fs.read_text(fp"${fs.cwd()?}/roles/director.md")?
-  let organization = fs.read_text(fp"${fs.cwd()?}/run-organization.xsh")?
+  let organization = fs.read_text(fp"${fs.cwd()?}/factory/controllers/organization.xsh")?
   test.contains(ticket, "max_concurrent_engineers()")?
   test.contains(ticket, r"""at most ${control.max_concurrent_engineers()} engineer tickets""")?
   test.contains(ticket, "remove_run_worktrees")?
@@ -514,8 +514,8 @@ proc test_ticket_cycle_bounds_concurrent_engineers() [fs, error] {
 }
 
 proc test_eval_mode_has_no_paid_director_review() [fs, error] {
-  let evaluator = fs.read_text(fp"${fs.cwd()?}/run-eval.xsh")?
-  let auditor = fs.read_text(fp"${fs.cwd()?}/audit-run.xsh")?
+  let evaluator = fs.read_text(fp"${fs.cwd()?}/factory/controllers/eval.xsh")?
+  let auditor = fs.read_text(fp"${fs.cwd()?}/factory/tools/audit.xsh")?
   test.ok(! evaluator.contains("20-director-started"))?
   test.ok(! evaluator.contains("director_handle"))?
   test.contains(auditor, "result: \"not-requested\"")?
@@ -523,7 +523,7 @@ proc test_eval_mode_has_no_paid_director_review() [fs, error] {
 }
 
 proc test_eval_gate_diagnostics_are_persisted() [fs, error] {
-  let evaluator = fs.read_text(fp"${fs.cwd()?}/run-eval.xsh")?
+  let evaluator = fs.read_text(fp"${fs.cwd()?}/factory/controllers/eval.xsh")?
   test.contains(evaluator, "required-outputs.json")?
   test.contains(evaluator, "write_preflight_failure_report")?
   test.contains(evaluator, "preflight-failure")?
@@ -540,15 +540,13 @@ proc test_task_bigfiles_evaluator_is_package_owned() [fs, error] {
   test.contains(evaluator, "sort -k1,1rn")?
 }
 proc test_eval_dispatch_is_package_owned() [fs, error] {
-  let common = fs.read_text(fp"${fs.cwd()?}/evaluate_common.xsh")?
-  let executor = fs.read_text(fp"${fs.cwd()?}/eval-executor.xsh")?
-  test.ok(! common.contains("task-tags"))?
-  test.ok(! common.contains("task-ecount"))?
-  test.ok(! common.contains("task-envcfg"))?
-  test.contains(common, "FACTORY_EVAL_EVALUATOR")?
+  let evaluate = fs.read_text(fp"${fs.cwd()?}/evals/task-bigfiles/evaluate.xsh")?
+  let executor = fs.read_text(fp"${fs.cwd()?}/factory/entrypoints/eval-executor.xsh")?
+  test.contains(evaluate, "/run/evaluator.xsh")?
+  test.ok(! evaluate.contains("factory/tools"))?
   test.contains(executor, "evaluator.xsh")?
-  test.contains(executor, "factory_control.xsh")?
-  let ticket_controller = fs.read_text(fp"${fs.cwd()?}/run-ticket.xsh")?
+  test.contains(executor, "use factory.control as control")?
+  let ticket_controller = fs.read_text(fp"${fs.cwd()?}/factory/controllers/ticket.xsh")?
   test.contains(ticket_controller, "CTO owns factory changes")?
   test.contains(ticket_controller, "ticket_change_target")?
   test.contains(executor, "identity", "eval_id")?
@@ -559,13 +557,13 @@ proc test_eval_dispatch_is_package_owned() [fs, error] {
 }
 
 proc test_eval_design_rejects_legacy_evaluator_source() [fs, error] {
-  let controller = fs.read_text(fp"${fs.cwd()?}/run-design.xsh")?
+  let controller = fs.read_text(fp"${fs.cwd()?}/factory/controllers/design.xsh")?
   test.contains(controller, "eval_evaluator_package_owned")?
   test.contains(controller, "evaluator_source_ok")?
 }
 
 proc test_eval_design_stages_and_promotes_complete_package() [fs, error] {
-  let controller = fs.read_text(fp"${fs.cwd()?}/run-design.xsh")?
+  let controller = fs.read_text(fp"${fs.cwd()?}/factory/controllers/design.xsh")?
   let assignment = fs.read_text(fp"${fs.cwd()?}/templates/EVAL-DESIGNER-ASSIGNMENT.md")?
   let role = fs.read_text(fp"${fs.cwd()?}/roles/eval-designer.md")?
   let review = fs.read_text(fp"${fs.cwd()?}/templates/CTO-EVAL-REVIEW.md")?
@@ -624,7 +622,7 @@ proc test_eval_executor_is_documented_as_controller_not_role() [fs, error] {
 }
 
 proc test_controllers_have_no_legacy_projection_outputs() [fs, error] {
-  for file in ["run.xsh", "run-eval.xsh", "run-ticket.xsh", "run-design.xsh", "run-organization.xsh", "audit-run.xsh", "tools/session-report.xsh"] {
+  for file in ["run.xsh", "factory/controllers/eval.xsh", "factory/controllers/ticket.xsh", "factory/controllers/design.xsh", "factory/controllers/organization.xsh", "factory/tools/audit.xsh", "factory/tools/session.xsh"] {
     let source = fs.read_text(fp"${fs.cwd()?}/${file}")?
     test.ok(! source.contains("COST.md"), f"${file} must use report.json")?
     test.ok(! source.contains("AUDIT.md"), f"${file} must use report.json")?
@@ -633,8 +631,25 @@ proc test_controllers_have_no_legacy_projection_outputs() [fs, error] {
   }
 }
 
+proc test_canonical_surface_has_no_compatibility_layer() [fs, error] {
+  let root = fs.cwd()?
+  let launcher = fs.read_text(fp"${root}/run.xsh")?
+  test.ok(! launcher.contains("compat"), "the only top-level launcher must be canonical")?
+  test.contains(launcher, "use factory.control as control")?
+  for file in [
+    "factory/controllers/organization.xsh", "factory/controllers/ticket.xsh",
+    "factory/controllers/eval.xsh", "factory/controllers/design.xsh",
+    "factory/controllers/reuse.xsh", "factory/entrypoints/run-agent.xsh",
+    "factory/entrypoints/eval-executor.xsh", "factory/tools/audit.xsh",
+    "factory/tools/report.xsh", "factory/tools/session.xsh",
+  ] {
+    let source = fs.read_text(fp"${root}/${file}")?
+    test.ok(! source.contains("compat"), f"${file} must not use compatibility code")?
+  }
+}
+
 proc test_clean_factory_supports_age_pruning() [fs, error] {
-  let clean = fs.read_text(fp"${fs.cwd()?}/tools/clean-factory.xsh")?
+  let clean = fs.read_text(fp"${fs.cwd()?}/factory/tools/clean-factory.xsh")?
   test.contains(clean, "cutoff_ms")?
   test.contains(clean, r"removed ${removed} run(s) older than")?
   test.contains(clean, "age_days < 1")?
@@ -654,10 +669,10 @@ proc test_compressed_session_support_round_trips(ctx: TestContext) [fs, process,
 }
 
 proc test_compressed_session_support_is_documented() [fs, error] {
-  let runtime = fs.read_text(fp"${fs.cwd()?}/factory_runtime.xsh")?
-  let report = fs.read_text(fp"${fs.cwd()?}/tools/session-report.xsh")?
-  let budget = fs.read_text(fp"${fs.cwd()?}/tools/budget-watch.xsh")?
-  let cleanup = fs.read_text(fp"${fs.cwd()?}/tools/cleanup-run.xsh")?
+  let runtime = fs.read_text(fp"${fs.cwd()?}/factory/runtime.xsh")?
+  let report = fs.read_text(fp"${fs.cwd()?}/factory/tools/session.xsh")?
+  let budget = fs.read_text(fp"${fs.cwd()?}/factory/tools/budget-watch.xsh")?
+  let cleanup = fs.read_text(fp"${fs.cwd()?}/factory/tools/cleanup-run.xsh")?
   test.contains(runtime, "session.jsonl.bz2")?
   test.contains(runtime, "compress_run_sessions")?
   test.contains(report, "runtime.session_text")?
@@ -667,7 +682,7 @@ proc test_compressed_session_support_is_documented() [fs, error] {
 }
 
 proc test_pi_session_persistence_is_jsonl_only() [fs, error] {
-  let controller = fs.read_text(fp"${fs.cwd()?}/run-agent.xsh")?
+  let controller = fs.read_text(fp"${fs.cwd()?}/factory/entrypoints/run-agent.xsh")?
   let eval_worker = fs.read_text(fp"${fs.cwd()?}/evals/eval-worker.xsh")?
   test.contains(controller, "--session")?
   test.contains(controller, "--mode", "json")?
@@ -676,7 +691,7 @@ proc test_pi_session_persistence_is_jsonl_only() [fs, error] {
   test.contains(eval_worker, "--session")?
   test.contains(eval_worker, "--mode", "json")?
   test.contains(eval_worker, ".events.jsonl")?
-  let executor = fs.read_text(fp"${fs.cwd()?}/eval-executor.xsh")?
+  let executor = fs.read_text(fp"${fs.cwd()?}/factory/entrypoints/eval-executor.xsh")?
   test.contains(executor, "fs.remove")?
   test.ok(! controller.contains("--export"), "run-agent must not create session.html")?
   test.ok(! eval_worker.contains("--export"), "eval worker must not create session.html")?
@@ -685,10 +700,10 @@ proc test_pi_session_persistence_is_jsonl_only() [fs, error] {
 proc test_run_agent_clears_pi_harness_env() [fs, error] {
   # The factory may be launched from inside a standalone-embedded Pi session
   # whose PI_PACKAGE_DIR/PI_STANDALONE_BINARY leak (XSH merges spawn `env`)
-  # into every host-side agent launch. run-agent.xsh must clear them so host
+  # into every host-side agent launch. The host runner must clear them so host
   # `pi` resolves its own installed package instead of a partial embedded one
   # lacking dist/modes/interactive/theme/dark.json, which crashed agent startup.
-  let controller = fs.read_text(fp"${fs.cwd()?}/run-agent.xsh")?
+  let controller = fs.read_text(fp"${fs.cwd()?}/factory/entrypoints/run-agent.xsh")?
   test.contains(controller, "PI_PACKAGE_DIR: \"\"")?
   test.contains(controller, "PI_STANDALONE_BINARY: \"\"")?
   let worker = fs.read_text(fp"${fs.cwd()?}/evals/eval-worker.xsh")?
@@ -715,7 +730,7 @@ proc test_host_agent_dispatch_requires_controller_manifest(ctx: TestContext) [fs
   test.eq(schema.value_text(json.get(dispatch, ["message_file"], "")), message.display())?
   test.eq(schema.value_text(json.get(dispatch, ["mode"], "")), "eval")?
   test.eq(schema.value_text(json.get(dispatch, ["eval_id"], "")), "task-a")?
-  let runner = fs.read_text(fp"${fs.cwd()?}/run-agent.xsh")?
+  let runner = fs.read_text(fp"${fs.cwd()?}/factory/entrypoints/run-agent.xsh")?
   test.contains(runner, "missing controller dispatch record")?
   test.contains(runner, "agent invocation does not match controller dispatch record")?
 }

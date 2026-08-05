@@ -3,7 +3,7 @@
 use factory.types as types
 use factory.graph as graph
 use factory.evidence as evidence
-use report_schema as schema
+use factory.schema as schema
 
 ## Expected machine outputs for one admitted node.
 export type NodeEvidence = {

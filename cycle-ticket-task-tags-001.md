@@ -17,7 +17,7 @@ review and merge.
 
 ## Role overrides
 
-Use the defaults codified by `run.xsh` and `run-agent.xsh`.
+Use the defaults codified by `run.xsh` and `factory/entrypoints/run-agent.xsh`.
 
 ## Required outputs
 

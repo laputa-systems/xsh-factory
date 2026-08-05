@@ -1,6 +1,6 @@
 ##! Reconcile approved tickets against the current XSH repository.
 
-use factory_runtime as runtime
+use factory.runtime as runtime
 
 proc main(...argv: List[Str]) [fs, process, env, error, io] {
   let factory_dir = env.path("FACTORY_DIR", fs.cwd()?)?

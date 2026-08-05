@@ -36,7 +36,7 @@ test.
    user work. Do not push to a remote.
 7. Do not move files until their imports, module search paths, tests, and
    operator documentation have an explicit migration step.
-8. Keep top-level launchers stable during migration. `run.xsh` remains the
+8. Keep only the required top-level launcher stable. `run.xsh` remains the
    only operator entry point.
 9. Do not use compatibility projections as a substitute for a stronger
    contract. Preserve raw evidence, then remove duplicate machine state.
@@ -48,16 +48,16 @@ test.
 The factory has useful pieces, but policy, effects, dispatch, and workflow
 state are spread across many top-level files:
 
-- policy and parsing: `factory_control.xsh`;
-- effects and reconciliation: `factory_runtime.xsh`;
-- report envelope: `report_schema.xsh`;
-- phase controllers: `run-ticket.xsh`, `run-eval.xsh`, `run-design.xsh`,
-  `run-organization.xsh`, and `run-ticket-reuse.xsh`;
+- policy and parsing: `factory/control.xsh`;
+- effects and reconciliation: `factory/runtime.xsh`;
+- report envelope: `factory/schema.xsh`;
+- phase controllers: `factory/controllers/ticket.xsh`, `factory/controllers/eval.xsh`, `factory/controllers/design.xsh`,
+  `factory/controllers/organization.xsh`, and `factory/controllers/reuse.xsh`;
 - top-level admission: `run.xsh`;
-- process boundary: `run-agent.xsh`;
-- audit and reporting: `audit-run.xsh`, `factory_report.xsh`, and
-  `tools/cto-report.xsh`;
-- evaluator boundary: `eval-executor.xsh`, `evaluate_common.xsh`, and
+- process boundary: `factory/entrypoints/run-agent.xsh`;
+- audit and reporting: `factory/tools/audit.xsh`, `factory/tools/report.xsh`, and
+  `factory/tools/cto-report.xsh`;
+- evaluator boundary: `factory/entrypoints/eval-executor.xsh`, `package-owned evaluator.xsh`, and
   `evals/eval-worker.xsh`.
 
 The recent ticket-ownership and dispatch-manifest fixes address two concrete
@@ -66,7 +66,7 @@ complete. The following risks are the starting hypotheses to verify.
 
 ### P0: dispatch authority and exact graph membership
 
-1. `run-agent.xsh` now checks a dispatch manifest, but the manifest is a
+1. `factory/entrypoints/run-agent.xsh` now checks a dispatch manifest, but the manifest is a
    mutable JSON file without a cryptographic controller/run authority. A caller
    that can write the run directory can manufacture a matching manifest.
 2. The runner validates several fields, but the system prompt path and system
@@ -134,10 +134,10 @@ finalization. The graph rejects impossible transitions before spawning a child.
 
 ### P1: report and evidence integrity
 
-1. `report_schema.xsh` validates a common envelope, but phase and run `data`
+1. `factory/schema.xsh` validates a common envelope, but phase and run `data`
    fields are mostly unconstrained. A report can be structurally valid while
    omitting the facts needed for its mode.
-2. `audit-run.xsh` contains mode-specific discovery and aggregation logic. The
+2. `factory/tools/audit.xsh` contains mode-specific discovery and aggregation logic. The
    audit must compare expected outputs from the dispatch plan with observed
    reports, manifests, sessions, narratives, patches, and events.
 3. Evaluator manifests, worker reports, phase reports, and root reports do not
@@ -177,16 +177,16 @@ blocking reasons. No controller may infer work from prose after admission.
 
 ### P1: duplicated orchestration and process boundaries
 
-1. `run-eval.xsh`, `run-design.xsh`, and `run-ticket.xsh` each construct role
+1. `factory/controllers/eval.xsh`, `factory/controllers/design.xsh`, and `factory/controllers/ticket.xsh` each construct role
    environments and launch paths with similar but non-identical logic.
-2. `run-organization.xsh` has its own child spawning, reuse handling, phase
+2. `factory/controllers/organization.xsh` has its own child spawning, reuse handling, phase
    waits, and result calculation instead of composing one shared graph engine.
 3. Report auditing, process registration, event emission, and cleanup are
    called in different orders across controllers.
-4. `evaluate_common.xsh` and package evaluators have an ownership boundary that
+4. `package-owned evaluator.xsh` and package evaluators have an ownership boundary that
    needs a single typed evaluator invocation contract.
-5. Top-level wrappers and historical compatibility files make it difficult to
-   tell which path is canonical.
+5. Multiple top-level launch paths make it difficult to tell which path is
+   canonical.
 
 **Required outcome:** one process/dispatch API and one graph executor own shared
 mechanics. Mode-specific modules provide only plan construction and
@@ -221,9 +221,9 @@ The audit must explicitly check, rather than assume, the following:
 ## Target architecture
 
 Create one consolidated `factory/` module namespace for core factory XSH code.
-Keep small top-level launchers as stable compatibility entry points that import
-or invoke the canonical modules. Do not move eval package-owned files into this
-namespace; package contracts remain under `evals/<id>/`.
+Keep only `run.xsh` at the repository root as the canonical operator launcher.
+Do not move eval package-owned files into this namespace; package contracts
+remain under `evals/<id>/`.
 
 Proposed layout:
 
@@ -254,9 +254,9 @@ factory/
 │   ├── budget.xsh
 │   └── cleanup.xsh
 └── entrypoints/
-    ├── run.xsh
-    ├── run-agent.xsh
-    └── eval-executor.xsh
+    ├── ../run.xsh (the only root operator launcher)
+    ├── factory/entrypoints/run-agent.xsh
+    └── factory/entrypoints/eval-executor.xsh
 ```
 
 The exact filenames may change after the audit. The boundaries must not:
@@ -391,7 +391,7 @@ Extend the recent dispatch-manifest work as follows:
    related environment variables.
 8. Audit compares the planned dispatch set with the claimed, started,
    completed, reported, and terminated sets and reports every difference.
-9. Direct invocation of `run-agent.xsh` without a controller-owned active run,
+9. Direct invocation of `factory/entrypoints/run-agent.xsh` without a controller-owned active run,
    valid plan, and matching claim is rejected.
 10. The dispatch manifest is evidence, not a generated Markdown projection. Its
     durable JSON form belongs under the run's allowed evidence tree.
@@ -456,7 +456,7 @@ Use one validator per node kind. It must verify:
   evidence;
 - all expected outputs are present and no unexpected worker node is accepted.
 
-Extend `report_schema.xsh` with typed mode contracts without creating
+Extend `factory/schema.xsh` with typed mode contracts without creating
 role-specific projections. Preserve metrics in the common envelope and raw
 session. Have `audit.xsh` consume the graph and evidence model rather than
 walking arbitrary directories and guessing identity from path substrings.
@@ -533,9 +533,9 @@ needed to validate the inventory, and `XSH_MODULE_PATH=. xsht test` passes.
 
 - Add `factory/types.xsh`, `factory/paths.xsh`, `factory/request.xsh`, and
   `factory/policy.xsh`.
-- Move or wrap pure parsing and policy from `factory_control.xsh`.
-- Keep a compatibility `factory_control.xsh` wrapper that exports the old
-  names while callers migrate.
+- Move or wrap pure parsing and policy from `factory/control.xsh`.
+- Make all callers import `factory.control` directly; no compatibility export
+  layer is retained.
 - Define typed change targets, statuses, IDs, roots, budgets, modes, and
   admission errors.
 - Add pure tests for normalization, containment, request parsing, status
@@ -551,11 +551,11 @@ all old and new tests pass; invalid values fail before effects.
 - Replace ad hoc role/message/environment construction with dispatch specs.
 - Bind system prompt hashes and complete input identities.
 - Add forged, stale, duplicate, and missing-dispatch tests.
-- Keep `run-agent.xsh` as a thin compatibility entry point that delegates to
-  the canonical runner.
+- Keep `factory/entrypoints/run-agent.xsh` as the canonical host process
+  boundary.
 
 Exit criteria: every controller can emit a complete plan before spawning;
-`run-agent.xsh` cannot start without a valid plan and claim; audit can compare
+`factory/entrypoints/run-agent.xsh` cannot start without a valid plan and claim; audit can compare
 planned nodes with observed nodes.
 
 ### Phase 3: centralize lifecycle, process ownership, and cleanup
@@ -577,7 +577,7 @@ idempotent.
 - Add `factory/evidence.xsh` and `factory/reports.xsh`.
 - Move report discovery, identity binding, hashes, required-output predicates,
   and mode-specific audit checks out of directory scans.
-- Make `audit-run.xsh` a thin entry point into the typed audit module.
+- Make `factory/tools/audit.xsh` a thin entry point into the typed audit module.
 - Validate dispatch-plan completeness, report identity, manifest identity,
   session identity, patch provenance, and terminal graph state.
 - Add synthetic evidence matrices for pass, failure, partial, cancellation,
@@ -590,11 +590,11 @@ all durable evidence paths are typed and hash-checked.
 
 Migrate in this order:
 
-1. `run-eval.xsh`;
-2. `run-design.xsh`;
-3. `run-ticket.xsh`;
-4. `run-ticket-reuse.xsh`;
-5. `run-organization.xsh`;
+1. `factory/controllers/eval.xsh`;
+2. `factory/controllers/design.xsh`;
+3. `factory/controllers/ticket.xsh`;
+4. `factory/controllers/reuse.xsh`;
+5. `factory/controllers/organization.xsh`;
 6. `run.xsh` as the final admission wrapper.
 
 For each controller:
@@ -615,9 +615,7 @@ private role-selection, process-registration, lifecycle, or evidence logic.
 ### Phase 6: consolidate the namespace
 
 - Move canonical core modules under `factory/`.
-- Keep only documented compatibility entry points at the repository root:
-  `run.xsh`, `run-agent.xsh`, mode launchers, evaluator entry points, and any
-  operator-facing tools that must retain their paths.
+- Keep only the documented `run.xsh` operator launcher at the repository root.
 - Update `XSH_MODULE_PATH` setup and all staged Docker module paths.
 - Update source-hash/image identity calculations to hash canonical module paths.
 - Update `AGENTS.md`, the factory codemap, README, tests, and operator docs.
@@ -625,8 +623,8 @@ private role-selection, process-registration, lifecycle, or evidence logic.
   and path audit proves they are unreachable.
 
 Exit criteria: one canonical implementation exists for every core concern;
-compatibility wrappers contain no policy or duplicated logic; fresh and cached
-Docker/eval builds resolve the same canonical modules.
+no compatibility wrappers or duplicate root implementations remain; fresh and
+cached Docker/eval builds resolve the same canonical modules.
 
 ### Phase 7: prove invariants and close the migration
 
@@ -638,8 +636,8 @@ Docker/eval builds resolve the same canonical modules.
 - Run one deliberately aborted graph and one forged-dispatch fixture.
 - Verify the product checkout remains clean and factory-only changes remain in
   the factory checkout.
-- Review all compatibility wrappers and delete any that no longer have a
-  documented operator or package consumer.
+- Delete every compatibility wrapper and remove its references from source,
+  tests, and operator documentation.
 - Record a migration report with old/new module hashes, test counts, and known
   limitations.
 
@@ -688,7 +686,7 @@ marking this plan complete.
 | Evidence identity | wrong report, manifest, session, or patch hash fails |
 | Ticket lifecycle | worker cannot change ticket status |
 | CTO ownership | factory finding is reportable but not engineer-dispatchable |
-| Eval ownership | package evaluator cannot delegate to a legacy dispatcher |
+| Eval ownership | package evaluator cannot delegate to a shared dispatcher |
 | Cap enforcement | 31st eval cannot be admitted |
 | Cleanup | stale markers and dirty worktrees do not delete unrelated state |
 
@@ -707,8 +705,8 @@ The refactor is complete only when all of the following are true:
    evidence.
 7. Lifecycle transitions, cancellation, budgets, and cleanup use shared typed
    machinery.
-8. Core factory XSH code has one canonical `factory/` namespace with thin,
-   documented entry-point wrappers.
+8. Core factory XSH code has one canonical `factory/` namespace; only the
+   required root `run.xsh` launcher remains outside it.
 9. The native suite covers pure policy, graph validation, dispatch, paths,
    lifecycle, evidence, cleanup, budget, and failure behavior without Pi.
 10. The migration preserves historical evidence and operator-visible durable

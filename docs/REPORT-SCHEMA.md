@@ -59,7 +59,7 @@ the sibling `events.jsonl`; they are not copied into a second report format.
 
 Numbers that Pi does not report are `null` or omitted; the factory never
 infers provider reasoning-token counts from thinking text. Controllers validate
-the envelope and required fields with `report_schema.xsh` and native XSH tests
+the envelope and required fields with `factory/schema.xsh` and native XSH tests
 before a report can advance a cycle.
 
 ## Ownership

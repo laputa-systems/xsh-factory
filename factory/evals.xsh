@@ -1,7 +1,7 @@
 ##! Eval portfolio admission and package ownership policy.
 
 use factory.types as types
-use factory_control as legacy
+use factory.control as legacy
 
 ## Parsed checked-in eval facts.
 export type EvalRecord = {

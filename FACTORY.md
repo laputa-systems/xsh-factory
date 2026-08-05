@@ -10,7 +10,7 @@ from `NORTH-STAR.md` and the adjacent XSH checkout.
 ```text
 CTO
 ├── eval cycle controller
-│   ├── eval-executor.xsh (controller program, not a Pi role) ── eval-worker
+│   ├── factory/entrypoints/eval-executor.xsh (controller program, not a Pi role) ── eval-worker
 │   ├── eval-manager
 │   └── eval-designer
 └── director (ticket-implementation only)
@@ -27,11 +27,11 @@ CTO
 | eval-worker | One isolated eval artifact and its task review | Host/factory/oracle inspection, handbook edits, or evaluator changes |
 
 The controller assigns work. Agents interpret evidence and make qualitative
-decisions inside their assignments. `eval-executor.xsh` is a controller-owned
+decisions inside their assignments. `factory/entrypoints/eval-executor.xsh` is a controller-owned
 inner-loop program that launches the isolated `eval-worker`; it is not an
 agent, employee, or Pi role. The director never searches for work and an
 engineer never chooses a ticket. There is one process launcher,
-`run-agent.xsh`, and one top-level dispatcher, `run.xsh`.
+`factory/entrypoints/run-agent.xsh`, and one top-level dispatcher, `run.xsh`.
 
 ## Engineering rules
 
@@ -60,13 +60,13 @@ is created.
   validation. Pi roles own interpretation, diagnosis, and recommendations.
   validation. Pi roles own interpretation, diagnosis, and recommendations.
 Every host-side Pi session requires a controller-written dispatch manifest at
-`runs/<run>/dispatch/<role>-<worker>.json`. `run-agent.xsh` rejects a missing,
+`runs/<run>/dispatch/<role>-<worker>.json`. `factory/entrypoints/run-agent.xsh` rejects a missing,
 altered, or mismatched manifest before starting Pi. Role prompts are guidance;
 the manifest, exact message path, worker identity, mode, and work directory
 are the dispatch contract.
 - Fail closed at boundaries: validate paths, exact assignments, commits,
   report schema, handbook lineage, image identity, budgets, and required reads.
-- Historical eval strength is measured by `tools/eval-trends.xsh` from worker
+- Historical eval strength is measured by `factory/tools/eval-trends.xsh` from worker
   reports; its output separates provider health from agent effort.
 - Every behavior that can be tested without Pi gets an xsht native test.
   Synthetic sessions, fake commands, and harmless process doubles are the
@@ -84,8 +84,8 @@ are the dispatch contract.
 
 ## Report contract
 
-The report envelope is implemented in `report_schema.xsh` and constructed by
-the controllers or `tools/session-report.xsh`:
+The report envelope is implemented in `factory/schema.xsh` and constructed by
+the controllers or `factory/tools/session.xsh`:
 
 ```text
 schema_version, kind, identity, state, result, data, findings, artifacts
@@ -113,7 +113,7 @@ human-authored inputs or judgments. They are not machine-to-machine state.
 `run.xsh` admits one explicit mode after preflight:
 
 - `eval`: build the local XSH/xsht distribution, run one or two pure eval
-  trials through `eval-executor.xsh`, then dispatch the manager and optional
+  trials through `factory/entrypoints/eval-executor.xsh`, then dispatch the manager and optional
   designer review;
 - `ticket-implementation`: create up to two isolated worktrees and one
   inlined ticket assignment per approved ticket, dispatching the admitted
@@ -160,9 +160,9 @@ product change with evidence.
 
 ## Budgets and shutdown
 
-Role settings are coded in `factory_control.xsh`; all roles have independent
+Role settings are coded in `factory/control.xsh`; all roles have independent
 provider, model, thinking, tools, turn, wall, and dollar settings. The
-aggregate cycle cap is enforced by `tools/cycle-budget-watch.xsh` and is a
+aggregate cycle cap is enforced by `factory/tools/cycle-budget-watch.xsh` and is a
 hard stop. A breach terminates the full process tree, writes a postmortem,
 and leaves structured partial evidence. An eval-worker budget breach disables
 that eval in its `EVAL.md`; an engineer breach closes its assigned ticket as

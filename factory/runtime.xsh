@@ -1,7 +1,7 @@
 ##! Shared process-boundary helpers for every factory cycle mode.
 
-use factory_control as control
-use report_schema as schema
+use factory.control as control
+use factory.schema as schema
 
 error RuntimeError = InvalidTransition(subject: Str, current: Str, next: Str) : InvalidData
 
@@ -45,7 +45,7 @@ export proc cleanup_active_run() [fs, process, env, error] -> Result[Unit] {
   if run_text != "" {
     let xsh_path = process.which("xsh")?
     let self_pid = process.current_pid()?
-    let cleanup = fp"${factory_dir}/tools/cleanup-run.xsh"
+    let cleanup = fp"${factory_dir}/factory/tools/cleanup-run.xsh"
     let _ = process.run(process.command_argv(
       xsh_path,
       [xsh_path.display(), cleanup.display(), "--", run_text, "--exclude-pid", f"${self_pid}"],
@@ -176,7 +176,7 @@ export proc start_cycle_budget_watch(
   let budget = control.clamp_cycle_budget(requested)?
   let xsh = process.which("xsh")?
   let env_path = process.which("env")?
-  let watcher = fp"${factory_dir}/tools/cycle-budget-watch.xsh"
+  let watcher = fp"${factory_dir}/factory/tools/cycle-budget-watch.xsh"
   let marker = fp"${run_dir}/AGGREGATE-BUDGET-BREACH"
   let stop = fp"${run_dir}/AGGREGATE-BUDGET-STOP"
   let postmortem = fp"${run_dir}/POSTMORTEM.md"
@@ -236,7 +236,7 @@ export proc write_cto_report(
   result: Str,
 ) [fs, process, error] -> Result[Bool] {
   let xsh = process.which("xsh")?
-  let tool = fp"${factory_dir}/tools/cto-report.xsh"
+  let tool = fp"${factory_dir}/factory/tools/cto-report.xsh"
   let output = fp"${run_dir}/CTO-REPORT.md"
   let status = process.run(process.command_argv(
     xsh,

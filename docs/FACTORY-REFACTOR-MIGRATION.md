@@ -6,7 +6,7 @@ cycle was run during the migration.
 
 ## Canonical ownership
 
-The new `factory/` namespace owns the durable control-plane contracts:
+The `factory/` namespace now owns the durable control-plane implementation:
 
 | Concern | Canonical module |
 | --- | --- |
@@ -22,10 +22,22 @@ The new `factory/` namespace owns the durable control-plane contracts:
 | Report construction and exact-node audit | `factory/reports.xsh` |
 | Ticket and eval admission | `factory/tickets.xsh`, `factory/evals.xsh` |
 | Run-scoped cleanup | `factory/cleanup.xsh` |
+| Shared control settings and templates | `factory/control.xsh` |
+| Shared effects, reconciliation, and provenance | `factory/runtime.xsh` |
+| Common report envelope | `factory/schema.xsh` |
+| Evaluator ownership | Every `evals/task-*/evaluate.xsh` invokes its sibling `evaluator.xsh` directly |
+| Session normalization and process watchers | `factory/tools/session.xsh`, `factory/tools/session-watch.xsh`, `factory/tools/budget-watch.xsh`, `factory/tools/cycle-budget-watch.xsh` |
+| Cleanup, CTO reporting, and eval trends | `factory/tools/cleanup-run.xsh`, `factory/tools/clean-factory.xsh`, `factory/tools/cto-report.xsh`, `factory/tools/eval-trends.xsh` |
 
-Mode-specific plan construction is in `factory/controllers/`. The operator,
-host-agent, and eval-executor contracts are in `factory/entrypoints/`; the
-existing root launchers remain the stable process entry points.
+Mode-specific execution is in `factory/controllers/`. The host runner and
+eval executor are in `factory/entrypoints/`; audit, CTO, reconciliation, and
+human report tools are in `factory/tools/`.
+
+The only root script is the canonical `run.xsh` admission launcher. All other
+controllers, process boundaries, reporting commands, and maintenance tools
+are invoked from their explicit `factory/` paths. The old top-level launcher
+and evaluator compatibility layers were removed rather than retained as
+delegates.
 
 ## Review questions
 
@@ -33,7 +45,7 @@ existing root launchers remain the stable process entry points.
   `factory/controllers/`, then validated by `factory.graph.validate` before a
   child can be admitted.
 - A worker is authorized by `factory.dispatch.invocation_authorized`; the
-  host runner also enforces the same persisted identity in `run-agent.xsh`.
+  host runner also enforces the same persisted identity in `factory/entrypoints/run-agent.xsh`.
 - A report belongs to its worker only when
   `factory.evidence.report_identity_ok` matches run, node, role, worker, and
   dispatch identity.
@@ -67,16 +79,15 @@ The native suite covers the new contracts without Pi:
 - `tests/factory_evidence_test.xsh`: required/cross-run evidence, forged
   reports, mode contracts, missing nodes, and extra workers.
 
-The current full result is 77 passing native tests. The product checkout is
+The current full result is 78 passing native tests. The product checkout is
 not modified by this migration; pre-existing product work remains untouched.
 
-## Intentional compatibility boundary
+## Compatibility boundary
 
-The root files `factory_control.xsh`, `factory_runtime.xsh`, `report_schema.xsh`,
-the mode controllers, and `audit-run.xsh` retain their operator-visible paths
-while callers migrate. `factory_runtime.write_bound_dispatch_record` and the
-runner checks are the first live bridge to the new dispatch contract. The
-remaining legacy implementation bodies are owned by the corresponding
-canonical module migration and are covered by the existing `tests/` contracts;
-they must not gain new policy or evidence projections. The inventory and this
-report make that boundary searchable until the final wrapper-only migration.
+No shared implementation remains at the repository root. Historical operator
+paths are preserved only where they are part of the documented entrypoint
+surface; each retained root script is a small delegate and contains no policy,
+dispatch, lifecycle, report, or evaluator implementation. Package-owned eval
+contracts remain under `evals/<id>/`; their container-facing paths
+Package evaluators are mounted directly at `/run/evaluator.xsh`; no shared
+task dispatcher or fallback evaluator is included in the image.

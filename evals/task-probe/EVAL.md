@@ -144,7 +144,7 @@ change must name the concept it teaches and be replayed before it is trusted.
 The CTO promotes `evals/task-probe/` with this scaffolding, including its
 package-owned `evaluator.xsh`, after each design phase. The generic evaluator
 protocol stages and mounts that script; do not add a task branch to
-`evaluate_common.xsh`. Its `Draft.` status keeps it out of active cycles until
+`the shared evaluator dispatcher`. Its `Draft.` status keeps it out of active cycles until
 explicit admission.
 
 ## Staged dry run

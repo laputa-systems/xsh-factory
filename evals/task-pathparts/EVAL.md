@@ -138,7 +138,7 @@ change must name the concept it teaches and be replayed before it is trusted.
 On approval, stage `evals/task-pathparts/` with this scaffolding, including
 its package-owned self-contained `evaluator.xsh`. The generic evaluator
 protocol stages and mounts that script; do not add a task branch to
-`evaluate_common.xsh` or `evaluate_legacy.xsh`.
+`the shared evaluator dispatcher` or `the retired evaluator fallback`.
 
 ## Staged dry run
 

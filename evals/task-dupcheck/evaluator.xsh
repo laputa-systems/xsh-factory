@@ -1,6 +1,6 @@
 ##! Package-owned evaluator for task-dupcheck.
 
-use factory_control as control
+use factory.control as control
 
 type FixtureFile = {dir: Str, name: Str, data: Str}
 type Case = {name: Str, dirs: List[Str], files: List[FixtureFile], missing: Bool}

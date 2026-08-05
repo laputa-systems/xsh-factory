@@ -17,7 +17,7 @@ type CaseResult = {
 ## Detect forbidden subprocess syntax without treating prose in `#` comments
 ## as code. Self-contained so the evaluator does not depend on a changing
 ## shared control module inside the eval image.
-proc source_has_forbidden_subprocess(source: Str) -> Bool {
+pure source_has_forbidden_subprocess(source: Str) -> Bool {
   for line in source.lines() {
     let code = line.split("#").get(0, "")
     if code.contains("process.") or code.contains("spawn ") or code.contains("run ") {

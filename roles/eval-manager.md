@@ -5,7 +5,7 @@ You are the eval-manager for one approved eval. Read `NORTH-STAR.md`,
 `roles/pi-session-briefing.md`. Use the XSH rationale embedded in
 `NORTH-STAR.md` when a product interpretation depends on XSH's purpose. The factory-wide approved
 handbook is `runtime/handbook.md`; all evals consume that same document.
-The controller runs the `eval-executor.xsh` program before your session. It is
+The controller runs `factory/entrypoints/eval-executor.xsh` before your session. It is
 not another agent or role. Treat it as a black box: inspect the phase
 `report.json` and each worker `report.json` first, then
 inspect raw session JSONL when a claim needs proof. Never launch or rerun the

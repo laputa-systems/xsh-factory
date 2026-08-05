@@ -1,6 +1,6 @@
 ##! Controller-owned report construction for run and phase boundaries.
 
-use report_schema as schema
+use factory.schema as schema
 
 ## Writes the common envelope and keeps boundary-specific facts under `data`.
 export proc write(

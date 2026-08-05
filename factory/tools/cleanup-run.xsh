@@ -1,6 +1,6 @@
 ##! Drain the process and container registry for an interrupted factory run.
 
-use factory_runtime as runtime
+use factory.runtime as runtime
 
 proc signal_registry(run_dir: Path, signal: Str, excluded_pid: Int) [fs, process, error] -> Result[Unit] {
   if ! fs.exists(run_dir)? {

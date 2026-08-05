@@ -25,7 +25,7 @@ not eligible for engineer dispatch.
 
 - Review cycle: next organization cycle.
 - Decision: Deferred; do not approve or dispatch.
-- Basis: The evaluator container failed before trial execution because `factory_control.xsh` was unavailable, and the ticket's first review also found the linked package ID malformed. The ID is now normalized to `task-dupcheck`, but the evaluator module-provisioning defect remains unrepaired; approval would create another paid harness failure.
+- Basis: The evaluator container failed before trial execution because `the shared factory control module` was unavailable, and the ticket's first review also found the linked package ID malformed. The ID is now normalized to `task-dupcheck`, but the evaluator module-provisioning defect remains unrepaired; approval would create another paid harness failure.
 - Next evidence: repair evaluator module provisioning and run a valid eight-case manifest before admission. Keep `Open.`.
 
 ## Budget breach
@@ -62,14 +62,14 @@ control`, and the evaluator container cannot resolve that module.
 err[parse.module-read]: failed to read module
   /run/evaluator.xsh:3:1
   use factory_control as control
-  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ failed to read module; tried `/run/factory_control.xsh`: No such file or directory (os error 2). Set XSH_MODULE_PATH to add module search roots
+  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ failed to read module; tried `/run/the shared factory control module`: No such file or directory (os error 2). Set XSH_MODULE_PATH to add module search roots
 ```
 
-The executor (`eval-executor.xsh`) mounts `evaluate.xsh` and `evaluator.xsh`
-into the evaluator container at `/run/` but neither copies `factory_control.xsh`
+The executor (`the factory evaluator process boundary`) mounts `evaluate.xsh` and `evaluator.xsh`
+into the evaluator container at `/run/` but neither copies `the shared factory control module`
 into the container nor sets `XSH_MODULE_PATH`, so `use factory_control` cannot
 resolve. The controller pre-staged dry-run passed on the host because
-`factory_control.xsh` is on the host's local module path; the isolated
+`the shared factory control module` is on the host's local module path; the isolated
 container lacks that root.
 
 ## Evidence
@@ -110,8 +110,8 @@ agent solution be formally measured against the eight-case oracle.
 ## Proposed XSH change
 
 None (no XSH language change is proposed). Proposed infrastructure change: in
-`eval-executor.xsh`, make the shared `factory_control` module resolvable inside
-the evaluator container — copy/mount `factory_control.xsh` into the container
+`the factory evaluator process boundary`, make the shared `factory_control` module resolvable inside
+the evaluator container — copy/mount `the shared factory control module` into the container
 (for example to `/run/` or a module root) and/or set `XSH_MODULE_PATH` so
 `xsh /run/evaluate.xsh` can load `use factory_control as control`.
 ## API-surface justification
@@ -121,7 +121,7 @@ builtin, keyword, constructor, type, method, or syntax form.
 
 ## Proposed XSH change
 
-Provide `factory_control.xsh` to the evaluator container (mount or copy it and
+Provide `the shared factory control module` to the evaluator container (mount or copy it and
 set `XSH_MODULE_PATH`), matching how the module is already resolved on the host
 so the dry-run and the isolated run agree.
 

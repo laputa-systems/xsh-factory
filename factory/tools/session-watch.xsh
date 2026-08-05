@@ -1,6 +1,6 @@
-use factory_runtime as runtime
 ##! Stop a Pi process when its turn or wall-clock ceiling is reached.
 
+use factory.runtime as runtime
 pure json_text(value: Any) -> Str {
   match value {
     s is Str => return s

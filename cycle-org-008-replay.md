@@ -41,7 +41,7 @@ spend.
 
 ## Role overrides
 
-Use the defaults codified by `factory_control.xsh` and `run-agent.xsh`. Put any
+Use the defaults codified by `the shared factory control module` and `factory/entrypoints/run-agent.xsh`. Put any
 deliberate override in the invocation with a role-specific setting.
 
 ## Required outputs

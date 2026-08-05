@@ -7,7 +7,7 @@ repair exposed by `run-1785947947500`. The prior cycle's engineer assignment
 was correctly blocked because the approved ticket was a factory-repository
 change, not an XSH product change; the cycle nevertheless produced the exact
 new failure signal: every evaluator hit a duplicate `/run/evaluator.xsh`
-mount. That duplicate is now removed, while the shared `factory_control.xsh`
+mount. That duplicate is now removed, while the shared `the shared factory control module`
 mount remains. Reuse the existing `task-dupcheck-001` implementation branch
 only if the controller finds one; otherwise do not dispatch a duplicate
 engineer. Run the linked `task-dupcheck` replay and the distinct independent

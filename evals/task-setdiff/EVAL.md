@@ -147,7 +147,7 @@ change must name the concept it teaches (for example the `set` module or
 `Str.lines` trailing-newline semantics) and be replayed before it is trusted.
 On approval, stage `evals/task-setdiff/` with this scaffolding, including its
 package-owned `evaluator.xsh`. The generic evaluator protocol stages and
-mounts that script; do not add a task branch to `evaluate_common.xsh`.
+mounts that script; do not add a task branch to `the shared evaluator dispatcher`.
 
 ## Staged dry run
 

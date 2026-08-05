@@ -1,7 +1,7 @@
 ##! Ticket ownership and merge-reconciliation policy.
 
 use factory.types as types
-use factory_control as legacy
+use factory.control as legacy
 
 ## Parsed ticket facts used by admission and reconciliation.
 export type TicketRecord = {

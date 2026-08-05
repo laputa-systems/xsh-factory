@@ -1,7 +1,7 @@
-use factory_runtime as runtime
 ##! Enforce the hard aggregate spend cap for one factory cycle.
 
-use factory_control as control
+use factory.runtime as runtime
+use factory.control as control
 
 type CostReport = {total: Float, seen: Bool, unknown: Bool, unavailable: Bool}
 
@@ -17,7 +17,7 @@ stream walk_failure(run_dir: Path) [fs, error] -> Stream[Record] {
   yield {kind: "__walk_error__", name: "", path: run_dir}
 }
 
-proc reported_cost(run_dir: Path) [fs, error] -> Result[CostReport] {
+proc reported_cost(run_dir: Path) [fs, process, error] -> Result[CostReport] {
   var total = 0.0
   var seen = false
   var unknown = false
@@ -141,7 +141,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
         f"budget exceeded: ${observed} > ${cap.format(precision: 2)}\n",
       )?
       write_postmortem(factory_dir, run_dir, cap, observed, controller_pid, reason, postmortem)?
-      let cleanup = fp"${factory_dir}/tools/cleanup-run.xsh"
+      let cleanup = fp"${factory_dir}/factory/tools/cleanup-run.xsh"
       let xsh = process.which("xsh")?
       let _ = process.run(process.command_argv(
         xsh,

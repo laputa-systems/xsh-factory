@@ -62,7 +62,7 @@ eval-design phase runs alongside the primary phase.
 
 ## Role overrides
 
-Use the defaults codified by `run.xsh` and `run-agent.xsh`. Put any deliberate
+Use the defaults codified by `run.xsh` and `factory/entrypoints/run-agent.xsh`. Put any deliberate
 environment override in the invocation, using names such as
 `FACTORY_EVAL_MANAGER_MODEL` or `FACTORY_ENGINEER_THINKING`.
 

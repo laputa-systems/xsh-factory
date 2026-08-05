@@ -76,7 +76,7 @@ with the nearest controller/tool and its native test under `tests/`.
 ## Terminology
 
 Use the current Pi role names: `CTO`, `director`, `eval-designer`,
-`eval-manager`, `eval-worker`, and `engineer`. `eval-executor.xsh` is
+`eval-manager`, `eval-worker`, and `engineer`. `factory/entrypoints/eval-executor.xsh` is
 controller-owned infrastructure, not a role or employee. Older references to
 “automator” or “xsh-swe” are legacy terminology, not new role names.
 
@@ -109,59 +109,57 @@ grepping broadly.
 - `run.xsh` is the only top-level launcher. It performs preflight, admission,
   locks, aggregate-budget setup, signal cleanup, and dispatches exactly one
   mode controller.
-- `run-organization.xsh` composes the bounded organization graph: approved
+- `factory/controllers/organization.xsh` composes the bounded organization graph: approved
   ticket implementation, linked replay, independent eval, and optional eval
   design. It owns overlap and waits on process handles; it does not ask agents
   to select work.
-- `run-ticket.xsh` creates clean XSH worktrees, renders immutable engineer
-  assignments, dispatches engineer rows through `run-agent.xsh`, validates
+- `factory/controllers/ticket.xsh` creates clean XSH worktrees, renders immutable engineer
+  assignments, dispatches engineer rows through `factory/entrypoints/run-agent.xsh`, validates
   reports/branches/commits/worktrees, amends validated engineer commits with
   provenance, and captures portable patches.
-- `run-ticket-reuse.xsh` validates an already-existing factory branch in a
+- `factory/controllers/reuse.xsh` validates an already-existing factory branch in a
   detached worktree for an organization replay; it is not a second engineer
   dispatch path.
-- `run-eval.xsh` builds the local XSH image/runtime, dispatches eval workers
-  through `eval-executor.xsh`, and then dispatches the eval-manager. It owns
+- `factory/controllers/eval.xsh` builds the local XSH image/runtime, dispatches eval workers
+  through `factory/entrypoints/eval-executor.xsh`, and then dispatches the eval-manager. It owns
   trial admission and evaluator manifests, not qualitative diagnosis.
-- `run-design.xsh` dispatches one eval-designer and gates materialization,
+- `factory/controllers/design.xsh` dispatches one eval-designer and gates materialization,
   evaluator syntax checks, CTO review, and promotion into `evals/`.
-- `run-cto.xsh` is deterministic ticket inventory/reconciliation input for the
+- `factory/tools/cto.xsh` is deterministic ticket inventory/reconciliation input for the
   CTO; it does not launch paid work.
 
 ### Shared runtime, contracts, and process boundaries
 
-- `factory/` is the canonical namespace for new control-plane contracts:
-  `types.xsh`, `paths.xsh`, `request.xsh`, `policy.xsh`, `graph.xsh`,
-  `dispatch.xsh`, `process.xsh`, `lifecycle.xsh`, `evidence.xsh`,
-  `reports.xsh`, `tickets.xsh`, `evals.xsh`, and `cleanup.xsh`. The root
-  `factory_control.xsh` and `factory_runtime.xsh` files are compatibility
-  implementations during migration; do not add new policy or evidence
-  projections there.
-- `factory_control.xsh` retains the existing role settings and template
-  helpers used by stable launchers. New admission and identity gates belong in
-  `factory/policy.xsh` and `factory/types.xsh`.
-- `factory_runtime.xsh` contains effectful shared operations: process/PID
+- `factory/` is the canonical namespace for all shared control-plane code:
+  domain modules under `factory/*.xsh`, mode controllers under
+  `factory/controllers/`, entrypoints under `factory/entrypoints/`, and tools
+  under `factory/tools/`. The sole root script, `run.xsh`, owns top-level
+  admission and dispatch; there are no compatibility scripts.
+- `factory/control.xsh` retains role settings and template helpers. New
+  admission and identity gates belong in `factory/policy.xsh` and
+  `factory/types.xsh`.
+- `factory/runtime.xsh` contains effectful shared operations: process/PID
   registration and cancellation, locks, event-ledger writes, CTO handoffs,
   eval promotion, ticket reconciliation, worktree/patch cleanup, handbook
   lineage checks, exact session-read checks, and engineer commit provenance.
-- `report_schema.xsh` is the single machine-report envelope validator for
+- `factory/schema.xsh` is the single machine-report envelope validator for
   `worker`, `phase`, and `run` reports. Do not add role-specific machine
   projections; preserve metrics in `report.json` and raw session JSONL.
-- `audit-run.xsh` compiles controller outputs into a phase/run report.
-  `factory_report.xsh` and `tools/cto-report.xsh` render human navigation
+- `factory/tools/audit.xsh` compiles controller outputs into a phase/run
+  report. `factory/tools/report.xsh` and `factory/tools/cto-report.xsh` render human navigation
   views from structured evidence; the views are not state.
-- `run-agent.xsh` is the one Pi process boundary. It creates the worker
+- `factory/entrypoints/run-agent.xsh` is the one Pi process boundary. It creates the worker
   directory, invokes Pi with role settings, persists compressed `session.jsonl.bz2`, runs
   session/budget watchers, and normalizes the worker report. Never launch Pi
   directly.
-- `tools/session-report.xsh` parses Pi JSONL into worker metrics: assistant
+- `factory/tools/session.xsh` parses Pi JSONL into worker metrics: assistant
   turns, token buckets, provider totals, reasoning tokens when reported,
   thinking blocks, cost, stop reasons, tool counts, tool errors, and session
   span. Engineer commit trailers are derived from this normalized report plus
   the hashed raw session, not from narrative prose.
-- `tools/session-watch.xsh`, `tools/budget-watch.xsh`, and
-  `tools/cycle-budget-watch.xsh` enforce worker and aggregate shutdown bounds.
-  `tools/cleanup-run.xsh` and `tools/clean-factory.xsh` are cleanup operators;
+- `factory/tools/session-watch.xsh`, `factory/tools/budget-watch.xsh`, and
+  `factory/tools/cycle-budget-watch.xsh` enforce worker and aggregate shutdown bounds.
+  `factory/tools/cleanup-run.xsh` and `factory/tools/clean-factory.xsh` are cleanup operators;
   they must preserve branches, tickets, and evidence according to their scope.
 
 ### Roles, prompts, and report ownership
@@ -189,9 +187,9 @@ grepping broadly.
 - Each approved `evals/task-*/EVAL.md` owns its task contract, restrictions,
   oracle, evaluator, metrics, and manager policy. `executor.xsh` is package
   selection/scaffolding; `evaluator.xsh` is the package-owned correctness and
-  restriction boundary. `evaluate_common.xsh` is shared mechanics only and
-  must not accumulate task-specific dispatch logic.
-- `eval-executor.xsh` is controller infrastructure, not a Pi role. It launches
+  restriction boundary. Each package's `evaluate.xsh` invokes its sibling
+  `evaluator.xsh` directly; task dispatch is never shared in factory code.
+- `factory/entrypoints/eval-executor.xsh` is controller infrastructure, not a Pi role. It launches
   the isolated worker, runs the selected package evaluator, and preserves
   compressed `session.jsonl.bz2`, worker `report.json`, evaluator `run.json`, and artifacts.
 - The evidence hierarchy is compressed raw `session.jsonl.bz2` -> normalized worker
@@ -201,9 +199,9 @@ grepping broadly.
 
 ### Engineer provenance path
 
-`run-ticket.xsh` first verifies `report.json`, required reads, expected branch,
+`factory/controllers/ticket.xsh` first verifies `report.json`, required reads, expected branch,
 new `HEAD`, and an empty product worktree. It captures the portable patch and
-its SHA-256, then calls `factory_runtime.amend_engineer_commit`. That helper
+its SHA-256, then calls `factory/runtime.xsh::amend_engineer_commit`. That helper
 reads the normalized worker report, hashes the report and raw session archive,
 receives the assignment and patch hashes, invokes Git's
 `commit --amend --no-edit --trailer` once, and independently verifies the
@@ -232,5 +230,5 @@ trailer-verification, idempotency, patch-hash, and cleanup cases live in
 
 Before the next paid cycle, verify the factory's root/phase path boundary,
 keep the checked-in eval portfolio at or below the coded cap of 30, inspect
-stale `factory/*` branches through `run-cto.xsh`, and preserve the outcome
+  stale `factory/*` branches through `factory/tools/cto.xsh`, and preserve the outcome
 split in reports: product, evaluator, infrastructure, and overall cycle.

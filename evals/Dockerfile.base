@@ -17,8 +17,12 @@ COPY .dist/xsh /usr/local/bin/xsh
 COPY .dist/xsht /usr/local/bin/xsht
 RUN chmod 0755 /usr/local/bin/xsh /usr/local/bin/xsht
 
-COPY eval-worker.xsh .dist/factory_control.xsh .dist/factory_runtime.xsh .dist/evaluate_common.xsh .dist/evaluate_legacy.xsh /usr/local/lib/xsh-factory/
-RUN chmod 0755 /usr/local/lib/xsh-factory/eval-worker.xsh /usr/local/lib/xsh-factory/factory_control.xsh /usr/local/lib/xsh-factory/factory_runtime.xsh /usr/local/lib/xsh-factory/evaluate_common.xsh /usr/local/lib/xsh-factory/evaluate_legacy.xsh
+COPY eval-worker.xsh /usr/local/lib/xsh-factory/eval-worker.xsh
+COPY .dist/factory/control.xsh /usr/local/lib/xsh-factory/factory/control.xsh
+COPY .dist/factory/runtime.xsh /usr/local/lib/xsh-factory/factory/runtime.xsh
+COPY .dist/factory/schema.xsh /usr/local/lib/xsh-factory/factory/schema.xsh
+RUN chmod 0755 /usr/local/lib/xsh-factory/eval-worker.xsh /usr/local/lib/xsh-factory/factory/control.xsh /usr/local/lib/xsh-factory/factory/runtime.xsh /usr/local/lib/xsh-factory/factory/schema.xsh
+ENV XSH_MODULE_PATH=/usr/local/lib/xsh-factory
 
 ARG FACTORY_BUILD_ID=unknown
 LABEL org.xsh.factory.build-id="${FACTORY_BUILD_ID}"

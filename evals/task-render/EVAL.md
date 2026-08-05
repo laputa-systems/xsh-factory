@@ -114,7 +114,7 @@ fixtures (basic substitution, multiple/adjacent placeholders, unknown
 placeholder + empty value, reversed key order, and values containing `=` and
 spaces). The missing-file failure control exits nonzero without creating the
 output. What remains unproven by the dry run is a full agent coding session,
-the containerized `evaluate_legacy.xsh` wiring, and lint cleanliness of the
+the containerized `the retired evaluator fallback` wiring, and lint cleanliness of the
 agent's own solution.
 
 ## CTO review

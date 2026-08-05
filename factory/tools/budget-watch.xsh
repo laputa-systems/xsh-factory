@@ -1,6 +1,6 @@
-use factory_runtime as runtime
 ##! Stop a Pi process when its reported session cost crosses the hard cap.
 
+use factory.runtime as runtime
 type CostReport = {total: Float, seen: Bool}
 
 pure json_number(value: Any) -> Float {

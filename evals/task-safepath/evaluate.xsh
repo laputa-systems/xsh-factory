@@ -1,4 +1,4 @@
-##! self-contained runner: delegate to the package-owned evaluator only.
+##! Package evaluator entrypoint. Task logic lives in this eval package.
 
 proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   let xsh = process.which("xsh")?

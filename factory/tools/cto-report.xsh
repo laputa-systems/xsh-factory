@@ -1,7 +1,7 @@
 ##! Render one human briefing from the structured run report and employee narratives.
 
-use factory_control as control
-use report_schema as schema
+use factory.control as control
+use factory.schema as schema
 
 pure text(value: Any, fallback: Str = "unknown") -> Str {
   let result = schema.value_text(value)

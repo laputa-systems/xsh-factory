@@ -5,7 +5,7 @@
 Run one bounded organization cycle under the CTO contract. The current
 assembly-line bottleneck is approval-to-delivery: `task-dupcheck-001` has a
 reproducible evaluator-container module failure, and the shared executor now
-mounts `factory_control.xsh` with a native regression assertion. Approve and
+mounts `the shared factory control module` with a native regression assertion. Approve and
 implement that infrastructure ticket, then require its linked replay to
 produce the eight-case manifest. Run the distinct approved `task-svcstat` eval
 as the independent signal phase. Do not create a new eval proposal because the
@@ -15,7 +15,7 @@ portfolio is at the coded 30-contract cap.
 
 - Stage: approval -> reviewable engineer commit.
 - Evidence: `tickets/task-dupcheck-001.md` records the deterministic
-  `parse.module-read` evaluator failure; `eval-executor.xsh` now mounts the
+  `parse.module-read` evaluator failure; `the factory evaluator process boundary` now mounts the
   missing shared module; `tests/tools_test.xsh` asserts that boundary.
 - Corrective action: admit one bounded engineer assignment for the repaired
   ticket and require the linked `task-dupcheck` replay before merge review.
@@ -54,7 +54,7 @@ portfolio is at the coded 30-contract cap.
 
 ## Role overrides
 
-Use the defaults codified by `factory_control.xsh` and `run-agent.xsh`.
+Use the defaults codified by `the shared factory control module` and `factory/entrypoints/run-agent.xsh`.
 
 ## Required outputs
 

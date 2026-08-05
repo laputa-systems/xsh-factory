@@ -1,6 +1,6 @@
 ##! Package-owned evaluator for task-keyjoin.
 
-use factory_control as control
+use factory.control as control
 
 type Case = {name: Str, left: Str, right: Str}
 

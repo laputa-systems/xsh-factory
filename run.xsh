@@ -1,7 +1,7 @@
 ##! Dispatches one complete factory cycle from a checked-in request.
 
-use factory_control as control
-use factory_runtime as runtime
+use factory.control as control
+use factory.runtime as runtime
 use factory.request as typed_request
 use factory.types as typed_types
 
@@ -46,18 +46,18 @@ proc preflight(
   for required in [
     "NORTH-STAR.md",
     "runtime/handbook.md",
-    "run-agent.xsh",
-    "run-ticket-reuse.xsh",
-    "run-cto.xsh",
-    "factory_control.xsh",
-    "factory_runtime.xsh",
-    "factory_report.xsh",
-    "report_schema.xsh",
-    "audit-run.xsh",
-    "tools/cleanup-run.xsh",
-    "tools/cycle-budget-watch.xsh",
-    "tools/session-watch.xsh",
-    "tools/cto-report.xsh",
+    "factory/entrypoints/run-agent.xsh",
+    "factory/controllers/reuse.xsh",
+    "factory/tools/cto.xsh",
+    "factory/control.xsh",
+    "factory/runtime.xsh",
+    "factory/tools/report.xsh",
+    "factory/schema.xsh",
+    "factory/tools/audit.xsh",
+    "factory/tools/cleanup-run.xsh",
+    "factory/tools/cycle-budget-watch.xsh",
+    "factory/tools/session-watch.xsh",
+    "factory/tools/cto-report.xsh",
     "templates/POSTMORTEM.md",
     "templates/CTO-REPORT.md",
     "templates/CTO-EVAL-REVIEW.md",
@@ -262,13 +262,13 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     abort(1)
   }
   let child = if mode == "ticket-implementation" {
-    fp"${factory_dir}/run-ticket.xsh"
+    fp"${factory_dir}/factory/controllers/ticket.xsh"
   } else if mode == "eval" {
-    fp"${factory_dir}/run-eval.xsh"
+    fp"${factory_dir}/factory/controllers/eval.xsh"
   } else if mode == "organization" {
-    fp"${factory_dir}/run-organization.xsh"
+    fp"${factory_dir}/factory/controllers/organization.xsh"
   } else {
-    fp"${factory_dir}/run-design.xsh"
+    fp"${factory_dir}/factory/controllers/design.xsh"
   }
   let xsh_path = process.which("xsh")?
   let status = process.run(process.command_argv(
