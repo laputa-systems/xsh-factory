@@ -2,7 +2,17 @@
 
 ## Status
 
-pending-validation
+reverted
+
+## Disposition
+
+The prior request rotation selected `task-col2`, but that eval is now `Disabled.` and cannot satisfy the independent-eval manifest target. The current organization request has been corrected to select the next live untried approved eval, `task-groupsum`; the invalid selection is therefore safely reverted rather than validated.
+
+## Evidence
+
+- `evals/task-col2/EVAL.md` — `Disabled.`
+- `cycle-organization.md` — current independent eval is `task-groupsum`.
+- `XSH_MODULE_PATH=. xsht test` — 62 tests passed, including untried-eval selection and organization request policy tests.
 
 ## Change
 

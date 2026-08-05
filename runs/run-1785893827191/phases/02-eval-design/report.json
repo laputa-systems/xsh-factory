@@ -1,0 +1,130 @@
+{
+  "artifacts": [
+    {
+      "kind": "session-directory",
+      "path": "workers/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 22,
+      "budget_failures": 0,
+      "cost_usd": 0.01998612,
+      "tool_errors": 0,
+      "total_bucket_tokens": 700091.0,
+      "unknown_costs": 0,
+      "workers": 1
+    },
+    "designer": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785893827191/phases/02-eval-design/workers/eval-designer/proposal-1/REPORT.md",
+      "present": true,
+      "result": "ready-for-review",
+      "role": "eval-designer",
+      "valid": true
+    },
+    "director": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785893827191/phases/02-eval-design/workers/director/director/REPORT.md",
+      "present": false,
+      "result": "missing",
+      "role": "director",
+      "valid": false
+    },
+    "engineer": [],
+    "handbook_lineage": {
+      "approved": "missing",
+      "candidate": "missing"
+    },
+    "manager": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785893827191/phases/02-eval-design/workers/eval-manager/task-colsum/REPORT.md",
+      "present": false,
+      "result": "missing",
+      "role": "eval-manager",
+      "valid": false
+    },
+    "mode": "eval-design",
+    "narratives": [
+      {
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785893827191/phases/02-eval-design/workers/eval-designer/proposal-1/REPORT.md",
+        "present": true,
+        "result": "ready-for-review",
+        "role": "eval-designer",
+        "valid": true
+      }
+    ],
+    "open_tickets": [
+      {
+        "eval_id": "task-envcfg",
+        "id": "task-envcfg-001",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-envcfg-001.md",
+        "status": ""
+      },
+      {
+        "eval_id": "task-tags",
+        "id": "task-tags-003",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-tags-003.md",
+        "status": ""
+      }
+    ],
+    "outcomes": {
+      "cycle": "pass",
+      "evaluator": "pass",
+      "infrastructure": "pass",
+      "product": "pass"
+    },
+    "required_outputs": null,
+    "sessions": [
+      "workers/eval-designer/proposal-1/session.jsonl.bz2"
+    ],
+    "tool_errors": [],
+    "trials": [],
+    "workers": [
+      {
+        "identity": {
+          "role": "eval-designer",
+          "worker_id": "proposal-1"
+        },
+        "path": "workers/eval-designer/proposal-1/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 22,
+          "budget_usd": 0.3,
+          "cache_read_cost_usd": 0.0112896,
+          "cache_read_tokens": 627200,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.01998612,
+          "input_cost_usd": 0.00442386,
+          "input_tokens": 49154,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.004272659999999999,
+          "output_tokens": 23737,
+          "provider_total_tokens": 700091,
+          "reasoning_tokens": 12839,
+          "thinking_blocks": 18,
+          "tool_calls": 42,
+          "tool_errors": 0,
+          "tool_results": 42,
+          "total_bucket_tokens": 700091,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "e5d29c7ec8b4411dc749fd3e44bf472d641ad9f4"
+  },
+  "findings": [],
+  "identity": {
+    "eval_id": "task-colsum",
+    "mode": "eval-design",
+    "run_id": "02-eval-design"
+  },
+  "kind": "phase",
+  "result": "pass",
+  "schema_version": 1,
+  "state": "completed"
+}

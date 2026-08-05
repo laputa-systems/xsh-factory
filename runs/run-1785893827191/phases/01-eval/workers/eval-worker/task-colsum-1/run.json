@@ -1,0 +1,96 @@
+{
+  "classification": "pass",
+  "correctness": {
+    "all_exact": true,
+    "cases": [
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 11636902,
+        "exact": true,
+        "name": "public",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 12127572
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 11221233,
+        "exact": true,
+        "name": "hidden_order",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 11449152
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 11316026,
+        "exact": true,
+        "name": "hidden_negative",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 13703373
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 11130066,
+        "exact": true,
+        "name": "hidden_many",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 12887535
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 13484830,
+        "exact": true,
+        "name": "hidden_single",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 13211161
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 13021744,
+        "exact": true,
+        "name": "hidden_no_data",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 13173995
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 13338495,
+        "exact": true,
+        "name": "hidden_extra_cols",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 13814374
+      },
+      {
+        "candidate_exit": 3,
+        "candidate_wall_ns": 11183566,
+        "exact": true,
+        "name": "hidden_missing_header",
+        "oracle_exit": 1,
+        "oracle_wall_ns": 12737700
+      },
+      {
+        "candidate_exit": 3,
+        "candidate_wall_ns": 12488033,
+        "exact": true,
+        "name": "hidden_bad_value",
+        "oracle_exit": 2,
+        "oracle_wall_ns": 12886827
+      }
+    ],
+    "passed": true
+  },
+  "eval_id": "task-colsum",
+  "image_id": "sha256:98c0b42af6f2322010c259c07586b4a3170334ddc9f05335283caed366b1def9",
+  "platform": "linux/arm64",
+  "protocol": {
+    "artifact_present": true,
+    "review_ok": true
+  },
+  "restrictions": {
+    "passed": true
+  },
+  "result": "pass",
+  "timings": {
+    "passed": true
+  },
+  "trial_id": "1"
+}

@@ -1,0 +1,194 @@
+{
+  "artifacts": [
+    {
+      "kind": "phase-reports",
+      "path": "phases/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 81,
+      "budget_failures": 0,
+      "cost_usd": 0.048800555999999995,
+      "tool_errors": 4,
+      "total_bucket_tokens": 1815490.0,
+      "unknown_costs": 0,
+      "workers": 3
+    },
+    "mode": "organization",
+    "outcomes": {
+      "cycle": "pass",
+      "evaluator": "pass",
+      "infrastructure": "pass",
+      "product": "pass"
+    },
+    "phases": [
+      {
+        "id": "01-eval",
+        "path": "phases/01-eval/report.json",
+        "result": "pass",
+        "valid": true
+      },
+      {
+        "id": "02-eval-design",
+        "path": "phases/02-eval-design/report.json",
+        "result": "pass",
+        "valid": true
+      }
+    ],
+    "tool_errors": [
+      {
+        "report": "phases/01-eval/workers/eval-manager/task-colsum/report.json",
+        "summary": "170a171,175\n> Int has no `to_string()` and `$var` is command-word syntax (invalid inside an\n> expression). To embed an Int in composed text, use a display string in\n> expression position and then print the value: `let line = f\"n=${n}\"`\n> then `print $line`.\n> \n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 12,
+        "worker": {
+          "role": "eval-manager",
+          "worker_id": "task-colsum"
+        }
+      },
+      {
+        "report": "phases/01-eval/workers/eval-worker/task-colsum-1/report.json",
+        "summary": "err[parse.expected-expression]: `$name` is command-word syntax; in expression context, use `name` directly\n  t2.xsh:7:18\n    let s = \"n=\" + $n\n                   ^^ use `n` here, not `$n`\nRUN data2\nerr[parse.expected-expression]: `$name` is command-word syntax; in expression context, use `name` directly\n  t2.xsh:7:18\n    let s = \"n=\" + $n\n                   ^^ use `n` here, not `$n`\nRUN data3\nerr[parse.expected-expression]: `$name` is command-word syntax; in expression context, use `name` directly\n  t2.xsh:7:18\n    let s = \"n=\" + $n\n                   ^^ use `n` here, not `$n`\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 26,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-colsum-1"
+        }
+      },
+      {
+        "report": "phases/01-eval/workers/eval-worker/task-colsum-1/report.json",
+        "summary": "err[check.unknown-method]: unknown method `to_string` on Int\n  t2.xsh:7:18\n    let s = \"n=\" + n.to_string()\n                   ^^^^^^^^^^^^^ `to_string` is not defined for Int\nRUN data2\nerr[check.unknown-method]: unknown method `to_string` on Int\n  t2.xsh:7:18\n    let s = \"n=\" + n.to_string()\n                   ^^^^^^^^^^^^^ `to_string` is not defined for Int\n====\nRUN data3\nerr[check.unknown-method]: unknown method `to_string` on Int\n  t2.xsh:7:18\n    let s = \"n=\" + n.to_string()\n                   ^^^^^^^^^^^^^ `to_string` is not defined for Int\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 27,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-colsum-1"
+        }
+      },
+      {
+        "report": "phases/01-eval/workers/eval-worker/task-colsum-1/report.json",
+        "summary": "sh: syntax error: unexpected \"(\"\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 33,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-colsum-1"
+        }
+      }
+    ],
+    "workers": [
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-colsum"
+        },
+        "path": "phases/01-eval/workers/eval-manager/task-colsum/report.json",
+        "result": "pass",
+        "tool_errors": 1,
+        "usage": {
+          "assistant_turns": 16,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.008391168,
+          "cache_read_tokens": 466176,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.014475438,
+          "input_cost_usd": 0.004281210000000001,
+          "input_tokens": 47569,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00180306,
+          "output_tokens": 10017,
+          "provider_total_tokens": 523762,
+          "reasoning_tokens": 4230,
+          "thinking_blocks": 14,
+          "tool_calls": 22,
+          "tool_errors": 1,
+          "tool_results": 22,
+          "total_bucket_tokens": 523762,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-colsum-1"
+        },
+        "path": "phases/01-eval/workers/eval-worker/task-colsum-1/report.json",
+        "result": "pass",
+        "tool_errors": 3,
+        "usage": {
+          "assistant_turns": 43,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.009986688000000002,
+          "cache_read_tokens": 554816,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.014338998,
+          "input_cost_usd": 0.00227547,
+          "input_tokens": 25283,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0020768400000000004,
+          "output_tokens": 11538,
+          "provider_total_tokens": 591637,
+          "reasoning_tokens": 5723,
+          "thinking_blocks": 29,
+          "tool_calls": 50,
+          "tool_errors": 3,
+          "tool_results": 50,
+          "total_bucket_tokens": 591637,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-designer",
+          "worker_id": "proposal-1"
+        },
+        "path": "phases/02-eval-design/workers/eval-designer/proposal-1/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 22,
+          "budget_usd": 0.3,
+          "cache_read_cost_usd": 0.0112896,
+          "cache_read_tokens": 627200,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.01998612,
+          "input_cost_usd": 0.00442386,
+          "input_tokens": 49154,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.004272659999999999,
+          "output_tokens": 23737,
+          "provider_total_tokens": 700091,
+          "reasoning_tokens": 12839,
+          "thinking_blocks": 18,
+          "tool_calls": 42,
+          "tool_errors": 0,
+          "tool_results": 42,
+          "total_bucket_tokens": 700091,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "e5d29c7ec8b4411dc749fd3e44bf472d641ad9f4"
+  },
+  "findings": [],
+  "identity": {
+    "mode": "organization",
+    "run_id": "run-1785893827191"
+  },
+  "kind": "run",
+  "result": "pass",
+  "schema_version": 1,
+  "state": "completed"
+}
