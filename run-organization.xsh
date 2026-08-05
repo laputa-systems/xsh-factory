@@ -3,6 +3,7 @@
 use factory_control as control
 use factory_runtime as runtime
 use report_schema as schema
+use factory.request as typed_request
 
 on SIGINT --pre-cancel=0ms [fs, process, env, error] {
   runtime.cleanup_active_run()?
@@ -190,22 +191,22 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   let factory_dir = env.path("FACTORY_DIR", fs.cwd()?)?
   let request = Path(argv[0])
   let request_text = request.read_text()?
-  if control.request_mode(request_text) != "organization" {
+  if typed_request.mode_value(request_text)? != "organization" {
     eprint "organization controller requires a request with mode organization"
     abort(2)
   }
-  let trial_count = control.request_trial_count(request_text)?
+  let trial_count = typed_request.trial_value(request_text)?
   if trial_count < 1 or trial_count > 2 {
     eprint f"unsupported trial count: ${trial_count} (expected 1 or 2)"
     abort(2)
   }
-  let new_eval_count = control.request_new_eval_count(request_text)?
+  let new_eval_count = typed_request.design_value(request_text)?
   if new_eval_count < 0 or new_eval_count > 1 {
     eprint "organization cycles allow zero or one eval-design proposal"
     abort(2)
   }
   let design_requested = new_eval_count == 1
-  let requested_tickets = control.request_tickets(request_text)
+  let requested_tickets = typed_request.ticket_values(request_text)?
   if requested_tickets.len() > control.max_concurrent_engineers() {
     eprint f"organization cycles admit at most ${control.max_concurrent_engineers()} tickets"
     abort(2)
@@ -246,7 +247,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   fs.write(active_run, run_dir.display() + "\n")?
   defer fs.remove(active_run, missing_ok: true)?
   let _ = runtime.reconcile_tickets(factory_dir, xsh_repo, xsh_commit.trim())?
-  let ticket_policy = control.request_ticket_policy(request_text)
+  let ticket_policy = typed_request.ticket_policy_value(request_text)?
   let selected_tickets = if requested_tickets.len() > 0 {
     requested_tickets
   } else if ticket_policy == "none" {
@@ -306,7 +307,8 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
       abort(2)
     }
   }
-  let requested_eval = control.request_eval(request_text)
+  let request_evals = typed_request.eval_values(request_text)?
+  let requested_eval = if request_evals.len() > 0 { request_evals[0] } else { "" }
   let ticket_eval = if selected_ticket != "" {
     control.ticket_eval(selected_ticket_path.read_text()?)
   } else {

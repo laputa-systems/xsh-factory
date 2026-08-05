@@ -130,10 +130,16 @@ grepping broadly.
 
 ### Shared runtime, contracts, and process boundaries
 
-- `factory_control.xsh` contains pure policy and parsing: role defaults,
-  provider/model/budget/turn/wall ceilings, request parsing, ticket/eval
-  lifecycle predicates, report-template validation, assignment checks, and
-  template substitution. Change policy here before changing a controller.
+- `factory/` is the canonical namespace for new control-plane contracts:
+  `types.xsh`, `paths.xsh`, `request.xsh`, `policy.xsh`, `graph.xsh`,
+  `dispatch.xsh`, `process.xsh`, `lifecycle.xsh`, `evidence.xsh`,
+  `reports.xsh`, `tickets.xsh`, `evals.xsh`, and `cleanup.xsh`. The root
+  `factory_control.xsh` and `factory_runtime.xsh` files are compatibility
+  implementations during migration; do not add new policy or evidence
+  projections there.
+- `factory_control.xsh` retains the existing role settings and template
+  helpers used by stable launchers. New admission and identity gates belong in
+  `factory/policy.xsh` and `factory/types.xsh`.
 - `factory_runtime.xsh` contains effectful shared operations: process/PID
   registration and cancellation, locks, event-ledger writes, CTO handoffs,
   eval promotion, ticket reconciliation, worktree/patch cleanup, handbook

@@ -3,6 +3,8 @@
 use factory_control as control
 use factory_runtime as runtime
 use report_schema as schema
+use factory.dispatch as canonical_dispatch
+use factory.paths as canonical_paths
 
 proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   if argv.len() < 4 {
@@ -61,6 +63,21 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   let dispatch_message = schema.value_text(json.get(dispatch, ["message_file"], ""))
   let dispatch_message_sha = schema.value_text(json.get(dispatch, ["message_sha256"], ""))
   let actual_message_sha = if fs.exists(message_file)? { hash.sha256(message_file)?.hex() } else { "" }
+  let dispatch_id = schema.value_text(json.get(dispatch, ["dispatch_id"], ""))
+  let dispatch_state = schema.value_text(json.get(dispatch, ["state"], ""))
+  let dispatch_prompt = schema.value_text(json.get(dispatch, ["system_prompt_file"], ""))
+  let dispatch_prompt_sha = schema.value_text(json.get(dispatch, ["system_prompt_sha256"], ""))
+  let dispatch_claim_token = schema.value_text(json.get(dispatch, ["claim_token"], ""))
+  let dispatch_factory_root = schema.value_text(json.get(dispatch, ["factory_root"], ""))
+  let actual_prompt_sha = if fs.exists(system_prompt)? { hash.sha256(system_prompt)?.hex() } else { "" }
+  if ! canonical_paths.within(factory_dir, system_prompt)? or ! canonical_paths.within(factory_dir, message_file)? {
+    eprint "dispatch content path escapes the factory root"
+    abort(2)
+  }
+  if role == "engineer" and canonical_paths.within(factory_dir, workdir)? {
+    eprint "engineer workdir is inside the factory checkout"
+    abort(2)
+  }
   let dispatch_ok = schema.value_text(json.get(dispatch, ["role"], "")) == role and
     schema.value_text(json.get(dispatch, ["worker_id"], "")) == worker_id and
     dispatch_message == message_file.display() and dispatch_message_sha == actual_message_sha and
@@ -68,9 +85,19 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     schema.value_text(json.get(dispatch, ["mode"], "")) == mode and
     schema.value_text(json.get(dispatch, ["eval_id"], "")) == eval_id and
     schema.value_text(json.get(dispatch, ["ticket_id"], "")) == ticket_id and
-    schema.value_text(json.get(dispatch, ["assignment_sha256"], "")) == assignment_sha
+    schema.value_text(json.get(dispatch, ["assignment_sha256"], "")) == assignment_sha and
+    dispatch_id == f"${role}-${worker_id}" and dispatch_state == "planned" and
+    dispatch_prompt == system_prompt.display() and dispatch_prompt_sha == actual_prompt_sha and
+    dispatch_claim_token != "" and dispatch_factory_root == factory_dir.display()
   if ! dispatch_ok {
     eprint f"agent invocation does not match controller dispatch record for ${role}/${worker_id}"
+    abort(2)
+  }
+  canonical_dispatch.claim_persisted_once(run_dir, dispatch_id, dispatch_claim_token, f"${role}/${worker_id}")?
+  let required_report_path = Path(required_report)
+  if required_report != "" and required_report_path.display() != default_required_report and
+    ! canonical_paths.within(worker_dir, required_report_path)? {
+    eprint "required report path escapes the assigned worker root"
     abort(2)
   }
 
@@ -95,7 +122,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     eprint f"worker slot already claimed: ${role}/${worker_id}"
     abort(2)
   }
-  fs.write_atomic(claim_file, f"${self_pid}\n${assignment_sha}\n")?
+  fs.write_atomic(claim_file, f"${self_pid}\n${dispatch_claim_token}\n")?
   fs.mkdir(process_registry)?
   fs.write(process_registry_file, f"${self_pid}\n")?
   fs.mkdir(worker_dir)?
@@ -270,6 +297,10 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
       session_limit_watcher: if limit_status.ok { "pass" } else { "failed" },
       reporting: if report_status.ok { "pass" } else { "failed" },
       required_report: if required_report_ok { "present" } else { "missing" },
+      dispatch_id: dispatch_id,
+      dispatch_claim: dispatch_claim_token,
+      system_prompt_sha256: dispatch_prompt_sha,
+      message_sha256: dispatch_message_sha,
     })?
     json.write(report, enriched, pretty: true)?
   }

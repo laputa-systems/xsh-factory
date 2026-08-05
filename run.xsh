@@ -2,6 +2,8 @@
 
 use factory_control as control
 use factory_runtime as runtime
+use factory.request as typed_request
+use factory.types as typed_types
 
 on SIGINT --pre-cancel=0ms [fs, process, env, error] {
   runtime.cleanup_active_run()?
@@ -23,6 +25,19 @@ proc preflight(
   if ! fs.exists(request)? {
     eprint f"cycle request does not exist: ${request.display()}"
     return false
+  }
+  let parsed_mode = typed_request.mode_value(request_text)
+  match parsed_mode {
+    Err(_) => {
+      eprint "cycle request failed canonical typed parsing"
+      return false
+    }
+    Ok(parsed) => {
+      if parsed != mode {
+        eprint f"cycle request mode does not match dispatcher mode: ${mode}"
+        return false
+      }
+    }
   }
   if ! fs.exists(xsh_repo)? {
     eprint f"XSH repository does not exist: ${xsh_repo.display()}"
@@ -53,6 +68,16 @@ proc preflight(
     "templates/CTO-TOTAL.md",
     "templates/CTO-IMPROVEMENT.md",
     "runtime/handbook-ledger.md",
+    "factory/types.xsh",
+    "factory/paths.xsh",
+    "factory/request.xsh",
+    "factory/policy.xsh",
+    "factory/graph.xsh",
+    "factory/dispatch.xsh",
+    "factory/lifecycle.xsh",
+    "factory/evidence.xsh",
+    "factory/reports.xsh",
+    "factory/cleanup.xsh",
   ] {
     if ! fs.exists(fp"${factory_dir}/${required}")? {
       eprint f"factory prerequisite is missing: ${factory_dir}/${required}"
@@ -81,7 +106,7 @@ proc preflight(
     }
   }
 
-  let requested_tickets = control.request_tickets(request_text)
+  let requested_tickets = typed_request.ticket_values(request_text)?
   let eval_contracts = fs.files(fp"${factory_dir}/evals", gitignore: false, hidden: true)?
     |> where .name == "EVAL.md"
     |> collect()
@@ -91,7 +116,7 @@ proc preflight(
   }
   let candidate_tickets = if requested_tickets.len() > 0 {
     requested_tickets
-  } else if mode == "organization" and control.request_ticket_policy(request_text) != "none" {
+  } else if mode == "organization" and typed_request.ticket_policy_value(request_text)? != "none" {
     runtime.first_approved_tickets(factory_dir, control.max_concurrent_engineers())?
   } else {
     []
@@ -156,7 +181,8 @@ proc preflight(
   }
 
   if mode == "eval" or mode == "organization" or mode == "eval-design" {
-    let eval_id = control.request_eval(request_text)
+    let eval_values = typed_request.eval_values(request_text)?
+    let eval_id = if eval_values.len() > 0 { eval_values[0] } else { "" }
     if mode == "organization" and eval_id == "" {
       eprint "organization request must select an eval"
       return false
@@ -164,7 +190,7 @@ proc preflight(
     let eval_path = fp"${factory_dir}/evals/${eval_id}/EVAL.md"
     let eval_exists = fs.exists(eval_path)?
     let eval_disabled = eval_exists and control.eval_is_disabled(eval_path.read_text()?)
-    if mode == "organization" and ! control.request_allow_measured_eval(request_text) {
+    if mode == "organization" and ! typed_request.measured_reuse_value(request_text)? {
       let next_untried = runtime.next_untried_approved_eval(factory_dir)?
       if next_untried != "" and eval_id != next_untried {
         eprint f"organization request must select next untried approved eval ${next_untried}; selected ${eval_id}"
@@ -196,20 +222,20 @@ proc preflight(
     }
   }
   if mode == "eval" or mode == "organization" {
-    let trial_count = control.request_trial_count(request_text)?
+    let trial_count = typed_request.trial_value(request_text)?
     if trial_count < 1 or trial_count > 2 {
       eprint f"unsupported trial count: ${trial_count} (expected 1 or 2)"
       return false
     }
   }
   if mode == "eval-design" {
-    let new_eval_count = control.request_new_eval_count(request_text)?
+    let new_eval_count = typed_request.design_value(request_text)?
     if new_eval_count != 1 {
       eprint f"${mode} requires exactly one eval-design proposal"
       return false
     }
   } else if mode == "organization" {
-    let new_eval_count = control.request_new_eval_count(request_text)?
+    let new_eval_count = typed_request.design_value(request_text)?
     if new_eval_count < 0 or new_eval_count > 1 {
       eprint "organization cycles allow zero or one eval-design proposal"
       return false
@@ -230,12 +256,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     abort(2)
   }
   let request_text = request.read_text()?
-  let mode = control.request_mode(request_text)
-  if mode != "ticket-implementation" and mode != "eval" and
-    mode != "organization" and mode != "eval-design" {
-    eprint f"unsupported cycle mode: ${mode}"
-    abort(2)
-  }
+  let mode = typed_request.mode_value(request_text)?
   let xsh_repo = env.path("FACTORY_XSH_REPO", fp"${factory_dir}/../xsh")?
   if ! preflight(factory_dir, xsh_repo, request, request_text, mode)? {
     abort(1)

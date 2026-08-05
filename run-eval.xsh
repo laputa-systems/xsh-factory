@@ -3,6 +3,7 @@
 use factory_control as control
 use factory_runtime as runtime
 use report_schema as schema
+use factory.request as typed_request
 
 proc role_assignments() [env, error] -> Result[List[Str]] {
   var assignments: List[Str] = []
@@ -34,8 +35,8 @@ proc spawn_agent(
   stderr: Path,
 ) [fs, process, error] -> Result[ProcessHandle] {
   let env_path = process.which("env")?
-  runtime.write_dispatch_record(
-    run_dir, role, worker_id, message, factory_dir, "eval", eval_id, "", ""
+  runtime.write_bound_dispatch_record(
+    factory_dir, run_dir, role, worker_id, system_prompt, message, factory_dir, "eval", eval_id, "", ""
   )?
   let child_args = assignments.extend([
     xsh_path.display(), run_agent.display(), "--", role, worker_id,
@@ -152,7 +153,8 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   let factory_dir = env.path("FACTORY_DIR", fs.cwd()?)?
   let request = Path(argv[0])
   let request_text = request.read_text()?
-  let requested_eval = if argv.len() >= 2 { argv[1] } else { control.request_eval(request_text) }
+  let request_evals = typed_request.eval_values(request_text)?
+  let requested_eval = if argv.len() >= 2 { argv[1] } else if request_evals.len() > 0 { request_evals[0] } else { "" }
   let eval_path = fp"${factory_dir}/evals/${requested_eval}/EVAL.md"
   let eval_exists = fs.exists(eval_path)?
   let eval_disabled = eval_exists and control.eval_is_disabled(eval_path.read_text()?)
@@ -160,12 +162,12 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     eprint f"cycle request selected unsupported or missing eval: ${requested_eval}"
     abort(2)
   }
-  let trial_count = control.request_trial_count(request_text)?
+  let trial_count = typed_request.trial_value(request_text)?
   if trial_count < 1 or trial_count > 2 {
     eprint f"unsupported trial count: ${trial_count} (expected 1 or 2)"
     abort(2)
   }
-  let new_eval_count = control.request_new_eval_count(request_text)?
+  let new_eval_count = typed_request.design_value(request_text)?
   if new_eval_count < 0 or new_eval_count > 1 {
     eprint f"unsupported new eval proposal count: ${new_eval_count} (expected 0 or 1)"
     abort(2)

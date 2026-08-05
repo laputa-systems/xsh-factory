@@ -37,6 +37,16 @@ export pure valid(value: Any, expected_kind: Str) -> Bool {
   return valid_report
 }
 
+## Validates the mode facts that a common envelope must carry without creating
+## role-specific report projections.
+export pure mode_contract_ok(value: Any, expected_kind: Str, mode: Str) -> Bool {
+  if ! valid(value, expected_kind) { return false }
+  if expected_kind == "worker" { return true }
+  let data = json.get(value, ["data"], null)
+  let reported_mode = json.get(data, ["mode"], "")
+  return reported_mode == mode
+}
+
 ## Separates product/evaluator success from controller/reporting success.
 export pure outcome(product_ok: Bool, evaluator_ok: Bool, infrastructure_ok: Bool) -> Any {
   return {

@@ -3,6 +3,7 @@
 use factory_control as control
 use factory_runtime as runtime
 use report_schema as schema
+use factory.request as typed_request
 
 on SIGINT --pre-cancel=0ms [fs, process, env, error] {
   runtime.cleanup_active_run()?
@@ -22,7 +23,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   let factory_dir = env.path("FACTORY_DIR", fs.cwd()?)?
   let request = Path(argv[0])
   let request_text = request.read_text()?
-  if control.request_mode(request_text) != "eval-design" {
+  if typed_request.mode_value(request_text)? != "eval-design" {
     eprint "eval-design controller requires a request with mode eval-design"
     abort(2)
   }
@@ -39,7 +40,8 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   let event_template = run_dir
   let assignment_template = fp"${factory_dir}/templates/EVAL-DESIGNER-ASSIGNMENT.md"
   let worker_id = "proposal-1"
-  let design_eval_id = control.request_eval(request_text)
+  let request_evals = typed_request.eval_values(request_text)?
+  let design_eval_id = if request_evals.len() > 0 { request_evals[0] } else { "" }
   let worker_root = fp"${run_dir}/workers"
   let messages_dir = fp"${run_dir}/messages"
   let proposal_dir = fp"${run_dir}/proposals/${worker_id}"
@@ -111,8 +113,8 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   let assignment = control.fill_template(assignment_template.read_text()?, assignment_values)
   let assignment_path = fp"${messages_dir}/eval-designer-${worker_id}.md"
   fs.write(assignment_path, assignment)?
-  runtime.write_dispatch_record(
-    run_dir, "eval-designer", worker_id, assignment_path, factory_dir,
+  runtime.write_bound_dispatch_record(
+    factory_dir, run_dir, "eval-designer", worker_id, fp"${factory_dir}/roles/eval-designer.md", assignment_path, factory_dir,
     "eval-design", design_eval_id, "", ""
   )?
   let _initial_report = process.run(process.command_argv(

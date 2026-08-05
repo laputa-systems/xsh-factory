@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "repository_boundary": {
+    "factory_root": ".",
+    "product_root": "../xsh",
+    "factory_owns": ["factory", "tickets", "evals", "templates", "roles", "runtime", "runs"],
+    "product_owns": ["../xsh/src", "../xsh/tests", "../xsh/docs"]
+  },
+  "entrypoints": {
+    "operator": "run.xsh",
+    "host_agent": "run-agent.xsh",
+    "eval_executor": "eval-executor.xsh",
+    "compatibility_wrappers": [
+      "run-organization.xsh",
+      "run-ticket.xsh",
+      "run-ticket-reuse.xsh",
+      "run-eval.xsh",
+      "run-design.xsh",
+      "audit-run.xsh"
+    ]
+  },
+  "modules": [
+    {"path": "factory_control.xsh", "layer": "compatibility-policy", "imports": [], "effects": ["env"], "writers": [], "tests": ["tests/factory_control_test.xsh"]},
+    {"path": "factory_runtime.xsh", "layer": "compatibility-effects", "imports": ["factory_control", "report_schema"], "effects": ["fs", "process", "env"], "writers": ["dispatch/*.json", "events.jsonl", "states/*", "report.json", "patches/*"], "tests": ["tests/factory_control_test.xsh", "tests/tools_test.xsh"]},
+    {"path": "report_schema.xsh", "layer": "compatibility-reports", "imports": [], "effects": [], "writers": [], "tests": ["tests/factory_control_test.xsh", "tests/tools_test.xsh"]},
+    {"path": "run-agent.xsh", "layer": "entrypoint", "imports": ["factory_control", "factory_runtime", "report_schema"], "effects": ["fs", "process", "env", "io"], "writers": ["workers/*", "processes/*", "dispatch/*"], "tests": ["tests/tools_test.xsh"]},
+    {"path": "run.xsh", "layer": "entrypoint", "imports": ["factory_control", "factory_runtime"], "effects": ["fs", "process", "env"], "writers": ["runs/*", "locks/*"], "tests": ["tests/tools_test.xsh"]},
+    {"path": "run-organization.xsh", "layer": "controller", "imports": ["factory_control", "factory_runtime", "report_schema"], "effects": ["fs", "process", "env", "time"], "writers": ["phases/*", "events.jsonl", "report.json"], "tests": ["tests/tools_test.xsh"]},
+    {"path": "run-ticket.xsh", "layer": "controller", "imports": ["factory_control", "factory_runtime", "report_schema"], "effects": ["fs", "process", "env", "time"], "writers": ["worktrees/*", "patches/*", "workers/*", "report.json"], "tests": ["tests/tools_test.xsh"]},
+    {"path": "run-ticket-reuse.xsh", "layer": "controller", "imports": ["factory_runtime"], "effects": ["fs", "process", "env"], "writers": ["worktrees/*", "patches/*", "report.json"], "tests": ["tests/tools_test.xsh"]},
+    {"path": "run-eval.xsh", "layer": "controller", "imports": ["factory_control", "factory_runtime", "report_schema"], "effects": ["fs", "process", "env", "time"], "writers": ["workers/*", "messages/*", "report.json", "required-outputs.json"], "tests": ["tests/tools_test.xsh"]},
+    {"path": "run-design.xsh", "layer": "controller", "imports": ["factory_control", "factory_runtime", "report_schema"], "effects": ["fs", "process", "env", "time"], "writers": ["proposals/*", "workers/*", "report.json"], "tests": ["tests/tools_test.xsh"]},
+    {"path": "eval-executor.xsh", "layer": "entrypoint", "imports": ["factory_control", "factory_runtime"], "effects": ["fs", "process", "env"], "writers": ["workers/eval-worker/*"], "tests": ["tests/tools_test.xsh"]},
+    {"path": "audit-run.xsh", "layer": "compatibility-audit", "imports": ["factory_control", "report_schema"], "effects": ["fs", "process", "env"], "writers": ["report.json"], "tests": ["tests/tools_test.xsh"]},
+    {"path": "factory_report.xsh", "layer": "view", "imports": ["report_schema"], "effects": ["fs", "env"], "writers": ["CTO-REPORT.md"], "tests": ["tests/tools_test.xsh"]},
+    {"path": "reconcile.xsh", "layer": "operator-tool", "imports": ["factory_runtime"], "effects": ["fs", "process", "env"], "writers": ["tickets/*.md"], "tests": ["tests/tools_test.xsh"]},
+    {"path": "evaluate_common.xsh", "layer": "evaluator-mechanics", "imports": [], "effects": ["fs", "process", "env"], "writers": ["run.json"], "tests": ["tests/tools_test.xsh"]},
+    {"path": "evaluate_legacy.xsh", "layer": "legacy-evaluator", "imports": ["factory_control"], "effects": ["fs", "process", "env"], "writers": ["run.json"], "tests": ["tests/tools_test.xsh"]}
+  ],
+  "durable_outputs": {
+    "run_root": ["report.json", "CTO-REPORT.md", "events.jsonl", "POSTMORTEM.md", "CTO-IMPROVEMENT.md", "CTO-PRODUCTIVITY-REPORT.md"],
+    "phase_root": ["report.json", "required-outputs.json"],
+    "worker_root": ["session.jsonl.bz2", "report.json", "REPORT.md"],
+    "dispatch_root": ["<dispatch-id>.json"],
+    "evidence_roots": ["phases", "workers", "patches", "lineage"]
+  },
+  "environment_producers": ["run.xsh", "run-organization.xsh", "run-ticket.xsh", "run-eval.xsh", "run-design.xsh", "eval-executor.xsh", "run-agent.xsh"],
+  "canonical_migration": {
+    "policy": "factory/policy.xsh",
+    "request": "factory/request.xsh",
+    "types": "factory/types.xsh",
+    "paths": "factory/paths.xsh",
+    "graph": "factory/graph.xsh",
+    "dispatch": "factory/dispatch.xsh",
+    "process": "factory/process.xsh",
+    "lifecycle": "factory/lifecycle.xsh",
+    "evidence": "factory/evidence.xsh",
+    "reports": "factory/reports.xsh",
+    "cleanup": "factory/cleanup.xsh"
+  },
+  "known_escape_hatches": [
+    {"name": "legacy-top-level-modules", "owner": "Phase 6", "boundary": "compatibility imports only", "test": "repository-wide import audit"},
+    {"name": "package-evaluator-process", "owner": "eval package", "boundary": "evals/<id>/evaluator.xsh", "test": "package ownership gate"}
+  ]
+}

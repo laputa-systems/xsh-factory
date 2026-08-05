@@ -3,6 +3,7 @@
 use factory_control as control
 use factory_runtime as runtime
 use report_schema as schema
+use factory.request as typed_request
 
 # Starts one controller-assigned engineer through the shared worker runner.
 # The controller owns the exact row; no paid agent decides what to launch.
@@ -68,7 +69,7 @@ proc run_ticket_cycle(
   run_agent: Path,
   pi_command: Str,
 ) [fs, process, env, time, error, io] -> Result[Int] {
-  let tickets = control.request_tickets(request.read_text()?)
+  let tickets = typed_request.ticket_values(request.read_text()?)?
   if tickets.len() == 0 {
     eprint "ticket-implementation cycle has no approved tickets"
     return 1
@@ -191,8 +192,8 @@ proc run_ticket_cycle(
     let assignment_path = fp"${run_dir}/messages/${ticket_id}.md"
     fs.write(assignment_path, assignment)?
     let assignment_sha = hash.sha256(assignment_path)?.hex()
-    runtime.write_dispatch_record(
-      run_dir, "engineer", ticket_id, assignment_path, worktree,
+    runtime.write_bound_dispatch_record(
+      factory_dir, run_dir, "engineer", ticket_id, fp"${factory_dir}/roles/engineer.md", assignment_path, worktree,
       "ticket-implementation", "", ticket_id, assignment_sha
     )?
     runtime.emit_event(event_template, run_dir, f"10-ticket-${ticket_id}-admitted", ticket_id, "admitted", 1, "admission", f"worktree ${worktree.display()} on ${branch}")?
@@ -214,8 +215,8 @@ proc run_ticket_cycle(
   ]
   fs.write(director_message, control.fill_template(director_template.read_text()?, director_values))?
   fs.write(director_message, control.fill_template(director_template.read_text()?, director_values))?
-  runtime.write_dispatch_record(
-    run_dir, "director", "director", director_message, factory_dir,
+  runtime.write_bound_dispatch_record(
+    factory_dir, run_dir, "director", "director", fp"${factory_dir}/roles/director.md", director_message, factory_dir,
     "ticket-implementation", "", "", ""
   )?
 

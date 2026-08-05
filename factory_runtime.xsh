@@ -92,6 +92,73 @@ export proc write_dispatch_record(
   return Ok()
 }
 
+## Writes the canonical controller-bound dispatch identity used by migrated
+## launchers. The legacy writer above remains only for old synthetic fixtures.
+export proc write_bound_dispatch_record(
+  factory_dir: Path,
+  run_dir: Path,
+  role: Str,
+  worker_id: Str,
+  system_prompt: Path,
+  message_file: Path,
+  workdir: Path,
+  mode: Str,
+  eval_id: Str,
+  ticket_id: Str,
+  assignment_sha: Str,
+) [fs, error] -> Result[Unit] {
+  if ! fs.exists(system_prompt)? or ! fs.exists(message_file)? {
+    return Err(RuntimeError.InvalidTransition(
+      subject: f"${role}/${worker_id}", current: "missing-input", next: "planned"
+    ))
+  }
+  fs.mkdir(fp"${run_dir}/dispatch")?
+  let dispatch_id = f"${role}-${worker_id}"
+  let prompt_sha = hash.sha256(system_prompt)?.hex()
+  let message_sha = hash.sha256(message_file)?.hex()
+  let claim_token = if assignment_sha != "" { assignment_sha } else { message_sha }
+  let phase_name = run_dir.name()
+  let parent_name = run_dir.parent().name()
+  let bound_run_id = if parent_name.starts_with("run-") { parent_name } else { phase_name }
+  let bound_phase_id = if parent_name.starts_with("run-") { phase_name } else { "root" }
+  let dispatch_path = fp"${run_dir}/dispatch/${dispatch_id}.json"
+  if fs.exists(dispatch_path)? {
+    return Err(RuntimeError.InvalidTransition(
+      subject: dispatch_id, current: "planned", next: "replaced"
+    ))
+  }
+  json.write(dispatch_path, {
+    schema_version: 2,
+    state: "planned",
+    run_id: bound_run_id,
+    phase_id: bound_phase_id,
+    node_id: dispatch_id,
+    dispatch_id: dispatch_id,
+    role: role,
+    worker_id: worker_id,
+    mode: mode,
+    eval_id: eval_id,
+    ticket_id: ticket_id,
+    assignment_sha256: assignment_sha,
+    system_prompt_file: system_prompt.display(),
+    system_prompt_sha256: prompt_sha,
+    message_file: message_file.display(),
+    message_sha256: message_sha,
+    workdir: workdir.display(),
+    factory_root: factory_dir.display(),
+    product_root: workdir.display(),
+    handbook_file: fp"${factory_dir}/runtime/handbook.md".display(),
+    handbook_sha256: if fs.exists(fp"${factory_dir}/runtime/handbook.md")? { hash.sha256(fp"${factory_dir}/runtime/handbook.md")?.hex() } else { "missing" },
+    north_star_file: fp"${factory_dir}/NORTH-STAR.md".display(),
+    north_star_sha256: if fs.exists(fp"${factory_dir}/NORTH-STAR.md")? { hash.sha256(fp"${factory_dir}/NORTH-STAR.md")?.hex() } else { "missing" },
+    source_commit: "controller-selected",
+    image_id: "not-applicable",
+    parent_controller: "controller",
+    claim_token: claim_token,
+  }, pretty: true)?
+  return Ok()
+}
+
 ## Registers a controller-owned child before waiting on it.
 export proc register_process(run_dir: Path, name: Str, pid: Int) [fs, error] -> Result[Unit] {
   let processes = fp"${run_dir}/processes"

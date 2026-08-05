@@ -8,6 +8,12 @@ Start with [NORTH-STAR.md](NORTH-STAR.md), then read
 [FACTORY.md](FACTORY.md) for the engineering contract and
 [docs/FACTORY-LOOPS.md](docs/FACTORY-LOOPS.md) for the loop boundaries.
 
+Core control-plane contracts live under [`factory/`](factory/) now. The root
+launchers remain stable compatibility entry points; see the
+[refactor migration report](docs/FACTORY-REFACTOR-MIGRATION.md) and the
+[machine-readable inventory](docs/FACTORY-REFACTOR-INVENTORY.json) before
+changing a boundary.
+
 ## Prerequisites
 
 Run commands from this directory with:
