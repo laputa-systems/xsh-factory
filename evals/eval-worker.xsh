@@ -2,6 +2,8 @@
 
 proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   let session = Path(argv[0])
+  # The host-side executor normalizes this transient stream after the worker
+  # exits, then removes it before the run is compressed.
   let provider_events = fp"${session.display()}.events.jsonl"
   let task_path = Path(argv[1])
   let agent_dir = env.path("PI_CODING_AGENT_DIR", p"/run/pi-agent")?

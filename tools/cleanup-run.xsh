@@ -71,8 +71,10 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   let xsh_repo = env.path("FACTORY_XSH_REPO", fp"${factory_dir}/../xsh")?
   let _ = runtime.remove_run_worktrees(xsh_repo, run_dir)?
   if fs.exists(run_dir)? {
-    for entry in fs.walk(run_dir, gitignore: false, hidden: true)? |> where .kind == "file" and .name == "ACTIVE" {
-      fs.remove(entry.path, missing_ok: true)?
+    for entry in fs.walk(run_dir, gitignore: false, hidden: true)? |> where .kind == "file" {
+      if entry.name == "ACTIVE" or entry.name.ends_with(".events.jsonl") {
+        fs.remove(entry.path, missing_ok: true)?
+      }
     }
   }
   fs.remove(fp"${run_dir}/ACTIVE", missing_ok: true)?

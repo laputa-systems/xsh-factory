@@ -4,6 +4,8 @@
 !**/*.md
 !**/*.json
 !**/*.jsonl.bz2
+# Provider JSON streaming deltas are transient parser input, never durable evidence.
+**/session.jsonl.events.jsonl.bz2
 !**/patches/*.diff
 !**/patches/*.patch
 !**/dry-run/*.txt

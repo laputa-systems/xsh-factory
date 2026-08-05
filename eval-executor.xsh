@@ -169,6 +169,10 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
       "--output", fp"${worker_dir}/report.json".display(), "--role", "eval-worker",
       "--worker-id", f"${eval_id}-${trial_id}", "--budget-usd", budget],
   ))?
+  # The provider stream is parser input only. Remove it after normalization;
+  # retaining message_update deltas can be orders of magnitude larger than the
+  # canonical session and report evidence.
+  fs.remove(fp"${session.display()}.events.jsonl", missing_ok: true)?
   let result = if agent_status.ok and watcher_status.ok and limit_status.ok and eval_status.ok and report_status.ok { "pass" } else { "fail" }
   let agent_state = if agent_status.ok and watcher_status.ok and limit_status.ok { "pass" } else { "fail" }
   let eval_state = if eval_status.ok { "pass" } else { "fail" }

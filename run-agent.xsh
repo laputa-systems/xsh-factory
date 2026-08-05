@@ -25,6 +25,9 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   let process_registry = fp"${run_dir}/processes"
   let process_registry_file = fp"${process_registry}/${role}-${worker_id}.pids"
   let session = fp"${worker_dir}/session.jsonl"
+  # Pi JSON mode emits high-volume streaming deltas. Keep that stream transient;
+  # session.jsonl is the durable evidence and session-report extracts the small
+  # provider-health summary before this file is removed.
   let provider_events = fp"${session.display()}.events.jsonl"
   let report = fp"${worker_dir}/report.json"
   let default_required_report = fp"${worker_dir}/REPORT.md".display()
@@ -231,6 +234,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
       "--worker-id", worker_id, "--budget-usd", budget,
       "--events", provider_events.display()],
   ))?
+  fs.remove(provider_events, missing_ok: true)?
   if required_report != "" and ! fs.exists(Path(required_report))? {
     fs.write(fp"${worker_dir}/REPORT-MISSING", f"required report missing: ${required_report}\n")?
   }

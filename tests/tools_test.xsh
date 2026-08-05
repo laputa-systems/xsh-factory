@@ -640,13 +640,12 @@ proc test_clean_factory_supports_age_pruning() [fs, error] {
 proc test_compressed_session_support_round_trips(ctx: TestContext) [fs, process, error] {
   let root = test.temp_dir(ctx, name: "compressed-session")?
   let session = fp"${root}/session.jsonl"
-  let archive_path = fp"${session.display()}.bz2"
+  let events = fp"${session.display()}.events.jsonl"
   fs.write(session, "{\"type\":\"message\"}\n")?
-  let bzip2 = process.which("bzip2")?
-  test.ok(process.run(process.command_argv(
-    bzip2, [bzip2.display(), "-c", session.display()], stdout: archive_path,
-  ))?.ok, "bzip2 fixture should be created")?
-  fs.remove(session)?
+  fs.write(events, "{\"type\":\"message_update\"}\n")?
+  runtime.compress_run_sessions(root)?
+  test.ok(! fs.exists(events)?, "streaming provider events must not be retained")?
+  test.ok(! fs.exists(session)?, "raw session must be compressed")?
   test.contains(runtime.session_text(session)?, "message")?
 }
 
@@ -654,10 +653,13 @@ proc test_compressed_session_support_is_documented() [fs, error] {
   let runtime = fs.read_text(fp"${fs.cwd()?}/factory_runtime.xsh")?
   let report = fs.read_text(fp"${fs.cwd()?}/tools/session-report.xsh")?
   let budget = fs.read_text(fp"${fs.cwd()?}/tools/budget-watch.xsh")?
+  let cleanup = fs.read_text(fp"${fs.cwd()?}/tools/cleanup-run.xsh")?
   test.contains(runtime, "session.jsonl.bz2")?
   test.contains(runtime, "compress_run_sessions")?
   test.contains(report, "runtime.session_text")?
   test.contains(budget, "runtime.session_text")?
+  test.contains(cleanup, ".events.jsonl")?
+  test.contains(fs.read_text(fp"${fs.cwd()?}/runs/.gitignore")?, "session.jsonl.events.jsonl.bz2")?
 }
 
 proc test_pi_session_persistence_is_jsonl_only() [fs, error] {
@@ -666,9 +668,12 @@ proc test_pi_session_persistence_is_jsonl_only() [fs, error] {
   test.contains(controller, "--session")?
   test.contains(controller, "--mode", "json")?
   test.contains(controller, ".events.jsonl")?
+  test.contains(controller, "fs.remove(provider_events")?
   test.contains(eval_worker, "--session")?
   test.contains(eval_worker, "--mode", "json")?
   test.contains(eval_worker, ".events.jsonl")?
+  let executor = fs.read_text(fp"${fs.cwd()?}/eval-executor.xsh")?
+  test.contains(executor, "fs.remove")?
   test.ok(! controller.contains("--export"), "run-agent must not create session.html")?
   test.ok(! eval_worker.contains("--export"), "eval worker must not create session.html")?
 }

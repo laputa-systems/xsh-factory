@@ -1000,8 +1000,12 @@ export proc compress_run_sessions(run_dir: Path) [fs, process, error] -> Result[
   let bzip2 = process.which("bzip2")?
   var sessions: List[Path] = []
   for entry in fs.walk(run_dir, gitignore: false, hidden: true)? |> where .kind == "file" {
-    if entry.name == "session.jsonl" or entry.name.ends_with(".events.jsonl") {
+    if entry.name == "session.jsonl" {
       sessions = sessions.push(entry.path)
+    } else if entry.name.ends_with(".events.jsonl") {
+      # JSON mode emits one record per streaming delta. Provider telemetry is
+      # normalized into report.json; the raw stream is transient input.
+      fs.remove(entry.path, missing_ok: true)?
     }
   }
   for session in sessions {
