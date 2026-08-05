@@ -193,3 +193,19 @@ The linked replay candidate recommends explicit absent-value terminals or `error
 | `3b56a781606faa1ae0eb811af09d10094080152dae78d9f057cca7de101e126b` | approved baseline unchanged |
 
 Both phase candidates in this run are byte-identical to the approved handbook. No new handbook content was staged; the pipeline guidance belongs to the merged product contract and requires a future cross-eval replay before any handbook change.
+
+## Explicit CTO disposition — run-1785899099112
+
+| Candidate SHA-256 | Disposition |
+| --- | --- |
+| `a1b5fef60a1e56c8d1f0eec8e91ae99f5d963a15ca7c374bd20ca8c8c35995f5` | deferred pending `task-histogram-002` product/replay decision; not promoted |
+
+The histogram worker's grouped-key `sort-by` guidance was not promoted because the same run produced a restriction failure and a product ticket for the checker behavior. A product replay must determine whether the existing `sort-by` surface can support concrete group keys before handbook guidance is changed.
+
+## Explicit CTO disposition — run-1785900054828
+
+| Candidate SHA-256 | Disposition |
+| --- | --- |
+| `a537a12ca4d6bf49d71787c5cf2fedcc1fcf5dbd4452e8df783d106cef284f01` | deferred pending cross-eval arithmetic replay; not promoted |
+
+The candidate records the reusable integer-division rule (`/` truncates for non-negative Int values; `//` is not an operator). The source trial passed, but the manager requested replay through another arithmetic eval before changing the shared handbook.

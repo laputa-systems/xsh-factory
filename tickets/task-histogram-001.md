@@ -4,6 +4,12 @@
 
 Open.
 
+## CTO decision — pre-cycle run-1
+
+- Decision: Deferred; do not approve or dispatch.
+- Basis: The proposed `require(cond, msg)` adds a second surface for the same deliberate validation-failure capability already implemented by merged `task-colsum-001` as `error.fail(message)`. The ticket's own API-surface comparison does not establish semantic novelty, so the quality gate rejects dispatch rather than creating a redundant checker/runtime/API path.
+- Next evidence: replay the existing `error.fail` capability in `task-histogram` or provide a materially different semantic requirement that the merged mechanism cannot express.
+
 ## Budget breach
 
 None.

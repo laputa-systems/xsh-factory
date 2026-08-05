@@ -2,7 +2,7 @@
 
 ## Status
 
-pending-validation
+validated
 
 ## Change
 

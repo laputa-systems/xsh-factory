@@ -1,0 +1,118 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785900054828/phases/04-eval-design/workers/eval-designer/proposal-1/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_process": "pass",
+    "reporting": "pass",
+    "required_report": "present",
+    "session_limit_watcher": "pass",
+    "watcher": "pass"
+  },
+  "findings": [
+    {
+      "count": 2,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "role": "eval-designer",
+    "worker_id": "proposal-1"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "provider_telemetry": {
+    "event_turns": 43,
+    "events_path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785900054828/phases/04-eval-design/workers/eval-designer/proposal-1/session.jsonl.bz2.events.jsonl",
+    "output_tokens_per_second": 0,
+    "present": true,
+    "provider_errors": [],
+    "response_elapsed_ms": 0,
+    "retry_count": 0,
+    "retry_delay_ms": 0,
+    "retry_errors": [],
+    "retry_failures": 0,
+    "retry_successes": 0
+  },
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785900054828/phases/04-eval-design/workers/eval-designer/proposal-1/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 42,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 512174
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785900054828/phases/04-eval-design/workers/eval-designer/proposal-1/session.jsonl.bz2",
+      "summary": "/bin/bash: -c: line 0: unexpected EOF while looking for matching `\"'\n/bin/bash: -c: line 1: syntax error: unexpected end of file\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 23
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785900054828/phases/04-eval-design/workers/eval-designer/proposal-1/session.jsonl.bz2",
+      "summary": "=== status/ID ===\n1:# Eval task-treecmp\n3:## Status\n=== difficulty section present ===\n57:## Difficulty justification\n=== files ===\n./runtime/artifact.md\n./runtime/task.md\n./EVAL.md\n./evaluate.xsh\n./evaluator.xsh\n./executor.xsh\n=== report dir ===\n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 38
+    }
+  ],
+  "tools": [
+    {
+      "count": 32,
+      "name": "bash"
+    },
+    {
+      "count": 3,
+      "name": "edit"
+    },
+    {
+      "count": 1,
+      "name": "ls"
+    },
+    {
+      "count": 15,
+      "name": "read"
+    },
+    {
+      "count": 7,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 43,
+    "budget_usd": 0.3,
+    "cache_read_cost_usd": 0.035970048,
+    "cache_read_tokens": 1998336,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.050860098000000006,
+    "input_cost_usd": 0.007041510000000002,
+    "input_tokens": 78239,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.00784854,
+    "output_tokens": 43603,
+    "provider_total_tokens": 2120178,
+    "reasoning_tokens": 22348,
+    "thinking_blocks": 35,
+    "tool_calls": 58,
+    "tool_errors": 2,
+    "tool_results": 58,
+    "total_bucket_tokens": 2120178,
+    "user_messages": 1
+  }
+}

@@ -1,0 +1,180 @@
+{
+  "artifacts": [
+    {
+      "kind": "phase-reports",
+      "path": "phases/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 93,
+      "budget_failures": 0,
+      "cost_usd": 0.07629188399999998,
+      "tool_errors": 2,
+      "total_bucket_tokens": 2837394.0,
+      "unknown_costs": 0,
+      "workers": 3
+    },
+    "mode": "organization",
+    "outcomes": {
+      "cycle": "fail",
+      "evaluator": "fail",
+      "infrastructure": "pass",
+      "product": "fail"
+    },
+    "phases": [
+      {
+        "id": "01-eval",
+        "path": "phases/01-eval/report.json",
+        "result": "fail",
+        "valid": true
+      },
+      {
+        "id": "02-eval-design",
+        "path": "phases/02-eval-design/report.json",
+        "result": "pass",
+        "valid": true
+      }
+    ],
+    "tool_errors": [
+      {
+        "report": "phases/01-eval/workers/eval-manager/task-histogram/report.json",
+        "summary": "Traceback (most recent call last):\n  File \"<string>\", line 5, in <module>\n    w=d['workers'][0]\n      ~^^^^^^^^^^^\nKeyError: 'workers'\nphase tool_errors: None\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 11,
+        "worker": {
+          "role": "eval-manager",
+          "worker_id": "task-histogram"
+        }
+      },
+      {
+        "report": "phases/02-eval-design/workers/eval-designer/proposal-1/report.json",
+        "summary": "/Users/josh/usr/bin/xsh\n/Users/josh/usr/bin/xsht\n---find---\ntarget/debug/xsh\ntarget/debug/xsht\n---cargo---\ntarget\ntarget exists\n---local bin---\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 6,
+        "worker": {
+          "role": "eval-designer",
+          "worker_id": "proposal-1"
+        }
+      }
+    ],
+    "workers": [
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-histogram"
+        },
+        "path": "phases/01-eval/workers/eval-manager/task-histogram/report.json",
+        "result": "pass",
+        "tool_errors": 1,
+        "usage": {
+          "assistant_turns": 23,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.017267328,
+          "cache_read_tokens": 959296,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.027736487999999997,
+          "input_cost_usd": 0.00617364,
+          "input_tokens": 68596,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.004295519999999999,
+          "output_tokens": 23864,
+          "provider_total_tokens": 1051756,
+          "reasoning_tokens": 17587,
+          "thinking_blocks": 16,
+          "tool_calls": 34,
+          "tool_errors": 1,
+          "tool_results": 34,
+          "total_bucket_tokens": 1051756,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-histogram-1"
+        },
+        "path": "phases/01-eval/workers/eval-worker/task-histogram-1/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 46,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.017563392000000004,
+          "cache_read_tokens": 975744,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.028945421999999995,
+          "input_cost_usd": 0.00675225,
+          "input_tokens": 75025,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00462978,
+          "output_tokens": 25721,
+          "provider_total_tokens": 1076490,
+          "reasoning_tokens": 17272,
+          "thinking_blocks": 41,
+          "tool_calls": 51,
+          "tool_errors": 0,
+          "tool_results": 51,
+          "total_bucket_tokens": 1076490,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-designer",
+          "worker_id": "proposal-1"
+        },
+        "path": "phases/02-eval-design/workers/eval-designer/proposal-1/report.json",
+        "result": "pass",
+        "tool_errors": 1,
+        "usage": {
+          "assistant_turns": 24,
+          "budget_usd": 0.3,
+          "cache_read_cost_usd": 0.011533823999999998,
+          "cache_read_tokens": 640768,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.019609973999999995,
+          "input_cost_usd": 0.00423225,
+          "input_tokens": 47025,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0038439,
+          "output_tokens": 21355,
+          "provider_total_tokens": 709148,
+          "reasoning_tokens": 10456,
+          "thinking_blocks": 22,
+          "tool_calls": 31,
+          "tool_errors": 1,
+          "tool_results": 31,
+          "total_bucket_tokens": 709148,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "a1cbb632d1ab8673176f6ef9f9d9cf04a7ad5e02"
+  },
+  "findings": [
+    {
+      "id": "01-eval",
+      "kind": "phase",
+      "result": "fail"
+    }
+  ],
+  "identity": {
+    "mode": "organization",
+    "run_id": "run-1785899099112"
+  },
+  "kind": "run",
+  "result": "fail",
+  "schema_version": 1,
+  "state": "completed"
+}
