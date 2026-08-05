@@ -484,7 +484,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
       let ticket_eval_id = control.ticket_eval(ticket_path.read_text()?)
       let ticket_reeval_phase = fp"${phases_dir}/02-reeval-${ticket_id}"
       let ticket_reeval_request = fp"${phase_requests_dir}/02-reeval-${ticket_id}.md"
-      let ticket_worktree = fp"${primary_phase}/worktrees/${ticket_id}"
+      let ticket_worktree = runtime.ticket_worktree_path(xsh_repo, primary_phase, ticket_id)
       let ticket_patch = fp"${primary_phase}/patches/${ticket_id}.diff"
       fs.mkdir(ticket_reeval_phase)?
       phase_request(phase_template, ticket_reeval_request, "eval", ticket_eval_id, trial_count, 0,

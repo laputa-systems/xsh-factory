@@ -466,6 +466,17 @@ export proc write_engineer_patch(
   return fs.metadata(patch_path)?.size > 0
 }
 
+## Computes the scratch root for a ticket worktree outside the factory checkout.
+export pure ticket_worktree_root(xsh_repo: Path, phase_dir: Path) -> Path {
+  let run_root = if phase_dir.name().starts_with("run-") { phase_dir } else { phase_dir.parent().parent() }
+  return fp"${xsh_repo.parent()}/.xsh-factory-worktrees/${run_root.name()}"
+}
+
+## Computes one controller-owned ticket worktree outside the factory checkout.
+export pure ticket_worktree_path(xsh_repo: Path, phase_dir: Path, ticket_id: Str) -> Path {
+  return fp"${ticket_worktree_root(xsh_repo, phase_dir)}/${ticket_id}"
+}
+
 ## Removes a clean temporary worktree while leaving its review branch intact.
 export proc remove_clean_worktree(xsh_repo: Path, worktree: Path) [fs, process, error] -> Result[Bool] {
   if ! fs.exists(worktree)? {
@@ -498,6 +509,20 @@ export proc remove_run_worktrees(xsh_repo: Path, run_dir: Path) [fs, process, er
         removed = false
         eprint f"unable to remove run worktree: ${child.path.display()}"
       }
+    }
+  }
+  let scratch_root = if run_dir.name().starts_with("run-") {
+    fp"${xsh_repo.parent()}/.xsh-factory-worktrees/${run_dir.name()}"
+  } else {
+    ticket_worktree_root(xsh_repo, run_dir)
+  }
+  if fs.exists(scratch_root)? {
+    for child in fs.children(scratch_root, stat: false, ordered: true)? {
+      if child.kind != "dir" { continue }
+      let status = process.run(process.command_argv(
+        "git", ["git", "-C", xsh_repo.display(), "worktree", "remove", "--force", child.path.display()]
+      ))?
+      if ! status.ok and fs.exists(child.path)? { removed = false }
     }
   }
   let prune = process.run(process.command_argv(

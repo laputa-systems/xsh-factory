@@ -89,7 +89,7 @@ proc run_ticket_cycle(
   let active_run = env.path("FACTORY_ACTIVE_RUN", fp"${factory_dir}/runs/ACTIVE")?
   let lock_path = env.path("FACTORY_LOCK_PATH", fp"${factory_dir}/runs/factory.lock")?
   let _run_lock = runtime.acquire_run_lock_at(lock_path)?
-  let worktree_root = fp"${run_dir}/worktrees"
+  let worktree_root = runtime.ticket_worktree_root(xsh_repo, run_dir)
   let patch_root = fp"${run_dir}/patches"
   let event_template = run_dir
   let assignment_template = fp"${factory_dir}/templates/ENGINEER-ASSIGNMENT.md"
@@ -155,7 +155,7 @@ proc run_ticket_cycle(
       eprint "replay or review that branch before dispatching another engineer"
       return 1
     }
-    let worktree = fp"${worktree_root}/${ticket_id}"
+    let worktree = runtime.ticket_worktree_path(xsh_repo, run_dir, ticket_id)
     let branch = f"factory/${ticket_id}/${stamp}"
     let worktree_stdout = fp"${run_dir}/worktrees/${ticket_id}.stdout"
     let worktree_stderr = fp"${run_dir}/worktrees/${ticket_id}.stderr"
@@ -224,7 +224,7 @@ proc run_ticket_cycle(
   runtime.emit_event(event_template, run_dir, "20-director-started", "director", "started", 1, "controller", "controller-dispatching engineers; director will reconcile")?
   for ticket_id in tickets {
     let assignment = fp"${run_dir}/messages/${ticket_id}.md"
-    let worktree = fp"${worktree_root}/${ticket_id}"
+    let worktree = runtime.ticket_worktree_path(xsh_repo, run_dir, ticket_id)
     runtime.emit_event(event_template, run_dir, f"20-ticket-${ticket_id}-started", ticket_id, "started", 1, "controller", "controller-dispatching engineer worker")?
     engineer_handles = engineer_handles.push(spawn_engineer(
       factory_dir, run_dir, xsh_repo, run_agent, auth_file, pi_command, platform,
@@ -294,7 +294,7 @@ proc run_ticket_cycle(
   var all_tickets_ok = true
   var all_patches_ok = true
   for ticket_id in tickets {
-    let worktree = fp"${worktree_root}/${ticket_id}"
+    let worktree = runtime.ticket_worktree_path(xsh_repo, run_dir, ticket_id)
     let worker_dir = fp"${run_dir}/workers/engineer/${ticket_id}"
     let engineer_report = fp"${worker_dir}/REPORT.md"
     let worker_report = fp"${worker_dir}/report.json"

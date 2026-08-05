@@ -541,6 +541,8 @@ proc test_organization_reuses_existing_branch_without_duplicate_dispatch() [fs, 
   test.contains(reuse, "mode: \"ticket-reuse\"")?
   test.contains(reuse, "worktree", "existing branch must use a detached worktree")?
   test.contains(launcher, "open_branch != \"\" and mode != \"organization\"")?
+  test.contains(launcher, "open_branch != \"\" and mode != \"organization\"")?
+  test.eq(runtime.ticket_worktree_path(Path("/srv/xsh"), Path("/srv/factory/runs/run-1/phases/01-ticket"), "task-a").display(), "/srv/.xsh-factory-worktrees/run-1/task-a")?
 }
 
 proc test_ticket_cycle_bounds_concurrent_engineers() [fs, error] {
@@ -555,6 +557,11 @@ proc test_ticket_cycle_bounds_concurrent_engineers() [fs, error] {
   test.contains(ticket, "spawn_engineer")?
   test.contains(ticket, "engineer_handles")?
   test.contains(ticket, "controller-dispatching engineer worker")?
+  test.contains(ticket, "controller-dispatching engineer worker")?
+  let runtime = fs.read_text(fp"${fs.cwd()?}/factory/runtime.xsh")?
+  test.contains(runtime, "ticket_worktree_root")?
+  test.contains(runtime, ".xsh-factory-worktrees")?
+  test.contains(ticket, "ticket_worktree_path(xsh_repo, run_dir, ticket_id)")?
   test.contains(director, "launch each assigned row exactly once")?
   test.contains(organization, "ticket_worker_pass(primary_phase, ticket_id)")?
   test.contains(organization, "remove_run_worktrees")?

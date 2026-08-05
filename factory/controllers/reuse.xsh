@@ -18,7 +18,7 @@ proc prepare(
   branch: Str,
   base_commit: Str,
 ) [fs, process, error] -> Result[ReuseEvidence] {
-  let worktree = fp"${phase_dir}/worktrees/${ticket_id}"
+  let worktree = runtime.ticket_worktree_path(xsh_repo, phase_dir, ticket_id)
   let patch_dir = fp"${phase_dir}/patches"
   let patch_path = fp"${patch_dir}/${ticket_id}.diff"
   let patch_stderr = fp"${patch_dir}/${ticket_id}.stderr"

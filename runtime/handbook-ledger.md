@@ -252,3 +252,14 @@ The candidate restates the boolean word-form rule already
 captured in earlier deferred candidates. The fresh run passed, but it remains
 unpromoted until the required matched predicate-heavy replay establishes
 whether the guidance generalizes beyond this eval.
+
+## Explicit CTO disposition — pre-cycle-1
+
+| Candidate SHA-256 | Disposition |
+| --- | --- |
+| `aef69dd11420b141a3935620d983b6f80d2cca82c426a26556ebb36f8a4582b2` | deferred pending matched predicate-heavy replay; not promoted |
+
+The `task-findexec` worker reproduced the boolean word-form rule, but the
+candidate is a single-eval hypothesis and requests a matched replay before
+changing the approved handbook. The product ticket is admitted independently;
+the handbook remains unchanged.

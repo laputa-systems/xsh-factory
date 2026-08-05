@@ -60,7 +60,7 @@ found the workaround of binding first (`let p = if ... {} else {}; p`).
 
 ## Evidence
 
-- Worker session: `runs/run-1785960825554/phases/01-eval/workers/eval-worker/task-findexec-1/session.jsonl`
+- Worker session: `runs/run-1785960825554/phases/01-eval/workers/eval-worker/task-findexec-1/session.jsonl.bz2`
 - Tool-error turns 18/19 (`err[check.map-tail]: map requires a tail value`
   against `findexec.xsh:7` `|> map { |e|`), turn 21 (`/tmp/iftest.xsh:3`
   `[1,2,3] |> map { |n|`), and the three `iftest*.xsh` single/multi-line

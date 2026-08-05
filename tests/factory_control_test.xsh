@@ -263,7 +263,7 @@ proc test_standard_cycle_uses_diverse_active_eval() [fs, error] {
   let organization = fs.read_text(fp"${fs.cwd()?}/factory/controllers/organization.xsh")?
   let runtime_source = fs.read_text(fp"${fs.cwd()?}/factory/runtime.xsh")?
   let cto_runner = fs.read_text(fp"${fs.cwd()?}/factory/tools/cto.xsh")?
-  test.contains(request, "## Active evals\n\n- `task-findexec`")?
+  test.contains(request, "## Active evals\n\n- `task-histogram`")?
   test.contains(request, "Allow measured eval reuse")?
   test.contains(fs.read_text(fp"${fs.cwd()?}/factory/tools/eval-trends.xsh")?, "median_turns")?
   test.contains(request, "## Bottleneck review")?
