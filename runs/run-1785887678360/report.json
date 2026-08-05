@@ -1,0 +1,285 @@
+{
+  "artifacts": [
+    {
+      "kind": "session-directory",
+      "path": "workers/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 93,
+      "budget_failures": 0,
+      "cost_usd": 0.07452576,
+      "tool_errors": 4,
+      "total_bucket_tokens": 2886857.0,
+      "unknown_costs": 0,
+      "workers": 3
+    },
+    "designer": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785887678360/workers/eval-designer/proposal-1/REPORT.md",
+      "present": true,
+      "result": "ready-for-review",
+      "role": "eval-designer",
+      "valid": true
+    },
+    "director": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785887678360/workers/director/director/REPORT.md",
+      "present": false,
+      "result": "not-requested",
+      "role": "director",
+      "valid": true
+    },
+    "engineer": [],
+    "handbook_lineage": {
+      "approved": "lineage/handbook-approved.md",
+      "candidate": "lineage/handbook-candidate.md"
+    },
+    "manager": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785887678360/workers/eval-manager/task-bigfiles/REPORT.md",
+      "present": true,
+      "result": "pass",
+      "role": "eval-manager",
+      "valid": true
+    },
+    "mode": "eval",
+    "narratives": [
+      {
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785887678360/workers/eval-designer/proposal-1/REPORT.md",
+        "present": true,
+        "result": "ready-for-review",
+        "role": "eval-designer",
+        "valid": true
+      },
+      {
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785887678360/workers/eval-manager/task-bigfiles/REPORT.md",
+        "present": true,
+        "result": "pass",
+        "role": "eval-manager",
+        "valid": true
+      }
+    ],
+    "open_tickets": [
+      {
+        "eval_id": "task-bigfiles",
+        "id": "task-bigfiles-001",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-bigfiles-001.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-envcfg",
+        "id": "task-envcfg-001",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-envcfg-001.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-tags",
+        "id": "task-tags-003",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-tags-003.md",
+        "status": "Open."
+      }
+    ],
+    "outcomes": {
+      "cycle": "pass",
+      "evaluator": "pass",
+      "infrastructure": "pass",
+      "product": "pass"
+    },
+    "required_outputs": {
+      "audit": true,
+      "candidate_handbook": true,
+      "designer_handbook_read": true,
+      "designer_output": true,
+      "handbook_lineage": true,
+      "manager_evidence_read": true,
+      "manager_handbook_read": true,
+      "manager_report": true,
+      "manager_session": true,
+      "required": true,
+      "trial1_process": true,
+      "trial1_report": true,
+      "trial2_process": true,
+      "trial2_report": true,
+      "worker_handbook_read": true
+    },
+    "sessions": [
+      "workers/eval-designer/proposal-1/session.jsonl.bz2",
+      "workers/eval-manager/task-bigfiles/session.jsonl.bz2",
+      "workers/eval-worker/task-bigfiles-1/session.jsonl.bz2"
+    ],
+    "tool_errors": [
+      {
+        "report": "workers/eval-designer/proposal-1/report.json",
+        "summary": "base-image-build.stderr\nbase-image-build.stdout\nCTO-IMPROVEMENT.md\ncycle-budget-watch.stderr\ncycle-budget-watch.stdout\nCYCLE-REQUEST.md\ndesigner.stderr\ndesigner.stdout\nevents.jsonl\nlineage\nlocks\nmessages\nprocesses\nproposals\nstates\ntrial-1.stderr\ntrial-1.stdout\nworkers\nxsh-build.state\nxsh-build.stderr\nxsh-build.stdout\n---PROPOSAL---\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 2,
+        "worker": {
+          "role": "eval-designer",
+          "worker_id": "proposal-1"
+        }
+      },
+      {
+        "report": "workers/eval-designer/proposal-1/report.json",
+        "summary": "Could not find edits[1] in /Users/josh/d/laputa-systems/xsh-factory/runs/run-1785887678360/proposals/proposal-1/EVAL.md. The oldText must match exactly including all whitespace and newlines.",
+        "tool": "edit",
+        "turn": 28,
+        "worker": {
+          "role": "eval-designer",
+          "worker_id": "proposal-1"
+        }
+      },
+      {
+        "report": "workers/eval-manager/task-bigfiles/report.json",
+        "summary": "Found 2 occurrences of edits[1] in /Users/josh/d/laputa-systems/xsh-factory/tickets/task-bigfiles-001.md. Each oldText must be unique. Please provide more context to make it unique.",
+        "tool": "edit",
+        "turn": 15,
+        "worker": {
+          "role": "eval-manager",
+          "worker_id": "task-bigfiles"
+        }
+      },
+      {
+        "report": "workers/eval-worker/task-bigfiles-1/report.json",
+        "summary": "4010 /usr/share/udhcpc/default.script\n2772 /usr/share/ca-certificates/mozilla/ACCVRAIZ1.crt\n2264 /usr/share/ca-certificates/mozilla/Certigna_Root_CA.crt\n2167 /usr/share/ca-certificates/mozilla/Autoridad_de_Certificacion_Firmaprofesional_CIF_A62634068.crt\n2155 /usr/share/ca-certificates/mozilla/Hellenic_Academic_and_Research_Institutions_RootCA_2015.crt\nsh: syntax error: bad substitution\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 18,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-bigfiles-1"
+        }
+      }
+    ],
+    "trials": [
+      {
+        "evidence": {
+          "candidate_sha256": "unknown",
+          "classification": "pass",
+          "correctness": "pass",
+          "eval_id": "task-bigfiles",
+          "handbook_sha256": "unknown",
+          "oracle_sha256": "unknown",
+          "passed": true,
+          "protocol": "pass",
+          "restrictions": "pass",
+          "result": "pass",
+          "timing": "pass",
+          "trial_id": "1",
+          "valid": true
+        },
+        "path": "workers/eval-worker/task-bigfiles-1/run.json"
+      }
+    ],
+    "workers": [
+      {
+        "identity": {
+          "role": "eval-designer",
+          "worker_id": "proposal-1"
+        },
+        "path": "workers/eval-designer/proposal-1/report.json",
+        "result": "pass",
+        "tool_errors": 2,
+        "usage": {
+          "assistant_turns": 45,
+          "budget_usd": 0.3,
+          "cache_read_cost_usd": 0.03350937600000001,
+          "cache_read_tokens": 1861632,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.048814146,
+          "input_cost_usd": 0.010260089999999998,
+          "input_tokens": 114001,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.005044679999999999,
+          "output_tokens": 28026,
+          "provider_total_tokens": 2003659,
+          "reasoning_tokens": 13725,
+          "thinking_blocks": 35,
+          "tool_calls": 55,
+          "tool_errors": 2,
+          "tool_results": 55,
+          "total_bucket_tokens": 2003659,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-bigfiles"
+        },
+        "path": "workers/eval-manager/task-bigfiles/report.json",
+        "result": "pass",
+        "tool_errors": 1,
+        "usage": {
+          "assistant_turns": 21,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.008667648,
+          "cache_read_tokens": 481536,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.017679707999999995,
+          "input_cost_usd": 0.00643914,
+          "input_tokens": 71546,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00257292,
+          "output_tokens": 14294,
+          "provider_total_tokens": 567376,
+          "reasoning_tokens": 7835,
+          "thinking_blocks": 17,
+          "tool_calls": 26,
+          "tool_errors": 1,
+          "tool_results": 26,
+          "total_bucket_tokens": 567376,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-bigfiles-1"
+        },
+        "path": "workers/eval-worker/task-bigfiles-1/report.json",
+        "result": "pass",
+        "tool_errors": 1,
+        "usage": {
+          "assistant_turns": 27,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.0052220159999999995,
+          "cache_read_tokens": 290112,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.008031906,
+          "input_cost_usd": 0.00181791,
+          "input_tokens": 20199,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00099198,
+          "output_tokens": 5511,
+          "provider_total_tokens": 315822,
+          "reasoning_tokens": 2319,
+          "thinking_blocks": 18,
+          "tool_calls": 34,
+          "tool_errors": 1,
+          "tool_results": 34,
+          "total_bucket_tokens": 315822,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "a67599b7865707d0ddbfdaf04bd1620f511556b8"
+  },
+  "findings": [],
+  "identity": {
+    "eval_id": "task-bigfiles",
+    "mode": "eval",
+    "run_id": "run-1785887678360"
+  },
+  "kind": "phase",
+  "result": "pass",
+  "schema_version": 1,
+  "state": "completed"
+}
