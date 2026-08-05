@@ -2,19 +2,19 @@
 
 ## Status
 
-Approved.
-## CTO review
+Open.
 ## CTO review
 
-- Review cycle: pre-cycle-1.
-- Decision: Approved for one bounded implementation cycle.
-- Basis: The evaluator-container module-provisioning defect is now repaired in
-  `eval-executor.xsh`, with a native regression assertion for the mounted
-  `factory_control.xsh`. The ticket has a live approved eval, reproducible
-  eight-case acceptance criteria, no new XSH API surface, and a bounded
-  filesystem/hash implementation scope.
-- Bottleneck action: move the repaired evaluator from infrastructure failure
-  to a reviewable engineer commit and a passing linked replay.
+- Review cycle: post-cycle-1785947947500.
+- Decision: Deferred; do not dispatch.
+- Basis: This is a factory-repository evaluator-packaging change, while the
+  organization ticket controller creates only an isolated XSH product
+  worktree. The engineer correctly stopped without a commit; dispatching it
+  again through that path would repeat the throughput failure. The executor
+  repair was validated separately in `run-1785949651175`.
+- Next evidence: add a factory-repository implementation path or re-scope the
+  ticket before approving another engineer. Require a passing `task-dupcheck`
+  manifest after that change.
 
 - Review cycle: next organization cycle.
 - Decision: Deferred; do not approve or dispatch.
