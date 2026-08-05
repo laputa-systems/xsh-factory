@@ -26,7 +26,7 @@ proc main() [fs, process, env, time, error, io] {
   fs.chmod(oracle, 0o755)?
   let candidate = if fs.exists(artifact)? { process.run(process.command_argv("xsh", ["xsh", artifact.display(), input.display()], stdout: candidate_out, stderr: p"/session/candidate.stderr"))? } else { process.run(process.command_argv("false", ["false"], stdout: candidate_out))? }
   let expected = process.run(process.command_argv("sh", ["sh", oracle.display(), input.display()], stdout: oracle_out, stderr: p"/session/oracle.stderr"))?
-  let exact = candidate.status.ok and expected.status.ok and candidate_out.read_text()? == oracle_out.read_text()?
+  let exact = candidate.ok and expected.ok and candidate_out.read_text()? == oracle_out.read_text()?
   let source = if fs.exists(artifact)? { artifact.read_text()? } else { "" }
   let restriction_ok = source.contains("fs.") and ! source_has_forbidden(source)
   let protocol_ok = review_ok()?

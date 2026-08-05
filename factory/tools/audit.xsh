@@ -114,7 +114,11 @@ proc manifest_evidence(manifest_path: Path) [fs, error] -> Result[Any] {
   let timings = json.get(raw, ["timings"], null)
   let protocol_ok = boolean(json.get(protocol, ["artifact_present"], false)) and
     boolean(json.get(protocol, ["review_ok"], false))
-  let correctness_value = json.get(correctness, ["passed"], json.get(correctness, ["all_exact"], false))
+  # Package-owned evaluators use either `passed`, `all_exact`, or the concise
+  # `exact` field. Treat all three as the same correctness contract so a valid
+  # manifest cannot be rejected merely because its evaluator uses `exact`.
+  let correctness_value = json.get(correctness, ["passed"],
+    json.get(correctness, ["all_exact"], json.get(correctness, ["exact"], false)))
   let correctness_ok = boolean(correctness_value)
   let restrictions_ok = boolean(json.get(restrictions, ["passed"], false))
   let timing_present = json.get(timings, ["passed"], null)

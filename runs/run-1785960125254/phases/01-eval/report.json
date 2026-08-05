@@ -1,0 +1,258 @@
+{
+  "artifacts": [
+    {
+      "kind": "session-directory",
+      "path": "workers/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 40,
+      "budget_failures": 0,
+      "cost_usd": 0.023351634,
+      "tool_errors": 3,
+      "total_bucket_tokens": 799998.0,
+      "unknown_costs": 0,
+      "workers": 2
+    },
+    "designer": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785960125254/phases/01-eval/workers/eval-designer/proposal-1/REPORT.md",
+      "present": false,
+      "result": "not-requested",
+      "role": "eval-designer",
+      "valid": true
+    },
+    "director": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785960125254/phases/01-eval/workers/director/director/REPORT.md",
+      "present": false,
+      "result": "not-requested",
+      "role": "director",
+      "valid": true
+    },
+    "engineer": [],
+    "handbook_lineage": {
+      "approved": "lineage/handbook-approved.md",
+      "candidate": "lineage/handbook-candidate.md"
+    },
+    "manager": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785960125254/phases/01-eval/workers/eval-manager/task-findexec/REPORT.md",
+      "present": true,
+      "result": "pass",
+      "role": "eval-manager",
+      "valid": true
+    },
+    "mode": "eval",
+    "narratives": [
+      {
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785960125254/phases/01-eval/workers/eval-manager/task-findexec/REPORT.md",
+        "present": true,
+        "result": "pass",
+        "role": "eval-manager",
+        "valid": true
+      }
+    ],
+    "open_tickets": [
+      {
+        "eval_id": "task-dupcheck",
+        "id": "task-dupcheck-001",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-dupcheck-001.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-envcfg",
+        "id": "task-envcfg-001",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-envcfg-001.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-001",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-001.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-003",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-003.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-svcstat",
+        "id": "task-svcstat-001",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-svcstat-001.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-tags",
+        "id": "task-tags-003",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-tags-003.md",
+        "status": "Open."
+      }
+    ],
+    "outcomes": {
+      "cycle": "fail",
+      "evaluator": "fail",
+      "infrastructure": "fail",
+      "product": "fail"
+    },
+    "required_outputs": {
+      "audit": false,
+      "candidate_handbook": true,
+      "designer_handbook_read": true,
+      "designer_output": true,
+      "handbook_lineage": true,
+      "manager_evidence_read": true,
+      "manager_handbook_read": true,
+      "manager_report": true,
+      "manager_session": true,
+      "required": false,
+      "trial1_process": true,
+      "trial1_report": true,
+      "trial2_process": true,
+      "trial2_report": true,
+      "worker_handbook_read": true
+    },
+    "sessions": [
+      "workers/eval-manager/task-findexec/session.jsonl.bz2.bz2",
+      "workers/eval-worker/task-findexec-1/session.jsonl.bz2.bz2"
+    ],
+    "tool_errors": [
+      {
+        "report": "workers/eval-manager/task-findexec/report.json",
+        "summary": "ENOENT: no such file or directory, access '/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785960125254/phases/01-eval/workers/eval-worker/task-findexec-1/review.md'",
+        "tool": "read",
+        "turn": 3,
+        "worker": {
+          "role": "eval-manager",
+          "worker_id": "task-findexec"
+        }
+      },
+      {
+        "report": "workers/eval-manager/task-findexec/report.json",
+        "summary": "ENOENT: no such file or directory, access '/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785960125254/phases/01-eval/workers/eval-worker/task-findexec-1/session.jsonl.bz2.bz2.events.jsonl'",
+        "tool": "read",
+        "turn": 6,
+        "worker": {
+          "role": "eval-manager",
+          "worker_id": "task-findexec"
+        }
+      },
+      {
+        "report": "workers/eval-worker/task-findexec-1/report.json",
+        "summary": "chmod: fx/sub/.hid/c.sh: No such file or directory\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 4,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-findexec-1"
+        }
+      }
+    ],
+    "trials": [
+      {
+        "evidence": {
+          "candidate_sha256": "unknown",
+          "classification": "unknown",
+          "correctness": "fail",
+          "eval_id": "task-findexec",
+          "handbook_sha256": "unknown",
+          "oracle_sha256": "unknown",
+          "passed": false,
+          "protocol": "pass",
+          "restrictions": "pass",
+          "result": "pass",
+          "timing": "pass",
+          "trial_id": "1",
+          "valid": true
+        },
+        "path": "workers/eval-worker/task-findexec-1/run.json"
+      }
+    ],
+    "workers": [
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-findexec"
+        },
+        "path": "workers/eval-manager/task-findexec/report.json",
+        "result": "pass",
+        "tool_errors": 2,
+        "usage": {
+          "assistant_turns": 13,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.006774912,
+          "cache_read_tokens": 376384,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.013738752,
+          "input_cost_usd": 0.0048679199999999995,
+          "input_tokens": 54088,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00209592,
+          "output_tokens": 11644,
+          "provider_total_tokens": 442116,
+          "reasoning_tokens": 8189,
+          "thinking_blocks": 12,
+          "tool_calls": 27,
+          "tool_errors": 2,
+          "tool_results": 27,
+          "total_bucket_tokens": 442116,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-findexec-1"
+        },
+        "path": "workers/eval-worker/task-findexec-1/report.json",
+        "result": "pass",
+        "tool_errors": 1,
+        "usage": {
+          "assistant_turns": 27,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.005853312,
+          "cache_read_tokens": 325184,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.009612882,
+          "input_cost_usd": 0.00212607,
+          "input_tokens": 23623,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0016335000000000002,
+          "output_tokens": 9075,
+          "provider_total_tokens": 357882,
+          "reasoning_tokens": 5839,
+          "thinking_blocks": 18,
+          "tool_calls": 31,
+          "tool_errors": 1,
+          "tool_results": 31,
+          "total_bucket_tokens": 357882,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "1cf4ad3d7ee5fde9b3160b11d8073cbd7ce5e7c4"
+  },
+  "findings": [
+    {
+      "kind": "required-outputs",
+      "state": "failed"
+    }
+  ],
+  "identity": {
+    "eval_id": "task-findexec",
+    "mode": "eval",
+    "run_id": "01-eval"
+  },
+  "kind": "phase",
+  "result": "fail",
+  "schema_version": 1,
+  "state": "completed"
+}

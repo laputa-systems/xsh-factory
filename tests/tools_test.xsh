@@ -174,7 +174,7 @@ proc write_eval_phase_fixture(root: Path, factory: Path) [fs, error] -> Result[U
     tool_errors: [], findings: [], artifacts: []
   }, pretty: true)?
   fs.write(fp"${root}/workers/eval-worker/task-tags-1/session.jsonl", "{}\n")?
-  fs.write(fp"${root}/workers/eval-worker/task-tags-1/run.json", "{\"eval_id\":\"task-tags\",\"trial_id\":\"1\",\"result\":\"pass\",\"protocol\":{\"artifact_present\":true,\"review_ok\":true},\"correctness\":{\"passed\":true},\"restrictions\":{\"passed\":true},\"timings\":{\"passed\":true}}\n")?
+  fs.write(fp"${root}/workers/eval-worker/task-tags-1/run.json", "{\"eval_id\":\"task-tags\",\"trial_id\":\"1\",\"result\":\"pass\",\"protocol\":{\"artifact_present\":true,\"review_ok\":true},\"correctness\":{\"exact\":true},\"restrictions\":{\"passed\":true},\"timings\":{\"passed\":true}}\n")?
   json.write(fp"${root}/workers/eval-manager/task-tags/report.json", {
     schema_version: 1, kind: "worker", identity: {role: "eval-manager", worker_id: "task-tags"},
     state: "completed", result: "pass", usage: {assistant_turns: 1, total_bucket_tokens: 10, cost_usd: 0.01, budget_usd: 0.15, tool_errors: 0}, tool_errors: [], findings: [], artifacts: []
@@ -187,6 +187,19 @@ proc write_eval_phase_fixture(root: Path, factory: Path) [fs, error] -> Result[U
   fs.write(fp"${root}/workers/director/director/REPORT.md", "# Director\n\n## Result\n\npass\n\n## Cycle\n\nfixture\n\n## Children\n\nfixture\n\n## Required-output status\n\npass\n\n## North-star impact\n\nfixture\n")?
   fs.write(fp"${factory}/NORTH-STAR.md", fs.read_text(fp"${factory}/NORTH-STAR.md")?)?
   return Ok()
+}
+
+proc test_audit_accepts_concise_exact_manifest(ctx: TestContext) [fs, process, error] {
+  let root = test.temp_dir(ctx, name: "audit-exact-manifest")?
+  let factory = fs.cwd()?
+  write_eval_phase_fixture(root, factory)?
+  fs.write(fp"${root}/workers/eval-worker/task-tags-1/run.json", "{\"eval_id\":\"task-tags\",\"trial_id\":\"1\",\"result\":\"pass\",\"protocol\":{\"artifact_present\":true,\"review_ok\":true},\"correctness\":{\"exact\":true},\"restrictions\":{\"passed\":true},\"timings\":{\"passed\":true}}\n")?
+  let status = process.run(process.command_argv(
+    process.which("xsh")?, ["xsh", fp"${factory}/factory/tools/audit.xsh", "--", root.display(), "eval"],
+    cwd: factory, env: {FACTORY_DIR: factory.display(), XSH_MODULE_PATH: factory.display(), FACTORY_XSH_COMMIT: "fixture"},
+  ))?
+  test.ok(status.ok, "audit must accept an exact=true package manifest")?
+  test.eq(json.get(json.read(fp"${root}/report.json")?, ["result"], ""), "pass")?
 }
 
 proc test_audit_compiles_one_phase_report(ctx: TestContext) [fs, process, error] {
@@ -530,6 +543,37 @@ proc test_eval_gate_diagnostics_are_persisted() [fs, error] {
   test.contains(evaluator, "manager_evidence_read")?
   test.contains(evaluator, "designer_handbook_read")?
   test.contains(evaluator, "_post_required_outputs_audit")?
+}
+
+proc test_process_run_status_contract_is_executable(ctx: TestContext) [fs, process, error] {
+  let root = test.temp_dir(ctx, name: "process-run-status-contract")?
+  let fixture = fp"${root}/fixture.xsh"
+  fs.write(fixture, r"""
+proc main() [process, error, io] {
+  let result = process.run(process.command_argv("true", ["true"]))?
+  if ! result.ok { abort(1) }
+  print "direct-status-ok"
+}
+""")?
+  let output = fp"${root}/output.txt"
+  let status = process.run(process.command_argv(
+    process.which("xsh")?, ["xsh", fixture.display()], stdout: output,
+    env: {XSH_MODULE_PATH: fs.cwd()?.display()},
+  ))?
+  test.ok(status.ok, "process.run fixture must execute")?
+  test.contains(output.read_text()?, "direct-status-ok")?
+}
+
+proc test_package_evaluators_use_direct_process_status(ctx: TestContext) [fs, error] {
+  # Regression for run-1785958228987: process.run returns ProcessStatus
+  # directly. Accessing result.status is valid only for time.measure results
+  # and caused the package evaluator to abort before writing run.json.
+  for eval_id in ["task-findexec", "task-propsort", "task-render", "task-setdiff", "task-trim"] {
+    let source = fs.read_text(fp"${fs.cwd()?}/evals/${eval_id}/evaluator.xsh")?
+    test.contains(source, "process.run(")?
+    test.ok(! source.contains(".status.ok"), f"${eval_id} must use direct process status")?
+    test.ok(! source.contains(".status.exit_code"), f"${eval_id} must use direct process status")?
+  }
 }
 
 proc test_task_bigfiles_evaluator_is_package_owned() [fs, error] {

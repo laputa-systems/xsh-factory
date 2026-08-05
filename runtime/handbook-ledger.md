@@ -230,3 +230,14 @@ The `task-findexec` worker produced a correct artifact and a general boolean
 operator observation, but the package evaluator failed before a manifest with
 `missing-field: status`. Preserve the candidate without changing the shared
 handbook until the evaluator is repaired and the claim is replayed.
+
+## Explicit CTO disposition — run-1785960125254
+
+| Candidate SHA-256 | Disposition |
+| --- | --- |
+| `6a7e2d443ca6c8f75e3e7d15a7e1fd9c583cca7492fa968df4d0019beb893f9a` | deferred pending matched replay; not promoted |
+
+The `task-findexec` candidate records a useful filesystem path-return
+contract, but it is single-trial guidance. The evaluator contract has now
+been repaired and the candidate remains unpromoted until a matched replay
+provides falsifying evidence.
