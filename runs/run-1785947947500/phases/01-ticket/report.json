@@ -1,0 +1,203 @@
+{
+  "artifacts": [
+    {
+      "kind": "session-directory",
+      "path": "workers/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 24,
+      "budget_failures": 0,
+      "cost_usd": 0.014192938,
+      "tool_errors": 0,
+      "total_bucket_tokens": 401605.0,
+      "unknown_costs": 0,
+      "workers": 2
+    },
+    "designer": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785947947500/phases/01-ticket/workers/eval-designer/proposal-1/REPORT.md",
+      "present": false,
+      "result": "not-requested",
+      "role": "eval-designer",
+      "valid": true
+    },
+    "director": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785947947500/phases/01-ticket/workers/director/director/REPORT.md",
+      "present": true,
+      "result": "fail",
+      "role": "director",
+      "valid": true
+    },
+    "engineer": [
+      {
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785947947500/phases/01-ticket/workers/director/director/REPORT.md",
+        "present": true,
+        "result": "fail",
+        "role": "director",
+        "valid": true
+      },
+      {
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785947947500/phases/01-ticket/workers/engineer/task-dupcheck-001/REPORT.md",
+        "present": true,
+        "result": "not-ready",
+        "role": "engineer",
+        "valid": false
+      }
+    ],
+    "handbook_lineage": {
+      "approved": "missing",
+      "candidate": "missing"
+    },
+    "manager": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785947947500/phases/01-ticket/workers/eval-manager/task-dupcheck/REPORT.md",
+      "present": false,
+      "result": "missing",
+      "role": "eval-manager",
+      "valid": false
+    },
+    "mode": "ticket-implementation",
+    "narratives": [
+      {
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785947947500/phases/01-ticket/workers/director/director/REPORT.md",
+        "present": true,
+        "result": "fail",
+        "role": "director",
+        "valid": true
+      },
+      {
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785947947500/phases/01-ticket/workers/engineer/task-dupcheck-001/REPORT.md",
+        "present": true,
+        "result": "not-ready",
+        "role": "engineer",
+        "valid": false
+      }
+    ],
+    "open_tickets": [
+      {
+        "eval_id": "task-dupcheck",
+        "id": "task-dupcheck-001",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-dupcheck-001.md",
+        "status": "Approved."
+      },
+      {
+        "eval_id": "task-envcfg",
+        "id": "task-envcfg-001",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-envcfg-001.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-001",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-001.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-003",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-003.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-tags",
+        "id": "task-tags-003",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-tags-003.md",
+        "status": "Open."
+      }
+    ],
+    "outcomes": {
+      "cycle": "pass",
+      "evaluator": "pass",
+      "infrastructure": "pass",
+      "product": "pass"
+    },
+    "required_outputs": null,
+    "sessions": [
+      "workers/director/director/session.jsonl.bz2.bz2",
+      "workers/engineer/task-dupcheck-001/session.jsonl.bz2.bz2"
+    ],
+    "tool_errors": [],
+    "trials": [],
+    "workers": [
+      {
+        "identity": {
+          "role": "director",
+          "worker_id": "director"
+        },
+        "path": "workers/director/director/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 10,
+          "budget_usd": 0.06,
+          "cache_read_cost_usd": 0.0022452479999999996,
+          "cache_read_tokens": 124736,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.005120658,
+          "input_cost_usd": 0.00216585,
+          "input_tokens": 24065,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00070956,
+          "output_tokens": 3942,
+          "provider_total_tokens": 152743,
+          "reasoning_tokens": 1398,
+          "thinking_blocks": 9,
+          "tool_calls": 20,
+          "tool_errors": 0,
+          "tool_results": 20,
+          "total_bucket_tokens": 152743,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "engineer",
+          "worker_id": "task-dupcheck-001"
+        },
+        "path": "workers/engineer/task-dupcheck-001/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 14,
+          "budget_usd": 0.35,
+          "cache_read_cost_usd": 0.00214573,
+          "cache_read_tokens": 214573,
+          "cache_write_cost_usd": 0.003585749999999999,
+          "cache_write_tokens": 28686,
+          "cost_usd": 0.00907228,
+          "input_cost_usd": 4.2e-6,
+          "input_tokens": 42,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0033366,
+          "output_tokens": 5561,
+          "provider_total_tokens": 248862,
+          "reasoning_tokens": 3584,
+          "thinking_blocks": 4,
+          "tool_calls": 31,
+          "tool_errors": 0,
+          "tool_results": 31,
+          "total_bucket_tokens": 248862,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "aaa968c73fd7649f70a6a94e21f77a90bf6a778c"
+  },
+  "findings": [],
+  "identity": {
+    "eval_id": "task-dupcheck",
+    "mode": "ticket-implementation",
+    "run_id": "01-ticket"
+  },
+  "kind": "phase",
+  "result": "pass",
+  "schema_version": 1,
+  "state": "completed"
+}

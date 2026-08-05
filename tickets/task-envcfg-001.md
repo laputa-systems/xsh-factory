@@ -3,6 +3,14 @@
 ## Status
 
 Open.
+## CTO review
+
+- Review cycle: pre-cycle-1.
+- Decision: Deferred; do not approve or dispatch.
+- Basis: The current proposal remains a convenience error constructor and
+  fails the API-surface semantic-novelty gate. Existing `error.fail`/Result
+  machinery is the relevant merged mechanism; no new evidence demonstrates
+  that this ticket needs a separate product surface.
 
 ## CTO decision — pre-cycle review
 

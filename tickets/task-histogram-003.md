@@ -3,6 +3,14 @@
 ## Status
 
 Open.
+## CTO review
+
+- Review cycle: pre-cycle-1.
+- Decision: Deferred; do not approve or dispatch.
+- Basis: Existing evidence is sufficient to preserve the observation, but the
+  ticket's own next-evidence gate calls for a fresh focused fold-with-print
+  diagnostic check before paid implementation. Do not spend an engineer row
+  until that check is recorded.
 
 ## CTO decision — post-cycle run-2
 

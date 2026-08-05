@@ -254,15 +254,18 @@ exists, identifies the exact next-cycle verification or safe inverse, and is
 linked from the CTO briefing. The improvement must address the bottleneck
 identified for that cycle, not merely record that the cycle produced no ticket.
 
-Before declaring the cycle complete, the CTO commits the reviewed changes and
-the durable evidence in the factory checkout. Stage the scoped controller,
-test, policy, ticket, eval, handbook-ledger, documentation, and run-evidence
-changes. `runs/.gitignore` excludes transient controller plumbing; it does not
-exclude the reports, narratives, manifests, compressed sessions, events,
-patches, or other durable evidence needed for later review. Keep unrelated
-user work out of the commit. Verify `git diff --check`, commit with
-`cto: close <run-id>`, and record the commit hash in the cycle handoff. A cycle
-without this factory-and-evidence commit is not closed.
+Before declaring any cycle complete, the CTO unconditionally closes that
+individual run with a dedicated commit in the factory checkout, regardless of
+whether the run passed, failed, or stopped with partial evidence. Stage only
+the run's factory changes and durable evidence (including any scoped policy,
+ticket, eval, handbook-ledger, documentation, and run-evidence changes).
+`runs/.gitignore` excludes transient controller plumbing; it does not exclude
+the reports, narratives, manifests, compressed sessions, events, patches, or
+other evidence needed for later review. Keep unrelated user work out of the
+commit. Verify `git diff --check`, commit with `cto: close <run-id>`, and
+record the commit hash in the cycle handoff. A run without this individual
+factory-and-evidence commit is not closed; do not batch multiple runs or wait
+for an additional explicit finalization decision.
 
 Retire an eval when the evidence shows it is solved, redundant, or stagnant,
 no ticket or handbook replay depends on it, and a replacement scenario keeps

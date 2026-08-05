@@ -3,6 +3,13 @@
 ## Status
 
 Open.
+## CTO review
+
+- Review cycle: pre-cycle-1.
+- Decision: Deferred; do not approve or dispatch.
+- Basis: The ticket duplicates the already merged deliberate-error capability
+  and has no remaining acceptance gap beyond replaying that capability. Keep
+  it Open until a materially different requirement is demonstrated.
 
 ## CTO decision — pre-cycle run-1
 

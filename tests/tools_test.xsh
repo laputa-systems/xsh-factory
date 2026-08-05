@@ -547,6 +547,8 @@ proc test_eval_dispatch_is_package_owned() [fs, error] {
   test.ok(! common.contains("task-envcfg"))?
   test.contains(common, "FACTORY_EVAL_EVALUATOR")?
   test.contains(executor, "evaluator.xsh")?
+  test.contains(executor, "evaluator.xsh")?
+  test.contains(executor, "factory_control.xsh")?
   test.contains(executor, "identity", "eval_id")?
   test.contains(executor, "identity", "run_id")?
   for eval_id in ["task-ecount", "task-envcfg"] {

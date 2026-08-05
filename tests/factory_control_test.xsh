@@ -276,8 +276,11 @@ proc test_standard_cycle_uses_diverse_active_eval() [fs, error] {
   test.contains(cto, "not a request for approval")?
   test.contains(cto, "may finish the cycle with `pending-validation`")?
   test.contains(cto, "product merge is a CTO decision")?
-  test.contains(cto, "Before declaring the cycle complete")?
+  test.contains(cto, "Before declaring any cycle complete")?
   test.contains(cto, "cto: close <run-id>")?
+  test.contains(cto, "unconditionally closes")?
+  test.contains(cto, "regardless of")?
+  test.contains(cto, "do not batch multiple runs")?
   test.contains(cto, "The CTO decides whether to merge or apply")?
   test.contains(cto, "Admission is an explicit CTO decision")?
   test.contains(cto, "Throughput invariant")?

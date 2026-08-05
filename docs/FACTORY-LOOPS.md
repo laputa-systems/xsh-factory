@@ -114,12 +114,14 @@ The CTO is the authority for product merges, handbook promotion, eval
 approval, and reversion. It reviews the evidence and chooses the next narrow
 cycle within the coded spend and eval-count limits.
 
-The CTO closes a paid cycle by committing the reviewed factory changes and its
-durable run evidence with `cto: close <run-id>`. `runs/.gitignore` allowlists
+The CTO unconditionally closes each paid cycle individually, including failed
+or partial runs, by committing the reviewed factory changes and that run's
+durable evidence with a dedicated `cto: close <run-id>` commit. `runs/.gitignore` allowlists
 the evidence hierarchy—reports, narratives, manifests, compressed sessions,
 events, and patches—while excluding transient controller plumbing such as
 locks, PIDs, logs, worktrees, and active markers. Unrelated local work is not
-part of that commit.
+part of that commit; runs are never batched and no further explicit
+finalization is required.
 
 ## Durable output hierarchy
 

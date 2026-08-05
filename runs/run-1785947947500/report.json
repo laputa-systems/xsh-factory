@@ -1,0 +1,307 @@
+{
+  "artifacts": [
+    {
+      "kind": "phase-reports",
+      "path": "phases/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 135,
+      "budget_failures": 0,
+      "cost_usd": 0.10908794799999999,
+      "tool_errors": 4,
+      "total_bucket_tokens": 3660541.0,
+      "unknown_costs": 0,
+      "workers": 6
+    },
+    "mode": "organization",
+    "outcomes": {
+      "cycle": "fail",
+      "evaluator": "fail",
+      "infrastructure": "pass",
+      "product": "fail"
+    },
+    "phases": [
+      {
+        "id": "01-ticket",
+        "path": "phases/01-ticket/report.json",
+        "result": "pass",
+        "valid": true
+      },
+      {
+        "id": "02-reeval-task-dupcheck-001",
+        "path": "phases/02-reeval-task-dupcheck-001/report.json",
+        "result": "fail",
+        "valid": true
+      },
+      {
+        "id": "03-eval",
+        "path": "phases/03-eval/report.json",
+        "result": "fail",
+        "valid": true
+      }
+    ],
+    "tool_errors": [
+      {
+        "report": "phases/02-reeval-task-dupcheck-001/workers/eval-manager/task-dupcheck/report.json",
+        "summary": "ENOENT: no such file or directory, access '/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785947947500/phases/02-reeval-task-dupcheck-001/workers/eval-worker/task-dupcheck-1/session.jsonl.bz2.bz2.events.jsonl'",
+        "tool": "read",
+        "turn": 4,
+        "worker": {
+          "role": "eval-manager",
+          "worker_id": "task-dupcheck"
+        }
+      },
+      {
+        "report": "phases/02-reeval-task-dupcheck-001/workers/eval-worker/task-dupcheck-1/report.json",
+        "summary": "(no output)\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 7,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-dupcheck-1"
+        }
+      },
+      {
+        "report": "phases/02-reeval-task-dupcheck-001/workers/eval-worker/task-dupcheck-1/report.json",
+        "summary": "xsht api: invalid API query 'language.core.display-strings'; expected KIND:VALUE\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 12,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-dupcheck-1"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-worker/task-svcstat-1/report.json",
+        "summary": "├── Result (1 items)\n│   └── context (1 overload)\n├── Status (5 items)\n===\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 34,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-svcstat-1"
+        }
+      }
+    ],
+    "workers": [
+      {
+        "identity": {
+          "role": "director",
+          "worker_id": "director"
+        },
+        "path": "phases/01-ticket/workers/director/director/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 10,
+          "budget_usd": 0.06,
+          "cache_read_cost_usd": 0.0022452479999999996,
+          "cache_read_tokens": 124736,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.005120658,
+          "input_cost_usd": 0.00216585,
+          "input_tokens": 24065,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00070956,
+          "output_tokens": 3942,
+          "provider_total_tokens": 152743,
+          "reasoning_tokens": 1398,
+          "thinking_blocks": 9,
+          "tool_calls": 20,
+          "tool_errors": 0,
+          "tool_results": 20,
+          "total_bucket_tokens": 152743,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "engineer",
+          "worker_id": "task-dupcheck-001"
+        },
+        "path": "phases/01-ticket/workers/engineer/task-dupcheck-001/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 14,
+          "budget_usd": 0.35,
+          "cache_read_cost_usd": 0.00214573,
+          "cache_read_tokens": 214573,
+          "cache_write_cost_usd": 0.003585749999999999,
+          "cache_write_tokens": 28686,
+          "cost_usd": 0.00907228,
+          "input_cost_usd": 4.2e-6,
+          "input_tokens": 42,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0033366,
+          "output_tokens": 5561,
+          "provider_total_tokens": 248862,
+          "reasoning_tokens": 3584,
+          "thinking_blocks": 4,
+          "tool_calls": 31,
+          "tool_errors": 0,
+          "tool_results": 31,
+          "total_bucket_tokens": 248862,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-dupcheck"
+        },
+        "path": "phases/02-reeval-task-dupcheck-001/workers/eval-manager/task-dupcheck/report.json",
+        "result": "pass",
+        "tool_errors": 1,
+        "usage": {
+          "assistant_turns": 12,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.006811775999999999,
+          "cache_read_tokens": 378432,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.023973246,
+          "input_cost_usd": 0.01427769,
+          "input_tokens": 158641,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00288378,
+          "output_tokens": 16021,
+          "provider_total_tokens": 553094,
+          "reasoning_tokens": 11594,
+          "thinking_blocks": 11,
+          "tool_calls": 28,
+          "tool_errors": 1,
+          "tool_results": 28,
+          "total_bucket_tokens": 553094,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-dupcheck-1"
+        },
+        "path": "phases/02-reeval-task-dupcheck-001/workers/eval-worker/task-dupcheck-1/report.json",
+        "result": "pass",
+        "tool_errors": 2,
+        "usage": {
+          "assistant_turns": 21,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.005171328,
+          "cache_read_tokens": 287296,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.008132508,
+          "input_cost_usd": 0.00197298,
+          "input_tokens": 21922,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0009882,
+          "output_tokens": 5490,
+          "provider_total_tokens": 314708,
+          "reasoning_tokens": 2367,
+          "thinking_blocks": 18,
+          "tool_calls": 28,
+          "tool_errors": 2,
+          "tool_results": 28,
+          "total_bucket_tokens": 314708,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-svcstat"
+        },
+        "path": "phases/03-eval/workers/eval-manager/task-svcstat/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 19,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.012903552,
+          "cache_read_tokens": 716864,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.027386801999999995,
+          "input_cost_usd": 0.01191681,
+          "input_tokens": 132409,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.002566440000000001,
+          "output_tokens": 14258,
+          "provider_total_tokens": 863531,
+          "reasoning_tokens": 7955,
+          "thinking_blocks": 17,
+          "tool_calls": 26,
+          "tool_errors": 0,
+          "tool_results": 26,
+          "total_bucket_tokens": 863531,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-svcstat-1"
+        },
+        "path": "phases/03-eval/workers/eval-worker/task-svcstat-1/report.json",
+        "result": "pass",
+        "tool_errors": 1,
+        "usage": {
+          "assistant_turns": 59,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.026031744,
+          "cache_read_tokens": 1446208,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.03540245399999999,
+          "input_cost_usd": 0.00528039,
+          "input_tokens": 58671,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.004090320000000001,
+          "output_tokens": 22724,
+          "provider_total_tokens": 1527603,
+          "reasoning_tokens": 15285,
+          "thinking_blocks": 47,
+          "tool_calls": 65,
+          "tool_errors": 1,
+          "tool_results": 65,
+          "total_bucket_tokens": 1527603,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "aaa968c73fd7649f70a6a94e21f77a90bf6a778c"
+  },
+  "findings": [
+    {
+      "id": "02-reeval-task-dupcheck-001",
+      "kind": "phase",
+      "result": "fail"
+    },
+    {
+      "id": "03-eval",
+      "kind": "phase",
+      "result": "fail"
+    }
+  ],
+  "identity": {
+    "mode": "organization",
+    "run_id": "run-1785947947500"
+  },
+  "kind": "run",
+  "result": "fail",
+  "schema_version": 1,
+  "state": "completed"
+}

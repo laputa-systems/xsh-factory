@@ -3,6 +3,12 @@
 ## Status
 
 Open.
+## CTO review
+
+- Review cycle: pre-cycle-1.
+- Decision: Deferred; do not approve or dispatch.
+- Basis: The linked `task-tags` eval is disabled and cannot provide the
+  required replay gate. Re-home the observation under a live eval first.
 
 ## CTO decision — pre-cycle review
 

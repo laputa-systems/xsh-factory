@@ -145,6 +145,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     "--mount", f"type=bind,src=${worker_dir.display()},dst=/export",
     "--mount", f"type=bind,src=${eval_dir.display()}/evaluate.xsh,dst=/run/evaluate.xsh,readonly",
     "--mount", f"type=bind,src=${evaluator_file.display()},dst=/run/evaluator.xsh,readonly",
+    "--mount", f"type=bind,src=${factory_dir}/factory_control.xsh,dst=/run/factory_control.xsh,readonly",
   ]
   let eval_envs = [
     "--env", f"FACTORY_EVAL_ID=${eval_id}",
