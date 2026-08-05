@@ -106,6 +106,10 @@ proc preflight(
       return false
     }
     let ticket_path = fp"${factory_dir}/tickets/${candidate_ticket}.md"
+    if fs.exists(ticket_path)? and control.ticket_change_target(ticket_path.read_text()?) != "product" {
+      eprint f"ticket ${candidate_ticket} is not a product ticket; CTO owns factory changes and no engineer was dispatched"
+      return false
+    }
     if fs.exists(ticket_path)? and runtime.accepted_ticket(ticket_path)? {
       let open_branch = runtime.open_ticket_branch(xsh_repo, candidate_ticket)?
       if open_branch != "" and mode != "organization" {

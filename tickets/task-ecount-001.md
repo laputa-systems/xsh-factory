@@ -4,6 +4,10 @@
 
 Merged.
 
+## Change target
+
+- `product`
+
 ## CTO review
 
 - Review cycle: `run-1785787490432` (2026-08-03)

@@ -4,6 +4,10 @@
 
 Merged.
 
+## Change target
+
+- `product`
+
 ## Merge record
 
 - Implementation branch: `factory/task-tags-002/1785661432884`

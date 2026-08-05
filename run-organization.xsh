@@ -264,6 +264,10 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   } else {
     fp"${factory_dir}/tickets/${selected_ticket}.md"
   }
+  if selected_ticket != "" and control.ticket_change_target(selected_ticket_path.read_text()?) != "product" {
+    eprint f"ticket ${selected_ticket} is not a product ticket; CTO owns factory changes and no engineer was dispatched"
+    abort(2)
+  }
   if selected_ticket != "" and ! runtime.accepted_ticket(selected_ticket_path)? {
     eprint f"selected ticket is missing or not Approved: ${selected_ticket}"
     abort(2)
@@ -279,6 +283,10 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   }
   for ticket_id in selected_tickets {
     let ticket_path = fp"${factory_dir}/tickets/${ticket_id}.md"
+    if control.ticket_change_target(ticket_path.read_text()?) != "product" {
+      eprint f"ticket ${ticket_id} is not a product ticket; CTO owns factory changes and no engineer was dispatched"
+      abort(2)
+    }
     if ! control.valid_ticket_id(ticket_id) or ! runtime.accepted_ticket(ticket_path)? {
       eprint f"selected ticket is missing or not Approved: ${ticket_id}"
       abort(2)

@@ -27,6 +27,9 @@ session wall limits are 12 minutes for eval designers, 15 minutes for eval
 managers, and 30 minutes for eval workers and engineers; dollar and aggregate
 caps remain hard limits. Ticket-implementation cycles may dispatch up to two
 engineers concurrently, with a default aggregate cap of `$1.00`.
+Factory changes are CTO-owned. The ticket contract requires `## Change target`;
+the ticket controllers reject missing or `factory` targets before creating an
+XSH worktree or dispatching an engineer.
 
 ## Start a cycle
 

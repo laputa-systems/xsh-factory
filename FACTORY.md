@@ -43,7 +43,11 @@ engineer never chooses a ticket. There is one process launcher,
 - Controllers contain no inline Markdown report, prompt, assignment, or event
   bodies. Put Markdown inputs and human narratives on disk in `templates/` or
   role files. Structured facts belong in JSON.
-  role files. Structured facts belong in JSON.
+Factory changes are CTO-owned. The CTO applies factory patches and edits the
+factory checkout directly. Every ticket must declare `## Change target` as
+`product` or `factory`; only `product` tickets can pass engineer admission.
+Missing or `factory` targets fail closed before a worktree or engineer session
+is created.
 
 - Worker reports preserve Pi provider-health telemetry separately from
   Worker reports preserve Pi provider-health telemetry separately from

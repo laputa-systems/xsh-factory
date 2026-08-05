@@ -4,6 +4,10 @@
 
 Merged.
 
+## Change target
+
+- `product`
+
 ## CTO review
 
 - Review cycle: `post-cycle-1785805967215` (2026-08-03)

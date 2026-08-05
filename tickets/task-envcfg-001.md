@@ -3,6 +3,10 @@
 ## Status
 
 Open.
+
+## Change target
+
+- `product`
 ## CTO review
 
 - Review cycle: pre-cycle-1.

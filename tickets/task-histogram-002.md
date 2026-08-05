@@ -4,6 +4,10 @@
 
 Merged.
 
+## Change target
+
+- `product`
+
 ## CTO decision — post-cycle run-2
 
 - Decision: Merge accepted; implementation is present at XSH `HEAD`.

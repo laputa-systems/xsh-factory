@@ -4,6 +4,13 @@
 
 Open.
 
+## Change target
+
+- `product`
+
+Factory changes are CTO-owned. Do not create a factory-target ticket for
+engineer dispatch; report the infrastructure change to the CTO instead.
+
 ## Budget breach
 
 None.

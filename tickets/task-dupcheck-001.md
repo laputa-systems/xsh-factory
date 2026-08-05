@@ -3,6 +3,13 @@
 ## Status
 
 Open.
+
+## Change target
+
+- `factory`
+
+This is a historical factory finding. The CTO owns its implementation; it is
+not eligible for engineer dispatch.
 ## CTO review
 
 - Review cycle: post-cycle-1785947947500.

@@ -4,6 +4,10 @@
 
 Merged.
 
+## Change target
+
+- `product`
+
 ## Merge record
 
 - Implementation branch: `master` (CTO-applied from `factory/task-ecount-003/1785687504767`)

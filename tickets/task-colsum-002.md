@@ -4,6 +4,10 @@
 
 Merged.
 
+## Change target
+
+- `product`
+
 ## CTO decision — post-cycle review
 
 - Review cycle: `run-1785896401695`.

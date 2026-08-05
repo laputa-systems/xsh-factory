@@ -53,20 +53,22 @@ proc test_organization_selects_two_approved_tickets(ctx: TestContext) [fs, error
   let tickets = fp"${root}/tickets"
   fs.mkdir(tickets)?
   fs.write(fp"${tickets}/task-z.md", "# Ticket\n\n## Status\n\nOpen.\n")?
-  fs.write(fp"${tickets}/task-b.md", "# Ticket\n\n## Status\n\nApproved.\n")?
-  fs.write(fp"${tickets}/task-a.md", "# Ticket\n\n## Status\n\nApproved.\n")?
+  fs.write(fp"${tickets}/task-b.md", "# Ticket\n\n## Status\n\nApproved.\n\n## Change target\n\n- `product`\n")?
+  fs.write(fp"${tickets}/task-a.md", "# Ticket\n\n## Status\n\nApproved.\n\n## Change target\n\n- `product`\n")?
+  fs.write(fp"${tickets}/task-factory.md", "# Ticket\n\n## Status\n\nApproved.\n\n## Change target\n\n- `factory`\n")?
   test.eq(runtime.first_approved_tickets(root, 2)?, ["task-a", "task-b"])?
+  test.ok(! runtime.accepted_ticket(fp"${tickets}/task-factory.md")?)?
 }
 
 proc test_cto_inventory_surfaces_ticket_state() [error] {
   let markdown = runtime.cto_inventory_markdown([
-    {id: "task-a", status: "Open.", eval_id: "task-envcfg", cto_review: false, open_branch: "", path: "tickets/task-a.md"},
-    {id: "task-b", status: "Approved.", eval_id: "task-ecount", cto_review: true, open_branch: "", path: "tickets/task-b.md"},
+    {id: "task-a", status: "Open.", change_target: "product", eval_id: "task-envcfg", cto_review: false, open_branch: "", path: "tickets/task-a.md"},
+    {id: "task-b", status: "Approved.", change_target: "factory", eval_id: "task-ecount", cto_review: true, open_branch: "", path: "tickets/task-b.md"},
   ])
   test.contains(markdown, "Open tickets: 1")?
   test.contains(markdown, "Approved tickets: 1")?
-  test.contains(markdown, "`task-a` | `Open.`")?
-  test.contains(markdown, "`task-b` | `Approved.`")?
+  test.contains(markdown, "`task-a` | `Open.` | `product`")?
+  test.contains(markdown, "`task-b` | `Approved.` | `factory`")?
   test.contains(markdown, "| present |")?
 }
 
@@ -152,7 +154,7 @@ proc test_north_star_contains_rationale_without_factory_symlink() [fs, error] {
 }
 
 proc test_ticket_api_surface_gate_rejects_unjustified_new_surface() [fs, error] {
-  let ticket = "# Ticket\n\n## Status\n\nApproved.\n\n## Proposed XSH change\n\nAdd a new builtin primitive.\n"
+  let ticket = "# Ticket\n\n## Status\n\nApproved.\n\n## Change target\n\n- `product`\n\n## Proposed XSH change\n\nAdd a new builtin primitive.\n"
   test.ok(! control.ticket_api_surface_gate_ok(ticket))?
   test.ok(control.ticket_api_surface_gate_ok(ticket.replace("## Proposed XSH change", "## API-surface justification\n\nThe existing operation is insufficient; semantic evidence is required.\n\n## Proposed XSH change")))?
 }
@@ -172,7 +174,12 @@ proc test_admission_and_report_contracts() [error] {
   test.ok(! control.valid_eval_id("../escape"))?
   test.ok(control.valid_ticket_id("task-tags-001"))?
   test.ok(! control.valid_ticket_id("task/tags"))?
-  test.ok(control.ticket_is_accepted("# Ticket\n\n## Status\n\nApproved.\n"))?
+  test.ok(control.ticket_is_accepted("# Ticket\n\n## Status\n\nApproved.\n\n## Change target\n\n- `product`\n"))?
+  test.eq(control.ticket_change_target("# Ticket\n\n## Change target\n\n- `product`\n"), "product")?
+  test.eq(control.ticket_change_target("# Ticket\n\n## Change target\n\n- `factory`\n"), "factory")?
+  test.ok(control.ticket_change_target("# Ticket\n") != "product")?
+  test.ok(! control.ticket_is_accepted("# Ticket\n\n## Status\n\nApproved.\n"))?
+  test.ok(! control.ticket_is_accepted("# Ticket\n\n## Status\n\nApproved.\n\n## Change target\n\n- `factory`\n"))?
   test.ok(control.eval_is_disabled("# Eval\n\n## Status\n\nDisabled.\n"))?
   test.ok(! control.ticket_is_closed("# Ticket\n\n## Status\n\nApproved.\n"))?
   test.ok(control.report_contract_ok("# Report\n\n## Result\n\npass\n\n## Evidence\n\nready\n", ["Evidence"], "pass"))?

@@ -138,3 +138,5 @@ the executor evidence, the handbook lineage, and the XSH baseline. New
 tickets are for the next cycle. Leave the ticket template's merge-record
 placeholders unchanged. A handbook candidate is global and becomes trusted
 only after review and replay.
+
+Factory infrastructure changes belong to the CTO. Do not create a factory-target ticket or recommend engineer dispatch for them.

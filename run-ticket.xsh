@@ -133,8 +133,13 @@ proc run_ticket_cycle(
       return 1
     }
     let ticket_path = fp"${factory_dir}/tickets/${ticket_id}.md"
+    let ticket_text = if fs.exists(ticket_path)? { ticket_path.read_text()? } else { "" }
+    if control.ticket_change_target(ticket_text) != "product" {
+      eprint f"ticket ${ticket_id} is not a product ticket; CTO owns factory changes and no engineer was dispatched"
+      runtime.emit_event(event_template, run_dir, f"ticket-${ticket_id}-rejected", ticket_id, "failed", 1, "admission", "ticket change target is not product")?
+      return 1
+    }
     if ! runtime.accepted_ticket(ticket_path)? {
-      let ticket_text = if fs.exists(ticket_path)? { ticket_path.read_text()? } else { "" }
       if control.ticket_is_merged(ticket_text) {
         eprint f"ticket ${ticket_id} is already Merged; run its linked eval cycle for acceptance"
       } else {
@@ -166,7 +171,6 @@ proc run_ticket_cycle(
     }
     fs.copy(ticket_path, fp"${run_dir}/tickets/${ticket_id}.md", overwrite: true)?
     let ticket_sha = hash.sha256(ticket_path)?.hex()
-    let ticket_text = ticket_path.read_text()?
     let assignment_values: List[control.TemplateValue] = [
       {key: "TICKET_ID", value: ticket_id},
       {key: "TICKET_PATH", value: fp"${run_dir}/tickets/${ticket_id}.md".display()},

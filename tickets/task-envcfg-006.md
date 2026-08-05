@@ -4,6 +4,13 @@
 
 Closed.
 
+## Change target
+
+- `factory`
+
+The shared evaluator restriction scanner is factory infrastructure. The CTO
+owns this change and no engineer dispatch is permitted.
+
 ## CTO review
 
 - Review cycle: `pre-cycle-1785801503` (2026-08-03)

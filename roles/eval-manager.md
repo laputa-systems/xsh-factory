@@ -46,6 +46,9 @@ general rule that removes repeated agent friction over a large collection of
 recipes. A product ticket must describe a general XSH ergonomics or correctness
 problem, not merely the easiest way to pass this eval.
 
+Factory infrastructure changes belong to the CTO, not to an engineer ticket.
+Report them as factory findings and do not create a factory-target ticket.
+
 The controller reconciles ticket provenance before each cycle. When an
 approved ticket's recorded implementation commit is an ancestor of the XSH
 commit under test, it updates that ticket's `## Status` to `Merged.` and adds

@@ -33,6 +33,19 @@ export pure ticket_status(text: Str) -> Str {
   return ""
 }
 
+## Reads the repository that owns a ticket implementation.
+## Missing or invalid ownership is not dispatchable. The checked-in ticket
+## contract must say `product` or `factory` under `## Change target`.
+export pure ticket_change_target(text: Str) -> Str {
+  let section = section_text(text, "Change target")
+  for line in section.lines() {
+    let trimmed = line.trim()
+    if trimmed == "- `product`" or trimmed == "- product" { return "product" }
+    if trimmed == "- `factory`" or trimmed == "- factory" { return "factory" }
+  }
+  return ""
+}
+
 ## Reads the eval identifier linked from a ticket.
 export pure ticket_eval(text: Str) -> Str {
   var in_source = false
@@ -536,7 +549,8 @@ export pure ticket_api_surface_gate_ok(text: Str) -> Bool {
 
 ## Requires the checked-in approval state used for cycle admission.
 export pure ticket_is_accepted(text: Str) -> Bool {
-  return ticket_status(text) == "Accepted." or ticket_status(text) == "Approved."
+  return ticket_change_target(text) == "product" and
+    (ticket_status(text) == "Accepted." or ticket_status(text) == "Approved.")
 }
 
 ## Identifies a ticket waiting for post-merge evaluation.

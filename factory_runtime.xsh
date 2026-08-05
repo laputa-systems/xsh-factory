@@ -653,7 +653,7 @@ export proc first_approved_tickets(factory_dir: Path, limit: Int) [fs, error] ->
     if ! entry.name.ends_with(".md") {
       continue
     }
-    if control.ticket_is_accepted(entry.path.read_text()?) {
+    if accepted_ticket(entry.path)? {
       selected = selected.push(entry.name.replace(".md", ""))
       if selected.len() >= limit { return selected }
     }
@@ -696,6 +696,7 @@ export proc cto_ticket_inventory(
       id: entry.name.replace(".md", ""),
       status: status,
       eval_id: control.ticket_eval(ticket_text),
+      change_target: control.ticket_change_target(ticket_text),
       cto_review: ticket_text.contains("## CTO review"),
       open_branch: branch,
       path: entry.path.display(),
@@ -729,12 +730,12 @@ export pure cto_inventory_markdown(tickets: List[Any]) -> Str {
   markdown = markdown + f"- Open tickets: ${open_count}\n"
   markdown = markdown + f"- Approved tickets: ${approved_count}\n"
   markdown = markdown + f"- Ticket rows: ${tickets.len()}\n\n"
-  markdown = markdown + "| Ticket | Status | Linked eval | CTO review marker | Open branch |\n"
-  markdown = markdown + "| --- | --- | --- | --- | --- |\n"
+  markdown = markdown + "| Ticket | Status | Change target | Linked eval | CTO review marker | Open branch |\n"
+  markdown = markdown + "| --- | --- | --- | --- | --- | --- |\n"
   for ticket in tickets {
     let review = if ticket.cto_review { "present" } else { "missing" }
     let branch = if ticket.open_branch == "" { "none" } else { ticket.open_branch }
-    markdown = markdown + f"| `${ticket.id}` | `${ticket.status}` | `${ticket.eval_id}` | ${review} | `${branch}` |\n"
+    markdown = markdown + f"| `${ticket.id}` | `${ticket.status}` | `${ticket.change_target}` | `${ticket.eval_id}` | ${review} | `${branch}` |\n"
   }
   return markdown
 }
