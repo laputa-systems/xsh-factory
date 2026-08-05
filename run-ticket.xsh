@@ -190,6 +190,11 @@ proc run_ticket_cycle(
     let assignment = control.fill_template(assignment_template_text, assignment_values)
     let assignment_path = fp"${run_dir}/messages/${ticket_id}.md"
     fs.write(assignment_path, assignment)?
+    let assignment_sha = hash.sha256(assignment_path)?.hex()
+    runtime.write_dispatch_record(
+      run_dir, "engineer", ticket_id, assignment_path, worktree,
+      "ticket-implementation", "", ticket_id, assignment_sha
+    )?
     runtime.emit_event(event_template, run_dir, f"10-ticket-${ticket_id}-admitted", ticket_id, "admitted", 1, "admission", f"worktree ${worktree.display()} on ${branch}")?
   }
   let _initial_report = process.run(process.command_argv(
@@ -208,6 +213,11 @@ proc run_ticket_cycle(
     {key: "EXECUTION_DIRECTIVE", value: "The controller has already launched every assigned engineer row concurrently through the shared runner. Do not launch engineers or eval roles. Inspect each completed worker report and write the director reconciliation report."},
   ]
   fs.write(director_message, control.fill_template(director_template.read_text()?, director_values))?
+  fs.write(director_message, control.fill_template(director_template.read_text()?, director_values))?
+  runtime.write_dispatch_record(
+    run_dir, "director", "director", director_message, factory_dir,
+    "ticket-implementation", "", "", ""
+  )?
 
   var engineer_handles: List[ProcessHandle] = []
   runtime.emit_event(event_template, run_dir, "20-director-started", "director", "started", 1, "controller", "controller-dispatching engineers; director will reconcile")?

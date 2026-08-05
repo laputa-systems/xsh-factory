@@ -58,6 +58,12 @@ is created.
 - Separate orchestration from judgment. Controllers own admission, exact
   assignment, process boundaries, cancellation, state transitions, and
   validation. Pi roles own interpretation, diagnosis, and recommendations.
+  validation. Pi roles own interpretation, diagnosis, and recommendations.
+Every host-side Pi session requires a controller-written dispatch manifest at
+`runs/<run>/dispatch/<role>-<worker>.json`. `run-agent.xsh` rejects a missing,
+altered, or mismatched manifest before starting Pi. Role prompts are guidance;
+the manifest, exact message path, worker identity, mode, and work directory
+are the dispatch contract.
 - Fail closed at boundaries: validate paths, exact assignments, commits,
   report schema, handbook lineage, image identity, budgets, and required reads.
 - Historical eval strength is measured by `tools/eval-trends.xsh` from worker

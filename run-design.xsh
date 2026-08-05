@@ -39,6 +39,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   let event_template = run_dir
   let assignment_template = fp"${factory_dir}/templates/EVAL-DESIGNER-ASSIGNMENT.md"
   let worker_id = "proposal-1"
+  let design_eval_id = control.request_eval(request_text)
   let worker_root = fp"${run_dir}/workers"
   let messages_dir = fp"${run_dir}/messages"
   let proposal_dir = fp"${run_dir}/proposals/${worker_id}"
@@ -110,6 +111,10 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   let assignment = control.fill_template(assignment_template.read_text()?, assignment_values)
   let assignment_path = fp"${messages_dir}/eval-designer-${worker_id}.md"
   fs.write(assignment_path, assignment)?
+  runtime.write_dispatch_record(
+    run_dir, "eval-designer", worker_id, assignment_path, factory_dir,
+    "eval-design", design_eval_id, "", ""
+  )?
   let _initial_report = process.run(process.command_argv(
     xsh_path,
     [xsh_path.display(), fp"${factory_dir}/audit-run.xsh", "--", run_dir.display(), "eval-design"],
@@ -128,7 +133,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     FACTORY_WORKER_ID: worker_id,
     FACTORY_PARENT_ID: "eval-design-controller",
     FACTORY_MODE: "eval-design",
-    FACTORY_EVAL_ID: "",
+    FACTORY_EVAL_ID: design_eval_id,
     FACTORY_TICKET_ID: "",
     FACTORY_ASSIGNMENT_SHA: "",
     FACTORY_WORKDIR: factory_dir.display(),

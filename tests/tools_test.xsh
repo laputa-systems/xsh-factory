@@ -701,3 +701,21 @@ proc test_eval_worker_prompt_matches_task_image() [fs, error] {
   test.contains(prompt, "avoid bash-only syntax")?
   test.contains(prompt, "`and` and `or`, not shell `&&` and `||`")?
 }
+
+proc test_host_agent_dispatch_requires_controller_manifest(ctx: TestContext) [fs, error] {
+  let root = test.temp_dir(ctx, name: "host-agent-dispatch")?
+  let message = fp"${root}/message.md"
+  fs.write(message, "controller assignment\n")?
+  runtime.write_dispatch_record(
+    root, "eval-manager", "task-a", message, root, "eval", "task-a", "", ""
+  )?
+  let dispatch = json.read(fp"${root}/dispatch/eval-manager-task-a.json")?
+  test.eq(schema.value_text(json.get(dispatch, ["role"], "")), "eval-manager")?
+  test.eq(schema.value_text(json.get(dispatch, ["worker_id"], "")), "task-a")?
+  test.eq(schema.value_text(json.get(dispatch, ["message_file"], "")), message.display())?
+  test.eq(schema.value_text(json.get(dispatch, ["mode"], "")), "eval")?
+  test.eq(schema.value_text(json.get(dispatch, ["eval_id"], "")), "task-a")?
+  let runner = fs.read_text(fp"${fs.cwd()?}/run-agent.xsh")?
+  test.contains(runner, "missing controller dispatch record")?
+  test.contains(runner, "agent invocation does not match controller dispatch record")?
+}

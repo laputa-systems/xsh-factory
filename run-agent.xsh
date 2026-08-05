@@ -2,6 +2,7 @@
 
 use factory_control as control
 use factory_runtime as runtime
+use report_schema as schema
 
 proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   if argv.len() < 4 {
@@ -51,6 +52,28 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   let ticket_id = env.get_or("FACTORY_TICKET_ID", "")?
   let assignment_sha = env.get_or("FACTORY_ASSIGNMENT_SHA", "")?
   let tools = control.configured_role_setting(role, "TOOLS")?
+  let dispatch_record = fp"${run_dir}/dispatch/${role}-${worker_id}.json"
+  if ! fs.exists(dispatch_record)? {
+    eprint f"missing controller dispatch record for ${role}/${worker_id}"
+    abort(2)
+  }
+  let dispatch = json.read(dispatch_record)?
+  let dispatch_message = schema.value_text(json.get(dispatch, ["message_file"], ""))
+  let dispatch_message_sha = schema.value_text(json.get(dispatch, ["message_sha256"], ""))
+  let actual_message_sha = if fs.exists(message_file)? { hash.sha256(message_file)?.hex() } else { "" }
+  let dispatch_ok = schema.value_text(json.get(dispatch, ["role"], "")) == role and
+    schema.value_text(json.get(dispatch, ["worker_id"], "")) == worker_id and
+    dispatch_message == message_file.display() and dispatch_message_sha == actual_message_sha and
+    schema.value_text(json.get(dispatch, ["workdir"], "")) == workdir.display() and
+    schema.value_text(json.get(dispatch, ["mode"], "")) == mode and
+    schema.value_text(json.get(dispatch, ["eval_id"], "")) == eval_id and
+    schema.value_text(json.get(dispatch, ["ticket_id"], "")) == ticket_id and
+    schema.value_text(json.get(dispatch, ["assignment_sha256"], "")) == assignment_sha
+  if ! dispatch_ok {
+    eprint f"agent invocation does not match controller dispatch record for ${role}/${worker_id}"
+    abort(2)
+  }
+
   if role == "engineer" {
     if worker_id != ticket_id or assignment_sha == "" or ! fs.exists(message_file)? {
       eprint "engineer dispatch is missing its controller assignment identity"

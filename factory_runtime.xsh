@@ -63,6 +63,35 @@ export proc register_cycle_controller(run_dir: Path) [fs, process, error] -> Res
   return Ok()
 }
 
+## Writes one controller-owned host-agent dispatch record.
+export proc write_dispatch_record(
+  run_dir: Path,
+  role: Str,
+  worker_id: Str,
+  message_file: Path,
+  workdir: Path,
+  mode: Str,
+  eval_id: Str,
+  ticket_id: Str,
+  assignment_sha: Str,
+) [fs, error] -> Result[Unit] {
+  fs.mkdir(fp"${run_dir}/dispatch")?
+  let message_sha = hash.sha256(message_file)?.hex()
+  json.write(fp"${run_dir}/dispatch/${role}-${worker_id}.json", {
+    schema_version: 1,
+    role: role,
+    worker_id: worker_id,
+    message_file: message_file.display(),
+    message_sha256: message_sha,
+    workdir: workdir.display(),
+    mode: mode,
+    eval_id: eval_id,
+    ticket_id: ticket_id,
+    assignment_sha256: assignment_sha,
+  }, pretty: true)?
+  return Ok()
+}
+
 ## Registers a controller-owned child before waiting on it.
 export proc register_process(run_dir: Path, name: Str, pid: Int) [fs, error] -> Result[Unit] {
   let processes = fp"${run_dir}/processes"

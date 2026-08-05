@@ -27,12 +27,16 @@ proc spawn_agent(
   assignments: List[Str],
   role: Str,
   worker_id: Str,
+  eval_id: Str,
   system_prompt: Path,
   message: Path,
   stdout: Path,
   stderr: Path,
 ) [fs, process, error] -> Result[ProcessHandle] {
   let env_path = process.which("env")?
+  runtime.write_dispatch_record(
+    run_dir, role, worker_id, message, factory_dir, "eval", eval_id, "", ""
+  )?
   let child_args = assignments.extend([
     xsh_path.display(), run_agent.display(), "--", role, worker_id,
     system_prompt.display(), message.display(),
@@ -473,7 +477,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     runtime.emit_event(event_template, run_dir, "21-designer-started", "eval-designer", "started", 1, "controller", "dispatch row admitted")?
     designer_handle = spawn_agent(
       factory_dir, run_dir, xsh_path, run_agent, common_assignments,
-      "eval-designer", designer_worker, fp"${factory_dir}/roles/eval-designer.md",
+      "eval-designer", designer_worker, eval_id, fp"${factory_dir}/roles/eval-designer.md",
       designer_message, fp"${run_dir}/designer.stdout", fp"${run_dir}/designer.stderr",
     )?
   }
@@ -520,7 +524,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   runtime.emit_event(event_template, run_dir, "20-manager-started", "eval-manager", "started", 1, "controller", "executor evidence packet is ready for manager review")?
   let manager_handle = spawn_agent(
     factory_dir, run_dir, xsh_path, run_agent, common_assignments,
-    "eval-manager", eval_id, fp"${factory_dir}/roles/eval-manager.md",
+    "eval-manager", eval_id, eval_id, fp"${factory_dir}/roles/eval-manager.md",
     manager_message, fp"${run_dir}/manager.stdout", fp"${run_dir}/manager.stderr",
   )?
   let manager_status = wait manager_handle?
