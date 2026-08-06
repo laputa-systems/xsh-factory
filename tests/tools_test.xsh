@@ -719,6 +719,8 @@ dist="$repo/target/docker-${target}-release/${target}/dist"
 mkdir -p "$dist"
 printf '#!/bin/sh\nexit 0\n' > "$dist/xsh"
 printf '#!/bin/sh\nexit 0\n' > "$dist/xsht"
+dd if=/dev/zero bs=1024 count=1 2>/dev/null >> "$dist/xsh"
+dd if=/dev/zero bs=1024 count=1 2>/dev/null >> "$dist/xsht"
 chmod +x "$dist/xsh" "$dist/xsht"
 exit 0
 """,

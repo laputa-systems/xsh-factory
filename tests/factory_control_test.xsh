@@ -1165,6 +1165,10 @@ proc test_eval_image_inputs_are_local() [fs, error] {
   test.contains(dockerfile, "443d39a4a2565e13edd70068ace8131baf71b3fd1edfa19a9d6b65a2ed7633ed")?
   test.contains(controller, "dist-Linux-docker")?
   test.contains(controller, "stage_xsht")?
+  test.contains(controller, "valid_staged_binary")?
+  test.contains(controller, "implausibly small")?
+  test.ok(control.eval_binary_size_ok(1024))?
+  test.ok(! control.eval_binary_size_ok(17))?
   test.contains(executor, "--pids-limit")?
   test.contains(executor, "--memory")?
   test.contains(executor, "size=64m")?

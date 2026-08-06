@@ -636,6 +636,11 @@ export pure eval_evaluator_package_owned(source: Str) -> Bool {
   return true
 }
 
+## Reject placeholder or truncated XSH binaries before building a paid eval image.
+export pure eval_binary_size_ok(size: Int) -> Bool {
+  size >= 1024
+}
+
 ## Only slash-free eval directories may be selected by a cycle request.
 export pure valid_eval_id(eval_id: Str) -> Bool {
   return eval_id != "" and ! ("/" in eval_id) and ! (".." in eval_id) and ! ("\\" in eval_id) and ! (" " in eval_id)

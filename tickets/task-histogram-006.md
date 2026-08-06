@@ -30,6 +30,13 @@ None.
   lacks cross-eval confirmation. Preserve it as Open. pending a controlled
   replay; do not spend an engineer row this cycle.
 
+## CTO preparation — 2026-08-06
+
+- Selected implementation path: diagnostic-only recognition of unknown stream
+  stages, naming `filter` and recommending `where`.
+- Do not add a `filter` alias or alter stream semantics. Approval still
+  requires the focused parser replay described above.
+
 ## Merge record
 
 - Implementation branch: `{{IMPLEMENTATION_BRANCH}}`

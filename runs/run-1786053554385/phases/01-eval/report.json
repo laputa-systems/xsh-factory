@@ -1,0 +1,218 @@
+{
+  "artifacts": [
+    {
+      "kind": "session-directory",
+      "path": "workers/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 20,
+      "budget_failures": 0,
+      "cost_usd": 0.011913858000000005,
+      "tool_errors": 4,
+      "total_bucket_tokens": 396583.0,
+      "unknown_costs": 0,
+      "workers": 1
+    },
+    "designer": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786053554385/phases/01-eval/workers/eval-designer/proposal-1/REPORT.md",
+      "present": false,
+      "result": "not-requested",
+      "role": "eval-designer",
+      "valid": true
+    },
+    "director": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786053554385/phases/01-eval/workers/director/director/REPORT.md",
+      "present": false,
+      "result": "not-requested",
+      "role": "director",
+      "valid": true
+    },
+    "engineer": [],
+    "handbook_lineage": {
+      "approved": "lineage/handbook-approved.md",
+      "candidate": "lineage/handbook-candidate.md"
+    },
+    "manager": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786053554385/phases/01-eval/workers/eval-manager/task-grep/REPORT.md",
+      "present": true,
+      "result": "fail",
+      "role": "eval-manager",
+      "valid": true
+    },
+    "mode": "eval",
+    "narratives": [
+      {
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786053554385/phases/01-eval/workers/eval-manager/task-grep/REPORT.md",
+        "present": true,
+        "result": "fail",
+        "role": "eval-manager",
+        "valid": true
+      }
+    ],
+    "open_tickets": [
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-003",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-003.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-004",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-004.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-005",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-005.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-006",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-006.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-007",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-007.md",
+        "status": "Open."
+      }
+    ],
+    "outcomes": {
+      "cycle": "fail",
+      "evaluator": "fail",
+      "infrastructure": "fail",
+      "product": "fail"
+    },
+    "required_outputs": {
+      "audit": false,
+      "candidate_handbook": true,
+      "designer_handbook_read": true,
+      "designer_output": true,
+      "handbook_lineage": true,
+      "manager_evidence_read": true,
+      "manager_handbook_read": true,
+      "manager_report": true,
+      "manager_session": true,
+      "required": false,
+      "trial1_process": false,
+      "trial1_report": false,
+      "trial2_process": true,
+      "trial2_report": true,
+      "worker_handbook_read": false
+    },
+    "sessions": [
+      "workers/eval-manager/task-grep/session.jsonl.bz2.bz2"
+    ],
+    "tool_errors": [
+      {
+        "report": "workers/eval-manager/task-grep/report.json",
+        "summary": "ENOENT: no such file or directory, access '/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786053554385/trial-1.stderr'",
+        "tool": "read",
+        "turn": 3,
+        "worker": {
+          "role": "eval-manager",
+          "worker_id": "task-grep"
+        }
+      },
+      {
+        "report": "workers/eval-manager/task-grep/report.json",
+        "summary": "ENOENT: no such file or directory, access '/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786053554385/trial-1.stdout'",
+        "tool": "read",
+        "turn": 3,
+        "worker": {
+          "role": "eval-manager",
+          "worker_id": "task-grep"
+        }
+      },
+      {
+        "report": "workers/eval-manager/task-grep/report.json",
+        "summary": "ENOENT: no such file or directory, access '/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786053554385/manager.stderr'",
+        "tool": "read",
+        "turn": 3,
+        "worker": {
+          "role": "eval-manager",
+          "worker_id": "task-grep"
+        }
+      },
+      {
+        "report": "workers/eval-manager/task-grep/report.json",
+        "summary": "ENOENT: no such file or directory, access '/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786053554385/manager.stdout'",
+        "tool": "read",
+        "turn": 3,
+        "worker": {
+          "role": "eval-manager",
+          "worker_id": "task-grep"
+        }
+      }
+    ],
+    "trials": [],
+    "workers": [
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-grep"
+        },
+        "path": "workers/eval-manager/task-grep/report.json",
+        "result": "pass",
+        "tool_errors": 4,
+        "usage": {
+          "assistant_turns": 20,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.006144767999999999,
+          "cache_read_tokens": 341376,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.011913858000000005,
+          "input_cost_usd": 0.0041681700000000006,
+          "input_tokens": 46313,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0016009200000000005,
+          "output_tokens": 8894,
+          "provider_total_tokens": 396583,
+          "reasoning_tokens": 3580,
+          "thinking_blocks": 18,
+          "tool_calls": 49,
+          "tool_errors": 4,
+          "tool_results": 49,
+          "total_bucket_tokens": 396583,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "a41d56c296fe1424fe7d9c993ab408c721fe8f8a"
+  },
+  "findings": [
+    {
+      "expected": 1,
+      "kind": "trial-count",
+      "observed": 0
+    },
+    {
+      "kind": "missing-evaluator-manifest"
+    },
+    {
+      "kind": "required-outputs",
+      "state": "failed"
+    }
+  ],
+  "identity": {
+    "eval_id": "task-grep",
+    "mode": "eval",
+    "run_id": "01-eval"
+  },
+  "kind": "phase",
+  "result": "fail",
+  "schema_version": 1,
+  "state": "completed"
+}

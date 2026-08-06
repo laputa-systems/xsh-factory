@@ -88,6 +88,14 @@ proc report_has_tool_errors(report: Path) [fs, error] -> Result[Bool] {
   }
 }
 
+proc valid_staged_binary(binary_path: Path) [fs, error] -> Result[Bool] {
+  if ! fs.exists(binary_path)? {
+    return false
+  }
+
+  control.eval_binary_size_ok(fs.metadata(binary_path)?.size)
+}
+
 proc write_preflight_failure_report(run_dir: Path, eval_id: Str, stage: Str, message: Str) [fs, error] {
   json.write(
     fp"${run_dir}/report.json",
@@ -469,6 +477,20 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
       "staging local XSH binaries or factory modules failed; see xsh-build.stderr",
     )?
     eprint f"unable to stage local XSH binaries for the ${eval_id} image"
+    abort(1)
+  }
+
+  let staged_binaries_ok = valid_staged_binary(fp"${staged_dir}/xsh")? and valid_staged_binary(
+    fp"${staged_dir}/xsht",
+  )?
+  if ! staged_binaries_ok {
+    write_preflight_failure_report(
+      run_dir,
+      eval_id,
+      "staging",
+      "staged xsh/xsht binaries are missing or implausibly small; inspect xsh-build output",
+    )?
+    eprint "staged XSH binaries failed size validation"
     abort(1)
   }
 

@@ -124,17 +124,16 @@ in fewer turns without the `div`/`//`/`operator` probe chain, and that either
 
 ## Proposed XSH change
 
-Smallest candidate: support `//` as an explicit integer-division operator on
-Int operands (alias to the existing truncating `/`), or, if a new operator is
-to be avoided, emit a readable `check`-time diagnostic for `//`/`div` that
-points to `/` on Int. Do not change the truncation semantics of `/`.
+Smallest candidate: emit a readable `check`-time diagnostic for `//`/`div`
+that points to `/` on Int. Do not add a new operator or change the truncation
+semantics of `/` in this ticket.
 
 ## Acceptance criteria
 
-1. A script using `7 // 2` (or, on the diagnostic-only path, being told to use
-   `/`) passes `xsht check` and the binning solution compiles.
-2. `task-histogram` re-run stays 9/9 byte-exact using the explicit
-   integer-division spelling.
+1. A script using `7 // 2` or `7 div 2` receives a readable diagnostic naming
+   `/` on Int, and the binning solution compiles with `/`.
+2. `task-histogram` re-run stays 9/9 byte-exact using the documented `/`
+   spelling.
 3. No regression in the other approved eval suite.
 
 ## Scope and non-goals
@@ -145,6 +144,12 @@ points to `/` on Int. Do not change the truncation semantics of `/`.
 - The descriptive handbook note (``/` on Int truncates; there is no `//`/`div``
   ) is staged separately as a provisional handbook candidate and does not
   depend on this product change.
+
+## CTO preparation — 2026-08-06
+
+- Selected implementation path: diagnostic-only guidance for `//` and `div`.
+- Defer adding a new operator until separate evidence demonstrates that the
+  diagnostic path is insufficient.
 
 ## Post-merge evaluation
 

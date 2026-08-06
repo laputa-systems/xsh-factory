@@ -34,6 +34,14 @@ None.
   first untried approved eval, `task-grep`, as independent signal; no engineer
   row is admitted without that controlled evidence.
 
+## CTO preparation — 2026-08-06
+
+- Selected implementation path: keep `fold` pure and replace the internal
+  `full_ir_function_blocker` failure with an actionable check-time diagnostic
+  that points to `each` for output.
+- Do not add cumulative-fold semantics in this ticket. Approval still requires
+  the fresh fold-with-print replay described above.
+
 ## Merge record
 
 - Implementation branch: `{{IMPLEMENTATION_BRANCH}}`

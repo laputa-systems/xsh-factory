@@ -108,43 +108,38 @@ regex/empty-string workaround disappears and all cases stay byte-exact.
 This is separate from `task-histogram-004`, which targets the unrelated
 `check.try-context` rule governing where postfix `?` may appear in helper
 procedures. This ticket deliberately does not propose changing `parse_int`
-permissiveness or the `?` rule; it proposes additive surface (an unsigned
-parser and/or a typed error constructor).
+permissiveness or the `?` rule; it proposes one additive unsigned parser.
 
 ## Proposed XSH change
 ## API-surface justification
 
 - Semantic capability not expressible today: a typed operation that parses a
-  non-negative/unsigned decimal and rejects any signed or malformed input, and
-  a first-class way to construct a deliberate typed failure.
+  non-negative/unsigned decimal and rejects any signed or malformed input.
 - Closest existing spelling and why it is insufficient: `Str.parse_int` +
   `regex.compile("^[0-9]+$")` + `"".parse_int()?` works but is indirect,
   verbose, and the empty-string forced failure is unreadable at the call site.
 - Less-surface alternative: a `parse_uint` method (type-directed, mirroring
   `parse_int`) is the smallest additive change that removes the regex and the
-  sign hazard; a generic `Error(...)` constructor is an orthogonal additive
-  change for the deliberate-failure path. Either is additive surface on an
-  existing typed-conversion family, not a syntax or runtime redesign.
+  sign hazard. A generic `Error(...)` constructor is out of scope because it
+  would combine a separate error-construction proposal with this parser fix.
 - Implementation and maintenance cost: a new method in the `Str`
   parse-conversion family plus its `xsht api` language-reference docs, checker
   wiring, and native tests; the runtime and effect system are otherwise
   unchanged.
 - Evidence and falsification replay required: `task-histogram` must pass all
-  nine cases using the new `parse_uint` (or `Error`) spelling, and one
+  nine cases using the new `parse_uint` spelling, and one
   additional numeric-parse eval must confirm no regression.
 
 ## Proposed XSH change
 
 Smallest candidate: add `Str.parse_uint()` that parses an unsigned decimal
-integer and returns `Result[Int]`, rejecting any sign, and/or a generic
-`Error` constructor so a deliberate validation failure can be typed directly
-instead of via `"".parse_int()?`. Do not change `parse_int` behavior; the new
-surface is additive.
+integer and returns `Result[Int]`, rejecting any sign. Do not add a generic
+`Error` constructor in this ticket and do not change `parse_int` behavior; the
+new surface is additive.
 
 ## Acceptance criteria
 
-1. `parse_uint` (or the `Error` constructor) is discoverable via `xsht api` in
-   the pinned gym image.
+1. `parse_uint` is discoverable via `xsht api` in the pinned gym image.
 2. `task-histogram` still passes all nine cases byte-exact using the new
    spelling, with the sign-rejection and non-positive-width paths expressed
    directly rather than via `"".parse_int()?`.
@@ -156,6 +151,12 @@ surface is additive.
   rule (tracked separately in `task-histogram-004`).
 - Non-goal: new stream or fold surface.
 - Non-goal: altering the effect system or error semantics at runtime.
+
+## CTO preparation — 2026-08-06
+
+- Selected implementation path: `Str.parse_uint()` only.
+- A generic `Error` constructor is explicitly out of scope. Approval still
+  requires a fresh discovery probe and a numeric-parse replay.
 
 ## Post-merge evaluation
 

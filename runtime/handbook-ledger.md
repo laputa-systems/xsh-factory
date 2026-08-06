@@ -442,3 +442,14 @@ The successful organization cycle staged single-trial handbook candidates
 about typed filesystem permissions and integer arithmetic. Both remain
 deferred pending the specified cross-eval replays; the approved handbook is
 unchanged.
+
+## Explicit CTO disposition — run-1786052381421
+
+| Candidate SHA-256 | Disposition |
+| --- | --- |
+| `2432f72a72c677e165aab6e7f0ddce7d29e95e045310617413c75b4f8a1cb515` | deferred pending cross-eval replay; not promoted |
+
+The task-grep candidate adds general guidance for standard-module shadowing
+and the `in` membership operator, but it has only one eval's evidence. Defer
+promotion until the specified nearby text-search replays complete; keep the
+approved handbook unchanged.

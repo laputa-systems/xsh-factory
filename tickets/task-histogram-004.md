@@ -103,11 +103,8 @@ disappears and correctness is preserved.
 
 Relax the `check.try-context` rule so postfix `?` is accepted in any
 procedure that declares the `error` effect, not only in Result-returning or
-`Unit`/top-level contexts. Minimal alternative: extend the handbook to state
-the current Result-returning requirement precisely so agents inline or return
-`Result` deliberately. (This ticket proposes the product change; the
-descriptive handbook clarification is already staged as a provisional
-handbook candidate in the linked lineage.)
+`Unit`/top-level contexts. The handbook-only clarification is not an
+alternative implementation for this ticket; it remains separate evidence.
 ## API-surface justification
 
 For any new builtin, keyword, constructor, type, method, or syntax form, state:
@@ -128,6 +125,13 @@ For any new builtin, keyword, constructor, type, method, or syntax form, state:
   `parse_uint` helper from this session must pass `xsht check`, and a
   re-run of `task-histogram` plus one additional eval that uses a typed
   validation helper must remain byte-exact.
+
+## CTO preparation — 2026-08-06
+
+- Selected implementation path: checker relaxation for value-returning
+  procedures that explicitly declare the `error` effect.
+- Do not substitute a handbook-only change for the product fix. Approval still
+  requires a focused helper check and a second helper-heavy replay.
 
 ## Proposed XSH change
 
