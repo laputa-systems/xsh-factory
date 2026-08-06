@@ -1,0 +1,108 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785971528057/phases/01-ticket/workers/director/director/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_process": "pass",
+    "dispatch_claim": "0cb594cfea05aac75cb345953b1ad61ee934f3a85f42886e719979f3e40a4090",
+    "dispatch_id": "director-director",
+    "message_sha256": "0cb594cfea05aac75cb345953b1ad61ee934f3a85f42886e719979f3e40a4090",
+    "reporting": "pass",
+    "required_report": "present",
+    "session_limit_watcher": "pass",
+    "system_prompt_sha256": "46eeebe9c5ded596c3cdebfa5355ef5f528ba4592c7e5adc216b11527e4f69b4",
+    "watcher": "pass"
+  },
+  "findings": [
+    {
+      "count": 1,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "role": "director",
+    "worker_id": "director"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "provider_telemetry": {
+    "event_turns": 11,
+    "events_path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785971528057/phases/01-ticket/workers/director/director/session.jsonl.bz2.events.jsonl",
+    "output_tokens_per_second": 0,
+    "present": true,
+    "provider_errors": [],
+    "response_elapsed_ms": 0,
+    "retry_count": 0,
+    "retry_delay_ms": 0,
+    "retry_errors": [],
+    "retry_failures": 0,
+    "retry_successes": 0
+  },
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785971528057/phases/01-ticket/workers/director/director/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 10,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 65950
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785971528057/phases/01-ticket/workers/director/director/session.jsonl.bz2",
+      "summary": "---worktree git---\nfatal: cannot change to '.xsh-factory-worktrees/run-1785971528057/task-findexec-001': No such file or directory\n---branches---\nfatal: cannot change to '.xsh-factory-worktrees/run-1785971528057/task-findexec-001': No such file or directory\n---log---\nfatal: cannot change to '.xsh-factory-worktrees/run-1785971528057/task-findexec-001': No such file or directory\n\n\nCommand exited with code 128",
+      "tool": "bash",
+      "turn": 6
+    }
+  ],
+  "tools": [
+    {
+      "count": 15,
+      "name": "bash"
+    },
+    {
+      "count": 5,
+      "name": "read"
+    },
+    {
+      "count": 1,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 11,
+    "budget_usd": 0.06,
+    "cache_read_cost_usd": 0.004156416,
+    "cache_read_tokens": 230912,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.008506475999999999,
+    "input_cost_usd": 0.0034038,
+    "input_tokens": 37820,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.0009462600000000002,
+    "output_tokens": 5257,
+    "provider_total_tokens": 273989,
+    "reasoning_tokens": 2008,
+    "thinking_blocks": 9,
+    "tool_calls": 21,
+    "tool_errors": 1,
+    "tool_results": 21,
+    "total_bucket_tokens": 273989,
+    "user_messages": 1
+  }
+}
