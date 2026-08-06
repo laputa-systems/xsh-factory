@@ -1,0 +1,225 @@
+{
+  "artifacts": [
+    {
+      "kind": "session-directory",
+      "path": "workers/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 93,
+      "budget_failures": 0,
+      "cost_usd": 0.06707253600000002,
+      "tool_errors": 2,
+      "total_bucket_tokens": 2575500.0,
+      "unknown_costs": 0,
+      "workers": 2
+    },
+    "designer": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785965138991/phases/03-eval/workers/eval-designer/proposal-1/REPORT.md",
+      "present": false,
+      "result": "not-requested",
+      "role": "eval-designer",
+      "valid": true
+    },
+    "director": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785965138991/phases/03-eval/workers/director/director/REPORT.md",
+      "present": false,
+      "result": "not-requested",
+      "role": "director",
+      "valid": true
+    },
+    "engineer": [],
+    "handbook_lineage": {
+      "approved": "lineage/handbook-approved.md",
+      "candidate": "lineage/handbook-candidate.md"
+    },
+    "manager": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785965138991/phases/03-eval/workers/eval-manager/task-histogram/REPORT.md",
+      "present": true,
+      "result": "pass",
+      "role": "eval-manager",
+      "valid": true
+    },
+    "mode": "eval",
+    "narratives": [
+      {
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785965138991/phases/03-eval/workers/eval-manager/task-histogram/REPORT.md",
+        "present": true,
+        "result": "pass",
+        "role": "eval-manager",
+        "valid": true
+      }
+    ],
+    "open_tickets": [
+      {
+        "eval_id": "task-findexec",
+        "id": "task-findexec-001",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-findexec-001.md",
+        "status": "Approved."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-003",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-003.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-004",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-004.md",
+        "status": "Open."
+      }
+    ],
+    "outcomes": {
+      "cycle": "pass",
+      "evaluator": "pass",
+      "infrastructure": "pass",
+      "product": "pass"
+    },
+    "required_outputs": {
+      "audit": true,
+      "candidate_handbook": true,
+      "designer_handbook_read": true,
+      "designer_output": true,
+      "handbook_lineage": true,
+      "manager_evidence_read": true,
+      "manager_handbook_read": true,
+      "manager_report": true,
+      "manager_session": true,
+      "required": true,
+      "trial1_process": true,
+      "trial1_report": true,
+      "trial2_process": true,
+      "trial2_report": true,
+      "worker_handbook_read": true
+    },
+    "sessions": [
+      "workers/eval-manager/task-histogram/session.jsonl.bz2.bz2",
+      "workers/eval-worker/task-histogram-1/session.jsonl.bz2.bz2"
+    ],
+    "tool_errors": [
+      {
+        "report": "workers/eval-worker/task-histogram-1/report.json",
+        "summary": "=== lint ===\n=== fmt ===\n=== rerun tests ===\n0 3 3\n1 4 7\nexit=0\nruntime traceback\nexecutable: /usr/local/bin/xsh\noperation: result.propagate\nerror: fs-read: No such file or directory (os error 2)\ncall path:\n  1. proc main at histogram.xsh:1:1-1:1\n\n\nCommand exited with code 3",
+        "tool": "bash",
+        "turn": 71,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-histogram-1"
+        }
+      },
+      {
+        "report": "workers/eval-worker/task-histogram-1/report.json",
+        "summary": "ls: /work/s.txt: No such file or directory\n---\nruntime traceback\nexecutable: /usr/local/bin/xsh\noperation: result.propagate\nerror: fs-read: No such file or directory (os error 2)\ncall path:\n  1. proc main at histogram.xsh:1:1-1:1\n\n\nCommand exited with code 3",
+        "tool": "bash",
+        "turn": 72,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-histogram-1"
+        }
+      }
+    ],
+    "trials": [
+      {
+        "evidence": {
+          "candidate_sha256": "unknown",
+          "classification": "pass",
+          "correctness": "pass",
+          "eval_id": "task-histogram",
+          "handbook_sha256": "unknown",
+          "oracle_sha256": "unknown",
+          "passed": true,
+          "protocol": "pass",
+          "restrictions": "pass",
+          "result": "pass",
+          "timing": "pass",
+          "trial_id": "1",
+          "valid": true
+        },
+        "path": "workers/eval-worker/task-histogram-1/run.json"
+      }
+    ],
+    "workers": [
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-histogram"
+        },
+        "path": "workers/eval-manager/task-histogram/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 14,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.006676992,
+          "cache_read_tokens": 370944,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.014084802000000002,
+          "input_cost_usd": 0.00430353,
+          "input_tokens": 47817,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00310428,
+          "output_tokens": 17246,
+          "provider_total_tokens": 436007,
+          "reasoning_tokens": 8238,
+          "thinking_blocks": 12,
+          "tool_calls": 24,
+          "tool_errors": 0,
+          "tool_results": 24,
+          "total_bucket_tokens": 436007,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-histogram-1"
+        },
+        "path": "workers/eval-worker/task-histogram-1/report.json",
+        "result": "pass",
+        "tool_errors": 2,
+        "usage": {
+          "assistant_turns": 79,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.035587584,
+          "cache_read_tokens": 1977088,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.05298773400000001,
+          "input_cost_usd": 0.01183275,
+          "input_tokens": 131475,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0055673999999999975,
+          "output_tokens": 30930,
+          "provider_total_tokens": 2139493,
+          "reasoning_tokens": 20632,
+          "thinking_blocks": 60,
+          "tool_calls": 89,
+          "tool_errors": 2,
+          "tool_results": 89,
+          "total_bucket_tokens": 2139493,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "1cf4ad3d7ee5fde9b3160b11d8073cbd7ce5e7c4"
+  },
+  "findings": [],
+  "identity": {
+    "eval_id": "task-histogram",
+    "mode": "eval",
+    "run_id": "03-eval"
+  },
+  "kind": "phase",
+  "result": "pass",
+  "schema_version": 1,
+  "state": "completed"
+}

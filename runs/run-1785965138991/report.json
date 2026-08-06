@@ -1,0 +1,159 @@
+{
+  "artifacts": [
+    {
+      "kind": "phase-reports",
+      "path": "phases/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 93,
+      "budget_failures": 0,
+      "cost_usd": 0.06707253600000002,
+      "tool_errors": 2,
+      "total_bucket_tokens": 2575500.0,
+      "unknown_costs": 0,
+      "workers": 2
+    },
+    "mode": "organization",
+    "outcomes": {
+      "cycle": "fail",
+      "evaluator": "fail",
+      "infrastructure": "pass",
+      "product": "fail"
+    },
+    "phases": [
+      {
+        "id": "01-ticket",
+        "path": "phases/01-ticket/report.json",
+        "result": "missing",
+        "valid": false
+      },
+      {
+        "id": "02-reeval-task-findexec-001",
+        "path": "phases/02-reeval-task-findexec-001/report.json",
+        "result": "missing",
+        "valid": false
+      },
+      {
+        "id": "03-eval",
+        "path": "phases/03-eval/report.json",
+        "result": "pass",
+        "valid": true
+      }
+    ],
+    "tool_errors": [
+      {
+        "report": "phases/03-eval/workers/eval-worker/task-histogram-1/report.json",
+        "summary": "=== lint ===\n=== fmt ===\n=== rerun tests ===\n0 3 3\n1 4 7\nexit=0\nruntime traceback\nexecutable: /usr/local/bin/xsh\noperation: result.propagate\nerror: fs-read: No such file or directory (os error 2)\ncall path:\n  1. proc main at histogram.xsh:1:1-1:1\n\n\nCommand exited with code 3",
+        "tool": "bash",
+        "turn": 71,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-histogram-1"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-worker/task-histogram-1/report.json",
+        "summary": "ls: /work/s.txt: No such file or directory\n---\nruntime traceback\nexecutable: /usr/local/bin/xsh\noperation: result.propagate\nerror: fs-read: No such file or directory (os error 2)\ncall path:\n  1. proc main at histogram.xsh:1:1-1:1\n\n\nCommand exited with code 3",
+        "tool": "bash",
+        "turn": 72,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-histogram-1"
+        }
+      }
+    ],
+    "workers": [
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-histogram"
+        },
+        "path": "phases/03-eval/workers/eval-manager/task-histogram/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 14,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.006676992,
+          "cache_read_tokens": 370944,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.014084802000000002,
+          "input_cost_usd": 0.00430353,
+          "input_tokens": 47817,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00310428,
+          "output_tokens": 17246,
+          "provider_total_tokens": 436007,
+          "reasoning_tokens": 8238,
+          "thinking_blocks": 12,
+          "tool_calls": 24,
+          "tool_errors": 0,
+          "tool_results": 24,
+          "total_bucket_tokens": 436007,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-histogram-1"
+        },
+        "path": "phases/03-eval/workers/eval-worker/task-histogram-1/report.json",
+        "result": "pass",
+        "tool_errors": 2,
+        "usage": {
+          "assistant_turns": 79,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.035587584,
+          "cache_read_tokens": 1977088,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.05298773400000001,
+          "input_cost_usd": 0.01183275,
+          "input_tokens": 131475,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0055673999999999975,
+          "output_tokens": 30930,
+          "provider_total_tokens": 2139493,
+          "reasoning_tokens": 20632,
+          "thinking_blocks": 60,
+          "tool_calls": 89,
+          "tool_errors": 2,
+          "tool_results": 89,
+          "total_bucket_tokens": 2139493,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "1cf4ad3d7ee5fde9b3160b11d8073cbd7ce5e7c4"
+  },
+  "findings": [
+    {
+      "id": "01-ticket",
+      "kind": "phase",
+      "result": "missing"
+    },
+    {
+      "id": "02-reeval-task-findexec-001",
+      "kind": "phase",
+      "result": "missing"
+    }
+  ],
+  "identity": {
+    "mode": "organization",
+    "run_id": "run-1785965138991"
+  },
+  "kind": "run",
+  "result": "fail",
+  "schema_version": 1,
+  "state": "completed"
+}
