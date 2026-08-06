@@ -1,0 +1,191 @@
+{
+  "artifacts": [
+    {
+      "kind": "phase-reports",
+      "path": "phases/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 78,
+      "budget_failures": 0,
+      "cost_usd": 0.047202084,
+      "tool_errors": 2,
+      "total_bucket_tokens": 1687173.0,
+      "unknown_costs": 0,
+      "workers": 3
+    },
+    "mode": "organization",
+    "outcomes": {
+      "cycle": "fail",
+      "evaluator": "fail",
+      "infrastructure": "pass",
+      "product": "fail"
+    },
+    "phases": [
+      {
+        "id": "01-ticket",
+        "path": "phases/01-ticket/report.json",
+        "result": "fail",
+        "valid": true
+      },
+      {
+        "id": "02-reeval-task-findexec-001",
+        "path": "phases/02-reeval-task-findexec-001/report.json",
+        "result": "missing",
+        "valid": false
+      },
+      {
+        "id": "03-eval",
+        "path": "phases/03-eval/report.json",
+        "result": "pass",
+        "valid": true
+      }
+    ],
+    "tool_errors": [
+      {
+        "report": "phases/01-ticket/workers/director/director/report.json",
+        "summary": "=== roles/engineer.md ===\n-rw-r--r--  1 josh  staff  3292 Aug  5 10:40 roles/engineer.md\n=== dispatch prompt sha check ===\nb193695a5fc9360e534a73f90ab176cb9de10e80faa98d962a289fdd307e8d70  roles/engineer.md\n46eeebe9c5ded596c3cdebfa5355ef5f528ba4592c7e5adc216b11527e4f69b4  roles/director.md\n=== engineer stderr full ===\ncat: illegal option -- A\nusage: cat [-belnstuv] [file ...]\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 7,
+        "worker": {
+          "role": "director",
+          "worker_id": "director"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-manager/task-histogram/report.json",
+        "summary": "Path not found: /Users/josh/d/laputa-systems/xsh-factory/runs/run-1785967719321/phases/03-eval/workers/eval-worker/task-histogram-1/session.jsonl.bz2.bz2.events.jsonl",
+        "tool": "ls",
+        "turn": 3,
+        "worker": {
+          "role": "eval-manager",
+          "worker_id": "task-histogram"
+        }
+      }
+    ],
+    "workers": [
+      {
+        "identity": {
+          "role": "director",
+          "worker_id": "director"
+        },
+        "path": "phases/01-ticket/workers/director/director/report.json",
+        "result": "pass",
+        "tool_errors": 1,
+        "usage": {
+          "assistant_turns": 12,
+          "budget_usd": 0.06,
+          "cache_read_cost_usd": 0.003631104,
+          "cache_read_tokens": 201728,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.010287144,
+          "input_cost_usd": 0.004864499999999998,
+          "input_tokens": 54050,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00179154,
+          "output_tokens": 9953,
+          "provider_total_tokens": 265731,
+          "reasoning_tokens": 6326,
+          "thinking_blocks": 11,
+          "tool_calls": 23,
+          "tool_errors": 1,
+          "tool_results": 23,
+          "total_bucket_tokens": 265731,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-histogram"
+        },
+        "path": "phases/03-eval/workers/eval-manager/task-histogram/report.json",
+        "result": "pass",
+        "tool_errors": 1,
+        "usage": {
+          "assistant_turns": 14,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.007128576,
+          "cache_read_tokens": 396032,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.013752486,
+          "input_cost_usd": 0.00448155,
+          "input_tokens": 49795,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00214236,
+          "output_tokens": 11902,
+          "provider_total_tokens": 457729,
+          "reasoning_tokens": 5582,
+          "thinking_blocks": 11,
+          "tool_calls": 25,
+          "tool_errors": 1,
+          "tool_results": 25,
+          "total_bucket_tokens": 457729,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-histogram-1"
+        },
+        "path": "phases/03-eval/workers/eval-worker/task-histogram-1/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 52,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.016291584,
+          "cache_read_tokens": 905088,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.023162454,
+          "input_cost_usd": 0.003681629999999999,
+          "input_tokens": 40907,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.003189239999999999,
+          "output_tokens": 17718,
+          "provider_total_tokens": 963713,
+          "reasoning_tokens": 10115,
+          "thinking_blocks": 42,
+          "tool_calls": 58,
+          "tool_errors": 0,
+          "tool_results": 58,
+          "total_bucket_tokens": 963713,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "1cf4ad3d7ee5fde9b3160b11d8073cbd7ce5e7c4"
+  },
+  "findings": [
+    {
+      "id": "01-ticket",
+      "kind": "phase",
+      "result": "fail"
+    },
+    {
+      "id": "02-reeval-task-findexec-001",
+      "kind": "phase",
+      "result": "missing"
+    }
+  ],
+  "identity": {
+    "mode": "organization",
+    "run_id": "run-1785967719321"
+  },
+  "kind": "run",
+  "result": "fail",
+  "schema_version": 1,
+  "state": "completed"
+}
