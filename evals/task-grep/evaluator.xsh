@@ -2,9 +2,9 @@
 ##! Runs the candidate and an external BusyBox `grep -nF` oracle against a set
 ##! of public and hidden cases, checks the no-subprocess restriction and the
 ##! review.md protocol, and writes a JSON run manifest to the session run.json.
-##! The workspace and session roots default to /work and /session (the eval
-##! container contract, which must exist) but may be overridden via environment
-##! variables for a host-side dry run.
+##! The workspace, session, and export roots default to /work, /session, and
+##! /export (the eval container contract, which must exist) but may be
+##! overridden via environment variables for a host-side dry run.
 type Fixture = {name: Str, pattern: Str, data: Str, missing: Bool}
 
 type CaseResult = {
@@ -30,11 +30,11 @@ proc source_has_forbidden_subprocess(source: Str) [] -> Bool {
   return false
 }
 
-proc copy_results(work_root: Path, session_root: Path) [fs, error] {
+proc copy_results(work_root: Path, export_root: Path) [fs, error] {
   for name in ["grep.xsh", "review.md"] {
     let source = fp"${work_root}/${name}"
     if fs.exists(source)? {
-      fs.copy(source, fp"${session_root}/export/${name}", overwrite: true)?
+      fs.copy(source, fp"${export_root}/${name}", overwrite: true)?
     }
   }
 }
@@ -110,6 +110,7 @@ proc run_case(
 proc main() [fs, process, env, time, error, io] {
   let work_root = fp"${env.get_or("FACTORY_WORK", "/work")?}"
   let session_root = fp"${env.get_or("FACTORY_SESSION", "/session")?}"
+  let export_root = fp"${env.get_or("FACTORY_EXPORT", "/export")?}"
   let artifact = fp"${work_root}/grep.xsh"
   let artifact_present = fs.exists(artifact)?
   var all_exact = artifact_present
@@ -248,7 +249,7 @@ elan
     },
     pretty: true,
   )?
-  let _ = copy_results(work_root, session_root)?
+  let _ = copy_results(work_root, export_root)?
   if ! passed {
     abort(1)
   }

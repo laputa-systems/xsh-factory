@@ -2231,6 +2231,13 @@ proc test_eval_dispatch_is_package_owned() [fs, error] {
   }
 }
 
+proc test_task_grep_evaluator_uses_shared_export_mount() [fs, error] {
+  let evaluator = fs.read_text(fp"${fs.cwd()?}/evals/task-grep/evaluator.xsh")?
+  test.contains(evaluator, "FACTORY_EXPORT")?
+  test.contains(evaluator, "copy_results(work_root, export_root)")?
+  test.ok(r"""${session_root}/export""" not in evaluator)?
+}
+
 proc test_eval_design_rejects_legacy_evaluator_source() [fs, error] {
   let controller = fs.read_text(fp"${fs.cwd()?}/factory/controllers/design.xsh")?
   test.contains(controller, "eval_evaluator_package_owned")?

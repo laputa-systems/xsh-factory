@@ -1,0 +1,96 @@
+{
+  "classification": "pass",
+  "correctness": {
+    "all_exact": true,
+    "cases": [
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 18432156,
+        "exact": true,
+        "name": "public",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 15357478
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 24886178,
+        "exact": true,
+        "name": "hidden_empty_pattern",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 31763820
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 13894616,
+        "exact": true,
+        "name": "hidden_no_match",
+        "oracle_exit": 1,
+        "oracle_wall_ns": 12375173
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 13776493,
+        "exact": true,
+        "name": "hidden_case",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 14379195
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 16182887,
+        "exact": true,
+        "name": "hidden_regex_literal",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 11623722
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 12579087,
+        "exact": true,
+        "name": "hidden_spaces",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 12540046
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 15517143,
+        "exact": true,
+        "name": "hidden_blank_lines",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 16802714
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 12682295,
+        "exact": true,
+        "name": "hidden_unicode",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 17714830
+      },
+      {
+        "candidate_exit": 3,
+        "candidate_wall_ns": 18435490,
+        "exact": true,
+        "name": "hidden_missing",
+        "oracle_exit": 2,
+        "oracle_wall_ns": 14556193
+      }
+    ],
+    "passed": true
+  },
+  "eval_id": "task-grep",
+  "image_id": "sha256:d74ddf576bda919b10d1b4908253998da8c0990ff457a4c4bddd46e01cdd8461",
+  "platform": "linux/arm64",
+  "protocol": {
+    "artifact_present": true,
+    "review_ok": true
+  },
+  "restrictions": {
+    "passed": true
+  },
+  "result": "pass",
+  "timings": {
+    "passed": true
+  },
+  "trial_id": "1"
+}

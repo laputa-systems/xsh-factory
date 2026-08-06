@@ -23,6 +23,13 @@ engineer dispatch; report the infrastructure change to the CTO instead.
 
 None.
 
+## CTO decision — pre-cycle 2026-08-06
+
+- Decision: Deferred; do not approve or dispatch in this cycle.
+- Basis: The observation was produced during the dispatch-repair period and
+  lacks cross-eval confirmation. Preserve it as Open. pending a controlled
+  replay; do not spend an engineer row this cycle.
+
 ## Merge record
 
 - Implementation branch: `{{IMPLEMENTATION_BRANCH}}`

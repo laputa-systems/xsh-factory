@@ -29,6 +29,13 @@ Open.
 
 None.
 
+## CTO decision — pre-cycle 2026-08-06
+
+- Decision: Deferred; do not approve or dispatch in this cycle.
+- Basis: This follow-on observation still depends on controlled replay after
+  the dispatch repair and is not eligible for a second engineer row while the
+  current cycle is reserved for independent eval signal.
+
 ## Merge record
 
 - Implementation branch: `{{IMPLEMENTATION_BRANCH}}`

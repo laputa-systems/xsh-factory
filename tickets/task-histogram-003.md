@@ -26,6 +26,14 @@ Open.
 
 None.
 
+## CTO decision — pre-cycle 2026-08-06
+
+- Decision: Deferred; do not approve or dispatch.
+- Basis: The linked `task-histogram` observation still requires the focused
+  fold-with-print diagnostic replay named above. The current cycle runs the
+  first untried approved eval, `task-grep`, as independent signal; no engineer
+  row is admitted without that controlled evidence.
+
 ## Merge record
 
 - Implementation branch: `{{IMPLEMENTATION_BRANCH}}`

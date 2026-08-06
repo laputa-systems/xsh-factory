@@ -19,6 +19,12 @@ Open.
 
 None.
 
+## CTO decision — pre-cycle 2026-08-06
+
+- Decision: Deferred; do not approve or dispatch in this cycle.
+- Basis: The observation remains single-eval guidance from the dispatch-repair
+  period. Require cross-eval replay before any implementation approval.
+
 ## Merge record
 
 - Implementation branch: `{{IMPLEMENTATION_BRANCH}}`
