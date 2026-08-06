@@ -16,15 +16,6 @@ type CaseResult = {
   oracle_duration_ms: Int,
 }
 
-type Report = {
-  eval: Str,
-  classification: Str,
-  cases: List[CaseResult],
-  restriction_ok: Bool,
-  review_ok: Bool,
-  protocol: Str,
-}
-
 proc failed_result(case: Case) [] -> CaseResult {
   return {
     name: case.name,
@@ -78,9 +69,9 @@ proc run_case(xsh: Path, artifact: Path, oracle: Path, case: Case) [fs, process,
   }
 }
 
-proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
-  let work_dir = p"/work"
-  let manifest_path = p"/session/run.json"
+proc main(..._: List[Str]) [fs, process, env, time, error, io] {
+  let work_dir = /work
+  let manifest_path = /session/run.json
   let xsh = process.which("xsh")?
   let artifact = fp"${work_dir}/probe.xsh"
   let review = fp"${work_dir}/review.md"
@@ -216,7 +207,7 @@ fi
     print "task-probe evaluation passed"
     abort(0)
   } else {
-    eprint "task-probe evaluation failed: see "${manifest_path.display()}
+    eprint "task-probe evaluation failed: see "${manifest_path}
     abort(1)
   }
 }

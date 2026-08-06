@@ -1,10 +1,14 @@
 ##! Native tests for graph ordering, exclusivity, and dispatch authority.
-
-use factory.types as types
-use factory.graph as graph
 use factory.dispatch as dispatch
+use factory.graph as graph
+use factory.types as types
 
-proc fixture_node(node_text: Str, worker_text: Str, dispatch_text: Str, role_text: Str) [error] -> Result[graph.GraphNode] {
+proc fixture_node(
+  node_text: Str,
+  worker_text: Str,
+  dispatch_text: Str,
+  role_text: Str,
+) [error] -> Result[graph.GraphNode] {
   return graph.make_node(
     types.make_node_id(node_text)?,
     types.make_role(role_text)?,
@@ -25,22 +29,66 @@ proc test_graph_validation_rejects_cycles_and_duplicates() [error] {
   let b = types.make_node_id("replay")?
   let run_id = types.make_run_id("run-1")?
   let mode = types.make_mode("organization")?
-  let plan = {run_id: run_id.value, mode: mode.value, nodes: [first, second], edges: [graph.make_edge(a, b, "replay", "stop-dependents")?], source_hashes: [], required_outputs: ["report.json"], aggregate_budget: 1.0}
+  let plan = {
+    run_id: run_id.value,
+    mode: mode.value,
+    nodes: [
+      first,
+      second,
+    ],
+    edges: [
+      graph.make_edge(a, b, "replay", "stop-dependents")?,
+    ],
+    source_hashes: [],
+    required_outputs: [
+      "report.json",
+    ],
+    aggregate_budget: 1.0,
+  }
   graph.validate(plan)?
   test.ok(graph.startable(plan, "replay", [{node_id: "implementation", state: "started"}]) == false)
   test.ok(graph.startable(plan, "replay", [{node_id: "implementation", state: "completed"}]))
 
-  let cycle = {run_id: run_id.value, mode: mode.value, nodes: [first, second], edges: [graph.make_edge(a, b, "hard", "stop-dependents")?, graph.make_edge(b, a, "hard", "stop-dependents")?], source_hashes: [], required_outputs: ["report.json"], aggregate_budget: 1.0}
+  let cycle = {
+    run_id: run_id.value,
+    mode: mode.value,
+    nodes: [
+      first,
+      second,
+    ],
+    edges: [
+      graph.make_edge(a, b, "hard", "stop-dependents")?,
+      graph.make_edge(b, a, "hard", "stop-dependents")?,
+    ],
+    source_hashes: [],
+    required_outputs: [
+      "report.json",
+    ],
+    aggregate_budget: 1.0,
+  }
   match graph.validate(cycle) {
-    Ok(_) => test.fail("cyclic workflow was accepted")?,
-    Err(_) => {},
+    Ok(_) => test.fail("cyclic workflow was accepted")?
+    Err(_) => {}
   }
 
   let duplicate = fixture_node("extra", "task-a", "dispatch-c", "engineer")?
-  let duplicate_plan = {run_id: run_id.value, mode: mode.value, nodes: [first, duplicate], edges: [], source_hashes: [], required_outputs: ["report.json"], aggregate_budget: 1.0}
+  let duplicate_plan = {
+    run_id: run_id.value,
+    mode: mode.value,
+    nodes: [
+      first,
+      duplicate,
+    ],
+    edges: [],
+    source_hashes: [],
+    required_outputs: [
+      "report.json",
+    ],
+    aggregate_budget: 1.0,
+  }
   match graph.validate(duplicate_plan) {
-    Ok(_) => test.fail("duplicate worker identity was accepted")?,
-    Err(_) => {},
+    Ok(_) => test.fail("duplicate worker identity was accepted")?
+    Err(_) => {}
   }
 }
 
@@ -52,32 +100,114 @@ proc test_graph_readiness_and_results_follow_plan_contract() [error] {
   let edge = graph.make_edge(a, b, "hard", "stop-dependents")?
   let run_id = types.make_run_id("run-2")?
   let mode = types.make_mode("organization")?
-  let plan = {run_id: run_id.value, mode: mode.value, nodes: [first, second], edges: [edge], source_hashes: [], required_outputs: ["report.json"], aggregate_budget: 1.0}
+  let plan = {
+    run_id: run_id.value,
+    mode: mode.value,
+    nodes: [
+      first,
+      second,
+    ],
+    edges: [
+      edge,
+    ],
+    source_hashes: [],
+    required_outputs: [
+      "report.json",
+    ],
+    aggregate_budget: 1.0,
+  }
   test.ok(! graph.startable(plan, "missing", []))?
   test.ok(! graph.startable(plan, "replay", [{node_id: "implementation", state: "started"}]))?
   test.ok(! graph.startable(plan, "replay", [{node_id: "implementation", state: "failed"}]))?
-  let continue_plan = {run_id: run_id.value, mode: mode.value, nodes: [first, second], edges: [graph.make_edge(a, b, "replay", "continue-on-failure")?], source_hashes: [], required_outputs: [], aggregate_budget: 1.0}
+  let continue_plan = {
+    run_id: run_id.value,
+    mode: mode.value,
+    nodes: [
+      first,
+      second,
+    ],
+    edges: [
+      graph.make_edge(a, b, "replay", "continue-on-failure")?,
+    ],
+    source_hashes: [],
+    required_outputs: [],
+    aggregate_budget: 1.0,
+  }
   test.ok(graph.startable(continue_plan, "replay", [{node_id: "implementation", state: "failed"}]))?
-  test.eq(graph.root_result(plan, [{node_id: "implementation", state: "completed"}, {node_id: "replay", state: "validated"}], ["report.json"]), "pass")?
-  test.eq(graph.root_result(plan, [{node_id: "implementation", state: "completed"}, {node_id: "replay", state: "validated"}], []), "fail")?
-  test.eq(graph.root_result(plan, [{node_id: "implementation", state: "failed"}, {node_id: "replay", state: "validated"}], ["report.json"]), "fail")?
-  match graph.make_node(a, types.make_role("engineer")?, types.make_worker_id("worker")?, types.make_dispatch_id("dispatch")?, "", [], [], types.make_budget(0.1, 1.0)?, []) {
-    Ok(_) => test.fail("incomplete graph node was accepted")?,
-    Err(_) => {},
+  test.eq(
+    graph.root_result(
+      plan,
+      [{node_id: "implementation", state: "completed"}, {node_id: "replay", state: "validated"}],
+      ["report.json"],
+    ),
+    "pass",
+  )?
+  test.eq(
+    graph.root_result(plan, [{node_id: "implementation", state: "completed"}, {node_id: "replay", state: "validated"}], []),
+    "fail",
+  )?
+  test.eq(
+    graph.root_result(
+      plan,
+      [{node_id: "implementation", state: "failed"}, {node_id: "replay", state: "validated"}],
+      ["report.json"],
+    ),
+    "fail",
+  )?
+  match graph.make_node(
+    a,
+    types.make_role("engineer")?,
+    types.make_worker_id("worker")?,
+    types.make_dispatch_id("dispatch")?,
+    "",
+    [],
+    [],
+    types.make_budget(0.1, 1.0)?,
+    [],
+  ) {
+    Ok(_) => test.fail("incomplete graph node was accepted")?
+    Err(_) => {}
   }
+
   match graph.make_edge(a, a, "hard", "stop-dependents") {
-    Ok(_) => test.fail("self-referential graph edge was accepted")?,
-    Err(_) => {},
+    Ok(_) => test.fail("self-referential graph edge was accepted")?
+    Err(_) => {}
   }
-  let missing_edge = {run_id: run_id.value, mode: mode.value, nodes: [first, second], edges: [graph.make_edge(a, types.make_node_id("missing")?, "hard", "stop-dependents")?], source_hashes: [], required_outputs: [], aggregate_budget: 1.0}
+
+  let missing_edge = {
+    run_id: run_id.value,
+    mode: mode.value,
+    nodes: [
+      first,
+      second,
+    ],
+    edges: [
+      graph.make_edge(a, types.make_node_id("missing")?, "hard", "stop-dependents")?,
+    ],
+    source_hashes: [],
+    required_outputs: [],
+    aggregate_budget: 1.0,
+  }
   match graph.validate(missing_edge) {
-    Ok(_) => test.fail("graph edge to missing node was accepted")?,
-    Err(_) => {},
+    Ok(_) => test.fail("graph edge to missing node was accepted")?
+    Err(_) => {}
   }
-  let orphan = {run_id: run_id.value, mode: mode.value, nodes: [first, second], edges: [], source_hashes: [], required_outputs: [], aggregate_budget: 1.0}
+
+  let orphan = {
+    run_id: run_id.value,
+    mode: mode.value,
+    nodes: [
+      first,
+      second,
+    ],
+    edges: [],
+    source_hashes: [],
+    required_outputs: [],
+    aggregate_budget: 1.0,
+  }
   match graph.validate(orphan) {
-    Ok(_) => test.fail("orphan graph node was accepted")?,
-    Err(_) => {},
+    Ok(_) => test.fail("orphan graph node was accepted")?
+    Err(_) => {}
   }
 }
 
@@ -93,16 +223,16 @@ proc fixture_dispatch() [error] -> Result[dispatch.DispatchSpec] {
     ticket_id: "task-a",
     eval_id: "task-ecount",
     change_target: "product",
-    system_prompt_path: Path("/factory/roles/engineer.md"),
+    system_prompt_path: /factory/roles/engineer.md,
     system_prompt_sha256: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-    message_path: Path("/factory/runs/run-1/messages/task-a.md"),
+    message_path: /factory/runs/run-1/messages/task-a.md,
     message_sha256: "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
-    workdir: Path("/product/worktrees/task-a"),
-    factory_root: Path("/factory"),
-    product_root: Path("/product"),
-    handbook_path: Path("/factory/runtime/handbook.md"),
+    workdir: /product/worktrees/task-a,
+    factory_root: /factory,
+    product_root: /product,
+    handbook_path: /factory/runtime/handbook.md,
     handbook_sha256: "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
-    north_star_path: Path("/factory/NORTH-STAR.md"),
+    north_star_path: /factory/NORTH-STAR.md,
     north_star_sha256: "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
     source_commit: "source-commit",
     image_id: "not-used",
@@ -123,37 +253,84 @@ proc test_dispatch_requires_exact_identity_and_single_claim(ctx: TestContext) [f
   test.eq(json.get(manifest, ["dispatch_id"], ""), "dispatch-a")?
   test.eq(json.get(manifest, ["aggregate_budget"], 0.0), 1.0)?
   let invocation = {
-    run_id: spec.run_id, phase_id: spec.phase_id, node_id: spec.node_id, dispatch_id: spec.dispatch_id,
-    role: spec.role, worker_id: spec.worker_id, mode: spec.mode, ticket_id: spec.ticket_id, eval_id: spec.eval_id,
-    change_target: spec.change_target, system_prompt_path: spec.system_prompt_path,
-    system_prompt_sha256: spec.system_prompt_sha256, message_path: spec.message_path,
-    message_sha256: spec.message_sha256, workdir: spec.workdir, parent_controller: spec.parent_controller,
+    run_id: spec.run_id,
+    phase_id: spec.phase_id,
+    node_id: spec.node_id,
+    dispatch_id: spec.dispatch_id,
+    role: spec.role,
+    worker_id: spec.worker_id,
+    mode: spec.mode,
+    ticket_id: spec.ticket_id,
+    eval_id: spec.eval_id,
+    change_target: spec.change_target,
+    system_prompt_path: spec.system_prompt_path,
+    system_prompt_sha256: spec.system_prompt_sha256,
+    message_path: spec.message_path,
+    message_sha256: spec.message_sha256,
+    workdir: spec.workdir,
+    parent_controller: spec.parent_controller,
   }
   test.ok(dispatch.invocation_authorized(plan, invocation))
-  let altered = {run_id: spec.run_id, phase_id: spec.phase_id, node_id: spec.node_id, dispatch_id: spec.dispatch_id,
-    role: spec.role, worker_id: spec.worker_id, mode: spec.mode, ticket_id: spec.ticket_id, eval_id: spec.eval_id,
-    change_target: spec.change_target, system_prompt_path: spec.system_prompt_path,
-    system_prompt_sha256: "altered-prompt", message_path: spec.message_path, message_sha256: spec.message_sha256,
-    workdir: spec.workdir, parent_controller: spec.parent_controller}
+  let altered = {
+    run_id: spec.run_id,
+    phase_id: spec.phase_id,
+    node_id: spec.node_id,
+    dispatch_id: spec.dispatch_id,
+    role: spec.role,
+    worker_id: spec.worker_id,
+    mode: spec.mode,
+    ticket_id: spec.ticket_id,
+    eval_id: spec.eval_id,
+    change_target: spec.change_target,
+    system_prompt_path: spec.system_prompt_path,
+    system_prompt_sha256: "altered-prompt",
+    message_path: spec.message_path,
+    message_sha256: spec.message_sha256,
+    workdir: spec.workdir,
+    parent_controller: spec.parent_controller,
+  }
   test.ok(! dispatch.invocation_authorized(plan, altered))
   let claim = dispatch.claim(spec, "claim-a", "runner-1", "planned")?
   test.eq(claim.state, "claimed")?
   match dispatch.claim(spec, "claim-a", "runner-2", "claimed") {
-    Ok(_) => test.fail("dispatch was claimed twice")?,
-    Err(_) => {},
+    Ok(_) => test.fail("dispatch was claimed twice")?
+    Err(_) => {}
   }
 
-  let factory_spec = {run_id: spec.run_id, phase_id: spec.phase_id, node_id: spec.node_id, dispatch_id: spec.dispatch_id,
-    role: spec.role, worker_id: spec.worker_id, mode: spec.mode, ticket_id: spec.ticket_id, eval_id: spec.eval_id,
-    change_target: "factory", system_prompt_path: spec.system_prompt_path, system_prompt_sha256: spec.system_prompt_sha256,
-    message_path: spec.message_path, message_sha256: spec.message_sha256, workdir: spec.workdir, factory_root: spec.factory_root,
-    product_root: spec.product_root, handbook_path: spec.handbook_path, handbook_sha256: spec.handbook_sha256,
-    north_star_path: spec.north_star_path, north_star_sha256: spec.north_star_sha256, source_commit: spec.source_commit,
-    image_id: spec.image_id, budget: spec.budget, max_turns: spec.max_turns, max_wall_seconds: spec.max_wall_seconds,
-    parent_controller: spec.parent_controller, state: spec.state, claim_token: spec.claim_token}
+  let factory_spec = {
+    run_id: spec.run_id,
+    phase_id: spec.phase_id,
+    node_id: spec.node_id,
+    dispatch_id: spec.dispatch_id,
+    role: spec.role,
+    worker_id: spec.worker_id,
+    mode: spec.mode,
+    ticket_id: spec.ticket_id,
+    eval_id: spec.eval_id,
+    change_target: "factory",
+    system_prompt_path: spec.system_prompt_path,
+    system_prompt_sha256: spec.system_prompt_sha256,
+    message_path: spec.message_path,
+    message_sha256: spec.message_sha256,
+    workdir: spec.workdir,
+    factory_root: spec.factory_root,
+    product_root: spec.product_root,
+    handbook_path: spec.handbook_path,
+    handbook_sha256: spec.handbook_sha256,
+    north_star_path: spec.north_star_path,
+    north_star_sha256: spec.north_star_sha256,
+    source_commit: spec.source_commit,
+    image_id: spec.image_id,
+    budget: spec.budget,
+    max_turns: spec.max_turns,
+    max_wall_seconds: spec.max_wall_seconds,
+    parent_controller: spec.parent_controller,
+    state: spec.state,
+    claim_token: spec.claim_token,
+  }
   match dispatch.validate_spec(factory_spec) {
-    Ok(_) => test.fail("factory target entered an engineer dispatch")?,
-    Err(_) => {},
+    Ok(_) => test.fail("factory target entered an engineer dispatch")?
+    Err(_) => {}
   }
 
   let root = test.temp_dir(ctx, name: "dispatch-plan")?
@@ -162,8 +339,8 @@ proc test_dispatch_requires_exact_identity_and_single_claim(ctx: TestContext) [f
   let claim_once = dispatch.claim_once(root, spec, "runner-0")?
   test.eq(claim_once.claimed_by, "runner-0")?
   match dispatch.claim_once(root, spec, "runner-1") {
-    Ok(_) => test.fail("dispatch claim was duplicated")?,
-    Err(_) => {},
+    Ok(_) => test.fail("dispatch claim was duplicated")?
+    Err(_) => {}
   }
 
   let persisted = test.temp_dir(ctx, name: "persisted-dispatch")?
@@ -172,7 +349,7 @@ proc test_dispatch_requires_exact_identity_and_single_claim(ctx: TestContext) [f
   dispatch.claim_persisted_once(persisted, "dispatch-a", "claim-a", "runner-1")?
   test.ok(fs.exists(fp"${persisted}/dispatch/dispatch-a.claim.json")?)?
   match dispatch.claim_persisted_once(persisted, "dispatch-a", "claim-a", "runner-2") {
-    Ok(_) => test.fail("persisted dispatch was claimed twice")?,
-    Err(_) => {},
+    Ok(_) => test.fail("persisted dispatch was claimed twice")?
+    Err(_) => {}
   }
 }

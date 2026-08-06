@@ -1,7 +1,6 @@
 ##! Eval portfolio admission and package ownership policy.
-
-use factory.types as types
 use factory.control as legacy
+use factory.types as types
 
 ## Parsed checked-in eval facts.
 export type EvalRecord = {
@@ -15,7 +14,14 @@ export type EvalRecord = {
 export pure parse(eval_id: Str, contract: Str, evaluator: Str) -> Result[EvalRecord] {
   let id = types.make_eval_id(eval_id)?
   let status = types.parse_eval_status(legacy.ticket_status(contract))?
-  return Ok({id: id, status: status, package_owned: legacy.eval_evaluator_package_owned(evaluator), difficulty_ok: legacy.eval_difficulty_contract_ok(contract)})
+  return Ok(
+    {
+      id: id,
+      status: status,
+      package_owned: legacy.eval_evaluator_package_owned(evaluator),
+      difficulty_ok: legacy.eval_difficulty_contract_ok(contract),
+    },
+  )
 }
 
 ## A package is eligible only when status and package boundaries agree.
@@ -24,7 +30,9 @@ export pure dispatchable(eval: EvalRecord) -> Bool {
 }
 
 ## Enforces the hard checked-in portfolio cap.
-export pure under_cap(eval_count: Int) -> Bool { return eval_count <= 30 }
+export pure under_cap(eval_count: Int) -> Bool {
+  return eval_count <= 30
+}
 
 ## A proposal remains Draft until all package gates pass.
 export pure promoted_status(review_pass: Bool) -> types.EvalStatus {

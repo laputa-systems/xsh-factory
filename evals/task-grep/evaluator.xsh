@@ -22,7 +22,7 @@ type CaseResult = {
 proc source_has_forbidden_subprocess(source: Str) [] -> Bool {
   for line in source.lines() {
     let code = line.split("#").get(0, "")
-    if code.contains("process.") or code.contains("spawn ") or code.contains("run ") {
+    if "process." in code or "spawn " in code or "run " in code {
       return true
     }
   }
@@ -30,15 +30,13 @@ proc source_has_forbidden_subprocess(source: Str) [] -> Bool {
   return false
 }
 
-proc copy_results(work_root: Path, session_root: Path) [fs, error] -> Result[Unit] {
+proc copy_results(work_root: Path, session_root: Path) [fs, error] {
   for name in ["grep.xsh", "review.md"] {
     let source = fp"${work_root}/${name}"
     if fs.exists(source)? {
       fs.copy(source, fp"${session_root}/export/${name}", overwrite: true)?
     }
   }
-
-  return Ok()
 }
 
 proc review_ok(work_root: Path) [fs, error] -> Result[Bool] {
@@ -48,7 +46,7 @@ proc review_ok(work_root: Path) [fs, error] -> Result[Bool] {
   }
 
   let text = review.read_text()?
-  return text.contains("## XSH language proposals") and text.contains("## xsht friction") and ! text.contains("{{")
+  return text.contains("## XSH language proposals") and text.contains("## xsht friction") and ! ("{{" in text)
 }
 
 proc run_case(
@@ -110,8 +108,8 @@ proc run_case(
 }
 
 proc main() [fs, process, env, time, error, io] {
-  let work_root = Path(env.get_or("FACTORY_WORK", "/work")?)
-  let session_root = Path(env.get_or("FACTORY_SESSION", "/session")?)
+  let work_root = fp"${env.get_or("FACTORY_WORK", "/work")?}"
+  let session_root = fp"${env.get_or("FACTORY_SESSION", "/session")?}"
   let artifact = fp"${work_root}/grep.xsh"
   let artifact_present = fs.exists(artifact)?
   var all_exact = artifact_present
@@ -166,7 +164,10 @@ abc
       {
         name: "hidden_spaces",
         pattern: "foo",
-        data: "  foo  \nfoo\n foo\n",
+        data: """  foo  
+foo
+ foo
+""",
         missing: false,
       },
       {
@@ -207,7 +208,7 @@ elan
   }
 
   let source = if artifact_present { artifact.read_text()? } else { "" }
-  let restriction_ok = artifact_present and source.contains("read_text") and ! source_has_forbidden_subprocess(source)
+  let restriction_ok = artifact_present and "read_text" in source and ! source_has_forbidden_subprocess(source)
   let protocol_ok = review_ok(work_root)?
   let passed = all_exact and restriction_ok and protocol_ok
   json.write(

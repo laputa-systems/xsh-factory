@@ -1,68 +1,187 @@
 ##! Native tests for factory contracts and lifecycle state.
-
 use factory.control as control
 use factory.runtime as runtime
 use factory.schema as schema
 
 proc test_cycle_request_parsing() [error] {
-  let request = "# Cycle\n\n## Mode\n\n- `organization`\n\n## Active evals\n\n- `task-tags`\n\n## Trial plan\n\n- Count: `1`\n\n## New eval proposals\n\n- Count: `1`\n\n## Approved tickets\n\n- `task-tags-001`\n- `task-tags-002`\n"
+  let request = """# Cycle
+
+## Mode
+
+- `organization`
+
+## Active evals
+
+- `task-tags`
+
+## Trial plan
+
+- Count: `1`
+
+## New eval proposals
+
+- Count: `1`
+
+## Approved tickets
+
+- `task-tags-001`
+- `task-tags-002`
+"""
   test.eq(control.request_mode(request), "organization")?
   test.eq(control.request_eval(request), "task-tags")?
   test.eq(control.request_tickets(request), ["task-tags-001", "task-tags-002"])?
   test.eq(control.request_trial_count(request)?, 1)?
   test.eq(control.request_new_eval_count(request)?, 1)?
   test.ok(! control.request_allow_measured_eval(request))?
-  test.ok(control.request_allow_measured_eval(request + "\n- Allow measured eval reuse: `yes`\n"))?
+  test.ok(
+    control.request_allow_measured_eval(
+  request + """
+- Allow measured eval reuse: `yes`
+""",
+),
+  )?
   test.eq(control.request_ticket_policy(request), "explicit")?
 }
 
 proc test_untried_eval_policy_is_explicit() [error] {
-  test.ok(! control.request_allow_measured_eval("# Cycle\n"))?
+  test.ok(
+    ! control.request_allow_measured_eval("""# Cycle
+"""),
+  )?
   test.ok(control.request_allow_measured_eval("- Allow measured eval reuse: `yes`"))?
 }
 
 proc test_eval_difficulty_contract_gate() [error] {
-  let valid = "## Eval task-rich\n\n## Difficulty justification\n\nThis task combines two independent data transformations and stateful aggregation, includes a meaningful failure control, and uses hidden cases that defeat a one-liner or hard-coded answer.\n"
-  let weak = "## Eval task-trivial\n\n## Difficulty justification\n\nThis is a simple one-liner.\n"
+  let valid = """## Eval task-rich
+
+## Difficulty justification
+
+This task combines two independent data transformations and stateful aggregation, includes a meaningful failure control, and uses hidden cases that defeat a one-liner or hard-coded answer.
+"""
+  let weak = """## Eval task-trivial
+
+## Difficulty justification
+
+This is a simple one-liner.
+"""
   test.ok(control.eval_difficulty_contract_ok(valid))?
   test.ok(! control.eval_difficulty_contract_ok(weak))?
-  test.ok(! control.eval_difficulty_contract_ok("## Eval task-missing\n"))?
+  test.ok(
+    ! control.eval_difficulty_contract_ok("""## Eval task-missing
+"""),
+  )?
 }
 
 proc test_eval_evaluator_package_ownership_gate() [error] {
   test.ok(control.eval_evaluator_package_owned("proc main() { json.write(...) }"))?
-  test.ok(! control.eval_evaluator_package_owned(
-    "let dispatcher = p\"/usr/local/lib/xsh-factory/factory/dispatcher.xsh\""))?
-  test.ok(! control.eval_evaluator_package_owned(
-    "let dispatcher = env.get_or(\"FACTORY_EVAL_EVALUATOR\", \"\")?"))?
+  test.ok(
+    ! control.eval_evaluator_package_owned(
+      "let dispatcher = p\"/usr/local/lib/xsh-factory/factory/dispatcher.xsh\"",
+    ),
+  )?
+  test.ok(
+    ! control.eval_evaluator_package_owned(
+      "let dispatcher = env.get_or(\"FACTORY_EVAL_EVALUATOR\", \"\")?",
+    ),
+  )?
 }
 
 proc test_forbidden_subprocess_scan_ignores_comments() [error] {
-  test.ok(! control.source_has_forbidden_subprocess(
-    "# run a command in prose\nlet note = \"safe\"\n"))?
-  test.ok(control.source_has_forbidden_subprocess(
-    "# harmless\nlet status = process.run(command)\n"))?
-  test.ok(control.source_has_forbidden_subprocess(
-    "let child = spawn process.command_argv(\"xsh\", args)\n"))?
+  test.ok(
+    ! control.source_has_forbidden_subprocess("""# run a command in prose
+let note = "safe"
+"""),
+  )?
+  test.ok(
+    control.source_has_forbidden_subprocess("""# harmless
+let status = process.run(command)
+"""),
+  )?
+  test.ok(
+    control.source_has_forbidden_subprocess("""let child = spawn process.command_argv("xsh", args)
+"""),
+  )?
 }
 
 proc test_organization_selects_two_approved_tickets(ctx: TestContext) [fs, error] {
   let root = test.temp_dir(ctx, name: "approved-ticket-selection")?
   let tickets = fp"${root}/tickets"
   fs.mkdir(tickets)?
-  fs.write(fp"${tickets}/task-z.md", "# Ticket\n\n## Status\n\nOpen.\n")?
-  fs.write(fp"${tickets}/task-b.md", "# Ticket\n\n## Status\n\nApproved.\n\n## Change target\n\n- `product`\n")?
-  fs.write(fp"${tickets}/task-a.md", "# Ticket\n\n## Status\n\nApproved.\n\n## Change target\n\n- `product`\n")?
-  fs.write(fp"${tickets}/task-factory.md", "# Ticket\n\n## Status\n\nApproved.\n\n## Change target\n\n- `factory`\n")?
+  fs.write(
+    fp"${tickets}/task-z.md",
+    """# Ticket
+
+## Status
+
+Open.
+""",
+  )?
+  fs.write(
+    fp"${tickets}/task-b.md",
+    """# Ticket
+
+## Status
+
+Approved.
+
+## Change target
+
+- `product`
+""",
+  )?
+  fs.write(
+    fp"${tickets}/task-a.md",
+    """# Ticket
+
+## Status
+
+Approved.
+
+## Change target
+
+- `product`
+""",
+  )?
+  fs.write(
+    fp"${tickets}/task-factory.md",
+    """# Ticket
+
+## Status
+
+Approved.
+
+## Change target
+
+- `factory`
+""",
+  )?
   test.eq(runtime.first_approved_tickets(root, 2)?, ["task-a", "task-b"])?
   test.ok(! runtime.accepted_ticket(fp"${tickets}/task-factory.md")?)?
 }
 
 proc test_cto_inventory_surfaces_ticket_state() [error] {
-  let markdown = runtime.cto_inventory_markdown([
-    {id: "task-a", status: "Open.", change_target: "product", eval_id: "task-envcfg", cto_review: false, open_branch: "", path: "tickets/task-a.md"},
-    {id: "task-b", status: "Approved.", change_target: "factory", eval_id: "task-ecount", cto_review: true, open_branch: "", path: "tickets/task-b.md"},
-  ])
+  let markdown = runtime.cto_inventory_markdown(
+    [
+      {
+        id: "task-a",
+        status: "Open.",
+        change_target: "product",
+        eval_id: "task-envcfg",
+        cto_review: false,
+        open_branch: "",
+        path: "tickets/task-a.md",
+      },
+      {
+        id: "task-b",
+        status: "Approved.",
+        change_target: "factory",
+        eval_id: "task-ecount",
+        cto_review: true,
+        open_branch: "",
+        path: "tickets/task-b.md",
+      },
+    ],
+  )
   test.contains(markdown, "Open tickets: 1")?
   test.contains(markdown, "Approved tickets: 1")?
   test.contains(markdown, "`task-a` | `Open.` | `product`")?
@@ -72,9 +191,30 @@ proc test_cto_inventory_surfaces_ticket_state() [error] {
 
 proc test_cto_gate_surfaces_unreviewed_open_tickets() [error] {
   let tickets = [
-    {id: "task-open", status: "Open.", eval_id: "task-envcfg", cto_review: false, open_branch: "", path: "tickets/task-open.md"},
-    {id: "task-reviewed", status: "Open.", eval_id: "task-ecount", cto_review: true, open_branch: "", path: "tickets/task-reviewed.md"},
-    {id: "task-approved", status: "Approved.", eval_id: "task-tags", cto_review: false, open_branch: "", path: "tickets/task-approved.md"},
+    {
+      id: "task-open",
+      status: "Open.",
+      eval_id: "task-envcfg",
+      cto_review: false,
+      open_branch: "",
+      path: "tickets/task-open.md",
+    },
+    {
+      id: "task-reviewed",
+      status: "Open.",
+      eval_id: "task-ecount",
+      cto_review: true,
+      open_branch: "",
+      path: "tickets/task-reviewed.md",
+    },
+    {
+      id: "task-approved",
+      status: "Approved.",
+      eval_id: "task-tags",
+      cto_review: false,
+      open_branch: "",
+      path: "tickets/task-approved.md",
+    },
   ]
   test.eq(runtime.cto_unreviewed_open_tickets(tickets), ["task-open"])?
 }
@@ -83,25 +223,59 @@ proc test_handbook_candidate_gate_requires_ledger_disposition(ctx: TestContext) 
   let root = test.temp_dir(ctx, name: "handbook-gate")?
   fs.mkdir(fp"${root}/runtime")?
   fs.mkdir(fp"${root}/runs/run-1/lineage")?
-  fs.write(fp"${root}/runtime/handbook.md", "approved\n")?
+  fs.write(
+    fp"${root}/runtime/handbook.md",
+    """approved
+""",
+  )?
   let candidate = fp"${root}/runs/run-1/lineage/handbook-candidate.md"
-  fs.write(candidate, "candidate\n")?
+  fs.write(
+    candidate,
+    """candidate
+""",
+  )?
   test.eq(runtime.unresolved_handbook_candidates(root)?, 1)?
   let candidate_sha = hash.sha256(candidate)?.hex()
-  fs.write(fp"${root}/runtime/handbook-ledger.md", f"promoted ${candidate_sha}\n")?
+  fs.write(
+    fp"${root}/runtime/handbook-ledger.md",
+    f"""promoted ${candidate_sha}
+""",
+  )?
   test.eq(runtime.unresolved_handbook_candidates(root)?, 0)?
 }
 
 proc test_organization_phase_request_preserves_multiple_tickets() [fs, error] {
   let template = fs.read_text(fp"${fs.cwd()?}/templates/ORGANIZATION-PHASE-REQUEST.md")?
-  let request = control.fill_template(template, [
-    {key: "MODE", value: "ticket-implementation"},
-    {key: "EVAL_ID", value: "task-envcfg"},
-    {key: "TRIAL_COUNT", value: "1"},
-    {key: "NEW_EVAL_COUNT", value: "0"},
-    {key: "TICKET_ID", value: "`task-a`\n- `task-b`"},
-    {key: "OBJECTIVE", value: "fixture"},
-  ])
+  let request = control.fill_template(
+    template,
+    [
+  {
+    key: "MODE",
+    value: "ticket-implementation",
+  },
+  {
+    key: "EVAL_ID",
+    value: "task-envcfg",
+  },
+  {
+    key: "TRIAL_COUNT",
+    value: "1",
+  },
+  {
+    key: "NEW_EVAL_COUNT",
+    value: "0",
+  },
+  {
+    key: "TICKET_ID",
+    value: """`task-a`
+- `task-b`""",
+  },
+  {
+    key: "OBJECTIVE",
+    value: "fixture",
+  },
+],
+  )
   let tickets = control.request_tickets(request)
   test.eq(tickets.len(), 2)?
   test.eq(tickets[0], "task-a")?
@@ -122,10 +296,12 @@ proc test_role_defaults_are_coded_and_capped() [env, error] {
     } else {
       test.eq(control.default_model(role), "deepseek/deepseek-v4-flash-0731")?
     }
+
     test.eq(control.default_thinking(role), "high")?
     test.ok(control.default_budget(role) != "")?
     test.ok(control.default_max_turns(role) != "")?
   }
+
   test.eq(control.default_max_turns("eval-designer"), "64")?
   test.eq(control.default_budget("engineer"), "0.35")?
   test.eq(control.default_max_turns("engineer"), "220")?
@@ -152,9 +328,33 @@ proc test_north_star_contains_rationale_without_factory_symlink() [fs, error] {
 }
 
 proc test_ticket_api_surface_gate_rejects_unjustified_new_surface() [fs, error] {
-  let ticket = "# Ticket\n\n## Status\n\nApproved.\n\n## Change target\n\n- `product`\n\n## Proposed XSH change\n\nAdd a new builtin primitive.\n"
+  let ticket = """# Ticket
+
+## Status
+
+Approved.
+
+## Change target
+
+- `product`
+
+## Proposed XSH change
+
+Add a new builtin primitive.
+"""
   test.ok(! control.ticket_api_surface_gate_ok(ticket))?
-  test.ok(control.ticket_api_surface_gate_ok(ticket.replace("## Proposed XSH change", "## API-surface justification\n\nThe existing operation is insufficient; semantic evidence is required.\n\n## Proposed XSH change")))?
+  test.ok(
+    control.ticket_api_surface_gate_ok(
+  ticket.replace(
+  "## Proposed XSH change",
+  """## API-surface justification
+
+The existing operation is insufficient; semantic evidence is required.
+
+## Proposed XSH change""",
+),
+),
+  )?
 }
 
 proc test_ticket_api_surface_gate_is_documented() [fs, error] {
@@ -167,40 +367,275 @@ proc test_ticket_api_surface_gate_is_documented() [fs, error] {
 
 proc test_admission_and_report_contracts() [error] {
   test.ok(control.valid_eval_id("task-tags"))?
-  test.eq(control.eval_id_from_contract("# Eval task-probe\n\n## Status\n\nDraft.\n"), "task-probe")?
-  test.eq(control.eval_id_from_contract("# Proposal\n"), "")?
+  test.eq(
+    control.eval_id_from_contract("""# Eval task-probe
+
+## Status
+
+Draft.
+"""),
+    "task-probe",
+  )?
+  test.eq(
+    control.eval_id_from_contract("""# Proposal
+"""),
+    "",
+  )?
   test.ok(! control.valid_eval_id("../escape"))?
   test.ok(control.valid_ticket_id("task-tags-001"))?
   test.ok(! control.valid_ticket_id("task/tags"))?
-  test.ok(control.ticket_is_accepted("# Ticket\n\n## Status\n\nApproved.\n\n## Change target\n\n- `product`\n"))?
-  test.eq(control.ticket_change_target("# Ticket\n\n## Change target\n\n- `product`\n"), "product")?
-  test.eq(control.ticket_change_target("# Ticket\n\n## Change target\n\n- `factory`\n"), "factory")?
-  test.ok(control.ticket_change_target("# Ticket\n") != "product")?
-  test.ok(! control.ticket_is_accepted("# Ticket\n\n## Status\n\nApproved.\n"))?
-  test.ok(! control.ticket_is_accepted("# Ticket\n\n## Status\n\nApproved.\n\n## Change target\n\n- `factory`\n"))?
-  test.ok(control.eval_is_disabled("# Eval\n\n## Status\n\nDisabled.\n"))?
-  test.ok(! control.ticket_is_closed("# Ticket\n\n## Status\n\nApproved.\n"))?
-  test.ok(control.report_contract_ok("# Report\n\n## Result\n\npass\n\n## Evidence\n\nready\n", ["Evidence"], "pass"))?
-  test.ok(! control.report_contract_ok("# Report\n\n## Result\n\npass\n", ["Evidence"], "pass"))?
-  test.ok(control.manager_tool_error_findings_contract_ok("## Tool-error findings\n\nreport.json\n"))?
-  test.ok(control.manager_tool_error_findings_contract_ok("## Tool-error findings\n\nFour nonzero Pi tool results were accounted for.\n"))?
-  test.ok(! control.manager_tool_error_findings_contract_ok("## Tool-error findings\n\nFill every current tool error.\n"))?
-  let manager_report = "## Result\n\npass\n\n## Effort metrics\n\nfixture\n\n## Usage and cost\n\nfixture\n\n## Thinking evidence\n\nfixture\n\n## Tool-error findings\n\nFive nonzero Pi tool results were accounted for in `tool_errors`.\n\n## Timing evidence\n\nfixture\n\n## Observation classification\n\nfixture\n\n## Handbook decision\n\nunchanged\n\n## Tickets created\n\nNone.\n\n## Post-merge decisions\n\nNone.\n\n## Next replay\n\nNone.\n\n## North-star impact\n\nfixture\n"
+  test.ok(
+    control.ticket_is_accepted("""# Ticket
+
+## Status
+
+Approved.
+
+## Change target
+
+- `product`
+"""),
+  )?
+  test.eq(
+    control.ticket_change_target("""# Ticket
+
+## Change target
+
+- `product`
+"""),
+    "product",
+  )?
+  test.eq(
+    control.ticket_change_target("""# Ticket
+
+## Change target
+
+- `factory`
+"""),
+    "factory",
+  )?
+  test.ok(
+    control.ticket_change_target("""# Ticket
+""") != "product",
+  )?
+  test.ok(
+    ! control.ticket_is_accepted("""# Ticket
+
+## Status
+
+Approved.
+"""),
+  )?
+  test.ok(
+    ! control.ticket_is_accepted("""# Ticket
+
+## Status
+
+Approved.
+
+## Change target
+
+- `factory`
+"""),
+  )?
+  test.ok(
+    control.eval_is_disabled("""# Eval
+
+## Status
+
+Disabled.
+"""),
+  )?
+  test.ok(
+    ! control.ticket_is_closed("""# Ticket
+
+## Status
+
+Approved.
+"""),
+  )?
+  test.ok(
+    control.report_contract_ok(
+  """# Report
+
+## Result
+
+pass
+
+## Evidence
+
+ready
+""",
+  ["Evidence"],
+  "pass",
+),
+  )?
+  test.ok(
+    ! control.report_contract_ok(
+  """# Report
+
+## Result
+
+pass
+""",
+  ["Evidence"],
+  "pass",
+),
+  )?
+  test.ok(
+    control.manager_tool_error_findings_contract_ok("""## Tool-error findings
+
+report.json
+"""),
+  )?
+  test.ok(
+    control.manager_tool_error_findings_contract_ok("""## Tool-error findings
+
+Four nonzero Pi tool results were accounted for.
+"""),
+  )?
+  test.ok(
+    ! control.manager_tool_error_findings_contract_ok("""## Tool-error findings
+
+Fill every current tool error.
+"""),
+  )?
+  let manager_report = """## Result
+
+pass
+
+## Effort metrics
+
+fixture
+
+## Usage and cost
+
+fixture
+
+## Thinking evidence
+
+fixture
+
+## Tool-error findings
+
+Five nonzero Pi tool results were accounted for in `tool_errors`.
+
+## Timing evidence
+
+fixture
+
+## Observation classification
+
+fixture
+
+## Handbook decision
+
+unchanged
+
+## Tickets created
+
+None.
+
+## Post-merge decisions
+
+None.
+
+## Next replay
+
+None.
+
+## North-star impact
+
+fixture
+"""
   test.ok(control.manager_report_gate_ok(manager_report, true, false))?
-  test.eq(control.report_section("# Report\n\n## Result\n\npass\n\nDetails.\n\n## Evidence\n\nready\n", "Result"), "pass\n\nDetails.")?
-  test.eq(control.report_field("# Report\n\n## Result\n\npass\n\nDetails.\n\n## Evidence\n\nready\n", "Result"), "pass")?
+  test.eq(
+    control.report_section(
+  """# Report
+
+## Result
+
+pass
+
+Details.
+
+## Evidence
+
+ready
+""",
+  "Result",
+),
+    """pass
+
+Details.""",
+  )?
+  test.eq(
+    control.report_field(
+  """# Report
+
+## Result
+
+pass
+
+Details.
+
+## Evidence
+
+ready
+""",
+  "Result",
+),
+    "pass",
+  )?
 }
 
 proc test_control_text_contracts_cover_fallbacks_and_transitions() [error] {
-  let ticket = "# Ticket\n\n## Status\n\nApproved.\n\n## Change target\n\n- product\n\n## Source eval and manager\n\n- Eval: `task-envcfg`\n\n## Body\n\ncontent\n"
+  let ticket = """# Ticket
+
+## Status
+
+Approved.
+
+## Change target
+
+- product
+
+## Source eval and manager
+
+- Eval: `task-envcfg`
+
+## Body
+
+content
+"""
   test.eq(control.ticket_status(ticket), "Approved.")?
   test.eq(control.ticket_change_target(ticket), "product")?
   test.eq(control.ticket_eval(ticket), "task-envcfg")?
   test.ok(control.ticket_is_accepted(ticket))?
   test.ok(! control.ticket_is_merged(ticket))?
-  test.eq(control.ticket_status("# Ticket\n\n## Status\n\n## Next\n"), "")?
-  test.eq(control.ticket_change_target("## Change target\n\n- factory\n"), "factory")?
-  test.eq(control.ticket_eval("## Source eval and manager\n\n- Eval: task-plain\n"), "task-plain")?
+  test.eq(
+    control.ticket_status("""# Ticket
+
+## Status
+
+## Next
+"""),
+    "",
+  )?
+  test.eq(
+    control.ticket_change_target("""## Change target
+
+- factory
+"""),
+    "factory",
+  )?
+  test.eq(
+    control.ticket_eval("""## Source eval and manager
+
+- Eval: task-plain
+"""),
+    "task-plain",
+  )?
   test.eq(control.role_prefix("unknown"), "")?
   test.eq(control.default_provider("unknown"), "")?
   test.eq(control.default_model("unknown"), "")?
@@ -225,9 +660,17 @@ proc test_control_text_contracts_cover_fallbacks_and_transitions() [error] {
   let replaced = control.replace_ticket_status(ticket, "Merged.")
   test.ok(control.ticket_is_merged(replaced))?
   test.contains(control.replace_section(ticket, "Body", "replacement"), "replacement")?
-  test.contains(control.replace_section("# Ticket\n", "Body", "appended"), "appended")?
-  test.eq(control.factory_relative_path("/factory", Path("/factory/runs/run-1/report.json")), "runs/run-1/report.json")?
-  test.eq(control.factory_relative_path("/factory/", Path("/outside/report.json")), "/outside/report.json")?
+  test.contains(
+    control.replace_section(
+  """# Ticket
+""",
+  "Body",
+  "appended",
+),
+    "appended",
+  )?
+  test.eq(control.factory_relative_path("/factory", /factory/runs/run-1/report.json), "runs/run-1/report.json")?
+  test.eq(control.factory_relative_path("/factory/", /outside/report.json), "/outside/report.json")?
   test.ok(control.transition_allowed("validated", "ready-for-review"))?
   test.ok(control.transition_allowed("ready-for-review", "accepted"))?
   test.ok(control.transition_allowed("accepted", "reverted"))?
@@ -239,17 +682,50 @@ proc test_control_text_contracts_cover_fallbacks_and_transitions() [error] {
 }
 
 proc test_control_build_identity_and_report_helpers() [env, error] {
-  let ticket = "# Ticket\n\n## Status\n\nOpen.\n"
-  let args = control.eval_overlay_build_args("xsh-base", "build-1", "factory:latest", "linux/amd64", Path("/factory/Dockerfile"), Path("/factory"), true)
+  let ticket = """# Ticket
+
+## Status
+
+Open.
+"""
+  let args = control.eval_overlay_build_args(
+    "xsh-base",
+    "build-1",
+    "factory:latest",
+    "linux/amd64",
+    /factory/Dockerfile,
+    /factory,
+    true,
+  )
   test.eq(args[0], "build")?
-  test.ok(args.contains("--no-cache"))?
-  let cached = control.eval_overlay_build_args("xsh-base", "build-1", "factory:latest", "linux/amd64", Path("/factory/Dockerfile"), Path("/factory"))
-  test.ok(! cached.contains("--no-cache"))?
+  test.ok("--no-cache" in args)?
+  let cached = control.eval_overlay_build_args(
+    "xsh-base",
+    "build-1",
+    "factory:latest",
+    "linux/amd64",
+    /factory/Dockerfile,
+    /factory,
+  )
+  test.ok("--no-cache" not in cached)?
   test.ok(control.toolchain_cache_valid(false, true, "key", "key", true))?
   test.ok(! control.toolchain_cache_valid(true, true, "key", "key", true))?
   test.ok(! control.toolchain_cache_valid(false, true, "old", "key", true))?
   test.ok(! control.toolchain_cache_valid(false, true, "key", "key", false))?
-  test.ok(control.factory_image_tag("xsh", "control", "runtime", "schema", "worker", "base", "toolchain", "make", "linux", "amd64") != "")?
+  test.ok(
+    control.factory_image_tag(
+      "xsh",
+      "control",
+      "runtime",
+      "schema",
+      "worker",
+      "base",
+      "toolchain",
+      "make",
+      "linux",
+      "amd64",
+    ) != "",
+  )?
   test.eq(control.ecount_oracle_command()[0], "sh")?
   env FACTORY_ENGINEER_PROVIDER="fixture" {
     test.eq(control.configured_role_setting("engineer", "PROVIDER")?, "fixture")?
@@ -259,17 +735,60 @@ proc test_control_build_identity_and_report_helpers() [env, error] {
   }
   test.eq(control.configured_role_setting("unknown", "MODEL")?, "")?
   test.eq(control.configured_role_setting("engineer", "UNKNOWN")?, "")?
-  let report = "## Result\n\nready-for-review. Details\n\nBranch: `factory/task-a`\n\n## Merge record\n\nbranch\ncommit\nrun\n"
+  let report = """## Result
+
+ready-for-review. Details
+
+Branch: `factory/task-a`
+
+## Merge record
+
+branch
+commit
+run
+"""
   test.eq(control.report_line_value(report, "Branch:"), "factory/task-a")?
   test.ok(control.report_result_is(report, "ready-for-review"))?
   test.contains(control.section_text(report, "Merge record"), "commit")?
   test.ok(control.ticket_merge_record_complete(report))?
-  test.ok(! control.ticket_merge_record_complete("## Merge record\n\n{{IMPLEMENTATION_BRANCH}}\n"))?
+  test.ok(
+    ! control.ticket_merge_record_complete("""## Merge record
+
+{{IMPLEMENTATION_BRANCH}}
+"""),
+  )?
   test.eq(control.replace_status(report, "ready-for-review"), report)?
-  test.eq(control.replace_status("# Empty\n", "Closed."), "# Empty\n")?
+  test.eq(
+    control.replace_status(
+  """# Empty
+""",
+  "Closed.",
+),
+    """# Empty
+""",
+  )?
   test.contains(control.replace_eval_status(ticket, "Approved."), "Approved.")?
-  test.contains(control.replace_ticket_section("# Ticket\n", "Status", "## Status\n\nOpen."), "Open.")?
-  test.ok(! control.report_contract_ok("## Result\n\npass\n{{pending}}", [], "pass"))?
+  test.contains(
+    control.replace_ticket_section(
+  """# Ticket
+""",
+  "Status",
+  """## Status
+
+Open.""",
+),
+    "Open.",
+  )?
+  test.ok(
+    ! control.report_contract_ok(
+  """## Result
+
+pass
+{{pending}}""",
+  [],
+  "pass",
+),
+  )?
 }
 
 proc test_eval_proposal_is_promoted_without_acceptance(ctx: TestContext) [fs, error] {
@@ -277,10 +796,23 @@ proc test_eval_proposal_is_promoted_without_acceptance(ctx: TestContext) [fs, er
   let proposal = fp"${factory}/runs/run-1/proposals/proposal-1"
   fs.mkdir(fp"${proposal}/runtime")?
   fs.mkdir(fp"${factory}/evals")?
-  fs.write(fp"${proposal}/EVAL.md", "# Eval task-probe\n\n## Status\n\nDraft.\n")?
+  fs.write(
+    fp"${proposal}/EVAL.md",
+    """# Eval task-probe
+
+## Status
+
+Draft.
+""",
+  )?
   for relative in ["executor.xsh", "evaluate.xsh", "evaluator.xsh", "runtime/task.md", "runtime/artifact.md"] {
-    fs.write(fp"${proposal}/${relative}", f"${relative}\n")?
+    fs.write(
+      fp"${proposal}/${relative}",
+      f"""${relative}
+""",
+    )?
   }
+
   let run_dir = fp"${factory}/runs/run-1"
   test.ok(runtime.promote_eval_proposal(factory, proposal, run_dir, "rejected")?)?
   let promoted = fp"${factory}/evals/task-probe"
@@ -294,10 +826,23 @@ proc test_eval_proposal_is_promoted_without_acceptance(ctx: TestContext) [fs, er
 
   let partial = fp"${factory}/runs/run-2/proposals/proposal-1"
   fs.mkdir(fp"${partial}/runtime")?
-  fs.write(fp"${partial}/EVAL.md", "# Eval task-legacy\n\n## Status\n\nDraft.\n")?
+  fs.write(
+    fp"${partial}/EVAL.md",
+    """# Eval task-legacy
+
+## Status
+
+Draft.
+""",
+  )?
   for relative in ["executor.xsh", "evaluate.xsh", "runtime/task.md", "runtime/artifact.md"] {
-    fs.write(fp"${partial}/${relative}", f"${relative}\n")?
+    fs.write(
+      fp"${partial}/${relative}",
+      f"""${relative}
+""",
+    )?
   }
+
   test.ok(runtime.promote_eval_proposal(factory, partial, fp"${factory}/runs/run-2", "rejected")?)?
   let partial_contract = fs.read_text(fp"${factory}/evals/task-legacy/EVAL.md")?
   test.contains(partial_contract, "Package: `incomplete`")?
@@ -305,10 +850,23 @@ proc test_eval_proposal_is_promoted_without_acceptance(ctx: TestContext) [fs, er
 
   let accepted = fp"${factory}/runs/run-3/proposals/proposal-1"
   fs.mkdir(fp"${accepted}/runtime")?
-  fs.write(fp"${accepted}/EVAL.md", "# Eval task-accepted\n\n## Status\n\nDraft.\n")?
+  fs.write(
+    fp"${accepted}/EVAL.md",
+    """# Eval task-accepted
+
+## Status
+
+Draft.
+""",
+  )?
   for relative in ["executor.xsh", "evaluate.xsh", "evaluator.xsh", "runtime/task.md", "runtime/artifact.md"] {
-    fs.write(fp"${accepted}/${relative}", f"${relative}\n")?
+    fs.write(
+      fp"${accepted}/${relative}",
+      f"""${relative}
+""",
+    )?
   }
+
   test.ok(runtime.promote_eval_proposal(factory, accepted, fp"${factory}/runs/run-3", "accepted")?)?
   test.eq(control.ticket_status(fs.read_text(fp"${factory}/evals/task-accepted/EVAL.md")?), "Approved.")?
 }
@@ -322,6 +880,7 @@ proc test_role_report_skeletons_are_fail_closed() [fs, error] {
     test.contains(report, "## Result")?
     test.contains(report, "not-ready")?
   }
+
   test.contains(manager, "## Tool-error findings")?
   let assignment = fs.read_text(fp"${fs.cwd()?}/templates/EVAL-MANAGER-ASSIGNMENT.md")?
   test.contains(assignment, "exact absolute path")?
@@ -345,11 +904,16 @@ proc test_standard_cycle_uses_diverse_active_eval() [fs, error] {
   let organization = fs.read_text(fp"${fs.cwd()?}/factory/controllers/organization.xsh")?
   let runtime_source = fs.read_text(fp"${fs.cwd()?}/factory/runtime.xsh")?
   let cto_runner = fs.read_text(fp"${fs.cwd()?}/factory/tools/cto.xsh")?
-  test.contains(request, "## Active evals\n\n- `task-histogram`")?
+  test.contains(
+    request,
+    """## Active evals
+
+- `task-histogram`""",
+  )?
   test.contains(request, "Allow measured eval reuse")?
   test.contains(fs.read_text(fp"${fs.cwd()?}/factory/tools/eval-trends.xsh")?, "median_turns")?
   test.contains(request, "## Bottleneck review")?
-  test.ok(! request.contains("`task-tags`"))?
+  test.ok("`task-tags`" not in request)?
   test.ok(! fs.exists(fp"${fs.cwd()?}/evals/task-tags/EVAL.md")?)
   test.contains(fs.read_text(fp"${fs.cwd()?}/evals/RETIREMENTS.md")?, "task-tags")?
   test.contains(improvement, "## Baseline metric")?
@@ -383,9 +947,9 @@ proc test_standard_cycle_uses_diverse_active_eval() [fs, error] {
   test.contains(cycle_template, "Approve eligible Open tickets before controller invocation")?
   test.contains(cycle_template, "Never leave an")?
   test.contains(cycle_template, "eligible ticket Open")?
-  test.ok(! cto.contains("user authority"))?
-  test.ok(! factory.contains("user authority"))?
-  test.ok(! factory.contains("user approves"))?
+  test.ok("user authority" not in cto)?
+  test.ok("user authority" not in factory)?
+  test.ok("user approves" not in factory)?
   test.contains(launcher, "templates/CTO-IMPROVEMENT.md")?
   test.contains(readme, "one paid `run.xsh` invocation")?
   test.contains(launcher, "paths.real_within")?
@@ -404,9 +968,9 @@ proc test_standard_cycle_uses_diverse_active_eval() [fs, error] {
   test.contains(organization, "ticket_eval_available")?
   test.contains(organization, "eval_is_disabled")?
   test.contains(organization, "max_concurrent_engineers()")?
-  test.ok(! organization.contains("admit at most one ticket"))?
+  test.ok("admit at most one ticket" not in organization)?
   test.contains(runtime_source, "passing engineer report")?
-  test.ok(! runtime_source.contains("git branch provenance"))?
+  test.ok("git branch provenance" not in runtime_source)?
 }
 
 proc test_agent_completion_is_report_bound() [error] {
@@ -420,11 +984,32 @@ proc test_agent_completion_is_report_bound() [error] {
 proc test_report_schema_is_single_machine_contract(ctx: TestContext) [fs, error] {
   let root = test.temp_dir(ctx, name: "report-schema")?
   let worker = fp"${root}/worker.json"
-  json.write(worker, {
-    schema_version: 1, kind: "worker", identity: {role: "engineer", worker_id: "fixture"},
-    state: "completed", result: "pass", data: {usage: {assistant_turns: 1}},
-    findings: [], artifacts: [{kind: "session", path: "session.jsonl"}]
-  }, pretty: true)?
+  json.write(
+    worker,
+    {
+      schema_version: 1,
+      kind: "worker",
+      identity: {
+        role: "engineer",
+        worker_id: "fixture",
+      },
+      state: "completed",
+      result: "pass",
+      data: {
+        usage: {
+          assistant_turns: 1,
+        },
+      },
+      findings: [],
+      artifacts: [
+        {
+          kind: "session",
+          path: "session.jsonl",
+        },
+      ],
+    },
+    pretty: true,
+  )?
   let value = json.read(worker)?
   test.ok(schema.valid(value, "worker"))?
   test.ok(! schema.valid(value, "phase"))?
@@ -476,14 +1061,60 @@ proc test_budget_consequences_are_durable(ctx: TestContext) [fs, error] {
   fs.mkdir(fp"${factory}/templates")?
   fs.copy(fp"${fs.cwd()?}/templates/TICKET.md", fp"${factory}/templates/TICKET.md", overwrite: true)?
   fs.copy(fp"${fs.cwd()?}/templates/BUDGET-BREACH.md", fp"${factory}/templates/BUDGET-BREACH.md", overwrite: true)?
-  fs.write(fp"${factory}/tickets/task-tags-002.md", "# Ticket\n\n## Status\n\nApproved.\n")?
-  fs.write(fp"${factory}/evals/task-tags/EVAL.md", "# Eval\n\n## Status\n\nApproved.\n")?
+  fs.write(
+    fp"${factory}/tickets/task-tags-002.md",
+    """# Ticket
+
+## Status
+
+Approved.
+""",
+  )?
+  fs.write(
+    fp"${factory}/evals/task-tags/EVAL.md",
+    """# Eval
+
+## Status
+
+Approved.
+""",
+  )?
   let engineer_report = fp"${factory}/runs/run-1/workers/engineer/task-tags-002/report.json"
   let eval_report = fp"${factory}/runs/run-2/workers/eval-worker/task-tags-1/report.json"
   fs.mkdir(engineer_report.parent())?
   fs.mkdir(eval_report.parent())?
-  json.write(engineer_report, {schema_version: 1, kind: "worker", identity: {role: "engineer", worker_id: "task-tags-002"}, state: "completed", result: "fail", findings: [], artifacts: []}, pretty: true)?
-  json.write(eval_report, {schema_version: 1, kind: "worker", identity: {role: "eval-worker", worker_id: "task-tags-1"}, state: "completed", result: "fail", findings: [], artifacts: []}, pretty: true)?
+  json.write(
+    engineer_report,
+    {
+      schema_version: 1,
+      kind: "worker",
+      identity: {
+        role: "engineer",
+        worker_id: "task-tags-002",
+      },
+      state: "completed",
+      result: "fail",
+      findings: [],
+      artifacts: [],
+    },
+    pretty: true,
+  )?
+  json.write(
+    eval_report,
+    {
+      schema_version: 1,
+      kind: "worker",
+      identity: {
+        role: "eval-worker",
+        worker_id: "task-tags-1",
+      },
+      state: "completed",
+      result: "fail",
+      findings: [],
+      artifacts: [],
+    },
+    pretty: true,
+  )?
   test.ok(runtime.close_ticket_too_difficult(factory, "task-tags-002", engineer_report.parent())?)?
   let closed = fs.read_text(fp"${factory}/tickets/task-tags-002.md")?
   test.ok(control.ticket_is_closed(closed))?
@@ -497,11 +1128,31 @@ proc test_budget_consequences_are_durable(ctx: TestContext) [fs, error] {
 }
 
 proc test_engineer_assignment_is_controller_bound() [error] {
-  let assignment = "- Ticket ID: `task-tags-001`\n- Dedicated XSH worktree: `/tmp/work`\n<!-- CONTROLLER_TICKET_SNAPSHOT_BEGIN -->\nticket\n<!-- CONTROLLER_TICKET_SNAPSHOT_END -->\nDo not search for open tickets\n"
-  test.ok(control.engineer_assignment_ok("/factory/runs/run-1", "task-tags-001",
-    "/factory/runs/run-1/messages/task-tags-001.md", "/tmp/work", assignment))?
-  test.ok(! control.engineer_assignment_ok("/factory/runs/run-1", "task-tags-002",
-    "/factory/runs/run-1/messages/task-tags-002.md", "/tmp/work", assignment))?
+  let assignment = """- Ticket ID: `task-tags-001`
+- Dedicated XSH worktree: `/tmp/work`
+<!-- CONTROLLER_TICKET_SNAPSHOT_BEGIN -->
+ticket
+<!-- CONTROLLER_TICKET_SNAPSHOT_END -->
+Do not search for open tickets
+"""
+  test.ok(
+    control.engineer_assignment_ok(
+      "/factory/runs/run-1",
+      "task-tags-001",
+      "/factory/runs/run-1/messages/task-tags-001.md",
+      "/tmp/work",
+      assignment,
+    ),
+  )?
+  test.ok(
+    ! control.engineer_assignment_ok(
+      "/factory/runs/run-1",
+      "task-tags-002",
+      "/factory/runs/run-1/messages/task-tags-002.md",
+      "/tmp/work",
+      assignment,
+    ),
+  )?
 }
 
 proc test_eval_image_inputs_are_local() [fs, error] {

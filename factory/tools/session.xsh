@@ -225,7 +225,7 @@ proc iso_millis(value: Str) [error] -> Result[Int] {
   let day_of_year = (153 * month_prime + 2) / 5 + day - 1
   let day_of_era = year_of_era * 365 + year_of_era / 4 - year_of_era / 100 + day_of_year
   let days = era * 146097 + day_of_era - 719468
-  return Ok(days * 86400000 + hour * 3600000 + minute * 60000 + second * 1000 + millis)
+  days * 86400000 + hour * 3600000 + minute * 60000 + second * 1000 + millis
 }
 
 proc read_session(session_path: Path) [fs, process, error] -> Result[SessionReport] {
@@ -315,7 +315,6 @@ proc read_session(session_path: Path) [fs, process, error] -> Result[SessionRepo
                   if delta.cost_seen { cost_seen = true }
                 } else if role == "assistant" {
                   assistant_turns += 1
-                  let turn = assistant_turns
                   let stop = json_text(json.get(message, ["stopReason"], null))
                   if stop != "" {
                     stop_reasons = stop_reasons.set(stop, stop_reasons.get(stop, 0) + 1)
@@ -324,7 +323,7 @@ proc read_session(session_path: Path) [fs, process, error] -> Result[SessionRepo
                   let model = json_text(json.get(message, ["model"], null))
                   if provider != "" and model != "" {
                     let label = f"${provider}/${model}"
-                    if ! models.contains(label) { models = models.push(label) }
+                    if label not in models { models = models.push(label) }
                   }
 
                   match json.get(message, ["content"], null) {
@@ -445,11 +444,7 @@ proc read_session(session_path: Path) [fs, process, error] -> Result[SessionRepo
 }
 
 pure count_rows(counts: Map[Int]) -> List[Any] {
-  var rows: List[Any] = []
-  for key in counts.keys() {
-    rows = rows.push({name: key, count: counts.get(key, 0)})
-  }
-  return rows
+  [{name: key, count: counts.get(key, 0)} for key in counts.keys()]
 }
 
 proc parse_pi_events(events_path: Path) [fs, process, error] -> Result[ProviderTelemetry] {
@@ -555,15 +550,12 @@ pure optional_int(value: Int, seen: Bool) -> Any {
 
 pure session_report_json(report: SessionReport, role: Str, worker_id: Str, budget: Float) -> Any {
   let usage = report.usage
-  var errors: List[Any] = []
-  for error in report.tool_error_details {
-    errors = errors.push({
+  let errors = [{
       turn: error.turn,
       tool: error.tool,
       summary: error.text,
       raw_session: report.path,
-    })
-  }
+    } for error in report.tool_error_details]
   var findings: List[Any] = []
   if report.tool_errors > 0 {
     findings = findings.push({kind: "tool-error", severity: "warning", count: report.tool_errors})
@@ -625,7 +617,7 @@ proc parse_budget(value: Str) [error] -> Result[Float] {
     divisor *= 10
   }
   let magnitude = whole.float() + fraction.float() / divisor.float()
-  return Ok(if whole < 0 { whole.float() - fraction.float() / divisor.float() } else { magnitude })
+  return if whole < 0 { whole.float() - fraction.float() / divisor.float() } else { magnitude }
 }
 
 proc run_worker(argv: List[Str]) [fs, process, env, error] -> Result[Int] {
@@ -633,8 +625,8 @@ proc run_worker(argv: List[Str]) [fs, process, env, error] -> Result[Int] {
     eprint "usage: session-report.xsh worker --session PATH --output PATH --role ROLE --worker-id ID --budget-usd USD"
     return Ok(2)
   }
-  let session = Path(argv[2])
-  let output = Path(argv[4])
+  let session = fp"${argv[2]}"
+  let output = fp"${argv[4]}"
   let role = argv[6]
   let worker_id = argv[8]
   let requested_budget = if argv.len() > 10 { argv[10] } else { control.default_budget(role) }
@@ -644,7 +636,7 @@ proc run_worker(argv: List[Str]) [fs, process, env, error] -> Result[Int] {
     return Ok(1)
   }
   let report = read_session(session)?
-  let events_path = if argv.len() > 12 { Path(argv[12]) } else { fp"${session.display()}.events.jsonl" }
+  let events_path = if argv.len() > 12 { fp"${argv[12]}" } else { fp"${session.display()}.events.jsonl" }
   let telemetry = parse_pi_events(events_path)?
   let enriched = {
     path: report.path,
@@ -667,7 +659,7 @@ proc run_worker(argv: List[Str]) [fs, process, env, error] -> Result[Int] {
   json.write(output, session_report_json(enriched, role, worker_id, budget), pretty: true)?
   if ! report.cost_seen { return Ok(2) }
   if report.usage.cost_usd > budget { return Ok(3) }
-  return Ok(0)
+  0
 }
 
 proc main(...argv: List[Str]) [fs, error, io] {

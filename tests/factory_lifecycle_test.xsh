@@ -1,22 +1,23 @@
 ##! Native tests for lifecycle, ownership, and run-scoped cleanup.
-
-use factory.types as types
+use factory.cleanup as cleanup
 use factory.lifecycle as lifecycle
 use factory.process as owned_process
-use factory.cleanup as cleanup
+use factory.types as types
 
 proc test_lifecycle_rejects_illegal_and_evidence_free_completion() [error] {
   match lifecycle.transition("node-a", "created", "completed", 1, "controller", false) {
-    Ok(_) => test.fail("evidence-free completion was accepted")?,
-    Err(_) => {},
+    Ok(_) => test.fail("evidence-free completion was accepted")?
+    Err(_) => {}
   }
+
   match lifecycle.transition("node-a", "completed", "started", 1, "controller", true) {
-    Ok(_) => test.fail("backward lifecycle transition was accepted")?,
-    Err(_) => {},
+    Ok(_) => test.fail("backward lifecycle transition was accepted")?
+    Err(_) => {}
   }
-  let _admitted = lifecycle.transition("node-a", "created", "admitted", 1, "controller", false)?
-  let _started = lifecycle.transition("node-a", "admitted", "started", 1, "controller", false)?
-  let _completed = lifecycle.transition("node-a", "started", "completed", 1, "controller", true)?
+
+  let _ = lifecycle.transition("node-a", "created", "admitted", 1, "controller", false)?
+  let _ = lifecycle.transition("node-a", "admitted", "started", 1, "controller", false)?
+  let _ = lifecycle.transition("node-a", "started", "completed", 1, "controller", true)?
 }
 
 proc test_lifecycle_ledger_rejects_boundary_invariants() [error] {
@@ -26,63 +27,170 @@ proc test_lifecycle_ledger_rejects_boundary_invariants() [error] {
   test.ok(! lifecycle.transition_allowed("accepted", "failed"))?
   test.ok(! lifecycle.transition_allowed("reverted", "started"))?
   let digest = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-  let start = {event_id: "start", run_id: "run-1", node_id: "node-a", attempt: 1, caused_by: "controller", previous: "created", next: "started", content_sha256: digest}
-  let complete = {event_id: "complete", run_id: "run-1", node_id: "node-a", attempt: 1, caused_by: "runner", previous: "started", next: "completed", content_sha256: digest}
-  let missing_identity = {event_id: "start", run_id: "", node_id: "node-a", attempt: 1, caused_by: "controller", previous: "created", next: "started", content_sha256: digest}
-  let mixed_run = {event_id: "complete", run_id: "run-2", node_id: "node-a", attempt: 1, caused_by: "runner", previous: "started", next: "completed", content_sha256: digest}
-  let wrong_previous = {event_id: "complete", run_id: "run-1", node_id: "node-a", attempt: 1, caused_by: "runner", previous: "admitted", next: "completed", content_sha256: digest}
-  let bad_hash = {event_id: "start", run_id: "run-1", node_id: "node-a", attempt: 1, caused_by: "controller", previous: "created", next: "started", content_sha256: "short"}
-  let retry_complete = {event_id: "retry", run_id: "run-1", node_id: "node-a", attempt: 2, caused_by: "controller", previous: "completed", next: "completed", content_sha256: digest}
+  let start = {
+    event_id: "start",
+    run_id: "run-1",
+    node_id: "node-a",
+    attempt: 1,
+    caused_by: "controller",
+    previous: "created",
+    next: "started",
+    content_sha256: digest,
+  }
+  let _ = {
+    event_id: "complete",
+    run_id: "run-1",
+    node_id: "node-a",
+    attempt: 1,
+    caused_by: "runner",
+    previous: "started",
+    next: "completed",
+    content_sha256: digest,
+  }
+  let missing_identity = {
+    event_id: "start",
+    run_id: "",
+    node_id: "node-a",
+    attempt: 1,
+    caused_by: "controller",
+    previous: "created",
+    next: "started",
+    content_sha256: digest,
+  }
+  let mixed_run = {
+    event_id: "complete",
+    run_id: "run-2",
+    node_id: "node-a",
+    attempt: 1,
+    caused_by: "runner",
+    previous: "started",
+    next: "completed",
+    content_sha256: digest,
+  }
+  let wrong_previous = {
+    event_id: "complete",
+    run_id: "run-1",
+    node_id: "node-a",
+    attempt: 1,
+    caused_by: "runner",
+    previous: "admitted",
+    next: "completed",
+    content_sha256: digest,
+  }
+  let bad_hash = {
+    event_id: "start",
+    run_id: "run-1",
+    node_id: "node-a",
+    attempt: 1,
+    caused_by: "controller",
+    previous: "created",
+    next: "started",
+    content_sha256: "short",
+  }
+  let retry_complete = {
+    event_id: "retry",
+    run_id: "run-1",
+    node_id: "node-a",
+    attempt: 2,
+    caused_by: "controller",
+    previous: "completed",
+    next: "completed",
+    content_sha256: digest,
+  }
   match lifecycle.validate_events([]) {
-    Ok(_) => test.fail("empty lifecycle ledger was accepted")?,
-    Err(_) => {},
+    Ok(_) => test.fail("empty lifecycle ledger was accepted")?
+    Err(_) => {}
   }
+
   match lifecycle.validate_events([missing_identity]) {
-    Ok(_) => test.fail("identity-free lifecycle event was accepted")?,
-    Err(_) => {},
+    Ok(_) => test.fail("identity-free lifecycle event was accepted")?
+    Err(_) => {}
   }
+
   match lifecycle.validate_events([start, mixed_run]) {
-    Ok(_) => test.fail("mixed-run lifecycle ledger was accepted")?,
-    Err(_) => {},
+    Ok(_) => test.fail("mixed-run lifecycle ledger was accepted")?
+    Err(_) => {}
   }
+
   match lifecycle.validate_events([start, wrong_previous]) {
-    Ok(_) => test.fail("wrong previous lifecycle state was accepted")?,
-    Err(_) => {},
+    Ok(_) => test.fail("wrong previous lifecycle state was accepted")?
+    Err(_) => {}
   }
+
   match lifecycle.validate_events([bad_hash]) {
-    Ok(_) => test.fail("invalid event hash was accepted")?,
-    Err(_) => {},
+    Ok(_) => test.fail("invalid event hash was accepted")?
+    Err(_) => {}
   }
+
   match lifecycle.validate_events([start, retry_complete]) {
-    Ok(_) => test.fail("new attempt with completion state was accepted")?,
-    Err(_) => {},
+    Ok(_) => test.fail("new attempt with completion state was accepted")?
+    Err(_) => {}
   }
+
   match lifecycle.validate_events([start]) {
-    Ok(_) => test.fail("non-terminal lifecycle ledger was accepted")?,
-    Err(_) => {},
+    Ok(_) => test.fail("non-terminal lifecycle ledger was accepted")?
+    Err(_) => {}
   }
+
   match lifecycle.finalize({desired: "started", process: "live", evidence: "valid"}, false, false) {
-    Ok(_) => test.fail("live process was finalized")?,
-    Err(_) => {},
+    Ok(_) => test.fail("live process was finalized")?
+    Err(_) => {}
   }
 }
 
 proc test_event_ledger_rejects_duplicates_and_impossible_attempts() [error] {
   let events = [
-    {event_id: "admit", run_id: "run-1", node_id: "node-a", attempt: 1, caused_by: "controller", previous: "created", next: "admitted", content_sha256: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"},
-    {event_id: "start", run_id: "run-1", node_id: "node-a", attempt: 1, caused_by: "controller", previous: "admitted", next: "started", content_sha256: "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"},
-    {event_id: "complete", run_id: "run-1", node_id: "node-a", attempt: 1, caused_by: "runner", previous: "started", next: "completed", content_sha256: "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"},
+    {
+      event_id: "admit",
+      run_id: "run-1",
+      node_id: "node-a",
+      attempt: 1,
+      caused_by: "controller",
+      previous: "created",
+      next: "admitted",
+      content_sha256: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    },
+    {
+      event_id: "start",
+      run_id: "run-1",
+      node_id: "node-a",
+      attempt: 1,
+      caused_by: "controller",
+      previous: "admitted",
+      next: "started",
+      content_sha256: "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    },
+    {
+      event_id: "complete",
+      run_id: "run-1",
+      node_id: "node-a",
+      attempt: 1,
+      caused_by: "runner",
+      previous: "started",
+      next: "completed",
+      content_sha256: "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+    },
   ]
   lifecycle.validate_events(events)?
   let duplicate = events.push(events[2])
   match lifecycle.validate_events(duplicate) {
-    Ok(_) => test.fail("duplicate event ID was accepted")?,
-    Err(_) => {},
+    Ok(_) => test.fail("duplicate event ID was accepted")?
+    Err(_) => {}
   }
-  let bad_attempt = events.push({event_id: "retry", run_id: "run-1", node_id: "node-a", attempt: 3, caused_by: "controller", previous: "completed", next: "started", content_sha256: "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"})
+
+  let bad_attempt = events.push({
+    event_id: "retry",
+    run_id: "run-1",
+    node_id: "node-a",
+    attempt: 3,
+    caused_by: "controller",
+    previous: "completed",
+    next: "started",
+    content_sha256: "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+  })
   match lifecycle.validate_events(bad_attempt) {
-    Ok(_) => test.fail("non-monotonic event attempt was accepted")?,
-    Err(_) => {},
+    Ok(_) => test.fail("non-monotonic event attempt was accepted")?
+    Err(_) => {}
   }
 }
 
@@ -99,35 +207,74 @@ proc test_finalization_keeps_process_and_evidence_distinct() [error] {
 
 proc test_process_ownership_is_run_and_node_scoped(ctx: TestContext) [fs, process, error] {
   let root = test.temp_dir(ctx, name: "process-owner")?
-  let owner = {run_id: "run-1", node_id: "node-a", controller_pid: 42, pid: 43, container_id: "", start_marker: "start-a", claim_token: "claim-a"}
-  let invalid_owner = {run_id: "run-1", node_id: "node-a", controller_pid: 42, pid: 0, container_id: "", start_marker: "start-a", claim_token: "claim-a"}
-  match owned_process.register(root, invalid_owner) {
-    Ok(_) => test.fail("zero-pid process ownership was accepted")?,
-    Err(_) => {},
+  let owner = {
+    run_id: "run-1",
+    node_id: "node-a",
+    controller_pid: 42,
+    pid: 43,
+    container_id: "",
+    start_marker: "start-a",
+    claim_token: "claim-a",
   }
+  let invalid_owner = {
+    run_id: "run-1",
+    node_id: "node-a",
+    controller_pid: 42,
+    pid: 0,
+    container_id: "",
+    start_marker: "start-a",
+    claim_token: "claim-a",
+  }
+  match owned_process.register(root, invalid_owner) {
+    Ok(_) => test.fail("zero-pid process ownership was accepted")?
+    Err(_) => {}
+  }
+
   owned_process.register(root, owner)?
   match owned_process.register(root, owner) {
-    Ok(_) => test.fail("duplicate process ownership was accepted")?,
-    Err(_) => {},
+    Ok(_) => test.fail("duplicate process ownership was accepted")?
+    Err(_) => {}
   }
+
   owned_process.mark(root, types.make_node_id("node-a")?, "exited")?
   let owner_record = json.read(fp"${root}/processes/node-a.json")?
   test.eq(json.get(owner_record, ["state"], ""), "exited")?
   match owned_process.mark(root, types.make_node_id("missing")?, "exited") {
-    Ok(_) => test.fail("missing process ownership was marked")?,
-    Err(_) => {},
+    Ok(_) => test.fail("missing process ownership was marked")?
+    Err(_) => {}
   }
+
   owned_process.cancel_owned(root, "TERM", 43)?
 }
 
 proc test_cleanup_preserves_durable_evidence(ctx: TestContext) [fs, error] {
   let root = test.temp_dir(ctx, name: "cleanup-contract")?
-  fs.write(fp"${root}/events.jsonl", "durable\n")?
-  fs.write(fp"${root}/report.json", "durable\n")?
-  fs.write(fp"${root}/worker.stdout", "transient\n")?
-  fs.write(fp"${root}/node.pids", "42\n")?
-  fs.write(fp"${root}/factory.lock", "lock\n")?
-  test.ok(! cleanup.removable(root, Path("/outside/report.json"), "report.json")?)
+  fs.write(
+    fp"${root}/events.jsonl",
+    """durable
+""",
+  )?
+  fs.write(
+    fp"${root}/report.json",
+    """durable
+""",
+  )?
+  fs.write(
+    fp"${root}/worker.stdout",
+    """transient
+""",
+  )?
+  fs.write(
+    fp"${root}/node.pids",
+    """42
+""",
+  )?
+  fs.write(
+    fp"${root}/factory.lock",
+    """lock
+""",
+  )?
+  test.ok(! cleanup.removable(root, /outside/report.json, "report.json")?)
   cleanup.run_scoped(root)?
   test.ok(fs.exists(fp"${root}/events.jsonl")?)
   test.ok(fs.exists(fp"${root}/report.json")?)
@@ -140,10 +287,20 @@ proc test_cleanup_names_preserve_durable_run_evidence() [error] {
   for name in ["ACTIVE", "worker.pids", "worker.stdout", "worker.stderr", "claim.claimed", "run.lock"] {
     test.ok(cleanup.transient_name(name))?
   }
-  for name in ["report.json", "REPORT.md", "CTO-REPORT.md", "events.jsonl", "POSTMORTEM.md", "session.jsonl.bz2", "task.diff"] {
+
+  for name in [
+    "report.json",
+    "REPORT.md",
+    "CTO-REPORT.md",
+    "events.jsonl",
+    "POSTMORTEM.md",
+    "session.jsonl.bz2",
+    "task.diff",
+  ] {
     test.ok(cleanup.durable_name(name))?
   }
-  test.ok(cleanup.removable(Path("/run-1"), Path("/run-1/worker.stdout"), "worker.stdout")?)?
-  test.ok(! cleanup.removable(Path("/run-1"), Path("/run-1/report.json"), "report.json")?)?
-  test.ok(! cleanup.removable(Path("/run-1"), Path("/other/worker.stdout"), "worker.stdout")?)?
+
+  test.ok(cleanup.removable(/run-1, /run-1/worker.stdout, "worker.stdout")?)?
+  test.ok(! cleanup.removable(/run-1, /run-1/report.json, "report.json")?)?
+  test.ok(! cleanup.removable(/run-1, /other/worker.stdout, "worker.stdout")?)?
 }

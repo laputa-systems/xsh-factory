@@ -1,5 +1,4 @@
 ##! Shared process-boundary helpers for every factory cycle mode.
-
 use factory.control as control
 use factory.schema as schema
 
@@ -27,7 +26,7 @@ export type MergedTicket = {
 ## Terminates all registered children of the active run.
 export proc cleanup_active_run() [fs, process, env, error] -> Result[Unit] {
   let configured_factory = env.get_or("FACTORY_DIR", "")?
-  let factory_dir = if configured_factory == "" { fs.cwd()? } else { Path(configured_factory) }
+  let factory_dir = if configured_factory == "" { fs.cwd()? } else { fp"${configured_factory}" }
   let default_active_run = fp"${factory_dir}/runs/ACTIVE"
   let configured_active_run = env.path("FACTORY_ACTIVE_RUN", default_active_run)?
   let organization_run = fp"${factory_dir}/runs/ORGANIZATION-ACTIVE"
@@ -39,19 +38,21 @@ export proc cleanup_active_run() [fs, process, env, error] -> Result[Unit] {
     default_active_run
   }
   if ! fs.exists(active_marker)? {
-    return Ok()
+    return
   }
+
   let run_text = fs.read_text(active_marker)?.trim()
   if run_text != "" {
     let xsh_path = process.which("xsh")?
     let self_pid = process.current_pid()?
     let cleanup = fp"${factory_dir}/factory/tools/cleanup-run.xsh"
-    let _ = process.run(process.command_argv(
-      xsh_path,
-      [xsh_path.display(), cleanup.display(), "--", run_text, "--exclude-pid", f"${self_pid}"],
-    ))?
+    let _ = process.run(
+      process.command_argv(
+        xsh_path,
+        [xsh_path.display(), cleanup.display(), "--", run_text, "--exclude-pid", f"${self_pid}"],
+      ),
+    )?
   }
-  return Ok()
 }
 
 ## Registers a controller so cleanup covers phase and top-level processes alike.
@@ -59,8 +60,11 @@ export proc register_cycle_controller(run_dir: Path) [fs, process, error] -> Res
   let processes = fp"${run_dir}/processes"
   fs.mkdir(processes)?
   let pid = process.current_pid()?
-  fs.write_atomic(fp"${processes}/controller.pids", f"${pid}\n")?
-  return Ok()
+  fs.write_atomic(
+    fp"${processes}/controller.pids",
+    f"""${pid}
+""",
+  )?
 }
 
 ## Writes one controller-owned host-agent dispatch record.
@@ -77,19 +81,22 @@ export proc write_dispatch_record(
 ) [fs, error] -> Result[Unit] {
   fs.mkdir(fp"${run_dir}/dispatch")?
   let message_sha = hash.sha256(message_file)?.hex()
-  json.write(fp"${run_dir}/dispatch/${role}-${worker_id}.json", {
-    schema_version: 1,
-    role: role,
-    worker_id: worker_id,
-    message_file: message_file.display(),
-    message_sha256: message_sha,
-    workdir: workdir.display(),
-    mode: mode,
-    eval_id: eval_id,
-    ticket_id: ticket_id,
-    assignment_sha256: assignment_sha,
-  }, pretty: true)?
-  return Ok()
+  json.write(
+    fp"${run_dir}/dispatch/${role}-${worker_id}.json",
+    {
+      schema_version: 1,
+      role: role,
+      worker_id: worker_id,
+      message_file: message_file.display(),
+      message_sha256: message_sha,
+      workdir: workdir.display(),
+      mode: mode,
+      eval_id: eval_id,
+      ticket_id: ticket_id,
+      assignment_sha256: assignment_sha,
+    },
+    pretty: true,
+  )?
 }
 
 ## Writes the canonical controller-bound dispatch identity used by migrated
@@ -108,10 +115,15 @@ export proc write_bound_dispatch_record(
   assignment_sha: Str,
 ) [fs, error] -> Result[Unit] {
   if ! fs.exists(system_prompt)? or ! fs.exists(message_file)? {
-    return Err(RuntimeError.InvalidTransition(
-      subject: f"${role}/${worker_id}", current: "missing-input", next: "planned"
-    ))
+    return Err(
+      RuntimeError.InvalidTransition(
+        subject: f"${role}/${worker_id}",
+        current: "missing-input",
+        next: "planned",
+      ),
+    )
   }
+
   let canonical_factory = factory_dir.resolve()?
   let canonical_run = run_dir.resolve()?
   let canonical_prompt = system_prompt.resolve()?
@@ -128,48 +140,67 @@ export proc write_bound_dispatch_record(
   let bound_phase_id = if parent_name.starts_with("run-") { phase_name } else { "root" }
   let dispatch_path = fp"${canonical_run}/dispatch/${dispatch_id}.json"
   if fs.exists(dispatch_path)? {
-    return Err(RuntimeError.InvalidTransition(
-      subject: dispatch_id, current: "planned", next: "replaced"
-    ))
+    return Err(
+      RuntimeError.InvalidTransition(
+        subject: dispatch_id,
+        current: "planned",
+        next: "replaced",
+      ),
+    )
   }
-  json.write(dispatch_path, {
-    schema_version: 2,
-    state: "planned",
-    run_id: bound_run_id,
-    phase_id: bound_phase_id,
-    node_id: dispatch_id,
-    dispatch_id: dispatch_id,
-    role: role,
-    worker_id: worker_id,
-    mode: mode,
-    eval_id: eval_id,
-    ticket_id: ticket_id,
-    assignment_sha256: assignment_sha,
-    system_prompt_file: canonical_prompt.display(),
-    system_prompt_sha256: prompt_sha,
-    message_file: canonical_message.display(),
-    message_sha256: message_sha,
-    workdir: canonical_workdir.display(),
-    factory_root: canonical_factory.display(),
-    product_root: canonical_workdir.display(),
-    handbook_file: fp"${canonical_factory}/runtime/handbook.md".display(),
-    handbook_sha256: if fs.exists(fp"${factory_dir}/runtime/handbook.md")? { hash.sha256(fp"${factory_dir}/runtime/handbook.md")?.hex() } else { "missing" },
-    north_star_file: fp"${canonical_factory}/NORTH-STAR.md".display(),
-    north_star_sha256: if fs.exists(fp"${factory_dir}/NORTH-STAR.md")? { hash.sha256(fp"${factory_dir}/NORTH-STAR.md")?.hex() } else { "missing" },
-    source_commit: "controller-selected",
-    image_id: "not-applicable",
-    parent_controller: "controller",
-    claim_token: claim_token,
-  }, pretty: true)?
-  return Ok()
+
+  json.write(
+    dispatch_path,
+    {
+      schema_version: 2,
+      state: "planned",
+      run_id: bound_run_id,
+      phase_id: bound_phase_id,
+      node_id: dispatch_id,
+      dispatch_id: dispatch_id,
+      role: role,
+      worker_id: worker_id,
+      mode: mode,
+      eval_id: eval_id,
+      ticket_id: ticket_id,
+      assignment_sha256: assignment_sha,
+      system_prompt_file: canonical_prompt.display(),
+      system_prompt_sha256: prompt_sha,
+      message_file: canonical_message.display(),
+      message_sha256: message_sha,
+      workdir: canonical_workdir.display(),
+      factory_root: canonical_factory.display(),
+      product_root: canonical_workdir.display(),
+      handbook_file: fp"${canonical_factory}/runtime/handbook.md".display(),
+      handbook_sha256: if fs.exists(fp"${factory_dir}/runtime/handbook.md")? {
+        hash.sha256(fp"${factory_dir}/runtime/handbook.md")?.hex()
+      } else {
+        "missing"
+      },
+      north_star_file: fp"${canonical_factory}/NORTH-STAR.md".display(),
+      north_star_sha256: if fs.exists(fp"${factory_dir}/NORTH-STAR.md")? {
+        hash.sha256(fp"${factory_dir}/NORTH-STAR.md")?.hex()
+      } else {
+        "missing"
+      },
+      source_commit: "controller-selected",
+      image_id: "not-applicable",
+      parent_controller: "controller",
+      claim_token: claim_token,
+    },
+    pretty: true,
+  )?
 }
 
 ## Registers a controller-owned child before waiting on it.
 export proc register_process(run_dir: Path, name: Str, pid: Int) [fs, error] -> Result[Unit] {
   let processes = fp"${run_dir}/processes"
   fs.mkdir(processes)?
-  fs.write_atomic(fp"${processes}/${name}.pids", f"${pid}\n")?
-  return Ok()
+  fs.write_atomic(
+    fp"${processes}/${name}.pids",
+    f"""${pid}
+""",
+  )?
 }
 
 ## Starts the one aggregate watcher owned by a top-level cycle controller.
@@ -191,15 +222,25 @@ export proc start_cycle_budget_watch(
     "FACTORY_DIR=" + factory_dir.display(),
     "XSH_MODULE_PATH=" + module_path,
   ]
-  let command = assignments.extend([
-    xsh.display(), watcher.display(), "--",
-    "--run-dir", run_dir.display(),
-    "--pid", f"${controller_pid}",
-    "--budget-usd", budget,
-    "--marker", marker.display(),
-    "--stop", stop.display(),
-    "--postmortem", postmortem.display(),
-  ])
+  let command = assignments.extend(
+    [
+      xsh.display(),
+      watcher.display(),
+      "--",
+      "--run-dir",
+      run_dir.display(),
+      "--pid",
+      f"${controller_pid}",
+      "--budget-usd",
+      budget,
+      "--marker",
+      marker.display(),
+      "--stop",
+      stop.display(),
+      "--postmortem",
+      postmortem.display(),
+    ],
+  )
   return spawn process.command_argv(
     env_path,
     [env_path.display()].extend(command),
@@ -211,8 +252,11 @@ export proc start_cycle_budget_watch(
 
 ## Requests a clean watcher exit after a controller completes normally.
 export proc stop_cycle_budget_watch(run_dir: Path) [fs, error] -> Result[Unit] {
-  fs.write_atomic(fp"${run_dir}/AGGREGATE-BUDGET-STOP", "normal controller shutdown\n")?
-  return Ok()
+  fs.write_atomic(
+    fp"${run_dir}/AGGREGATE-BUDGET-STOP",
+    """normal controller shutdown
+""",
+  )?
 }
 
 ## Stages the CTO handoff in every controller-owned run directory.
@@ -223,7 +267,6 @@ export proc stage_cto_improvement(factory_dir: Path, run_dir: Path) [fs, error] 
   if ! fs.exists(target)? {
     fs.copy(fp"${factory_dir}/templates/CTO-IMPROVEMENT.md", target, overwrite: true)?
   }
-  return Ok()
 }
 
 ## Stages the mandatory organization-cycle productivity review.
@@ -232,26 +275,31 @@ export proc stage_cto_productivity_report(factory_dir: Path, run_dir: Path) [fs,
   if ! fs.exists(target)? {
     fs.copy(fp"${factory_dir}/templates/CTO-PRODUCTIVITY-REPORT.md", target, overwrite: true)?
   }
-  return Ok()
 }
+
 ## Writes the deterministic first-pass briefing used by the CTO.
-export proc write_cto_report(
-  factory_dir: Path,
-  run_dir: Path,
-  result: Str,
-) [fs, process, error] -> Result[Bool] {
+export proc write_cto_report(factory_dir: Path, run_dir: Path, result: Str) [fs, process, error] -> Result[Bool] {
   let xsh = process.which("xsh")?
   let tool = fp"${factory_dir}/factory/tools/cto-report.xsh"
   let output = fp"${run_dir}/CTO-REPORT.md"
-  let status = process.run(process.command_argv(
-    xsh,
-    [xsh.display(), tool.display(), "--",
-      "--run-dir", run_dir.display(),
-      "--output", output.display(),
-      "--result", result],
-    cwd: factory_dir,
-    env: {FACTORY_DIR: factory_dir.display(), XSH_MODULE_PATH: factory_dir.display()},
-  ))?
+  let status = process.run(
+    process.command_argv(
+      xsh,
+      [
+        xsh.display(),
+        tool.display(),
+        "--",
+        "--run-dir",
+        run_dir.display(),
+        "--output",
+        output.display(),
+        "--result",
+        result,
+      ],
+      cwd: factory_dir,
+      env: {FACTORY_DIR: factory_dir.display(), XSH_MODULE_PATH: factory_dir.display()},
+    ),
+  )?
   return status.ok and fs.exists(output)?
 }
 
@@ -270,18 +318,22 @@ export proc promote_eval_proposal(
   if ! fs.exists(contract)? {
     return false
   }
+
   let eval_text = contract.read_text()?
   if control.ticket_status(eval_text) != "Draft." {
     return false
   }
+
   let eval_id = control.eval_id_from_contract(eval_text)
   if ! control.valid_eval_id(eval_id) {
     return false
   }
+
   let target = fp"${factory_dir}/evals/${eval_id}"
   if fs.exists(target)? {
     return false
   }
+
   let package_files = [
     "EVAL.md",
     "executor.xsh",
@@ -294,6 +346,7 @@ export proc promote_eval_proposal(
       return false
     }
   }
+
   let optional_files = ["evaluator.xsh", "Dockerfile"]
   fs.mkdir(target)?
   fs.mkdir(fp"${target}/runtime")?
@@ -302,18 +355,29 @@ export proc promote_eval_proposal(
     let destination = fp"${target}/${relative}"
     fs.copy(source, destination, overwrite: false)?
   }
+
   for relative in optional_files {
     let source = fp"${proposal_dir}/${relative}"
     if fs.exists(source)? {
       fs.copy(source, fp"${target}/${relative}", overwrite: false)?
     }
   }
+
   let source_run = control.factory_relative_path(factory_dir.display(), run_dir)
   let package_state = if fs.exists(fp"${proposal_dir}/evaluator.xsh")? { "complete" } else { "incomplete" }
   let missing = if package_state == "complete" { "None." } else { "evaluator.xsh (package-owned evaluator)" }
   let status = if review_result == "accepted" { "Approved." } else { "Draft." }
   let updated_contract = control.replace_eval_status(fs.read_text(fp"${target}/EVAL.md")?, status)
-  let review = "\n## CTO review\n\n- Result: `" + review_result + "`\n- Promotion: `promoted`\n- Package: `" + package_state + "`\n- Missing package files: `" + missing + "`\n- Status: `" + status + "`\n- Source run: `" + source_run + "`\n"
+  let review = """
+## CTO review
+
+- Result: `""" + review_result + """`
+- Promotion: `promoted`
+- Package: `""" + package_state + """`
+- Missing package files: `""" + missing + """`
+- Status: `""" + status + """`
+- Source run: `""" + source_run + """`
+"""
   fs.write_atomic(fp"${target}/EVAL.md", updated_contract + review)?
   return true
 }
@@ -325,24 +389,34 @@ export proc update_engineer_report_commit(report_path: Path, commit_hash: Str) [
   if ! fs.exists(report_path)? {
     return false
   }
+
   let report = report_path.read_text()?
   if control.report_field(report, "Commit") == "" {
     return false
   }
-  let updated = control.replace_section(report, "Commit", "## Commit\n\n" + commit_hash.trim())
+
+  let updated = control.replace_section(
+    report,
+    "Commit",
+    """## Commit
+
+""" + commit_hash.trim(),
+  )
   fs.write_atomic(report_path, updated)?
   return control.engineer_report_contract_ok(updated)
 }
 
 proc provenance_trailers_ok(worktree: Path, commit: Str, expected: List[Str]) [process, error] -> Result[Bool] {
-  let text = run.text "git" "-C" $worktree.display() "show" "-s" "--format=%(trailers)" $commit.trim() ?
+  let text = run.text "git" "-C" $worktree "show" "-s" "--format=%(trailers)" commit.trim() ?
   for value in expected {
-    if ! text.contains(value) {
+    if value not in text {
       return false
     }
   }
+
   return true
 }
+
 ## Amends a validated engineer commit with deterministic factory provenance.
 ## The caller must verify the report, branch, commit, and clean worktree first.
 export proc amend_engineer_commit(
@@ -358,34 +432,44 @@ export proc amend_engineer_commit(
   assignment_sha: Str,
   patch_sha: Str,
 ) [fs, process, error] -> Result[Str] {
-  let current_head = run.text "git" "-C" $worktree.display() "rev-parse" "HEAD" ?
-  let worktree_status = run.text "git" "-C" $worktree.display() "status" "--porcelain" ?
+  let current_head = run.text "git" "-C" $worktree "rev-parse" "HEAD" ?
+  let worktree_status = run.text "git" "-C" $worktree "status" "--porcelain" ?
   if current_head.trim() != head_commit.trim() or worktree_status.trim() != "" {
     return Ok("")
   }
-  let existing_message = (run.text "git" "-C" $worktree.display() "log" "-1" "--format=%B" $head_commit.trim() ?).trim()
-  if existing_message.contains("Factory-Provenance-Version:") {
+
+  let commit_id = head_commit.trim()
+  if commit_id == "" { return Ok("") }
+  let existing_output = run.text "git" "-C" $worktree "log" "-1" "--format=%B" $commit_id ?
+  let existing_message = existing_output.trim()
+  if "Factory-Provenance-Version:" in existing_message {
     return Ok(head_commit.trim())
   }
+
   if ! fs.exists(report_path)? or ! fs.exists(session_path)? {
     return Ok("")
   }
+
   let report = json.read(report_path)?
   let usage = json.get(report, ["usage"], null)
   let models = json.get(report, ["models"], [])
   let model_ref = match models {
-    values is List[Any] => if values.len() > 0 { report_value(values[0]) } else { "unknown" }
+    values is List[Any] => if values.len() > 0 { report_value(values[0]) } else { "unknown" },
     _ => "unknown",
   }
   let model_parts = model_ref.split("/", maxsplit: 1)
   let provider = if model_parts.len() > 1 { model_parts[0] } else { "unknown" }
-  let model = if model_parts.len() > 1 { model_ref.byte_slice(provider.byte_len() + 1, model_ref.byte_len() - provider.byte_len() - 1) } else { model_ref }
+  let model = if model_parts.len() > 1 {
+    model_ref.byte_slice(provider.byte_len() + 1, model_ref.byte_len() - provider.byte_len() - 1)
+  } else {
+    model_ref
+  }
   let report_sha = hash.sha256(report_path)?.hex()
   let session_sha = hash.sha256(session_path)?.hex()
   let relative_report = control.factory_relative_path(factory_dir.display(), report_path)
   let relative_session = control.factory_relative_path(factory_dir.display(), session_path)
   let relative_run = control.factory_relative_path(factory_dir.display(), run_dir)
-  var trailers: List[Str] = [
+  var trailers = [
     f"Factory-Provenance-Version: 1",
     f"Factory-Run: ${relative_run}",
     "Factory-Role: engineer",
@@ -415,16 +499,24 @@ export proc amend_engineer_commit(
     f"Factory-Session: ${relative_session}",
   ]
   var git_args: List[Str] = [
-    "git", "-C", worktree.display(), "commit", "--amend", "--no-edit", "--no-verify",
+    "git",
+    "-C",
+    worktree.display(),
+    "commit",
+    "--amend",
+    "--no-edit",
+    "--no-verify",
   ]
   for trailer in trailers {
     git_args = git_args.push("--trailer").push(trailer)
   }
+
   let status = process.run(process.command_argv("git", git_args))?
   if ! status.ok {
     return Ok("")
   }
-  let amended_head = run.text "git" "-C" $worktree.display() "rev-parse" "HEAD" ?
+
+  let amended_head = run.text "git" "-C" $worktree "rev-parse" "HEAD" ?
   let amended = amended_head.trim()
   let expected = [
     "Factory-Provenance-Version: 1",
@@ -437,7 +529,8 @@ export proc amend_engineer_commit(
   if ! provenance_trailers_ok(worktree, amended, expected)? {
     return Ok("")
   }
-  return Ok(amended)
+
+  amended
 }
 
 pure report_value(value: Any) -> Str {
@@ -458,16 +551,26 @@ export proc write_engineer_patch(
   patch_path: Path,
   stderr_path: Path,
 ) [fs, process, error] -> Result[Bool] {
-  let status = process.run(process.command_argv(
-    "git",
-    ["git", "-C", worktree.display(), "diff", "--binary", "--no-ext-diff",
-      f"${base_commit}..${head_commit}"],
-    stdout: patch_path,
-    stderr: stderr_path,
-  ))?
+  let status = process.run(
+    process.command_argv(
+      "git",
+      [
+        "git",
+        "-C",
+        worktree.display(),
+        "diff",
+        "--binary",
+        "--no-ext-diff",
+        f"${base_commit}..${head_commit}",
+      ],
+      stdout: patch_path,
+      stderr: stderr_path,
+    ),
+  )?
   if ! status.ok or ! fs.exists(patch_path)? {
     return false
   }
+
   return fs.metadata(patch_path)?.size > 0
 }
 
@@ -487,10 +590,13 @@ export proc remove_clean_worktree(xsh_repo: Path, worktree: Path) [fs, process, 
   if ! fs.exists(worktree)? {
     return true
   }
-  let status = process.run(process.command_argv(
-    "git",
-    ["git", "-C", xsh_repo.display(), "worktree", "remove", worktree.display()],
-  ))?
+
+  let status = process.run(
+    process.command_argv(
+      "git",
+      ["git", "-C", xsh_repo.display(), "worktree", "remove", worktree.display()],
+    ),
+  )?
   return status.ok and ! fs.exists(worktree)?
 }
 
@@ -500,22 +606,24 @@ export proc remove_run_worktrees(xsh_repo: Path, run_dir: Path) [fs, process, er
   if ! fs.exists(run_dir)? {
     return true
   }
+
   var removed = true
   for entry in fs.walk(run_dir, gitignore: false, hidden: true)? |> where .kind == "dir" and .name == "worktrees" {
     for child in fs.children(entry.path, stat: false, ordered: true)? {
-      if child.kind != "dir" {
-        continue
-      }
-      let status = process.run(process.command_argv(
-        "git",
-        ["git", "-C", xsh_repo.display(), "worktree", "remove", "--force", child.path.display()],
-      ))?
+      continue when child.kind != "dir"
+      let status = process.run(
+        process.command_argv(
+          "git",
+          ["git", "-C", xsh_repo.display(), "worktree", "remove", "--force", child.path.display()],
+        ),
+      )?
       if ! status.ok and fs.exists(child.path)? {
         removed = false
         eprint f"unable to remove run worktree: ${child.path.display()}"
       }
     }
   }
+
   let scratch_root = if run_dir.name().starts_with("run-") {
     fp"${xsh_repo.parent()}/.xsh-factory-worktrees/${run_dir.name()}"
   } else {
@@ -523,28 +631,36 @@ export proc remove_run_worktrees(xsh_repo: Path, run_dir: Path) [fs, process, er
   }
   if fs.exists(scratch_root)? {
     for child in fs.children(scratch_root, stat: false, ordered: true)? {
-      if child.kind != "dir" { continue }
-      let status = process.run(process.command_argv(
-        "git", ["git", "-C", xsh_repo.display(), "worktree", "remove", "--force", child.path.display()]
-      ))?
-      if ! status.ok and fs.exists(child.path)? { removed = false }
+      continue when child.kind != "dir"
+      let status = process.run(
+        process.command_argv(
+          "git",
+          ["git", "-C", xsh_repo.display(), "worktree", "remove", "--force", child.path.display()],
+        ),
+      )?
+      if ! status.ok and fs.exists(child.path)? {
+        removed = false
+      }
     }
   }
-  let prune = process.run(process.command_argv(
-    "git", ["git", "-C", xsh_repo.display(), "worktree", "prune"],
-  ))?
+
+  let prune = process.run(
+    process.command_argv(
+      "git",
+      ["git", "-C", xsh_repo.display(), "worktree", "prune"],
+    ),
+  )?
   return removed and prune.ok
 }
 
 ## Deferred-cleanup adapter for controller shutdown paths.
 export proc cleanup_run_worktrees(xsh_repo: Path, run_dir: Path) [fs, process, error] -> Result[Unit] {
   let _ = remove_run_worktrees(xsh_repo, run_dir)?
-  return Ok()
 }
 
 ## Writes one event and advances its subject state atomically.
 export proc emit_structured_event(
-  template: Path,
+  _: Path,
   run_dir: Path,
   name: Str,
   subject: Str,
@@ -552,9 +668,15 @@ export proc emit_structured_event(
 ) [fs, error] -> Result[Unit] {
   let events = fp"${run_dir}/events.jsonl"
   let existing = if fs.exists(events)? { fs.read_text(events)? } else { "" }
-  let event = {schema_version: 1, kind: "event", event_id: name, run_id: run_dir.display(), subject: subject, payload: payload}
+  let event = {
+    schema_version: 1,
+    kind: "event",
+    event_id: name,
+    run_id: run_dir.display(),
+    subject: subject,
+    payload: payload,
+  }
   fs.write_atomic(events, existing + json.encode(event)? + "\n")?
-  return Ok()
 }
 
 ## Writes one event and advances its subject state atomically.
@@ -577,6 +699,7 @@ export proc emit_event(
   if ! control.transition_allowed(current, state) {
     return Err(RuntimeError.InvalidTransition(subject: subject, current: current, next: state))
   }
+
   let _ = template
   let event = {
     schema_version: 1,
@@ -592,7 +715,6 @@ export proc emit_event(
   let existing = if fs.exists(events)? { fs.read_text(events)? } else { "" }
   fs.write_atomic(events, existing + json.encode(event)? + "\n")?
   fs.write_atomic(state_file, state + "\n")?
-  return Ok()
 }
 
 ## Appends one complete process stream to the canonical cycle ledger. The
@@ -620,7 +742,6 @@ export proc emit_process_output(
   }
   let existing = if fs.exists(events)? { fs.read_text(events)? } else { "" }
   fs.write_atomic(events, existing + json.encode(event)? + "\n")?
-  return Ok()
 }
 
 ## Advances an audited started phase to completed before later validation.
@@ -641,6 +762,7 @@ export proc accepted_ticket(ticket_path: Path) [fs, error] -> Result[Bool] {
   if ! fs.exists(ticket_path)? {
     return false
   }
+
   let text = fs.read_text(ticket_path)?
   return control.ticket_is_accepted(text) and control.ticket_api_surface_gate_ok(text)
 }
@@ -652,13 +774,23 @@ proc budget_breach_section(
   worker_label: Str,
 ) [fs, error] -> Result[Str] {
   let worker_run = control.factory_relative_path(
-    factory_dir.display(), fp"${worker_dir}/report.json"
+    factory_dir.display(),
+    fp"${worker_dir}/report.json",
   )
   let template = fp"${factory_dir}/templates/BUDGET-BREACH.md"
-  let values: List[control.TemplateValue] = [
-    {key: "REASON", value: reason},
-    {key: "WORKER_LABEL", value: worker_label},
-    {key: "WORKER_RUN", value: worker_run},
+  let values = [
+    {
+      key: "REASON",
+      value: reason,
+    },
+    {
+      key: "WORKER_LABEL",
+      value: worker_label,
+    },
+    {
+      key: "WORKER_RUN",
+      value: worker_run,
+    },
   ]
   return control.fill_template(template.read_text()?, values)
 }
@@ -672,72 +804,96 @@ export proc close_ticket_too_difficult(
   if ! control.valid_ticket_id(ticket_id) {
     return false
   }
+
   let ticket_path = fp"${factory_dir}/tickets/${ticket_id}.md"
   if ! fs.exists(ticket_path)? {
     return false
   }
+
   let ticket_text = ticket_path.read_text()?
   if control.ticket_is_merged(ticket_text) {
     return false
   }
+
   let breach = budget_breach_section(
-    factory_dir, worker_dir, "too difficult", "engineer run"
+    factory_dir,
+    worker_dir,
+    "too difficult",
+    "engineer run",
   )?
   var updated = control.replace_status(ticket_text, "Closed.")
   updated = control.replace_section(updated, "Budget breach", breach)
   if updated != ticket_text {
     fs.write_atomic(ticket_path, updated)?
   }
+
   return true
 }
 
 ## Disables an eval whose isolated eval-worker exceeded its hard budget.
-export proc disable_eval(
-  factory_dir: Path,
-  eval_id: Str,
-  worker_dir: Path,
-) [fs, error] -> Result[Bool] {
+export proc disable_eval(factory_dir: Path, eval_id: Str, worker_dir: Path) [fs, error] -> Result[Bool] {
   if ! control.valid_eval_id(eval_id) {
     return false
   }
+
   let eval_path = fp"${factory_dir}/evals/${eval_id}/EVAL.md"
   if ! fs.exists(eval_path)? {
     return false
   }
+
   let eval_text = eval_path.read_text()?
   let breach = budget_breach_section(
-    factory_dir, worker_dir, "eval-worker budget exceeded", "eval-worker run"
+    factory_dir,
+    worker_dir,
+    "eval-worker budget exceeded",
+    "eval-worker run",
   )?
   var updated = control.replace_eval_status(eval_text, "Disabled.")
   updated = control.replace_section(updated, "Budget breach", breach)
   if updated != eval_text {
     fs.write_atomic(eval_path, updated)?
   }
+
   return true
 }
 
 pure worker_report_eval_id(report: Any, path_value: Path) -> Str {
   let identity = json.get(report, ["identity"], null)
   let explicit = schema.value_text(json.get(identity, ["eval_id"], ""))
-  if explicit != "" { return explicit }
+  if explicit != "" {
+    return explicit
+  }
+
   let parts = path_value.display().split("/")
   var after_worker = false
   for part in parts {
-    if after_worker { return part.replace("-1", "").replace("-2", "") }
-    if part == "eval-worker" { after_worker = true }
+    if after_worker {
+      return part.replace("-1", "").replace("-2", "")
+    }
+
+    if part == "eval-worker" {
+      after_worker = true
+    }
   }
+
   return ""
 }
 
 proc eval_trial_count(factory_dir: Path, eval_id: Str) [fs, error] -> Result[Int] {
   let runs = fp"${factory_dir}/runs"
-  if ! fs.exists(runs)? { return 0 }
-  var count = 0
-  for entry in fs.walk(runs, gitignore: false, hidden: true) |> where .kind == "file" {
-    if entry.name != "report.json" or ! entry.path.display().contains("/workers/eval-worker/") { continue }
-    let report = json.read(entry.path)?
-    if worker_report_eval_id(report, entry.path) == eval_id { count += 1 }
+  if ! fs.exists(runs)? {
+    return 0
   }
+
+  var count = 0
+  for entry in fs.files(runs, gitignore: false, hidden: true) {
+    continue when entry.name != "report.json" or "/workers/eval-worker/" not in entry.path.display()
+    let report = json.read(entry.path)?
+    if worker_report_eval_id(report, entry.path) == eval_id {
+      count += 1
+    }
+  }
+
   return count
 }
 
@@ -745,16 +901,22 @@ proc eval_trial_count(factory_dir: Path, eval_id: Str) [fs, error] -> Result[Int
 export proc untried_approved_evals(factory_dir: Path) [fs, error] -> Result[List[Str]] {
   let eval_dir = fp"${factory_dir}/evals"
   var untried: List[Str] = []
-  if ! fs.exists(eval_dir)? { return untried }
+  if ! fs.exists(eval_dir)? {
+    return untried
+  }
+
   let contracts = fs.files(eval_dir, gitignore: false, hidden: true)
     |> where .name == "EVAL.md"
     |> sort-by .path.display()
     |> collect()
   for contract in contracts {
     let eval_id = contract.path.parent().name()
-    if control.ticket_status(contract.path.read_text()?) != "Approved." { continue }
-    if eval_trial_count(factory_dir, eval_id)? == 0 { untried = untried.push(eval_id) }
+    continue when control.ticket_status(contract.path.read_text()?) != "Approved."
+    if eval_trial_count(factory_dir, eval_id)? == 0 {
+      untried = untried.push(eval_id)
+    }
   }
+
   return untried
 }
 
@@ -768,22 +930,27 @@ export proc next_untried_approved_eval(factory_dir: Path) [fs, error] -> Result[
 export proc first_approved_tickets(factory_dir: Path, limit: Int) [fs, error] -> Result[List[Str]] {
   let ticket_dir = fp"${factory_dir}/tickets"
   var selected: List[Str] = []
-  if limit <= 0 { return selected }
+  if limit <= 0 {
+    return selected
+  }
+
   if ! fs.exists(ticket_dir)? {
     return selected
   }
+
   let entries = fs.files(ticket_dir, gitignore: false, hidden: true)?
     |> sort-by .path.display()
     |> collect()
   for entry in entries {
-    if ! entry.name.ends_with(".md") {
-      continue
-    }
+    continue unless entry.name.ends_with(".md")
     if accepted_ticket(entry.path)? {
       selected = selected.push(entry.name.replace(".md", ""))
-      if selected.len() >= limit { return selected }
+      if selected.len() >= limit {
+        return selected
+      }
     }
   }
+
   return selected
 }
 
@@ -795,22 +962,18 @@ export proc first_approved_ticket(factory_dir: Path) [fs, error] -> Result[Str] 
 
 ## Builds the complete ticket inventory used by the CTO pre-cycle briefing.
 ## This is deterministic controller state, not a worker-selected work list.
-export proc cto_ticket_inventory(
-  factory_dir: Path,
-  xsh_repo: Path,
-) [fs, process, error] -> Result[List[Any]] {
+export proc cto_ticket_inventory(factory_dir: Path, xsh_repo: Path) [fs, process, error] -> Result[List[Any]] {
   let ticket_dir = fp"${factory_dir}/tickets"
   var tickets: List[Any] = []
   if ! fs.exists(ticket_dir)? {
     return tickets
   }
+
   let entries = fs.files(ticket_dir, gitignore: false, hidden: true)?
     |> sort-by .path.display()
     |> collect()
   for entry in entries {
-    if ! entry.name.ends_with(".md") {
-      continue
-    }
+    continue unless entry.name.ends_with(".md")
     let ticket_text = entry.path.read_text()?
     let status = control.ticket_status(ticket_text)
     let branch = if status == "Open." or status == "Approved." {
@@ -828,50 +991,55 @@ export proc cto_ticket_inventory(
       path: entry.path.display(),
     })
   }
+
   return tickets
 }
 
 ## Returns Open tickets that have no durable CTO review marker.
 export pure cto_unreviewed_open_tickets(tickets: List[Any]) -> List[Str] {
-  var unreviewed: List[Str] = []
-  for ticket in tickets {
-    if ticket.status == "Open." and ! ticket.cto_review {
-      unreviewed = unreviewed.push(ticket.id)
-    }
-  }
-  return unreviewed
+  [ticket.id for ticket in tickets if ticket.status == "Open." and ! ticket.cto_review]
 }
 
 ## Renders the programmatic ticket inventory for a human CTO handoff.
 export pure cto_inventory_markdown(tickets: List[Any]) -> Str {
   var open_count = 0
   var approved_count = 0
-  var markdown = "# CTO ticket inventory\n\n"
+  var markdown = """# CTO ticket inventory
+
+"""
   for ticket in tickets {
-    if ticket.status == "Open." { open_count += 1 }
+    if ticket.status == "Open." {
+      open_count += 1
+    }
+
     if ticket.status == "Approved." or ticket.status == "Accepted." {
       approved_count += 1
     }
   }
-  markdown = markdown + f"- Open tickets: ${open_count}\n"
-  markdown = markdown + f"- Approved tickets: ${approved_count}\n"
-  markdown = markdown + f"- Ticket rows: ${tickets.len()}\n\n"
-  markdown = markdown + "| Ticket | Status | Change target | Linked eval | CTO review marker | Open branch |\n"
-  markdown = markdown + "| --- | --- | --- | --- | --- | --- |\n"
+
+  markdown = markdown + f"""- Open tickets: ${open_count}
+"""
+  markdown = markdown + f"""- Approved tickets: ${approved_count}
+"""
+  markdown = markdown + f"""- Ticket rows: ${tickets.len()}
+
+"""
+  markdown = markdown + """| Ticket | Status | Change target | Linked eval | CTO review marker | Open branch |
+"""
+  markdown = markdown + """| --- | --- | --- | --- | --- | --- |
+"""
   for ticket in tickets {
     let review = if ticket.cto_review { "present" } else { "missing" }
     let branch = if ticket.open_branch == "" { "none" } else { ticket.open_branch }
-    markdown = markdown + f"| `${ticket.id}` | `${ticket.status}` | `${ticket.change_target}` | `${ticket.eval_id}` | ${review} | `${branch}` |\n"
+    markdown = markdown + f"""| `${ticket.id}` | `${ticket.status}` | `${ticket.change_target}` | `${ticket.eval_id}` | ${review} | `${branch}` |
+"""
   }
+
   return markdown
 }
 
 ## Persists the CTO inventory into a controller-owned run directory.
-export proc write_cto_inventory(
-  factory_dir: Path,
-  run_dir: Path,
-  xsh_repo: Path,
-) [fs, process, error] -> Result[Unit] {
+export proc write_cto_inventory(factory_dir: Path, run_dir: Path, xsh_repo: Path) [fs, process, error] -> Result[Unit] {
   let tickets = cto_ticket_inventory(factory_dir, xsh_repo)?
   fs.write_atomic(
     fp"${run_dir}/CTO-TICKET-INVENTORY.json",
@@ -881,7 +1049,6 @@ export proc write_cto_inventory(
     fp"${run_dir}/CTO-TICKET-INVENTORY.md",
     cto_inventory_markdown(tickets),
   )?
-  return Ok()
 }
 
 ## Returns whether an eval is explicitly retired from the active portfolio.
@@ -891,15 +1058,19 @@ export proc eval_is_retired(factory_dir: Path, eval_id: Str) [fs, error] -> Resu
   if ! control.valid_eval_id(eval_id) {
     return false
   }
+
   let contract = fp"${factory_dir}/evals/${eval_id}/EVAL.md"
   if fs.exists(contract)? {
     return control.eval_is_disabled(contract.read_text()?)
   }
+
   let ledger = fp"${factory_dir}/evals/RETIREMENTS.md"
   if ! fs.exists(ledger)? {
     return false
   }
-  return ledger.read_text()?.contains(f"## ${eval_id}\n")
+
+  return ledger.read_text()?.contains(f"""## ${eval_id}
+""")
 }
 
 ## Closes active tickets whose linked eval has an explicit retirement record.
@@ -911,32 +1082,45 @@ export proc close_tickets_for_retired_evals(factory_dir: Path) [fs, error] -> Re
   if ! fs.exists(ticket_dir)? {
     return []
   }
+
   if ! fs.exists(disposition_template)? {
-    return Err(RuntimeError.InvalidTransition(
-      subject: "ticket-template",
-      current: "missing-retired-eval-disposition",
-      next: "reconcile",
-    ))
+    return Err(
+      RuntimeError.InvalidTransition(
+        subject: "ticket-template",
+        current: "missing-retired-eval-disposition",
+        next: "reconcile",
+      ),
+    )
   }
+
   let template = disposition_template.read_text()?
   var closed: List[Str] = []
   for entry in fs.files(ticket_dir, gitignore: false, hidden: true) |> sort-by .path.display() {
-    if ! entry.name.ends_with(".md") { continue }
+    continue unless entry.name.ends_with(".md")
     let ticket_id = entry.name.replace(".md", "")
     let ticket_text = entry.path.read_text()?
     let status = control.ticket_status(ticket_text)
-    if status != "Open." and status != "Approved." and status != "Accepted." { continue }
+    continue when status != "Open." and status != "Approved." and status != "Accepted."
     let eval_id = control.ticket_eval(ticket_text)
-    if ! eval_is_retired(factory_dir, eval_id)? { continue }
+    continue unless eval_is_retired(factory_dir, eval_id)?
     let evidence = if fs.exists(fp"${factory_dir}/evals/${eval_id}/EVAL.md")? {
       f"evals/${eval_id}/EVAL.md"
     } else {
       "evals/RETIREMENTS.md"
     }
-    let disposition = control.fill_template(template, [
-      {key: "EVAL_ID", value: eval_id},
-      {key: "EVAL_EVIDENCE", value: evidence},
-    ])
+    let disposition = control.fill_template(
+      template,
+      [
+        {
+          key: "EVAL_ID",
+          value: eval_id,
+        },
+        {
+          key: "EVAL_EVIDENCE",
+          value: evidence,
+        },
+      ],
+    )
     var updated = control.replace_ticket_status(ticket_text, "Closed.")
     updated = control.replace_ticket_section(updated, "Lifecycle disposition", disposition)
     if updated != ticket_text {
@@ -944,6 +1128,7 @@ export proc close_tickets_for_retired_evals(factory_dir: Path) [fs, error] -> Re
       closed = closed.push(ticket_id)
     }
   }
+
   return closed
 }
 
@@ -953,18 +1138,24 @@ export proc archive_retired_ticket_branches(xsh_repo: Path, factory_dir: Path) [
   let candidates = stale_ticket_branches(xsh_repo, factory_dir)?
   var archived = 0
   for candidate in candidates {
-    if candidate.ticket_status != "Closed." { continue }
+    continue when candidate.ticket_status != "Closed."
     let ticket_path = fp"${factory_dir}/tickets/${candidate.ticket_id}.md"
-    if ! fs.exists(ticket_path)? { continue }
-    if ! eval_is_retired(factory_dir, control.ticket_eval(ticket_path.read_text()?))? { continue }
+    continue unless fs.exists(ticket_path)?
+    continue unless eval_is_retired(factory_dir, control.ticket_eval(ticket_path.read_text()?))?
     let branch_parts = candidate.branch.split("/")
     let suffix = branch_parts.get(2, "branch")
     let target = f"archive/retired/${candidate.ticket_id}/${suffix}"
-    let status = process.run(process.command_argv(
-      "git", ["git", "-C", xsh_repo.display(), "branch", "-m", candidate.branch, target]
-    ))?
-    if status.ok { archived += 1 }
+    let status = process.run(
+      process.command_argv(
+        "git",
+        ["git", "-C", xsh_repo.display(), "branch", "-m", candidate.branch, target],
+      ),
+    )?
+    if status.ok {
+      archived += 1
+    }
   }
+
   return archived
 }
 
@@ -972,10 +1163,13 @@ proc commit_is_ancestor(xsh_repo: Path, commit: Str) [process, error] -> Result[
   if commit == "" {
     return false
   }
-  let status = process.run(process.command_argv(
-    "git",
-    ["git", "-C", xsh_repo.display(), "merge-base", "--is-ancestor", commit, "HEAD"],
-  ))?
+
+  let status = process.run(
+    process.command_argv(
+      "git",
+      ["git", "-C", xsh_repo.display(), "merge-base", "--is-ancestor", commit, "HEAD"],
+    ),
+  )?
   return status.ok
 }
 
@@ -983,18 +1177,24 @@ proc commit_is_patch_applied(xsh_repo: Path, branch: Str, commit: Str) [process,
   if branch == "" or commit == "" {
     return false
   }
-  let branch_status = process.run(process.command_argv(
-    "git", ["git", "-C", xsh_repo.display(), "rev-parse", "--verify", f"refs/heads/${branch}"],
-  ))?
+
+  let branch_status = process.run(
+    process.command_argv(
+      "git",
+      ["git", "-C", xsh_repo.display(), "rev-parse", "--verify", f"refs/heads/${branch}"],
+    ),
+  )?
   if ! branch_status.ok {
     return false
   }
-  let cherry = run.text "git" "-C" $xsh_repo.display() "cherry" "-v" "HEAD" $branch ?
+
+  let cherry = run.text "git" "-C" $xsh_repo "cherry" "-v" "HEAD" $branch ?
   for line in cherry.lines() {
     if line.starts_with(f"- ${commit} ") {
       return true
     }
   }
+
   return false
 }
 
@@ -1008,43 +1208,47 @@ export proc retire_stale_ticket_branches(xsh_repo: Path, factory_dir: Path) [fs,
   let candidates = stale_ticket_branches(xsh_repo, factory_dir)?
   var retired = 0
   for candidate in candidates {
-    if candidate.ticket_status != "Merged." and candidate.ticket_status != "Closed." {
-      continue
-    }
-    if ! candidate.merged {
-      continue
-    }
-    let status = process.run(process.command_argv(
-      "git", ["git", "-C", xsh_repo.display(), "branch", "-D", candidate.branch]
-    ))?
+    continue when candidate.ticket_status != "Merged." and candidate.ticket_status != "Closed."
+    continue unless candidate.merged
+    let status = process.run(
+      process.command_argv(
+        "git",
+        ["git", "-C", xsh_repo.display(), "branch", "-D", candidate.branch],
+      ),
+    )?
     if status.ok {
       retired += 1
     }
   }
+
   return retired
 }
 
 ## Inventories branches that are merged, closed, or otherwise stale candidates.
 export proc stale_ticket_branches(xsh_repo: Path, factory_dir: Path) [fs, process, error] -> Result[List[Any]] {
   var stale: List[Any] = []
-  let refs = run.text "git" "-C" $xsh_repo.display() "for-each-ref" "--format=%(refname:short)" "refs/heads/factory/" ?
+  let refs = run.text "git" "-C" $xsh_repo "for-each-ref" "--format=%(refname:short)" "refs/heads/factory/" ?
   for line in refs.lines() {
     let branch = line.trim()
-    if branch == "" { continue }
+    continue when branch == ""
     let parts = branch.split("/")
-    if parts.len() < 3 { continue }
+    continue when parts.len() < 3
     let ticket_id = parts[1]
-    if ! control.valid_ticket_id(ticket_id) { continue }
+    continue unless control.valid_ticket_id(ticket_id)
     let ticket_path = fp"${factory_dir}/tickets/${ticket_id}.md"
     let status = if fs.exists(ticket_path)? { control.ticket_status(ticket_path.read_text()?) } else { "missing" }
-    let merged_status = process.run(process.command_argv(
-      "git", ["git", "-C", xsh_repo.display(), "merge-base", "--is-ancestor", branch, "HEAD"]
-    ))?
+    let merged_status = process.run(
+      process.command_argv(
+        "git",
+        ["git", "-C", xsh_repo.display(), "merge-base", "--is-ancestor", branch, "HEAD"],
+      ),
+    )?
     let merged = merged_status.ok
     if status == "Merged." or status == "Closed." or merged {
       stale = stale.push({branch: branch, ticket_id: ticket_id, ticket_status: status, merged: merged})
     }
   }
+
   return stale
 }
 
@@ -1053,18 +1257,18 @@ export proc open_ticket_branch(xsh_repo: Path, ticket_id: Str) [process, error] 
   if ! control.valid_ticket_id(ticket_id) {
     return ""
   }
+
   let branch_prefix = f"refs/heads/factory/${ticket_id}/"
-  let refs = run.text "git" "-C" $xsh_repo.display() "for-each-ref" "--format=%(refname:short)" $branch_prefix ?
+  let refs = run.text "git" "-C" $xsh_repo "for-each-ref" "--format=%(refname:short)" $branch_prefix ?
   for branch_line in refs.lines() {
     let branch = branch_line.trim()
-    if branch == "" {
-      continue
-    }
-    let commit = run.text "git" "-C" $xsh_repo.display() "rev-parse" $branch ?
+    continue when branch == ""
+    let commit = run.text "git" "-C" $xsh_repo "rev-parse" $branch ?
     if ! commit_is_merged(xsh_repo, branch, commit.trim())? {
       return branch
     }
   }
+
   return ""
 }
 
@@ -1080,19 +1284,14 @@ proc find_merged_implementation(
       let run_dir = run_entry.path
       let summary = fp"${run_dir}/report.json"
       let report = fp"${run_dir}/workers/engineer/${ticket_id}/REPORT.md"
-      if ! fs.exists(summary)? or ! fs.exists(report)? {
-        continue
-      }
+      continue when ! fs.exists(summary)? or ! fs.exists(report)?
       let report_text = fs.read_text(report)?
       let summary_value = json.read(summary)?
       let summary_result = match json.get(summary_value, ["result"], "") {
         s is Str => s,
         _ => "",
       }
-      if summary_result != "pass" or
-        ! control.engineer_report_contract_ok(report_text) {
-        continue
-      }
+      continue when summary_result != "pass" or ! control.engineer_report_contract_ok(report_text)
       let branch = control.report_field(report_text, "Branch")
       let commit = control.report_field(report_text, "Commit")
       if branch != "" and commit != "" and commit_is_merged(xsh_repo, branch, commit)? {
@@ -1133,40 +1332,51 @@ export proc reconcile_tickets(
   if ! fs.exists(ticket_dir)? {
     return merged
   }
+
   let ticket_template = fp"${factory_dir}/templates/TICKET.md"
   let merge_section_template = control.section_text(ticket_template.read_text()?, "Merge record")
   if merge_section_template == "" {
-    return Err(RuntimeError.InvalidTransition(
-      subject: "ticket-template",
-      current: "missing-merge-record",
-      next: "reconcile",
-    ))
+    return Err(
+      RuntimeError.InvalidTransition(
+        subject: "ticket-template",
+        current: "missing-merge-record",
+        next: "reconcile",
+      ),
+    )
   }
+
   for entry in fs.files(ticket_dir, gitignore: false, hidden: true)? {
-    if ! entry.name.ends_with(".md") {
-      continue
-    }
+    continue unless entry.name.ends_with(".md")
     let ticket_id = entry.name.replace(".md", "")
     let ticket_path = entry.path
     let ticket_text = fs.read_text(ticket_path)?
     let status = control.ticket_status(ticket_text)
-    if status != "Accepted." and status != "Approved." and status != "Merged." {
-      continue
-    }
-    if status == "Merged." and control.ticket_merge_record_complete(ticket_text) {
-      continue
-    }
+    continue when status != "Accepted." and status != "Approved." and status != "Merged."
+    continue when status == "Merged." and control.ticket_merge_record_complete(ticket_text)
     let evidence = find_merged_implementation(
-      factory_dir, xsh_repo, ticket_id, detected_xsh_commit
+      factory_dir,
+      xsh_repo,
+      ticket_id,
+      detected_xsh_commit,
     )?
-    if ! evidence.merged {
-      continue
-    }
-    let values: List[control.TemplateValue] = [
-      {key: "IMPLEMENTATION_BRANCH", value: evidence.branch},
-      {key: "IMPLEMENTATION_COMMIT", value: evidence.implementation_commit},
-      {key: "DETECTED_XSH_COMMIT", value: detected_xsh_commit},
-      {key: "IMPLEMENTATION_RUN", value: evidence.source_run},
+    continue unless evidence.merged
+    let values = [
+      {
+        key: "IMPLEMENTATION_BRANCH",
+        value: evidence.branch,
+      },
+      {
+        key: "IMPLEMENTATION_COMMIT",
+        value: evidence.implementation_commit,
+      },
+      {
+        key: "DETECTED_XSH_COMMIT",
+        value: detected_xsh_commit,
+      },
+      {
+        key: "IMPLEMENTATION_RUN",
+        value: evidence.source_run,
+      },
     ]
     let merge_record = control.fill_template(merge_section_template, values)
     let updated_status = control.replace_ticket_status(ticket_text, "Merged.")
@@ -1174,6 +1384,7 @@ export proc reconcile_tickets(
     if updated_ticket != ticket_text {
       fs.write(ticket_path, updated_ticket)?
     }
+
     merged = merged.push({
       ticket_id: evidence.ticket_id,
       eval_id: control.ticket_eval(ticket_text),
@@ -1183,6 +1394,7 @@ export proc reconcile_tickets(
       detected_xsh_commit: evidence.detected_xsh_commit,
     })
   }
+
   return merged
 }
 
@@ -1192,17 +1404,18 @@ export proc session_text(session: Path) [fs, process, error] -> Result[Str] {
   let compressed = fp"${session.display()}.bz2"
   let source = if fs.exists(session)? { session } else { compressed }
   if source.display().ends_with(".bz2") {
-    return run.text "bzip2" "-dc" $source.display()
+    return run.text "bzip2" "-dc" $source
   }
+
   return source.read_text()
 }
 
 pure session_reference_file(name: Str) -> Bool {
-  return name.ends_with(".json") or name.ends_with(".jsonl") or name.ends_with(".events.jsonl.bz2") or
-    name.ends_with(".md") or name.ends_with(".txt") or
-    name.ends_with(".stdout") or name.ends_with(".stderr") or
-    name.ends_with(".state") or name.ends_with(".pids") or
-    name.ends_with(".claimed")
+  return name.ends_with(".json") or name.ends_with(".jsonl") or name.ends_with(".events.jsonl.bz2") or name.ends_with(
+    ".md",
+  ) or name.ends_with(".txt") or name.ends_with(".stdout") or name.ends_with(".stderr") or name.ends_with(".state") or name.ends_with(
+    ".pids",
+  ) or name.ends_with(".claimed")
 }
 
 ## Compresses raw sessions after a run has finished using them.
@@ -1219,26 +1432,35 @@ export proc compress_run_sessions(run_dir: Path) [fs, process, error] -> Result[
       fs.remove(entry.path, missing_ok: true)?
     }
   }
+
   for session in sessions {
     let archive_path = fp"${session.display()}.bz2"
-    let status = process.run(process.command_argv(
-      bzip2, [bzip2.display(), "-c", session.display()], stdout: archive_path,
-    ))?
-    if ! status.ok { return Ok() }
+    let status = process.run(
+      process.command_argv(
+        bzip2,
+        [bzip2.display(), "-c", session.display()],
+        stdout: archive_path,
+      ),
+    )?
+    if ! status.ok {
+      return
+    }
+
     fs.remove(session)?
   }
+
   for entry in fs.walk(run_dir, gitignore: false, hidden: true)? |> where .kind == "file" {
-    if entry.name.ends_with(".bz2") or ! session_reference_file(entry.name) { continue }
+    continue when entry.name.ends_with(".bz2") or ! session_reference_file(entry.name)
     let text = entry.path.read_text()?
-    let normalized = text
-      .replace("/session/session.jsonl.events.jsonl", "/session/__SESSION_EVENTS_JSONL__")
+    let normalized = text.replace("/session/session.jsonl.events.jsonl", "/session/__SESSION_EVENTS_JSONL__")
       .replace("/session/session.jsonl", "/session/__SESSION_JSONL__")
       .replace("session.jsonl", "session.jsonl.bz2")
       .replace("__SESSION_JSONL__", "session.jsonl")
       .replace("__SESSION_EVENTS_JSONL__", "session.jsonl.events.jsonl.bz2")
-    if normalized != text { fs.write_atomic(entry.path, normalized)? }
+    if normalized != text {
+      fs.write_atomic(entry.path, normalized)?
+    }
   }
-  return Ok()
 }
 
 ## Proves that a Pi session called the read tool for one exact path.
@@ -1246,12 +1468,13 @@ export proc session_read_path(session: Path, expected: Path) [fs, process, error
   let text = session_text(session)?
   var found = false
   for line in text.lines() {
-    let read_call = line.contains("\"role\":\"assistant\"") and line.contains("\"name\":\"read\"")
-    let read_result = line.contains("\"role\":\"toolResult\"") and line.contains("\"toolName\":\"read\"")
-    if (read_call or read_result) and line.contains(expected.display()) {
+    let read_call = "\"role\":\"assistant\"" in line and "\"name\":\"read\"" in line
+    let read_result = "\"role\":\"toolResult\"" in line and "\"toolName\":\"read\"" in line
+    if (read_call or read_result) and expected.display() in line {
       found = true
     }
   }
+
   return found
 }
 
@@ -1283,17 +1506,17 @@ export proc unresolved_handbook_candidates(factory_dir: Path) [fs, error] -> Res
   if ! fs.exists(handbook)? or ! fs.exists(runs_dir)? {
     return 0
   }
+
   let current_sha = hash.sha256(handbook)?.hex()
   let ledger = if fs.exists(ledger_path)? { ledger_path.read_text()? } else { "" }
   var unresolved = 0
   for entry in fs.walk(runs_dir, gitignore: false, hidden: true)? |> where .kind == "file" {
-    if entry.name != "handbook-candidate.md" {
-      continue
-    }
+    continue when entry.name != "handbook-candidate.md"
     let sha = hash.sha256(entry.path)?.hex()
-    if sha != current_sha and ! ledger.contains(sha) {
+    if sha != current_sha and sha not in ledger {
       unresolved = unresolved + 1
     }
   }
+
   return unresolved
 }

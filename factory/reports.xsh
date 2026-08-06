@@ -1,9 +1,8 @@
 ##! Common report construction and graph/evidence auditing.
-
-use factory.types as types
-use factory.graph as graph
 use factory.evidence as evidence
+use factory.graph as graph
 use factory.schema as schema
+use factory.types as types
 
 ## Expected machine outputs for one admitted node.
 export type NodeEvidence = {
@@ -24,7 +23,15 @@ export type AuditResult = {
 }
 
 ## Builds the one common machine-report envelope with typed data preserved.
-export pure machine_report(kind: Str, identity: Any, state: Str, result: Str, data: Any, findings: List[Any], artifacts: List[Any]) -> Any {
+export pure machine_report(
+  kind: Str,
+  identity: Any,
+  state: Str,
+  result: Str,
+  data: Any,
+  findings: List[Any],
+  artifacts: List[Any],
+) -> Any {
   return {
     schema_version: schema.SCHEMA_VERSION,
     kind: kind,
@@ -49,20 +56,27 @@ export pure validate_mode_report(report: Any, kind: Str, mode: Str, expected: ev
 
 pure observed_for(observed: List[NodeEvidence], node_id: Str) -> NodeEvidence {
   for item in observed {
-    if item.node_id == node_id { return item }
+    if item.node_id == node_id {
+      return item
+    }
   }
+
   return {node_id: "", report: false, manifest: false, session: false, narrative: false}
 }
 
 pure duplicate_observed(observed: List[NodeEvidence]) -> Str {
   var seen: List[Str] = []
   for item in observed {
-    if item.node_id == "" { continue }
+    continue when item.node_id == ""
     for prior in seen {
-      if prior == item.node_id { return prior }
+      if prior == item.node_id {
+        return prior
+      }
     }
+
     seen = seen.push(item.node_id)
   }
+
   return ""
 }
 
@@ -80,29 +94,56 @@ export pure audit_plan(plan: Any, observed: List[NodeEvidence]) -> AuditResult {
       }
     }
   }
+
   var extra: List[Str] = []
   for item in observed {
-    if item.node_id == "" { continue }
+    continue when item.node_id == ""
     var expected = false
     for node in plan.nodes {
-      if node.node_id == item.node_id { expected = true }
+      if node.node_id == item.node_id {
+        expected = true
+      }
     }
-    if ! expected { extra = extra.push(item.node_id) }
+
+    if ! expected {
+      extra = extra.push(item.node_id)
+    }
   }
+
   let duplicate = duplicate_observed(observed)
-  if duplicate != "" { invalid = invalid.push(duplicate) }
+  if duplicate != "" {
+    invalid = invalid.push(duplicate)
+  }
   var findings: List[Any] = []
-  if missing.len() > 0 { findings = findings.push({kind: "missing-node", nodes: missing}) }
-  if extra.len() > 0 { findings = findings.push({kind: "extra-node", nodes: extra}) }
-  if invalid.len() > 0 { findings = findings.push({kind: "invalid-evidence", nodes: invalid}) }
-  return {pass: missing.len() == 0 and extra.len() == 0 and invalid.len() == 0, missing_nodes: missing, extra_nodes: extra, invalid_nodes: invalid, findings: findings}
+  if missing.len() > 0 {
+    findings = findings.push({kind: "missing-node", nodes: missing})
+  }
+  if extra.len() > 0 {
+    findings = findings.push({kind: "extra-node", nodes: extra})
+  }
+  if invalid.len() > 0 {
+    findings = findings.push({kind: "invalid-evidence", nodes: invalid})
+  }
+  return {
+    pass: missing.len() == 0 and extra.len() == 0 and invalid.len() == 0,
+    missing_nodes: missing,
+    extra_nodes: extra,
+    invalid_nodes: invalid,
+    findings: findings,
+  }
 }
 
 ## The root report is derived from graph evidence, never employee prose.
 export pure root_report(plan: Any, audit: AuditResult, states: List[Any], outputs: List[Str]) -> Any {
   let graph_result = graph.root_result(plan, states, outputs)
   let result = if audit.pass and graph_result == "pass" { "pass" } else { "fail" }
-  return machine_report("run", {run_id: plan.run_id, mode: plan.mode}, "completed", result,
+  return machine_report(
+    "run",
+    {run_id: plan.run_id, mode: plan.mode},
+    "completed",
+    result,
     {missing_nodes: audit.missing_nodes, extra_nodes: audit.extra_nodes, invalid_nodes: audit.invalid_nodes},
-    audit.findings, [{kind: "raw-events", path: "events.jsonl"}])
+    audit.findings,
+    [{kind: "raw-events", path: "events.jsonl"}],
+  )
 }

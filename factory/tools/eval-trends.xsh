@@ -1,5 +1,4 @@
 ##! Summarize historical eval-worker effort by eval and run.
-
 use factory.schema as schema
 
 type Sample = {
@@ -40,35 +39,51 @@ pure run_id_for(path_value: Path) -> Str {
   let parts = path_value.display().split("/")
   var after_runs = false
   for part in parts {
-    if after_runs { return part }
-    if part == "runs" { after_runs = true }
+    if after_runs {
+      return part
+    }
+
+    if part == "runs" {
+      after_runs = true
+    }
   }
+
   return "unknown"
 }
 
 pure eval_id_for(report: Any, path_value: Path) -> Str {
   let identity = json.get(report, ["identity"], null)
   let explicit = text(json.get(identity, ["eval_id"], ""), "")
-  if explicit != "" { return explicit }
+  if explicit != "" {
+    return explicit
+  }
+
   let parts = path_value.display().split("/")
   var after_worker = false
   for part in parts {
-    if after_worker { return part.replace("-1", "").replace("-2", "") }
-    if part == "eval-worker" { after_worker = true }
+    if after_worker {
+      return part.replace("-1", "").replace("-2", "")
+    }
+
+    if part == "eval-worker" {
+      after_worker = true
+    }
   }
+
   return "unknown"
 }
 
 proc read_samples(factory_dir: Path) [fs, error] -> Result[List[Sample]] {
   var samples: List[Sample] = []
   let runs = fp"${factory_dir}/runs"
-  if ! fs.exists(runs)? { return samples }
-  for entry in fs.walk(runs, gitignore: false, hidden: true) |> where .kind == "file" {
-    if entry.name != "report.json" or ! entry.path.display().contains("/workers/eval-worker/") {
-      continue
-    }
+  if ! fs.exists(runs)? {
+    return samples
+  }
+
+  for entry in fs.files(runs, gitignore: false, hidden: true) {
+    continue when entry.name != "report.json" or "/workers/eval-worker/" not in entry.path.display()
     let report = json.read(entry.path)?
-    if ! schema.valid(report, "worker") { continue }
+    continue unless schema.valid(report, "worker")
     let identity = json.get(report, ["identity"], null)
     let execution = json.get(report, ["execution"], null)
     let usage = json.get(report, ["usage"], null)
@@ -76,8 +91,8 @@ proc read_samples(factory_dir: Path) [fs, error] -> Result[List[Sample]] {
     let telemetry = json.get(report, ["provider_telemetry"], null)
     let provider_errors = json.get(telemetry, ["provider_errors"], [])
     let provider_error_count = match provider_errors {
-      values is List[Any] => values.len()
-      _ => 0
+      values is List[Any] => values.len(),
+      _ => 0,
     }
     samples = samples.push({
       eval_id: eval_id_for(report, entry.path),
@@ -93,6 +108,7 @@ proc read_samples(factory_dir: Path) [fs, error] -> Result[List[Sample]] {
       classification: text(json.get(execution, ["classification"], "unknown")),
     })
   }
+
   return samples
 }
 
@@ -101,23 +117,35 @@ pure ordered_samples(samples: List[Sample]) -> List[Sample] {
 }
 
 pure median_int(values: List[Int]) -> Int {
-  if values.len() == 0 { return 0 }
+  if values.len() == 0 {
+    return 0
+  }
+
   return values[values.len() / 2]
 }
 
 pure percentile_int(values: List[Int], percent: Int) -> Int {
-  if values.len() == 0 { return 0 }
-  return values[((values.len() - 1) * percent) / 100]
+  if values.len() == 0 {
+    return 0
+  }
+
+  return values[(values.len() - 1) * percent / 100]
 }
 
 pure median_metric(values: List[Int]) -> Int {
-  if values.len() == 0 { return 0 }
+  if values.len() == 0 {
+    return 0
+  }
+
   return values[values.len() / 2]
 }
 
 pure percentile_metric(values: List[Int], percent: Int) -> Int {
-  if values.len() == 0 { return 0 }
-  return values[((values.len() - 1) * percent) / 100]
+  if values.len() == 0 {
+    return 0
+  }
+
+  return values[(values.len() - 1) * percent / 100]
 }
 
 pure row(eval_id: Str, run_id: Str, samples: List[Sample]) -> Any {
@@ -128,7 +156,6 @@ pure row(eval_id: Str, run_id: Str, samples: List[Sample]) -> Any {
   var passed = 0
   var retries = 0
   var provider_errors = 0
-  let ordered = samples |> sort-by .turns
   for sample in samples {
     turns = turns.push(sample.turns)
     tokens = tokens.push(sample.tokens)
@@ -136,8 +163,11 @@ pure row(eval_id: Str, run_id: Str, samples: List[Sample]) -> Any {
     wall = wall.push(sample.wall_ms)
     retries += sample.retries
     provider_errors += sample.provider_errors
-    if sample.result == "pass" and sample.classification == "pass" { passed += 1 }
+    if sample.result == "pass" and sample.classification == "pass" {
+      passed += 1
+    }
   }
+
   return {
     eval_id: eval_id,
     run_id: run_id,
@@ -164,18 +194,21 @@ proc trend_rows(samples: List[Sample], selected: Str) [error] -> Result[List[Any
       index += 1
       continue
     }
+
     var batch: List[Sample] = []
     let eval_id = current.eval_id
     let run_id = current.run_id
     while index < ordered.len() {
       let sample = ordered[index]
-      if sample.eval_id != eval_id or sample.run_id != run_id { break }
+      break when sample.eval_id != eval_id or sample.run_id != run_id
       batch = batch.push(sample)
       index += 1
     }
+
     rows = rows.push(row(eval_id, run_id, batch))
   }
-  return Ok(rows)
+
+  rows
 }
 
 pure row_text(value: Any) -> Str {
@@ -192,7 +225,7 @@ proc main(...argv: List[Str]) [fs, env, error, io] {
   var index = 0
   while index < argv.len() {
     if argv[index] == "--factory-dir" and index + 1 < argv.len() {
-      factory_dir = Path(argv[index + 1])
+      factory_dir = fp"${argv[index + 1]}"
       index += 2
     } else if argv[index] == "--eval" and index + 1 < argv.len() {
       selected = argv[index + 1]
@@ -205,15 +238,18 @@ proc main(...argv: List[Str]) [fs, env, error, io] {
       abort(2)
     }
   }
+
   if format != "table" and format != "json" {
     eprint "eval-trends format must be table or json"
     abort(2)
   }
+
   let rows = trend_rows(read_samples(factory_dir)?, selected)?
   if format == "json" {
-    print json.encode(rows, pretty: true)?
+    print (json.encode(rows, pretty: true)?)
     return
   }
+
   print "EVAL RUN TRIALS PASS MED_TURNS P90_TURNS MED_TOKENS P90_TOKENS MED_ERRORS MED_WALL_MS RETRIES PROVIDER_ERRORS"
   for value in rows {
     let eval_id = text(json.get(value, ["eval_id"], "unknown"))

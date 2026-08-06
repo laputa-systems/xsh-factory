@@ -1,11 +1,11 @@
 ##! Drain the process and container registry for an interrupted factory run.
-
 use factory.runtime as runtime
 
-proc signal_registry(run_dir: Path, signal: Str, excluded_pid: Int) [fs, process, error] -> Result[Unit] {
+proc signal_registry(run_dir: Path, signal: Str, excluded_pid: Int) [fs, process, error] {
   if ! fs.exists(run_dir)? {
-    return Ok()
+    return
   }
+
   for entry in fs.walk(run_dir, gitignore: false, hidden: true)? |> where .kind == "file" {
     if entry.name.ends_with(".pids") {
       for line in entry.path.read_text()?.lines() {
@@ -13,14 +13,10 @@ proc signal_registry(run_dir: Path, signal: Str, excluded_pid: Int) [fs, process
         if text != "" {
           match text.parse_int() {
             Ok(pid) => {
-              if pid == excluded_pid {
-                continue
-              }
+              continue when pid == excluded_pid
               match unix.kill_process_group(pid, signal) {
                 Ok(_) => {}
-                Err(_) => {
-                  let _ = process.kill(pid, signal)
-                }
+                Err(_) => let _ = process.kill(pid, signal)
               }
             }
             Err(_) => {}
@@ -29,26 +25,27 @@ proc signal_registry(run_dir: Path, signal: Str, excluded_pid: Int) [fs, process
       }
     }
   }
-  return Ok()
 }
 
-proc stop_containers(run_dir: Path) [fs, process, env, error] -> Result[Unit] {
+proc stop_containers(run_dir: Path) [fs, process, env, error] {
   if ! fs.exists(run_dir)? {
-    return Ok()
+    return
   }
+
   let docker = env.get_or("DOCKER", "docker")?
   for entry in fs.walk(run_dir, gitignore: false, hidden: true)? |> where .kind == "file" {
     if entry.name.ends_with(".cid") {
       let container_id = entry.path.read_text()?.trim()
       if container_id != "" {
-        let _ = process.run(process.command_argv(
-          docker,
-          [docker, "rm", "-f", container_id],
-        ))
+        let _ = process.run(
+          process.command_argv(
+            docker,
+            [docker, "rm", "-f", container_id],
+          ),
+        )
       }
     }
   }
-  return Ok()
 }
 
 proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
@@ -56,7 +53,8 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     eprint "usage: cleanup-run.xsh RUN_DIR [--exclude-pid PID]"
     abort(2)
   }
-  let run_dir = Path(argv[0])
+
+  let run_dir = fp"${argv[0]}"
   let excluded_pid = if argv.len() >= 3 and argv[1] == "--exclude-pid" {
     argv[2].parse_int()?
   } else {
@@ -77,6 +75,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
       }
     }
   }
+
   fs.remove(fp"${run_dir}/ACTIVE", missing_ok: true)?
   fs.remove(fp"${run_dir.parent()}/ACTIVE", missing_ok: true)?
   fs.remove(fp"${run_dir.parent()}/ORGANIZATION-ACTIVE", missing_ok: true)?

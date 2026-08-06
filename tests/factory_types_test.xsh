@@ -1,27 +1,30 @@
 ##! Native tests for canonical factory types, paths, requests, and admission.
-
-use factory.types as types
 use factory.paths as paths
-use factory.request as request
 use factory.policy as policy
+use factory.request as request
+use factory.types as types
 
 proc test_domain_constructors_reject_unsafe_values() [error] {
   match types.make_ticket_id("ticket/escape") {
-    Ok(_) => test.fail("unsafe ticket id was accepted")?,
-    Err(_) => {},
+    Ok(_) => test.fail("unsafe ticket id was accepted")?
+    Err(_) => {}
   }
+
   match types.make_run_id("run-../escape") {
-    Ok(_) => test.fail("unsafe run id was accepted")?,
-    Err(_) => {},
+    Ok(_) => test.fail("unsafe run id was accepted")?
+    Err(_) => {}
   }
+
   match types.make_trial_count(3) {
-    Ok(_) => test.fail("out-of-bound trial count was accepted")?,
-    Err(_) => {},
+    Ok(_) => test.fail("out-of-bound trial count was accepted")?
+    Err(_) => {}
   }
+
   match types.make_budget(0.60, 0.50) {
-    Ok(_) => test.fail("role budget exceeded aggregate budget")?,
-    Err(_) => {},
+    Ok(_) => test.fail("role budget exceeded aggregate budget")?
+    Err(_) => {}
   }
+
   test.eq(types.role_name(types.make_role("eval-worker")?), "eval-worker")?
   test.eq(types.mode_name(types.make_mode("organization")?), "organization")?
   test.eq(types.ticket_status_name(types.make_ticket_status("too difficult")?), "too difficult")?
@@ -53,29 +56,32 @@ proc test_domain_vocabulary_round_trips_and_boundaries() [error] {
   test.eq(types.eval_status_name(types.parse_eval_status("Disabled.")?), "Disabled.")?
   test.eq(types.lifecycle_name({value: "validated"}), "validated")?
   match types.make_budget(-0.1, 1.0) {
-    Ok(_) => test.fail("negative role budget was accepted")?,
-    Err(_) => {},
+    Ok(_) => test.fail("negative role budget was accepted")?
+    Err(_) => {}
   }
+
   match types.make_content_hash("session", "short") {
-    Ok(_) => test.fail("short content hash was accepted")?,
-    Err(_) => {},
+    Ok(_) => test.fail("short content hash was accepted")?
+    Err(_) => {}
   }
 }
 
 proc test_paths_are_absolute_and_separator_bounded() [error] {
-  let factory = paths.make_factory_root(Path("/srv/factory"))?
-  let product = paths.make_product_root(Path("/srv/xsh"), factory)?
-  test.ok(paths.within(factory.root_path, Path("/srv/factory/runs/run-1/report.json"))?)
-  test.ok(! paths.within(factory.root_path, Path("/srv/factory-old/report.json"))?)
-  match paths.make_factory_path(factory, Path("relative/report.json")) {
-    Ok(_) => test.fail("relative factory path was accepted")?,
-    Err(_) => {},
+  let factory = paths.make_factory_root(/srv/factory)?
+  let product = paths.make_product_root(/srv/xsh, factory)?
+  test.ok(paths.within(factory.root_path, /srv/factory/runs/run-1/report.json)?)
+  test.ok(! paths.within(factory.root_path, /srv/factory-old/report.json)?)
+  match paths.make_factory_path(factory, p"relative/report.json") {
+    Ok(_) => test.fail("relative factory path was accepted")?
+    Err(_) => {}
   }
-  match paths.make_product_worktree(product, factory, Path("/srv/factory/worktree"), "factory/task", "abc") {
-    Ok(_) => test.fail("factory path was accepted as a product worktree")?,
-    Err(_) => {},
+
+  match paths.make_product_worktree(product, factory, /srv/factory/worktree, "factory/task", "abc") {
+    Ok(_) => test.fail("factory path was accepted as a product worktree")?
+    Err(_) => {}
   }
-  let worktree = paths.make_product_worktree(product, factory, Path("/srv/xsh/worktree"), "factory-task", "abc")?
+
+  let worktree = paths.make_product_worktree(product, factory, /srv/xsh/worktree, "factory-task", "abc")?
   test.eq(worktree.worktree_path.display(), "/srv/xsh/worktree")?
 }
 
@@ -90,11 +96,12 @@ proc test_scoped_paths_preserve_repository_boundaries(ctx: TestContext) [fs, err
   for directory in [factory_path, product_path, runs_path, run_path, phase_path, worker_path] {
     fs.mkdir(directory)?
   }
-  test.eq(paths.canonical_absolute(Path("/srv//factory/"))?.display(), "/srv/factory")?
-  test.ok(paths.within(Path("/"), Path("/anything"))?)?
+
+  test.eq(paths.canonical_absolute(/srv//factory/)?.display(), "/srv/factory")?
+  test.ok(paths.within(/, /anything)?)?
   test.ok(paths.real_within(factory_path, run_path)?)?
   let factory = paths.make_factory_root(factory_path)?
-  let product = paths.make_product_root(product_path, factory)?
+  let _ = paths.make_product_root(product_path, factory)?
   let run_root = paths.make_run_root(factory, run_path)?
   let phase = paths.make_phase_root(run_root, "01-ticket", phase_path)?
   let worker = paths.make_worker_root(phase, "worker-a", worker_path)?
@@ -110,30 +117,59 @@ proc test_scoped_paths_preserve_repository_boundaries(ctx: TestContext) [fs, err
   test.eq(run_evidence.value.display(), run_report.display())?
   test.eq(phase_evidence.value.display(), phase_report.display())?
   test.eq(worker_evidence.value.display(), worker_report.display())?
-  match paths.canonical_absolute(Path("relative")) {
-    Ok(_) => test.fail("relative path was canonicalized")?,
-    Err(_) => {},
+  match paths.canonical_absolute(p"relative") {
+    Ok(_) => test.fail("relative path was canonicalized")?
+    Err(_) => {}
   }
-  match paths.canonical_absolute(Path("/srv/../factory")) {
-    Ok(_) => test.fail("traversal path was canonicalized")?,
-    Err(_) => {},
+
+  match paths.canonical_absolute(/srv/../factory) {
+    Ok(_) => test.fail("traversal path was canonicalized")?
+    Err(_) => {}
   }
+
   match paths.make_product_root(factory_path, factory) {
-    Ok(_) => test.fail("factory checkout was accepted as product root")?,
-    Err(_) => {},
+    Ok(_) => test.fail("factory checkout was accepted as product root")?
+    Err(_) => {}
   }
-  match paths.make_run_root(factory, Path("/outside/run-1")) {
-    Ok(_) => test.fail("outside run root was accepted")?,
-    Err(_) => {},
+
+  match paths.make_run_root(factory, /outside/run-1) {
+    Ok(_) => test.fail("outside run root was accepted")?
+    Err(_) => {}
   }
-  match paths.make_worker_path(worker, Path("/outside/report.json")) {
-    Ok(_) => test.fail("outside worker path was accepted")?,
-    Err(_) => {},
+
+  match paths.make_worker_path(worker, /outside/report.json) {
+    Ok(_) => test.fail("outside worker path was accepted")?
+    Err(_) => {}
   }
 }
 
 proc test_cycle_request_is_typed_and_bounded() [error] {
-  let text = "# Cycle\n\n## Mode\n\n- `organization`\n\n## Active evals\n\n- `task-ecount`\n\n## Trial plan\n\n- Count: `1`\n\n## New eval proposals\n\n- Count: `1`\n\n## Approved tickets\n\n- `task-a`\n\n## Aggregate budget\n\n- USD: `0.75`\n"
+  let text = """# Cycle
+
+## Mode
+
+- `organization`
+
+## Active evals
+
+- `task-ecount`
+
+## Trial plan
+
+- Count: `1`
+
+## New eval proposals
+
+- Count: `1`
+
+## Approved tickets
+
+- `task-a`
+
+## Aggregate budget
+
+- USD: `0.75`
+"""
   let cycle = request.parse(text)?
   test.eq(types.mode_name(cycle.mode), "organization")?
   test.eq(cycle.tickets.len(), 1)?
@@ -144,7 +180,20 @@ proc test_cycle_request_is_typed_and_bounded() [error] {
 }
 
 proc test_cycle_request_defaults_and_scalar_accessors() [error] {
-  let text = "# Cycle\n\n## Mode\n\n- `eval`\n\n## Approved tickets\n\n- None.\n\n## Aggregate budget\n\n- USD: 0.50\n"
+  let text = """# Cycle
+
+## Mode
+
+- `eval`
+
+## Approved tickets
+
+- None.
+
+## Aggregate budget
+
+- USD: 0.50
+"""
   let facts = request.facts(text)?
   test.eq(facts.mode, "eval")?
   test.eq(facts.tickets, [])?
@@ -161,13 +210,43 @@ proc test_cycle_request_defaults_and_scalar_accessors() [error] {
   test.eq(request.trial_value(text)?, 1)?
   test.eq(request.design_value(text)?, 0)?
   test.ok(! request.measured_reuse_value(text)?)
-  let colon = "# Cycle\n\n## Mode\n\n- `eval`\n\n## Trial plan\n\n- Count: 2\n\n## New eval proposals\n\n- Count: 1\n\n## Aggregate budget\n\n- USD: 0.25\n"
+  let colon = """# Cycle
+
+## Mode
+
+- `eval`
+
+## Trial plan
+
+- Count: 2
+
+## New eval proposals
+
+- Count: 1
+
+## Aggregate budget
+
+- USD: 0.25
+"""
   test.eq(request.parse_trial_count(colon)?.value, 2)?
   test.eq(request.parse_design_count(colon)?, 1)?
 }
 
 proc test_admission_returns_one_plan_and_rejects_factory_work() [error] {
-  let cycle = request.parse("# Cycle\n\n## Mode\n\n- `ticket-implementation`\n\n## Active evals\n\n- `task-ecount`\n\n## Approved tickets\n\n- `task-a`\n")?
+  let cycle = request.parse("""# Cycle
+
+## Mode
+
+- `ticket-implementation`
+
+## Active evals
+
+- `task-ecount`
+
+## Approved tickets
+
+- `task-a`
+""")?
   let ticket_id = types.make_ticket_id("task-a")?
   let eval_id = types.make_eval_id("task-ecount")?
   let ticket = {
@@ -179,75 +258,161 @@ proc test_admission_returns_one_plan_and_rejects_factory_work() [error] {
     open_branch: "",
   }
   let eval = {id: eval_id, status: types.make_eval_status("Approved.")?}
-  let plan = policy.admit(cycle,
+  let plan = policy.admit(
+    cycle,
     {factory_root_ok: true, product_root_ok: true, product_clean: true, active_run_clear: true, lock_clear: true},
-    {eval_count: 1, evals: [eval], tickets: [ticket], handbook_dispositioned: true})?
+    {eval_count: 1, evals: [eval], tickets: [ticket], handbook_dispositioned: true},
+  )?
   test.eq(plan.tickets.len(), 1)?
   test.eq(plan.evals.len(), 1)?
 
-  let factory_ticket = {id: ticket_id, target: types.make_change_target("factory")?, status: types.make_ticket_status("Approved.")?, eval_id: eval_id.value, api_surface_ok: true, open_branch: ""}
-  match policy.admit(cycle,
+  let factory_ticket = {
+    id: ticket_id,
+    target: types.make_change_target("factory")?,
+    status: types.make_ticket_status("Approved.")?,
+    eval_id: eval_id.value,
+    api_surface_ok: true,
+    open_branch: "",
+  }
+  match policy.admit(
+    cycle,
     {factory_root_ok: true, product_root_ok: true, product_clean: true, active_run_clear: true, lock_clear: true},
-    {eval_count: 1, evals: [eval], tickets: [factory_ticket], handbook_dispositioned: true}) {
-    Ok(_) => test.fail("factory-owned ticket entered engineer admission")?,
-    Err(_) => {},
+    {eval_count: 1, evals: [eval], tickets: [factory_ticket], handbook_dispositioned: true},
+  ) {
+    Ok(_) => test.fail("factory-owned ticket entered engineer admission")?
+    Err(_) => {}
   }
 }
 
 proc test_admission_fails_closed_for_portfolio_and_repository_boundaries() [error] {
-  let cycle = request.parse("# Cycle\n\n## Mode\n\n- `ticket-implementation`\n\n## Approved tickets\n\n- `task-a`\n")?
+  let cycle = request.parse("""# Cycle
+
+## Mode
+
+- `ticket-implementation`
+
+## Approved tickets
+
+- `task-a`
+""")?
   let ticket_id = types.make_ticket_id("task-a")?
   let eval_id = types.make_eval_id("task-ecount")?
-  let ticket = {id: ticket_id, target: types.make_change_target("product")?, status: types.make_ticket_status("Approved.")?, eval_id: eval_id.value, api_surface_ok: true, open_branch: ""}
+  let ticket = {
+    id: ticket_id,
+    target: types.make_change_target("product")?,
+    status: types.make_ticket_status("Approved.")?,
+    eval_id: eval_id.value,
+    api_surface_ok: true,
+    open_branch: "",
+  }
   let eval = {id: eval_id, status: types.make_eval_status("Approved.")?}
-  let repository = {factory_root_ok: true, product_root_ok: true, product_clean: true, active_run_clear: true, lock_clear: true}
+  let repository = {
+    factory_root_ok: true,
+    product_root_ok: true,
+    product_clean: true,
+    active_run_clear: true,
+    lock_clear: true,
+  }
   let portfolio = {eval_count: 1, evals: [eval], tickets: [ticket], handbook_dispositioned: true}
   let accepted = policy.admit(cycle, repository, portfolio)?
   test.eq(accepted.tickets.len(), 1)?
-  let no_factory_root = {factory_root_ok: false, product_root_ok: true, product_clean: true, active_run_clear: true, lock_clear: true}
-  let dirty_product = {factory_root_ok: true, product_root_ok: true, product_clean: false, active_run_clear: true, lock_clear: true}
-  let active_run = {factory_root_ok: true, product_root_ok: true, product_clean: true, active_run_clear: false, lock_clear: true}
-  let held_lock = {factory_root_ok: true, product_root_ok: true, product_clean: true, active_run_clear: true, lock_clear: false}
+  let no_factory_root = {
+    factory_root_ok: false,
+    product_root_ok: true,
+    product_clean: true,
+    active_run_clear: true,
+    lock_clear: true,
+  }
+  let dirty_product = {
+    factory_root_ok: true,
+    product_root_ok: true,
+    product_clean: false,
+    active_run_clear: true,
+    lock_clear: true,
+  }
+  let active_run = {
+    factory_root_ok: true,
+    product_root_ok: true,
+    product_clean: true,
+    active_run_clear: false,
+    lock_clear: true,
+  }
+  let held_lock = {
+    factory_root_ok: true,
+    product_root_ok: true,
+    product_clean: true,
+    active_run_clear: true,
+    lock_clear: false,
+  }
   match policy.admit(cycle, no_factory_root, portfolio) {
-    Ok(_) => test.fail("invalid factory root entered admission")?,
-    Err(_) => {},
+    Ok(_) => test.fail("invalid factory root entered admission")?
+    Err(_) => {}
   }
+
   match policy.admit(cycle, dirty_product, portfolio) {
-    Ok(_) => test.fail("dirty product checkout entered admission")?,
-    Err(_) => {},
+    Ok(_) => test.fail("dirty product checkout entered admission")?
+    Err(_) => {}
   }
+
   match policy.admit(cycle, active_run, portfolio) {
-    Ok(_) => test.fail("active run did not block admission")?,
-    Err(_) => {},
+    Ok(_) => test.fail("active run did not block admission")?
+    Err(_) => {}
   }
+
   match policy.admit(cycle, held_lock, portfolio) {
-    Ok(_) => test.fail("held admission lock did not block admission")?,
-    Err(_) => {},
+    Ok(_) => test.fail("held admission lock did not block admission")?
+    Err(_) => {}
   }
+
   let no_handbook = {eval_count: 1, evals: [eval], tickets: [ticket], handbook_dispositioned: false}
   let too_many_evals = {eval_count: 31, evals: [eval], tickets: [ticket], handbook_dispositioned: true}
   let no_ticket = {eval_count: 1, evals: [eval], tickets: [], handbook_dispositioned: true}
   match policy.admit(cycle, repository, no_handbook) {
-    Ok(_) => test.fail("undispositioned handbook entered admission")?,
-    Err(_) => {},
+    Ok(_) => test.fail("undispositioned handbook entered admission")?
+    Err(_) => {}
   }
+
   match policy.admit(cycle, repository, too_many_evals) {
-    Ok(_) => test.fail("eval portfolio cap was ignored")?,
-    Err(_) => {},
+    Ok(_) => test.fail("eval portfolio cap was ignored")?
+    Err(_) => {}
   }
+
   match policy.admit(cycle, repository, no_ticket) {
-    Ok(_) => test.fail("missing ticket was admitted")?,
-    Err(_) => {},
+    Ok(_) => test.fail("missing ticket was admitted")?
+    Err(_) => {}
   }
-  let duplicate_cycle = {mode: cycle.mode, tickets: [ticket_id, ticket_id], ticket_policy: cycle.ticket_policy, active_evals: cycle.active_evals, trial_count: cycle.trial_count, design_count: cycle.design_count, allow_measured_reuse: cycle.allow_measured_reuse, role_overrides: cycle.role_overrides, required_outputs: cycle.required_outputs, aggregate_budget: cycle.aggregate_budget}
+
+  let duplicate_cycle = {
+    mode: cycle.mode,
+    tickets: [
+      ticket_id,
+      ticket_id,
+    ],
+    ticket_policy: cycle.ticket_policy,
+    active_evals: cycle.active_evals,
+    trial_count: cycle.trial_count,
+    design_count: cycle.design_count,
+    allow_measured_reuse: cycle.allow_measured_reuse,
+    role_overrides: cycle.role_overrides,
+    required_outputs: cycle.required_outputs,
+    aggregate_budget: cycle.aggregate_budget,
+  }
   match policy.admit(duplicate_cycle, repository, portfolio) {
-    Ok(_) => test.fail("duplicate ticket entered admission")?,
-    Err(_) => {},
+    Ok(_) => test.fail("duplicate ticket entered admission")?
+    Err(_) => {}
   }
-  let factory_ticket = {id: ticket_id, target: types.make_change_target("factory")?, status: types.make_ticket_status("Approved.")?, eval_id: eval_id.value, api_surface_ok: true, open_branch: ""}
+
+  let factory_ticket = {
+    id: ticket_id,
+    target: types.make_change_target("factory")?,
+    status: types.make_ticket_status("Approved.")?,
+    eval_id: eval_id.value,
+    api_surface_ok: true,
+    open_branch: "",
+  }
   let factory_portfolio = {eval_count: 1, evals: [eval], tickets: [factory_ticket], handbook_dispositioned: true}
   match policy.admit(cycle, repository, factory_portfolio) {
-    Ok(_) => test.fail("factory ticket entered engineer admission")?,
-    Err(_) => {},
+    Ok(_) => test.fail("factory ticket entered engineer admission")?
+    Err(_) => {}
   }
 }

@@ -1,9 +1,8 @@
 ##! Dispatches one complete factory cycle from a checked-in request.
-
 use factory.control as control
-use factory.runtime as runtime
-use factory.request as typed_request
 use factory.paths as paths
+use factory.request as typed_request
+use factory.runtime as runtime
 use factory.types as typed_types
 
 on SIGINT --pre-cancel=0ms [fs, process, env, error] {
@@ -28,10 +27,12 @@ proc preflight(
     eprint f"cycle request must be a template under ${templates_root.display()}: ${request.display()}"
     return false
   }
+
   if ! fs.exists(request)? {
     eprint f"cycle request does not exist: ${request.display()}"
     return false
   }
+
   let parsed_mode = typed_request.mode_value(request_text)
   match parsed_mode {
     Err(_) => {
@@ -45,10 +46,12 @@ proc preflight(
       }
     }
   }
+
   if ! fs.exists(xsh_repo)? {
     eprint f"XSH repository does not exist: ${xsh_repo.display()}"
     return false
   }
+
   for required in [
     "NORTH-STAR.md",
     "runtime/handbook.md",
@@ -90,11 +93,13 @@ proc preflight(
       return false
     }
   }
-  let xsh_status = run.text "git" "-C" $xsh_repo.display() "status" "--porcelain" ?
+
+  let xsh_status = run.text "git" "-C" $xsh_repo "status" "--porcelain" ?
   if xsh_status.trim() != "" {
     eprint f"XSH repository must be clean before ${mode} admission: ${xsh_repo.display()}"
     return false
   }
+
   let runs_dir = fp"${factory_dir}/runs"
   let active_run = fp"${runs_dir}/ACTIVE"
   let organization_run = fp"${runs_dir}/ORGANIZATION-ACTIVE"
@@ -120,6 +125,7 @@ proc preflight(
     eprint f"eval contract cap exceeded: ${eval_contracts.len()} > ${control.max_eval_contracts()}"
     return false
   }
+
   let candidate_tickets = if requested_tickets.len() > 0 {
     requested_tickets
   } else if mode == "organization" and typed_request.ticket_policy_value(request_text)? != "none" {
@@ -131,16 +137,19 @@ proc preflight(
     eprint f"cycle admits at most ${control.max_concurrent_engineers()} tickets"
     return false
   }
+
   for candidate_ticket in candidate_tickets {
     if ! control.valid_ticket_id(candidate_ticket) {
       eprint f"unsafe ticket id: ${candidate_ticket}"
       return false
     }
+
     let ticket_path = fp"${factory_dir}/tickets/${candidate_ticket}.md"
     if fs.exists(ticket_path)? and control.ticket_change_target(ticket_path.read_text()?) != "product" {
       eprint f"ticket ${candidate_ticket} is not a product ticket; CTO owns factory changes and no engineer was dispatched"
       return false
     }
+
     if fs.exists(ticket_path)? and runtime.accepted_ticket(ticket_path)? {
       let open_branch = runtime.open_ticket_branch(xsh_repo, candidate_ticket)?
       if open_branch != "" and mode != "organization" {
@@ -150,6 +159,7 @@ proc preflight(
       }
     }
   }
+
   let unresolved_handbook = runtime.unresolved_handbook_candidates(factory_dir)?
   if unresolved_handbook > 0 {
     eprint f"${unresolved_handbook} handbook candidates require CTO disposition before paid work"
@@ -161,25 +171,29 @@ proc preflight(
     eprint "top-level dispatcher cannot disable the aggregate cycle budget"
     return false
   }
+
   let requested_cycle_budget = env.get_or("FACTORY_CYCLE_BUDGET_USD", control.default_cycle_budget())?
-  let _cycle_budget = control.clamp_cycle_budget(requested_cycle_budget)?
+  let _ = control.clamp_cycle_budget(requested_cycle_budget)?
   let auth_file = env.path("PI_AUTH_FILE", fp"${home}/.pi/agent/auth.json")?
   if ! fs.exists(auth_file)? {
     eprint f"Pi auth file does not exist: ${auth_file.display()}"
     return false
   }
+
   let pi_command = env.get_or("PI_COMMAND", "pi")?
-  let _pi_path = process.which(pi_command)?
-  let _xsh_path = process.which("xsh")?
+  let _ = process.which(pi_command)?
+  let _ = process.which("xsh")?
   let requires_eval_runtime = mode == "eval" or mode == "organization"
   if requires_eval_runtime {
-    let _make_path = process.which("make")?
+    let _ = process.which("make")?
     let docker_command = env.get_or("DOCKER", "docker")?
-    let _docker_path = process.which(docker_command)?
-    let docker_status = process.run(process.command_argv(
-      docker_command,
-      [docker_command, "info", "--format", "{{.ServerVersion}}"],
-    ))?
+    let _ = process.which(docker_command)?
+    let docker_status = process.run(
+      process.command_argv(
+        docker_command,
+        [docker_command, "info", "--format", "{{.ServerVersion}}"],
+      ),
+    )?
     if ! docker_status.ok {
       eprint "Docker daemon preflight failed"
       return false
@@ -193,6 +207,7 @@ proc preflight(
       eprint "organization request must select an eval"
       return false
     }
+
     let eval_path = fp"${factory_dir}/evals/${eval_id}/EVAL.md"
     let eval_exists = fs.exists(eval_path)?
     let eval_disabled = eval_exists and control.eval_is_disabled(eval_path.read_text()?)
@@ -203,30 +218,37 @@ proc preflight(
         return false
       }
     }
+
     if ! control.valid_eval_id(eval_id) or ! eval_exists or eval_disabled {
       eprint f"cycle request selected unsupported or missing eval: ${eval_id}"
       return false
     }
+
     let evaluator_file = fp"${factory_dir}/evals/${eval_id}/evaluator.xsh"
     if ! fs.exists(evaluator_file)? {
       eprint f"eval ${eval_id} is missing its package-owned evaluator.xsh"
       return false
     }
+
     let evaluator_source = evaluator_file.read_text()?
     if ! control.eval_evaluator_package_owned(evaluator_source) {
       eprint f"eval ${eval_id} package evaluator delegates to a legacy/shared dispatcher"
       return false
     }
-    let evaluator_check = process.run(process.command_argv(
-      process.which("xsht")?,
-      ["xsht", "check", evaluator_file.display()],
-      cwd: factory_dir,
-    ))?
+
+    let evaluator_check = process.run(
+      process.command_argv(
+        process.which("xsht")?,
+        ["xsht", "check", evaluator_file.display()],
+        cwd: factory_dir,
+      ),
+    )?
     if ! evaluator_check.ok {
       eprint f"eval ${eval_id} package evaluator failed xsht check"
       return false
     }
   }
+
   if mode == "eval" or mode == "organization" {
     let trial_count = typed_request.trial_value(request_text)?
     if trial_count < 1 or trial_count > 2 {
@@ -234,6 +256,7 @@ proc preflight(
       return false
     }
   }
+
   if mode == "eval-design" {
     let new_eval_count = typed_request.design_value(request_text)?
     if new_eval_count != 1 {
@@ -247,6 +270,7 @@ proc preflight(
       return false
     }
   }
+
   return true
 }
 
@@ -255,23 +279,27 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     eprint "usage: xsh run.xsh CYCLE_REQUEST.md [EVAL_ID]"
     abort(2)
   }
+
   let factory_dir = env.path("FACTORY_DIR", fs.cwd()?)?
-  let request = Path(argv[0])
+  let request = fp"${argv[0]}"
   let request_allowed = paths.real_within(fp"${factory_dir}/templates", request)?
   if ! request_allowed {
     eprint f"cycle request must be a template under ${factory_dir}/templates: ${request.display()}"
     abort(2)
   }
+
   if ! fs.exists(request)? {
     eprint f"cycle request does not exist: ${request.display()}"
     abort(2)
   }
+
   let request_text = request.read_text()?
   let mode = typed_request.mode_value(request_text)?
   let xsh_repo = env.path("FACTORY_XSH_REPO", fp"${factory_dir}/../xsh")?
   if ! preflight(factory_dir, xsh_repo, request, request_text, mode)? {
     abort(1)
   }
+
   let child = if mode == "ticket-implementation" {
     fp"${factory_dir}/factory/controllers/ticket.xsh"
   } else if mode == "eval" {
@@ -282,10 +310,12 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     fp"${factory_dir}/factory/controllers/design.xsh"
   }
   let xsh_path = process.which("xsh")?
-  let status = process.run(process.command_argv(
-    xsh_path,
-    [xsh_path.display(), child.display(), "--"].extend(argv),
-    cwd: factory_dir,
-  ))?
+  let status = process.run(
+    process.command_argv(
+      xsh_path,
+      [xsh_path.display(), child.display(), "--"].extend(argv),
+      cwd: factory_dir,
+    ),
+  )?
   abort(if status.ok { 0 } else { status.exit_code() ?? 1 })
 }

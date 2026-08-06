@@ -1,5 +1,4 @@
 ##! Typed parsing for the Markdown cycle request boundary.
-
 use factory.types as types
 
 ## The parsed request is the only request representation admission consumes.
@@ -38,9 +37,15 @@ pure section_lines(text: Str, heading: Str) -> List[Str] {
       in_section = true
       continue
     }
-    if in_section and trimmed.starts_with("## ") { return lines }
-    if in_section { lines = lines.push(trimmed) }
+
+    if in_section and trimmed.starts_with("## ") {
+      return lines
+    }
+    if in_section {
+      lines = lines.push(trimmed)
+    }
   }
+
   return lines
 }
 
@@ -48,9 +53,12 @@ pure first_quoted(lines: List[Str]) -> Str {
   for line in lines {
     if line.starts_with("- `") {
       let parts = line.split("`")
-      if parts.len() >= 2 { return parts[1] }
+      if parts.len() >= 2 {
+        return parts[1]
+      }
     }
   }
+
   return ""
 }
 
@@ -59,9 +67,12 @@ pure list_quoted(lines: List[Str]) -> List[Str] {
   for line in lines {
     if line.starts_with("- `") {
       let parts = line.split("`")
-      if parts.len() >= 2 { values = values.push(parts[1]) }
+      if parts.len() >= 2 {
+        values = values.push(parts[1])
+      }
     }
   }
+
   return values
 }
 
@@ -69,38 +80,42 @@ pure count_value(lines: List[Str], fallback: Int) -> Result[Int] {
   for line in lines {
     if line.starts_with("- Count:") {
       let quoted = line.split("`")
-      if quoted.len() >= 2 { return quoted[1].parse_int() }
+      if quoted.len() >= 2 {
+        return quoted[1].parse_int()
+      }
       let parts = line.split(":")
-      if parts.len() >= 2 { return parts[1].trim().parse_int() }
+      if parts.len() >= 2 {
+        return parts[1].trim().parse_int()
+      }
     }
   }
-  return Ok(fallback)
+
+  fallback
 }
 
 pure parsed_ticket_policy(text: Str) -> Str {
   for line in section_lines(text, "Approved tickets") {
-    if line == "- None." or line == "- None" { return "none" }
-    if line.starts_with("- `") { return "explicit" }
+    if line == "- None." or line == "- None" {
+      return "none"
+    }
+    if line.starts_with("- `") {
+      return "explicit"
+    }
   }
+
   return "auto"
 }
 
 ## Parses all explicitly named approved tickets.
 export pure parse_ticket_ids(text: Str) -> Result[List[types.TicketId]] {
-  var values: List[types.TicketId] = []
-  for raw in list_quoted(section_lines(text, "Approved tickets")) {
-    values = values.push(types.make_ticket_id(raw)?)
-  }
-  return Ok(values)
+  var values = [types.make_ticket_id(raw)? for raw in list_quoted(section_lines(text, "Approved tickets"))]
+  values
 }
 
 ## Parses the selected active eval identifiers.
 export pure parse_eval_ids(text: Str) -> Result[List[types.EvalId]] {
-  var values: List[types.EvalId] = []
-  for raw in list_quoted(section_lines(text, "Active evals")) {
-    values = values.push(types.make_eval_id(raw)?)
-  }
-  return Ok(values)
+  var values = [types.make_eval_id(raw)? for raw in list_quoted(section_lines(text, "Active evals"))]
+  values
 }
 
 ## Parses the bounded trial count.
@@ -115,16 +130,18 @@ export pure parse_design_count(text: Str) -> Result[Int] {
   if count < 0 or count > 1 {
     return Err(types.DomainError.InvalidFormat(kind: "design-count", value: f"${count}"))
   }
-  return Ok(count)
+
+  count
 }
 
 ## Parses the explicit measured-reuse opt-in.
 export pure parse_measured_reuse(text: Str) -> Bool {
   for line in text.lines() {
-    if line.contains("Allow measured eval reuse") and (line.contains("`yes`") or line.contains("`true`")) {
+    if "Allow measured eval reuse" in line and ("`yes`" in line or "`true`" in line) {
       return true
     }
   }
+
   return false
 }
 
@@ -133,25 +150,34 @@ export pure parse_aggregate_budget(text: Str) -> Result[Float] {
   for line in section_lines(text, "Aggregate budget") {
     if line.starts_with("- USD:") {
       let quoted = line.split("`")
-      if quoted.len() >= 2 { return quoted[1].parse_float() }
+      if quoted.len() >= 2 {
+        return quoted[1].parse_float()
+      }
       let parts = line.split(":")
-      if parts.len() >= 2 { return parts[1].trim().parse_float() }
+      if parts.len() >= 2 {
+        return parts[1].trim().parse_float()
+      }
     }
   }
-  return Ok(1.0)
+
+  1.0
 }
 
 ## Parses one immutable CycleRequest before any run directory is created.
 export pure parse(text: Str) -> Result[CycleRequest] {
-  let mode_value = first_quoted(section_lines(text, "Mode"))
-  if mode_value == "" { return Err(types.DomainError.Missing(value: "Mode")) }
-  let mode = types.parse_mode(mode_value)?
+  let parsed_mode_value = first_quoted(section_lines(text, "Mode"))
+  if parsed_mode_value == "" {
+    return Err(types.DomainError.Missing(value: "Mode"))
+  }
+  let mode = types.parse_mode(parsed_mode_value)?
   let tickets = parse_ticket_ids(text)?
   let evals = parse_eval_ids(text)?
   let ticket_policy = parsed_ticket_policy(text)
   let design_count = parse_design_count(text)?
   let aggregate_budget = parse_aggregate_budget(text)?
-  if aggregate_budget <= 0.0 { return Err(types.DomainError.InvalidFormat(kind: "aggregate-budget", value: f"${aggregate_budget}")) }
+  if aggregate_budget <= 0.0 {
+    return Err(types.DomainError.InvalidFormat(kind: "aggregate-budget", value: f"${aggregate_budget}"))
+  }
   return Ok({
     mode: mode,
     tickets: tickets,
@@ -185,41 +211,41 @@ export pure facts(text: Str) -> Result[RequestFacts] {
 ## nominal record fields through the current XSH module boundary.
 export pure mode_value(text: Str) -> Result[Str] {
   let cycle = parse(text)?
-  return Ok(types.mode_name(cycle.mode))
+  types.mode_name(cycle.mode)
 }
 
 ## Returns explicitly named ticket values.
 export pure ticket_values(text: Str) -> Result[List[Str]] {
   let cycle = parse(text)?
-  return Ok([ticket.value for ticket in cycle.tickets])
+  [ticket.value for ticket in cycle.tickets]
 }
 
 ## Returns the controller ticket-selection policy.
 export pure ticket_policy_value(text: Str) -> Result[Str] {
   let cycle = parse(text)?
-  return Ok(cycle.ticket_policy)
+  cycle.ticket_policy
 }
 
 ## Returns selected active eval values.
 export pure eval_values(text: Str) -> Result[List[Str]] {
   let cycle = parse(text)?
-  return Ok([eval_id.value for eval_id in cycle.active_evals])
+  [eval_id.value for eval_id in cycle.active_evals]
 }
 
 ## Returns the bounded trial count.
 export pure trial_value(text: Str) -> Result[Int] {
   let cycle = parse(text)?
-  return Ok(cycle.trial_count.value)
+  cycle.trial_count.value
 }
 
 ## Returns the bounded eval-design count.
 export pure design_value(text: Str) -> Result[Int] {
   let cycle = parse(text)?
-  return Ok(cycle.design_count)
+  cycle.design_count
 }
 
 ## Returns the explicit measured-reuse permission.
 export pure measured_reuse_value(text: Str) -> Result[Bool] {
   let cycle = parse(text)?
-  return Ok(cycle.allow_measured_reuse)
+  cycle.allow_measured_reuse
 }
