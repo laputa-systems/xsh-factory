@@ -3,6 +3,8 @@ use factory.control as control
 use factory.paths as paths
 use factory.runtime as runtime
 use factory.schema as schema
+use factory.tools.budget as budget
+use factory.tools.cleanup as cleanup
 
 proc command_ok(command: Path, args: List[Str]) [process, error] -> Result[Bool] {
   return process.run(process.command_argv(command, args))?.ok
@@ -33,6 +35,340 @@ proc run_session_report(session: Path, output: Path) [fs, process, error] -> Res
     ),
   )?
   return status.ok
+}
+
+proc run_factory_entrypoint(file: Str, args: List[Str]) [fs, process, error] -> Result[Bool] {
+  let factory = fs.cwd()?
+  let xsh = process.which("xsh")?
+  let status = process.run(
+    process.command_argv(
+      xsh,
+      [xsh.display(), fp"${factory}/${file}", "--"].extend(args),
+      cwd: factory,
+      env: {FACTORY_DIR: factory.display(), XSH_MODULE_PATH: factory.display()},
+    ),
+  )?
+  status.ok
+}
+
+proc test_controller_and_tool_entrypoints_fail_closed(ctx: TestContext) [fs, process, error] {
+  test.ok(! run_factory_entrypoint("run.xsh", [])?)?
+  test.ok(! run_factory_entrypoint("run.xsh", ["missing-request.md"])?)?
+  test.ok(! run_factory_entrypoint("factory/controllers/eval.xsh", [])?)?
+  test.ok(! run_factory_entrypoint("factory/controllers/eval.xsh", ["missing-request.md"])?)?
+  test.ok(! run_factory_entrypoint("factory/controllers/organization.xsh", [])?)?
+  test.ok(! run_factory_entrypoint("factory/controllers/organization.xsh", ["missing-request.md"])?)?
+  test.ok(! run_factory_entrypoint("factory/controllers/ticket.xsh", [])?)?
+  test.ok(! run_factory_entrypoint("factory/controllers/ticket.xsh", ["missing-request.md"])?)?
+  test.ok(! run_factory_entrypoint("factory/controllers/design.xsh", [])?)?
+  test.ok(! run_factory_entrypoint("factory/controllers/design.xsh", ["missing-request.md"])?)?
+  test.ok(! run_factory_entrypoint("factory/controllers/reuse.xsh", ["unexpected"])?)?
+  test.ok(
+    ! run_factory_entrypoint("factory/entrypoints/run-agent.xsh", ["unknown-role", "worker", "prompt", "message"])?,
+  )?
+  test.ok(! run_factory_entrypoint("factory/entrypoints/eval-executor.xsh", [])?)?
+  test.ok(! run_factory_entrypoint("factory/tools/budget-watch.xsh", [])?)?
+  test.ok(! run_factory_entrypoint("factory/tools/session-watch.xsh", [])?)?
+  test.ok(! run_factory_entrypoint("factory/tools/cto.xsh", ["unexpected"])?)?
+
+  let root = test.temp_dir(ctx, name: "entrypoint-tool-probes")?
+  let factory = fp"${root}/factory"
+  let product = fp"${root}/product"
+  fs.mkdir(factory)?
+  fs.mkdir(product)?
+  fs.mkdir(fp"${root}/run")?
+  fs.mkdir(fp"${root}/eval-worker")?
+  let xsh = process.which("xsh")?
+  let eval_request = fp"${root}/eval-request.md"
+  fs.write(
+    eval_request,
+    """# Coverage eval request
+
+## Mode
+
+- `eval`
+
+## Active evals
+
+- `task-bigfiles`
+
+## Trial plan
+
+- Count: `0`
+
+## New eval proposals
+
+- Count: `0`
+""",
+  )?
+  let eval_request_status = process.run(
+    process.command_argv(
+      xsh,
+      [
+        xsh.display(),
+        fp"${fs.cwd()?}/factory/controllers/eval.xsh",
+        "--",
+        eval_request.display(),
+      ],
+      cwd: factory,
+      env: {FACTORY_DIR: fs.cwd()?.display(), XSH_MODULE_PATH: fs.cwd()?.display()},
+    ),
+  )?
+  test.ok(! eval_request_status.ok)?
+
+  let organization_request = fp"${root}/organization-request.md"
+  fs.write(
+    organization_request,
+    """# Coverage organization request
+
+## Mode
+
+- `organization`
+
+## Trial plan
+
+- Count: `0`
+
+## New eval proposals
+
+- Count: `0`
+
+## Approved tickets
+
+- None.
+""",
+  )?
+  let organization_request_status = process.run(
+    process.command_argv(
+      xsh,
+      [
+        xsh.display(),
+        fp"${fs.cwd()?}/factory/controllers/organization.xsh",
+        "--",
+        organization_request.display(),
+      ],
+      cwd: factory,
+      env: {FACTORY_DIR: fs.cwd()?.display(), XSH_MODULE_PATH: fs.cwd()?.display()},
+    ),
+  )?
+  test.ok(! organization_request_status.ok)?
+
+  let design_request = fp"${root}/design-request.md"
+  fs.write(
+    design_request,
+    """# Coverage design request
+
+## Mode
+
+- `organization`
+""",
+  )?
+  let design_request_status = process.run(
+    process.command_argv(
+      xsh,
+      [
+        xsh.display(),
+        fp"${fs.cwd()?}/factory/controllers/design.xsh",
+        "--",
+        design_request.display(),
+      ],
+      cwd: factory,
+      env: {FACTORY_DIR: fs.cwd()?.display(), XSH_MODULE_PATH: fs.cwd()?.display()},
+    ),
+  )?
+  test.ok(! design_request_status.ok)?
+
+  let ticket_request = fp"${root}/ticket-request.md"
+  fs.write(
+    ticket_request,
+    """# Coverage ticket request
+
+## Mode
+
+- `ticket-implementation`
+
+## Approved tickets
+
+- None.
+""",
+  )?
+  let ticket_request_status = process.run(
+    process.command_argv(
+      xsh,
+      [
+        xsh.display(),
+        fp"${fs.cwd()?}/factory/controllers/ticket.xsh",
+        "--",
+        ticket_request.display(),
+      ],
+      cwd: factory,
+      env: {
+        FACTORY_DIR: fs.cwd()?.display(),
+        PI_AUTH_FILE: fp"${root}/missing-auth.json".display(),
+        XSH_MODULE_PATH: fs.cwd()?.display(),
+      },
+    ),
+  )?
+  test.ok(! ticket_request_status.ok)?
+
+  test.ok(
+    run_factory_entrypoint(
+      "factory/tools/budget-watch.xsh",
+      [
+        "--session",
+        fp"${root}/missing-session".display(),
+        "--pid",
+        "999999999",
+        "--budget-usd",
+        "1.00",
+        "--marker",
+        fp"${root}/budget-marker".display(),
+      ],
+    )?,
+  )?
+  test.ok(
+    run_factory_entrypoint(
+      "factory/tools/session-watch.xsh",
+      [
+        "--session",
+        fp"${root}/missing-session".display(),
+        "--pid",
+        "999999999",
+        "--max-turns",
+        "10",
+        "--max-seconds",
+        "10",
+        "--marker",
+        fp"${root}/session-marker".display(),
+        "--role",
+        "eval-worker",
+      ],
+    )?,
+  )?
+
+  let run_agent_status = process.run(
+    process.command_argv(
+      xsh,
+      [
+        xsh.display(),
+        fp"${fs.cwd()?}/factory/entrypoints/run-agent.xsh",
+        "--",
+        "eval-manager",
+        "worker-1",
+        fp"${fs.cwd()?}/templates/WORKER.md".display(),
+        fp"${fs.cwd()?}/templates/EVAL-MANAGER-REPORT.md".display(),
+      ],
+      cwd: factory,
+      env: {
+        FACTORY_DIR: fs.cwd()?.display(),
+        FACTORY_RUN_DIR: fp"${root}/run".display(),
+        PI_COMMAND: "xsh",
+        XSH_MODULE_PATH: fs.cwd()?.display(),
+      },
+    ),
+  )?
+  test.ok(! run_agent_status.ok)?
+
+  let eval_executor_status = process.run(
+    process.command_argv(
+      xsh,
+      [
+        xsh.display(),
+        fp"${fs.cwd()?}/factory/entrypoints/eval-executor.xsh",
+        "--",
+        "task-no-evaluator",
+      ],
+      cwd: factory,
+      env: {
+        FACTORY_DIR: fs.cwd()?.display(),
+        FACTORY_EVAL_ID: "task-no-evaluator",
+        FACTORY_EVAL_WORKER_DIR: fp"${root}/eval-worker".display(),
+        PI_AUTH_FILE: fp"${root}/missing-auth.json".display(),
+        XSH_MODULE_PATH: fs.cwd()?.display(),
+      },
+    ),
+  )?
+  test.ok(! eval_executor_status.ok)?
+
+  let clean_status = process.run(
+    process.command_argv(
+      xsh,
+      [
+        xsh.display(),
+        fp"${fs.cwd()?}/factory/tools/clean-factory.xsh",
+        "--",
+      ],
+      cwd: factory,
+      env: {
+        FACTORY_DIR: factory.display(),
+        FACTORY_XSH_REPO: fp"${root}/missing-product".display(),
+        XSH_MODULE_PATH: fs.cwd()?.display(),
+      },
+    ),
+  )?
+  test.ok(! clean_status.ok)?
+
+  let clean_success_status = process.run(
+    process.command_argv(
+      xsh,
+      [
+        xsh.display(),
+        fp"${fs.cwd()?}/factory/tools/clean-factory.xsh",
+        "--",
+      ],
+      cwd: factory,
+      env: {
+        FACTORY_DIR: factory.display(),
+        FACTORY_XSH_REPO: fp"${fs.cwd()?}/../xsh".resolve()?.display(),
+        XSH_MODULE_PATH: fs.cwd()?.display(),
+      },
+    ),
+  )?
+  test.ok(clean_success_status.ok)?
+
+  let reconcile_status = process.run(
+    process.command_argv(
+      xsh,
+      [
+        xsh.display(),
+        fp"${fs.cwd()?}/factory/tools/reconcile.xsh",
+        "--",
+      ],
+      cwd: factory,
+      env: {
+        FACTORY_DIR: factory.display(),
+        FACTORY_XSH_REPO: product.display(),
+        XSH_MODULE_PATH: fs.cwd()?.display(),
+      },
+    ),
+  )?
+  test.ok(! reconcile_status.ok)?
+
+  let reuse_status = process.run(
+    process.command_argv(
+      xsh,
+      [
+        xsh.display(),
+        fp"${fs.cwd()?}/factory/controllers/reuse.xsh",
+        "--",
+      ],
+      cwd: factory,
+      env: {
+        FACTORY_DIR: fs.cwd()?.display(),
+        FACTORY_PHASE_DIR: fp"${root}/reuse-phase".display(),
+        FACTORY_TICKET_ID: "coverage-probe",
+        FACTORY_TICKET_BRANCH: "HEAD",
+        FACTORY_XSH_COMMIT: "HEAD~1",
+        FACTORY_XSH_REPO: fp"${fs.cwd()?}/../xsh".resolve()?.display(),
+        XSH_MODULE_PATH: fs.cwd()?.display(),
+      },
+    ),
+  )?
+  test.ok(reuse_status.ok)?
+
+  test.ok(budget.can_start(0.1, 1.0, 0.2))?
+  test.ok(budget.stops_new_work(null, false))?
+  test.ok(cleanup.can_remove(fp"${root}/run", fp"${root}/run/ACTIVE", "ACTIVE")?)?
 }
 
 proc test_untried_approved_eval_selection(ctx: TestContext) [fs, error] {
