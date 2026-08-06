@@ -1,0 +1,236 @@
+{
+  "artifacts": [
+    {
+      "kind": "phase-reports",
+      "path": "phases/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 92,
+      "budget_failures": 0,
+      "cost_usd": 0.05146455600000001,
+      "tool_errors": 6,
+      "total_bucket_tokens": 2037705.0,
+      "unknown_costs": 0,
+      "workers": 3
+    },
+    "mode": "organization",
+    "outcomes": {
+      "cycle": "fail",
+      "evaluator": "fail",
+      "infrastructure": "pass",
+      "product": "fail"
+    },
+    "phases": [
+      {
+        "id": "01-ticket",
+        "path": "phases/01-ticket/report.json",
+        "result": "fail",
+        "valid": true
+      },
+      {
+        "id": "02-reeval-task-findexec-001",
+        "path": "phases/02-reeval-task-findexec-001/report.json",
+        "result": "missing",
+        "valid": false
+      },
+      {
+        "id": "03-eval",
+        "path": "phases/03-eval/report.json",
+        "result": "fail",
+        "valid": true
+      }
+    ],
+    "tool_errors": [
+      {
+        "report": "phases/01-ticket/workers/director/director/report.json",
+        "summary": "=== dispatch ===\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 2,
+        "worker": {
+          "role": "director",
+          "worker_id": "director"
+        }
+      },
+      {
+        "report": "phases/01-ticket/workers/director/director/report.json",
+        "summary": "=== files ===\ntotal 0\ndrwxr-xr-x  2 josh  staff  64 Aug  5 16:42 .\ndrwxr-xr-x  3 josh  staff  96 Aug  5 16:42 ..\n=== REPORT.md ===\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 4,
+        "worker": {
+          "role": "director",
+          "worker_id": "director"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-manager/task-histogram/report.json",
+        "summary": "Traceback (most recent call last):\n  File \"<string>\", line 6, in <module>\n    m=d['message']\n      ~^^^^^^^^^^^\nKeyError: 'message'\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 9,
+        "worker": {
+          "role": "eval-manager",
+          "worker_id": "task-histogram"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-manager/task-histogram/report.json",
+        "summary": "3:## Result\n7:## Effort metrics\n23:## Usage and cost\n31:## Thinking evidence\n43:## Tool-error findings\n57:## Timing evidence\n78:## Observation classification\n102:## Handbook decision\n117:## Tickets created\n127:## Post-merge decisions\n134:## Next replay\n145:## North-star impact\n--- candidate diff ---\n49a50,55\n> \n> Division on Int values is integer (truncating) division: `7 / 2` is `3`.\n> There is no `//` or `div` integer-division operator, so for a quotient or a\n> bin/`width` key write `v / width` directly (with a positive, non-zero width)\n> and it already truncates. Boolean operators are the word forms `and`, `or`,\n> `not`; `&&`/`||` are rejected.\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 24,
+        "worker": {
+          "role": "eval-manager",
+          "worker_id": "task-histogram"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-worker/task-histogram-1/report.json",
+        "summary": "(no output)\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 16,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-histogram-1"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-worker/task-histogram-1/report.json",
+        "summary": "(no output)\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 17,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-histogram-1"
+        }
+      }
+    ],
+    "workers": [
+      {
+        "identity": {
+          "role": "director",
+          "worker_id": "director"
+        },
+        "path": "phases/01-ticket/workers/director/director/report.json",
+        "result": "pass",
+        "tool_errors": 2,
+        "usage": {
+          "assistant_turns": 15,
+          "budget_usd": 0.06,
+          "cache_read_cost_usd": 0.006054911999999999,
+          "cache_read_tokens": 336384,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.010694682,
+          "input_cost_usd": 0.00352521,
+          "input_tokens": 39169,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00111456,
+          "output_tokens": 6192,
+          "provider_total_tokens": 381745,
+          "reasoning_tokens": 2441,
+          "thinking_blocks": 10,
+          "tool_calls": 24,
+          "tool_errors": 2,
+          "tool_results": 24,
+          "total_bucket_tokens": 381745,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-histogram"
+        },
+        "path": "phases/03-eval/workers/eval-manager/task-histogram/report.json",
+        "result": "pass",
+        "tool_errors": 2,
+        "usage": {
+          "assistant_turns": 25,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.011966976,
+          "cache_read_tokens": 664832,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.019414566,
+          "input_cost_usd": 0.004522589999999999,
+          "input_tokens": 50251,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0029249999999999996,
+          "output_tokens": 16250,
+          "provider_total_tokens": 731333,
+          "reasoning_tokens": 8712,
+          "thinking_blocks": 24,
+          "tool_calls": 29,
+          "tool_errors": 2,
+          "tool_results": 29,
+          "total_bucket_tokens": 731333,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-histogram-1"
+        },
+        "path": "phases/03-eval/workers/eval-worker/task-histogram-1/report.json",
+        "result": "pass",
+        "tool_errors": 2,
+        "usage": {
+          "assistant_turns": 52,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.015787008,
+          "cache_read_tokens": 877056,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.021355308000000003,
+          "input_cost_usd": 0.0029944800000000008,
+          "input_tokens": 33272,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00257382,
+          "output_tokens": 14299,
+          "provider_total_tokens": 924627,
+          "reasoning_tokens": 7869,
+          "thinking_blocks": 36,
+          "tool_calls": 62,
+          "tool_errors": 2,
+          "tool_results": 62,
+          "total_bucket_tokens": 924627,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "1cf4ad3d7ee5fde9b3160b11d8073cbd7ce5e7c4"
+  },
+  "findings": [
+    {
+      "id": "01-ticket",
+      "kind": "phase",
+      "result": "fail"
+    },
+    {
+      "id": "02-reeval-task-findexec-001",
+      "kind": "phase",
+      "result": "missing"
+    },
+    {
+      "id": "03-eval",
+      "kind": "phase",
+      "result": "fail"
+    }
+  ],
+  "identity": {
+    "mode": "organization",
+    "run_id": "run-1785973336705"
+  },
+  "kind": "run",
+  "result": "fail",
+  "schema_version": 1,
+  "state": "completed"
+}
