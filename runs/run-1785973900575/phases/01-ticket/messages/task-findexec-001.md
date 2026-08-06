@@ -1,8 +1,42 @@
+# Controller-assigned engineer ticket
+
+This is an immutable controller assignment for one implementation worker.
+The controller, not the worker, selected the ticket, snapshot, worktree, and
+branch.
+
+## Assignment authority
+
+- Ticket ID: `task-findexec-001`
+- Ticket snapshot: `/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785973900575/phases/01-ticket/tickets/task-findexec-001.md`
+- Ticket snapshot SHA-256: `219406641ce1a1e02f99789257f66aa421e61677e196364fd81306f7c6236d3c`
+- Dedicated XSH worktree: `/Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1785973900575/task-findexec-001`
+- Branch: `factory/task-findexec-001/1785973903595`
+- XSH base commit: `1cf4ad3d7ee5fde9b3160b11d8073cbd7ce5e7c4`
+- engineer report: `/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785973900575/phases/01-ticket/workers/engineer/task-findexec-001/REPORT.md`
+- Factory root: `/Users/josh/d/laputa-systems/xsh-factory`
+- Run evidence root: `/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785973900575/phases/01-ticket`
+
+You are an implementation worker, not a ticket selector. Implement only the
+ticket identified above and inlined below. Do not search for open tickets,
+choose another ticket, or broaden this assignment. Do not create or modify a
+ticket assignment. If the ticket ID, worktree, branch, or snapshot is missing
+or conflicts with the runner's `FACTORY_TICKET_ID` or `FACTORY_WORKDIR`, stop
+and report the assignment problem; do not guess.
+
+The snapshot path is retained for provenance. The inlined snapshot below is
+the controller's authoritative task input, so no ticket-discovery read is
+required. Relative links in that snapshot resolve from the factory root above,
+not from the XSH product worktree; use exact paths under that root if linked
+evidence needs to be consulted.
+
+## Ticket snapshot
+
+<!-- CONTROLLER_TICKET_SNAPSHOT_BEGIN -->
 # Ticket task-findexec-001
 
 ## Status
 
-Merged.
+Approved.
 
 ## Change target
 
@@ -34,10 +68,10 @@ None.
 
 ## Merge record
 
-- Implementation branch: `factory/task-findexec-001/1785973903595`
-- Implementation commit: `500a9a6a6dcc82b8ba70be4c2bd3e4afcf5ede50`
-- Detected at XSH commit: `500a9a6a6dcc82b8ba70be4c2bd3e4afcf5ede50`
-- Implementation run: `/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785973900575/phases/01-ticket`
+- Implementation branch: `{{IMPLEMENTATION_BRANCH}}`
+- Implementation commit: `{{IMPLEMENTATION_COMMIT}}`
+- Detected at XSH commit: `{{DETECTED_XSH_COMMIT}}`
+- Implementation run: `{{IMPLEMENTATION_RUN}}`
 
 ## Source eval and manager
 
@@ -60,7 +94,7 @@ found the workaround of binding first (`let p = if ... {} else {}; p`).
 
 ## Evidence
 
-- Worker session: `runs/run-1785960825554/phases/01-eval/workers/eval-worker/task-findexec-1/session.jsonl`
+- Worker session: `runs/run-1785960825554/phases/01-eval/workers/eval-worker/task-findexec-1/session.jsonl.bz2.bz2`
 - Tool-error turns 18/19 (`err[check.map-tail]: map requires a tail value`
   against `findexec.xsh:7` `|> map { |e|`), turn 21 (`/tmp/iftest.xsh:3`
   `[1,2,3] |> map { |n|`), and the three `iftest*.xsh` single/multi-line
@@ -135,3 +169,67 @@ consistency fix in expression/tail parsing.
 The linked `task-findexec` eval-manager replay will re-run this eval on the
 XSH commit containing the change and confirm the conditional pipeline builds
 without a tail error and still matches the `find ... | sort` oracle.
+<!-- CONTROLLER_TICKET_SNAPSHOT_END -->
+
+## Factory context required before coding
+
+The factory documents below are outside the XSH worktree. Before coding, use
+the `read` tool on each exact absolute path. This is required so the session
+JSONL proves that the worker consumed the current factory guidance:
+
+- North star: `/Users/josh/d/laputa-systems/xsh-factory/NORTH-STAR.md`
+- Shared handbook: `/Users/josh/d/laputa-systems/xsh-factory/runtime/handbook.md`
+
+Then use the `read` tool on the product worktree's exact guidance files:
+
+- Product agent guide: `/Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1785973900575/task-findexec-001/AGENTS.md`
+- XSH rationale: `/Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1785973900575/task-findexec-001/docs/CHAPTER-01-why-xsh.md`
+
+## Implementation contract
+
+Work only in `/Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1785973900575/task-findexec-001` on branch `factory/task-findexec-001/1785973903595`. Do not edit XSH main, the
+factory main tree, or the ticket diagnosis. Make the smallest general XSH
+language, tooling, test, or canonical-documentation change supported by the
+ticket. Run the narrowest relevant checks, commit the product change on this
+branch, and leave the worktree clean.
+
+The controller has staged a fail-closed `not-ready` report at
+`/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785973900575/phases/01-ticket/workers/engineer/task-findexec-001/REPORT.md`. Complete that file in place; do not spend turns
+reconstructing its headings. Keep `## Result` as `not-ready` until the
+acceptance checks, commit, and clean-worktree validation are complete.
+
+Write `/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785973900575/phases/01-ticket/workers/engineer/task-findexec-001/REPORT.md` with these exact headings:
+
+```markdown
+## Result
+
+ready-for-review
+
+## Branch
+
+<branch name>
+
+## Commit
+
+<commit hash>
+
+## Files changed
+
+<short list>
+
+## Tests
+
+<commands and results>
+
+## North-star impact
+
+<how this improves XSH or agent use>
+
+## Remaining risks
+
+<known limitations, or None.>
+```
+
+Change `## Result` to `ready-for-review` only when the branch is committed, the worktree is
+clean, and the relevant checks passed. Do not merge the branch or update the
+ticket status; the deterministic controller records it for CTO review.

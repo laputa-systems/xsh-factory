@@ -3,6 +3,7 @@
 use factory.control as control
 use factory.runtime as runtime
 use factory.schema as schema
+use factory.paths as paths
 
 proc command_ok(command: Path, args: List[Str]) [process, error] -> Result[Bool] {
   return process.run(process.command_argv(command, args))?.ok
@@ -821,4 +822,15 @@ proc test_host_agent_dispatch_requires_controller_manifest(ctx: TestContext) [fs
   let runner = fs.read_text(fp"${fs.cwd()?}/factory/entrypoints/run-agent.xsh")?
   test.contains(runner, "missing controller dispatch record")?
   test.contains(runner, "agent invocation does not match controller dispatch record")?
+}
+
+proc test_ticket_worktree_is_outside_factory_checkout() [error] {
+  let factory = paths.make_factory_root(Path("/srv/factory"))?
+  let product = paths.make_product_root(Path("/srv/xsh"), factory)?
+  let worktree = runtime.ticket_worktree_path(product.root_path,
+    Path("/srv/factory/runs/run-42/phases/01-ticket"), "task-a")
+  test.ok(! paths.within(factory.root_path, worktree)?,
+    "engineer worktree must not be inside the factory checkout")?
+  test.ok(worktree.display().starts_with("/srv/.xsh-factory-worktrees/run-42/"),
+    "engineer worktree must use the adjacent product-parent scratch root")?
 }

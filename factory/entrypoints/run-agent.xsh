@@ -20,8 +20,8 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   let worker_id = argv[1]
   let system_prompt = Path(argv[2])
   let message_file = Path(argv[3])
-  let factory_dir = env.path("FACTORY_DIR")?
-  let run_dir = env.path("FACTORY_RUN_DIR")?
+  let factory_dir = env.path("FACTORY_DIR")?.resolve()?
+  let run_dir = env.path("FACTORY_RUN_DIR")?.resolve()?
   let handbook_file = env.path("FACTORY_HANDBOOK_FILE", fp"${factory_dir}/runtime/handbook.md")?
   let north_star_file = env.path("FACTORY_NORTH_STAR_FILE", fp"${factory_dir}/NORTH-STAR.md")?
   let worker_dir = fp"${run_dir}/workers/${role}/${worker_id}"
@@ -36,7 +36,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   let default_required_report = fp"${worker_dir}/REPORT.md".display()
   let required_report = env.get_or("FACTORY_REQUIRED_REPORT", default_required_report)?
   let configured_workdir = env.get_or("FACTORY_WORKDIR", "")?
-  let workdir = if configured_workdir == "" { fs.cwd()? } else { Path(configured_workdir) }
+  let workdir = if configured_workdir == "" { fs.cwd()?.resolve()? } else { Path(configured_workdir).resolve()? }
   let budget = control.configured_role_setting(role, "BUDGET_USD")?
   let max_turns = control.configured_role_setting(role, "MAX_TURNS")?
   let max_wall_seconds = control.configured_role_setting(role, "MAX_WALL_SECONDS")?
@@ -80,14 +80,14 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   }
   let dispatch_ok = schema.value_text(json.get(dispatch, ["role"], "")) == role and
     schema.value_text(json.get(dispatch, ["worker_id"], "")) == worker_id and
-    dispatch_message == message_file.display() and dispatch_message_sha == actual_message_sha and
+    dispatch_message == message_file.resolve()?.display() and dispatch_message_sha == actual_message_sha and
     schema.value_text(json.get(dispatch, ["workdir"], "")) == workdir.display() and
     schema.value_text(json.get(dispatch, ["mode"], "")) == mode and
     schema.value_text(json.get(dispatch, ["eval_id"], "")) == eval_id and
     schema.value_text(json.get(dispatch, ["ticket_id"], "")) == ticket_id and
     schema.value_text(json.get(dispatch, ["assignment_sha256"], "")) == assignment_sha and
     dispatch_id == f"${role}-${worker_id}" and dispatch_state == "planned" and
-    dispatch_prompt == system_prompt.display() and dispatch_prompt_sha == actual_prompt_sha and
+    dispatch_prompt == system_prompt.resolve()?.display() and dispatch_prompt_sha == actual_prompt_sha and
     dispatch_claim_token != "" and dispatch_factory_root == factory_dir.display()
   if ! dispatch_ok {
     eprint f"agent invocation does not match controller dispatch record for ${role}/${worker_id}"

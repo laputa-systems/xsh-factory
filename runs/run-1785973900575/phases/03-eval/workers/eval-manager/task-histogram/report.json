@@ -1,0 +1,118 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785973900575/phases/03-eval/workers/eval-manager/task-histogram/session.jsonl.bz2.bz2"
+    }
+  ],
+  "execution": {
+    "agent_process": "pass",
+    "dispatch_claim": "5cce1b1b621a893e123b6b733419c9a79399287832c22863fda541f39b58e3eb",
+    "dispatch_id": "eval-manager-task-histogram",
+    "message_sha256": "5cce1b1b621a893e123b6b733419c9a79399287832c22863fda541f39b58e3eb",
+    "reporting": "pass",
+    "required_report": "present",
+    "session_limit_watcher": "pass",
+    "system_prompt_sha256": "a5ab31790989af39c06a7fec953a65b5b782b1be43779a76401f77f02f7995f3",
+    "watcher": "pass"
+  },
+  "findings": [
+    {
+      "count": 2,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "role": "eval-manager",
+    "worker_id": "task-histogram"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "provider_telemetry": {
+    "event_turns": 12,
+    "events_path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785973900575/phases/03-eval/workers/eval-manager/task-histogram/session.jsonl.bz2.bz2.events.jsonl",
+    "output_tokens_per_second": 0,
+    "present": true,
+    "provider_errors": [],
+    "response_elapsed_ms": 0,
+    "retry_count": 0,
+    "retry_delay_ms": 0,
+    "retry_errors": [],
+    "retry_failures": 0,
+    "retry_successes": 0
+  },
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785973900575/phases/03-eval/workers/eval-manager/task-histogram/session.jsonl.bz2.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 11,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 126335
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785973900575/phases/03-eval/workers/eval-manager/task-histogram/session.jsonl.bz2.bz2",
+      "summary": "3:## Result\n7:## Effort metrics\n25:## Usage and cost\n43:## Thinking evidence\n56:## Tool-error findings\n75:## Timing evidence\n96:## Observation classification\n125:## Handbook decision\n137:## Tickets created\n146:## Post-merge decisions\n151:## Next replay\n162:## North-star impact\n---candidate diff---\ndiff: ../lineage/handbook-approved.md: No such file or directory\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 10
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785973900575/phases/03-eval/workers/eval-manager/task-histogram/session.jsonl.bz2.bz2",
+      "summary": "69a70,74\n> Integer arithmetic uses `/` for integer division and truncates toward zero;\n> there is no `//` floor-division token and no `mod`/`div` keyword, so `7 / 2`\n> evaluates to `3` and writing `//` or `mod` is a parse error. Use only `/`\n> (and `+`, `-`, `*`) for Int math.\n> \n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 11
+    }
+  ],
+  "tools": [
+    {
+      "count": 7,
+      "name": "bash"
+    },
+    {
+      "count": 1,
+      "name": "edit"
+    },
+    {
+      "count": 8,
+      "name": "read"
+    },
+    {
+      "count": 1,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 12,
+    "budget_usd": 0.15,
+    "cache_read_cost_usd": 0.005530752,
+    "cache_read_tokens": 307264,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.010992492,
+    "input_cost_usd": 0.0039394799999999995,
+    "input_tokens": 43772,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.00152226,
+    "output_tokens": 8457,
+    "provider_total_tokens": 359493,
+    "reasoning_tokens": 4066,
+    "thinking_blocks": 10,
+    "tool_calls": 17,
+    "tool_errors": 2,
+    "tool_results": 17,
+    "total_bucket_tokens": 359493,
+    "user_messages": 1
+  }
+}

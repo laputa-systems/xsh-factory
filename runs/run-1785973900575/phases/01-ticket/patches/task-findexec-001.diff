@@ -1,0 +1,101 @@
+diff --git a/docs/SPEC.md b/docs/SPEC.md
+index 8313211..7f8a1dc 100644
+--- a/docs/SPEC.md
++++ b/docs/SPEC.md
+@@ -2763,7 +2763,9 @@ materialized list, or consume the stream.
+ `each` or `table.print(...)` evaluates to `Unit`, so it may be a procedure's
+ final statement and is accepted by both `xsht check` and the runtime. `map`
+ and `par-map` are for values and require a final
+-expression or command tail value. Stage blocks may bind one explicit item
++expression or command tail value. An `if`/`else` expression is valid in that
++position, including as a direct conditional tail without an intermediate
++binding. Stage blocks may bind one explicit item
+ parameter with `{ |item| ... }`, but the implicit `.` item is available in
+ one-expression and multi-statement stage blocks. `fold`/`reduce` additionally
+ accept a two-parameter block `{ |acc, item| ... }` whose first parameter is the
+diff --git a/src/sema/check/stream.rs b/src/sema/check/stream.rs
+index 0bfba97..0421a82 100644
+--- a/src/sema/check/stream.rs
++++ b/src/sema/check/stream.rs
+@@ -554,6 +554,46 @@ impl Checker {
+         tail_ty
+     }
+ 
++    fn check_stream_tail_if_arena(
++        &mut self,
++        arena: &ArenaProgram,
++        source: &str,
++        branches: crate::syntax::arena::ArenaRange,
++        else_block: Option<crate::syntax::arena::BlockId>,
++    ) -> Type {
++        let branch_list = arena.arena.if_branches(branches);
++        let mut inferred = None;
++        for branch in branch_list {
++            let condition = self.check_expr_arena(
++                arena,
++                source,
++                branch.condition,
++                Some(&Type::Bool),
++            );
++            let condition_span = arena.arena.expr(branch.condition).span;
++            self.expect_type(&Type::Bool, &condition, condition_span);
++            self.push_scope();
++            let branch_ty = match else_block {
++                Some(_) => self.check_tail_block_arena(arena, source, branch.block, inferred.as_ref()),
++                None => {
++                    self.check_block_arena(arena, source, branch.block);
++                    Type::Unit
++                }
++            };
++            if inferred.is_none() && !matches!(branch_ty, Type::Unknown) {
++                inferred = Some(branch_ty);
++            }
++            self.pop_scope();
++        }
++        let Some(else_block) = else_block else {
++            return Type::Unit;
++        };
++        self.push_scope();
++        let else_ty = self.check_tail_block_arena(arena, source, else_block, inferred.as_ref());
++        self.pop_scope();
++        inferred.unwrap_or(else_ty)
++    }
++
+     fn check_stream_tail_stmt_arena(
+         &mut self,
+         arena: &ArenaProgram,
+@@ -568,6 +608,10 @@ impl Checker {
+             crate::syntax::arena::ArenaStmtKind::TailBareIdent(name) => {
+                 self.check_tail_bare_ident_arena(arena, source, name, stmt.span)
+             }
++            crate::syntax::arena::ArenaStmtKind::If {
++                branches,
++                else_block,
++            } => self.check_stream_tail_if_arena(arena, source, branches, else_block),
+             crate::syntax::arena::ArenaStmtKind::Command(command_id) => {
+                 if self.in_pure {
+                     self.error(
+diff --git a/tests/xsh/stdlib/streams.xsh b/tests/xsh/stdlib/streams.xsh
+index 94c642c..3387055 100644
+--- a/tests/xsh/stdlib/streams.xsh
++++ b/tests/xsh/stdlib/streams.xsh
+@@ -198,6 +198,19 @@ beta
+   [{name: "small", size: 1}, {name: "large", size: 4}] |> table.print(columns: ["name", "size"])
+ }
+ 
++proc test_if_else_is_a_stream_stage_tail_value() [error] {
++  let mapped = [1, 2, 3]
++    |> map { |n| if n % 2 == 0 { "even" } else { "odd" } }
++  test.eq(mapped, ["odd", "even", "odd"])?
++
++  let filtered = [1, 2, 3]
++    |> where { |n| if n > 1 { true } else { false } }
++  test.eq(filtered, [2, 3])?
++
++  let _ = [1, 2]
++    |> each { |n| if n > 1 { let _ = n } else { let _ = n } }
++}
++
+ proc test_predicate_stage_blocks_bind_local_lets() [error] {
+   # A multi-statement predicate block with a local let binding must compile
+   # and behave identically to the single-expression form for where/any/all.

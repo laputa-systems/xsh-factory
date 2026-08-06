@@ -2,54 +2,51 @@
 
 ## Status
 
-pending-validation
+validated
 
 ## Change
 
-The ticket controller previously created engineer worktrees under
-`runs/<run>/worktrees`, inside the factory checkout. The shared runner rejects
-that boundary, so `task-findexec-001` never started. The CTO moved ticket
-worktree calculation to the adjacent product-parent scratch root through
-`factory/runtime.xsh::ticket_worktree_root` and updated the ticket, reuse, and
-organization controllers to use it. Cleanup remains run-scoped and preserves
-branches.
+The ticket controller now places engineer worktrees in the adjacent
+product-parent scratch root, canonicalizes worktree and dispatch paths before
+writing/checking manifests, and binds the engineer eval identity explicitly.
+The focused regression `tests/tools_test.xsh::test_ticket_worktree_is_outside_factory_checkout`
+and the full native suite (83/83) pass.
 
 ## Throughput requirement
 
-Zero reviewable engineer commits were produced: the ticket phase failed before
-Pi launch because the worktree was inside the factory checkout. This is a
-throughput failure caused by factory admission, not an engineer failure.
+The validation cycle produced one reviewable engineer implementation commit,
+`500a9a6a6dcc82b8ba70be4c2bd3e4afcf5ede50`, after the baseline's zero-commit
+worktree-boundary failure.
 
 ## Provider-health attribution
 
-Provider telemetry was present for the three workers that ran; retries were
-zero. The engineer had no session, so this failure is infrastructure-only.
+Provider telemetry was present for all six workers in the validation cycle;
+retries and provider errors were zero. Agent tool errors remain structured and
+are not attributed to provider health.
 
 ## Baseline metric
 
-Run `runs/run-1785962529677/report.json`: one approved ticket, zero engineer
-commits, and a failed ticket phase. The director report identifies the
-worktree-boundary rejection.
+`runs/run-1785962529677/report.json`: one admitted ticket, zero engineer
+commits, and a worktree-inside-factory launch failure.
 
 ## Target metric
 
-The next organization cycle must produce one engineer worker report, one
-non-baseline engineer commit, and one passing linked replay for
-`task-findexec-001`, with no worktree-boundary launch failure.
+One engineer report, one non-baseline commit, a portable patch, and a passing
+linked replay with the worktree outside `FACTORY_DIR`.
 
 ## Validation
 
-Run `XSH_MODULE_PATH=. xsht test`, then run one organization cycle and verify
-that the engineer worktree is outside `FACTORY_DIR`, the worker report and
-portable patch exist, and the linked replay passes.
+`runs/run-1785973900575/report.json` passed product, evaluator, and
+infrastructure outcomes. It contains the engineer report, portable patch,
+linked replay, and independent eval. The product worktree was outside the
+factory and cleaned while the branch/evidence were preserved.
 
 ## Revert condition
 
-If the next cycle cannot create or clean the adjacent scratch worktree, or if
-cleanup removes evidence or branches, revert the placement change and repair
-the path/cleanup contract with a focused native test before paid work.
+Revert only if a future native regression or organization run shows an
+in-factory worktree, a raw/canonical dispatch mismatch, or cleanup loss of
+branch/evidence; repair the boundary with a focused test before paid work.
 
 ## Next-cycle disposition
 
-The next CTO must replace `pending-validation` with `validated` or `reverted`
-after the named verification and link the evidence before admitting paid work.
+Validated; retain the path-boundary regression and canonical dispatch checks.

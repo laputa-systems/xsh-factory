@@ -112,7 +112,12 @@ export proc write_bound_dispatch_record(
       subject: f"${role}/${worker_id}", current: "missing-input", next: "planned"
     ))
   }
-  fs.mkdir(fp"${run_dir}/dispatch")?
+  let canonical_factory = factory_dir.resolve()?
+  let canonical_run = run_dir.resolve()?
+  let canonical_prompt = system_prompt.resolve()?
+  let canonical_message = message_file.resolve()?
+  let canonical_workdir = workdir.resolve()?
+  fs.mkdir(fp"${canonical_run}/dispatch")?
   let dispatch_id = f"${role}-${worker_id}"
   let prompt_sha = hash.sha256(system_prompt)?.hex()
   let message_sha = hash.sha256(message_file)?.hex()
@@ -121,7 +126,7 @@ export proc write_bound_dispatch_record(
   let parent_name = run_dir.parent().name()
   let bound_run_id = if parent_name.starts_with("run-") { parent_name } else { phase_name }
   let bound_phase_id = if parent_name.starts_with("run-") { phase_name } else { "root" }
-  let dispatch_path = fp"${run_dir}/dispatch/${dispatch_id}.json"
+  let dispatch_path = fp"${canonical_run}/dispatch/${dispatch_id}.json"
   if fs.exists(dispatch_path)? {
     return Err(RuntimeError.InvalidTransition(
       subject: dispatch_id, current: "planned", next: "replaced"
@@ -140,16 +145,16 @@ export proc write_bound_dispatch_record(
     eval_id: eval_id,
     ticket_id: ticket_id,
     assignment_sha256: assignment_sha,
-    system_prompt_file: system_prompt.display(),
+    system_prompt_file: canonical_prompt.display(),
     system_prompt_sha256: prompt_sha,
-    message_file: message_file.display(),
+    message_file: canonical_message.display(),
     message_sha256: message_sha,
-    workdir: workdir.display(),
-    factory_root: factory_dir.display(),
-    product_root: workdir.display(),
-    handbook_file: fp"${factory_dir}/runtime/handbook.md".display(),
+    workdir: canonical_workdir.display(),
+    factory_root: canonical_factory.display(),
+    product_root: canonical_workdir.display(),
+    handbook_file: fp"${canonical_factory}/runtime/handbook.md".display(),
     handbook_sha256: if fs.exists(fp"${factory_dir}/runtime/handbook.md")? { hash.sha256(fp"${factory_dir}/runtime/handbook.md")?.hex() } else { "missing" },
-    north_star_file: fp"${factory_dir}/NORTH-STAR.md".display(),
+    north_star_file: fp"${canonical_factory}/NORTH-STAR.md".display(),
     north_star_sha256: if fs.exists(fp"${factory_dir}/NORTH-STAR.md")? { hash.sha256(fp"${factory_dir}/NORTH-STAR.md")?.hex() } else { "missing" },
     source_commit: "controller-selected",
     image_id: "not-applicable",

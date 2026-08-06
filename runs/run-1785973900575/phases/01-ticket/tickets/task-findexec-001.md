@@ -2,7 +2,7 @@
 
 ## Status
 
-Merged.
+Approved.
 
 ## Change target
 
@@ -34,10 +34,10 @@ None.
 
 ## Merge record
 
-- Implementation branch: `factory/task-findexec-001/1785973903595`
-- Implementation commit: `500a9a6a6dcc82b8ba70be4c2bd3e4afcf5ede50`
-- Detected at XSH commit: `500a9a6a6dcc82b8ba70be4c2bd3e4afcf5ede50`
-- Implementation run: `/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785973900575/phases/01-ticket`
+- Implementation branch: `{{IMPLEMENTATION_BRANCH}}`
+- Implementation commit: `{{IMPLEMENTATION_COMMIT}}`
+- Detected at XSH commit: `{{DETECTED_XSH_COMMIT}}`
+- Implementation run: `{{IMPLEMENTATION_RUN}}`
 
 ## Source eval and manager
 
@@ -60,7 +60,7 @@ found the workaround of binding first (`let p = if ... {} else {}; p`).
 
 ## Evidence
 
-- Worker session: `runs/run-1785960825554/phases/01-eval/workers/eval-worker/task-findexec-1/session.jsonl`
+- Worker session: `runs/run-1785960825554/phases/01-eval/workers/eval-worker/task-findexec-1/session.jsonl.bz2.bz2`
 - Tool-error turns 18/19 (`err[check.map-tail]: map requires a tail value`
   against `findexec.xsh:7` `|> map { |e|`), turn 21 (`/tmp/iftest.xsh:3`
   `[1,2,3] |> map { |n|`), and the three `iftest*.xsh` single/multi-line

@@ -31,6 +31,7 @@ proc spawn_engineer(
     FACTORY_XSH_REPO: xsh_repo.display(),
     FACTORY_XSH_COMMIT: xsh_commit,
     FACTORY_MODE: "ticket-implementation",
+    FACTORY_EVAL_ID: "",
     FACTORY_PARENT_ID: "controller",
     FACTORY_TICKET_ID: ticket_id,
     FACTORY_ASSIGNMENT_SHA: hash.sha256(assignment)?.hex(),
@@ -69,6 +70,8 @@ proc run_ticket_cycle(
   run_agent: Path,
   pi_command: Str,
 ) [fs, process, env, time, error, io] -> Result[Int] {
+  let xsh_repo = xsh_repo.resolve()?
+  let factory_dir = factory_dir.resolve()?
   let tickets = typed_request.ticket_values(request.read_text()?)?
   if tickets.len() == 0 {
     eprint "ticket-implementation cycle has no approved tickets"
@@ -101,6 +104,7 @@ proc run_ticket_cycle(
     return 1
   }
   fs.mkdir(run_dir)?
+  fs.mkdir(fp"${run_dir}/worktrees")?
   fs.mkdir(worktree_root)?
   fs.mkdir(patch_root)?
   fs.mkdir(fp"${run_dir}/messages")?
@@ -172,11 +176,12 @@ proc run_ticket_cycle(
     }
     fs.copy(ticket_path, fp"${run_dir}/tickets/${ticket_id}.md", overwrite: true)?
     let ticket_sha = hash.sha256(ticket_path)?.hex()
+    let canonical_worktree = worktree.resolve()?
     let assignment_values: List[control.TemplateValue] = [
       {key: "TICKET_ID", value: ticket_id},
       {key: "TICKET_PATH", value: fp"${run_dir}/tickets/${ticket_id}.md".display()},
       {key: "TICKET_SHA", value: ticket_sha},
-      {key: "WORKTREE", value: worktree.display()},
+      {key: "WORKTREE", value: canonical_worktree.display()},
       {key: "BRANCH", value: branch},
       {key: "XSH_COMMIT", value: xsh_commit.trim()},
       {key: "ENGINEER_REPORT", value: fp"${run_dir}/workers/engineer/${ticket_id}/REPORT.md".display()},
@@ -184,8 +189,8 @@ proc run_ticket_cycle(
       {key: "FACTORY_RUN_DIR", value: run_dir.display()},
       {key: "NORTH_STAR_FILE", value: fp"${factory_dir}/NORTH-STAR.md".display()},
       {key: "HANDBOOK_FILE", value: fp"${factory_dir}/runtime/handbook.md".display()},
-      {key: "XSH_AGENTS_FILE", value: fp"${worktree}/AGENTS.md".display()},
-      {key: "XSH_RATIONALE_FILE", value: fp"${worktree}/docs/CHAPTER-01-why-xsh.md".display()},
+      {key: "XSH_AGENTS_FILE", value: fp"${canonical_worktree}/AGENTS.md".display()},
+      {key: "XSH_RATIONALE_FILE", value: fp"${canonical_worktree}/docs/CHAPTER-01-why-xsh.md".display()},
       {key: "TICKET_TEXT", value: ticket_text},
     ]
     let assignment = control.fill_template(assignment_template_text, assignment_values)

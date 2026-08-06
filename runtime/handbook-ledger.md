@@ -263,3 +263,182 @@ The `task-findexec` worker reproduced the boolean word-form rule, but the
 candidate is a single-eval hypothesis and requests a matched replay before
 changing the approved handbook. The product ticket is admitted independently;
 the handbook remains unchanged.
+
+## Explicit CTO disposition — pre-cycle validation
+
+| Candidate SHA-256 | Disposition |
+| --- | --- |
+| `7f039da70ba9aec1d15de50d81588d33060f6beaa19daeb564f94356296684f2` | deferred pending cross-eval replay; not promoted |
+
+The `task-histogram` candidate records the `/` integer-division spelling and
+the `Regex.matches` receiver. Both are plausible reusable guidance, but the
+source run is single-eval evidence and the candidate has not yet been
+consumed by a matched replay. Keep the approved handbook unchanged until the
+organization cycle provides the required cross-eval evidence.
+
+## Explicit CTO disposition — run-1785965138991
+
+| Candidate SHA-256 | Disposition |
+| --- | --- |
+| `91d37b46ef5a14af294741f8e23a533f83201228a055ebd03363ceafe8891c3a` | deferred pending cross-eval replay; not promoted |
+
+The failed organization validation run's `task-histogram` candidate adds
+postfix-`?` context and integer-division guidance. It is useful but comes from
+one eval and was not consumed by a matched replay. Keep it deferred and leave
+the approved handbook unchanged.
+
+## Explicit CTO disposition — run-1785966217772
+
+| Candidate SHA-256 | Disposition |
+| --- | --- |
+| `7fbf3ec053e94133b71d56450a58b61b8548f3f1dc46d7196c5c83a870270d8b` | deferred pending cross-eval replay; not promoted |
+
+The second worktree-boundary validation run produced no product change and
+staged only a single-eval naming observation. Defer it pending cross-eval
+replay; the approved handbook remains unchanged.
+
+## Explicit CTO disposition — run-1785967096286
+
+| Candidate SHA-256 | Disposition |
+| --- | --- |
+| `ea3761e9563ed8ae34b9a9e758f04e71a739fc6d29b731fc91101f25caa3172b` | deferred pending cross-eval replay; not promoted |
+
+The operator-convention candidate is single-eval evidence from another
+infrastructure-blocked organization run. Defer it pending cross-eval replay;
+do not change the approved handbook.
+
+## Explicit CTO disposition — run-1785967719321
+
+| Candidate SHA-256 | Disposition |
+| --- | --- |
+| `bf3a0c802847dfd9d940c1cb7317854fb6b49b26d2a530dd7863c630030b03b0` | deferred pending cross-eval replay; not promoted |
+
+The run was blocked by the same unresolved engineer-launch boundary and
+produced no product commit. Defer its single-eval numeric-validation
+candidate pending cross-eval replay; leave the approved handbook unchanged.
+
+## Explicit CTO disposition — run-1785968539139
+
+| Candidate SHA-256 | Disposition |
+| --- | --- |
+| `9d08733bc2c243823f0256c5955e6738726d5b73d10e194e12cf908365df27dd` | deferred pending cross-eval replay; not promoted |
+
+The trial's exact-read restriction lesson is evaluator-specific single-run
+evidence and the cycle was infrastructure-blocked. Defer it pending replay;
+leave the approved handbook unchanged.
+
+## Explicit CTO disposition — run-1785969469053
+
+| Candidate SHA-256 | Disposition |
+| --- | --- |
+| `9ab17a881bc35fe0ed4693348ef99348cffd8bdb125e6ba6a33c4c8f9f347bac` | deferred pending cross-eval replay; not promoted |
+
+The candidate is single-eval operator and argument-result guidance from an
+organization run whose engineer dispatch remained blocked. Defer it pending
+cross-eval replay and keep the approved handbook unchanged.
+
+## Explicit CTO disposition — run-1785970204681
+
+| Candidate SHA-256 | Disposition |
+| --- | --- |
+| `72824b0dcc111c1f9e0ea505cfa2260a002719fa8a012759a5ddda8adc89e4f7` | deferred pending cross-eval replay; not promoted |
+
+The candidate is a single-eval division note from a run where engineer
+dispatch remained blocked. Defer it pending replay; do not alter the approved
+handbook.
+
+## Explicit CTO disposition — run-1785971171503
+
+| Candidate SHA-256 | Disposition |
+| --- | --- |
+| `72824b0dcc111c1f9e0ea505cfa2260a002719fa8a012759a5ddda8adc89e4f7` | deferred pending cross-eval replay; not promoted |
+
+This attempt did not start paid work because the temporary diagnostic itself
+failed syntax validation. It adds no product evidence; retain the prior
+single-eval disposition and keep the approved handbook unchanged.
+
+## Explicit CTO disposition — run-1785971528057
+
+| Candidate SHA-256 | Disposition |
+| --- | --- |
+| `7b949371cfe85e2e6860ba4f4a1deecf9914aa9237374c5290286cf49c98488b` | deferred pending cross-eval replay; not promoted |
+
+The run remained infrastructure-blocked and produced no product signal.
+Defer its single-eval candidate pending replay; keep the approved handbook
+unchanged.
+
+## Explicit CTO disposition — run-1785972040960
+
+| Candidate SHA-256 | Disposition |
+| --- | --- |
+| `7b949371cfe85e2e6860ba4f4a1deecf9914aa9237374c5290286cf49c98488b` | deferred pending cross-eval replay; not promoted |
+
+This attempt only exposed a controller diagnostic-path collision while the
+engineer remained blocked. It adds no product evidence; keep the handbook
+unchanged.
+
+## Explicit CTO disposition — run-1785972040960
+
+| Candidate SHA-256 | Disposition |
+| --- | --- |
+| `9b0d6f75be6d6e7e5113236917274101167e06391e26fb8a6b8aac5072902cb6` | deferred pending cross-eval replay; not promoted |
+
+No product signal was produced while dispatch diagnostics were being repaired;
+defer the candidate and keep the approved handbook unchanged.
+
+## Explicit CTO disposition — run-1785972584122
+
+| Candidate SHA-256 | Disposition |
+| --- | --- |
+| `9b0d6f75be6d6e7e5113236917274101167e06391e26fb8a6b8aac5072902cb6` | deferred pending cross-eval replay; not promoted |
+
+The diagnostic isolated a missing engineer `FACTORY_EVAL_ID` environment
+binding, not a product issue. Defer the candidate and keep the approved
+handbook unchanged.
+
+## Explicit CTO disposition — run-1785972584122
+
+| Candidate SHA-256 | Disposition |
+| --- | --- |
+| `b7c5a5c2f2c8bc3d6b5bb3be20b2a5cb7ecf53e9f80a1e112ef8cbbd5fe5e1de` | deferred pending cross-eval replay; not promoted |
+
+The run surfaced only the missing ticket review gate while the engineer
+dispatch remained blocked. Defer its single-eval candidate pending replay.
+
+## Explicit CTO disposition — run-1785972584122 candidate
+
+| Candidate SHA-256 | Disposition |
+| --- | --- |
+| `7c9669c0f07d4667045a37e79d1539db809e030708f1c20d0a426ca1b1948898` | deferred pending cross-eval replay; not promoted |
+
+The candidate belongs to the blocked run's single eval and remains deferred.
+
+## Explicit CTO disposition — run-1785973336705
+
+| Candidate SHA-256 | Disposition |
+| --- | --- |
+| `7c9669c0f07d4667045a37e79d1539db809e030708f1c20d0a426ca1b1948898` | deferred pending cross-eval replay; not promoted |
+
+Dispatch reached the assignment gate but exposed a raw-vs-canonical worktree
+string mismatch. No product work started; defer the candidate.
+
+## Explicit CTO disposition — run-1785973336705
+
+| Candidate SHA-256 | Disposition |
+| --- | --- |
+| `0d895fe92547465c597f257c6e56cf1d52587c825d4ed0f165b7381e57f8cd6c` | deferred pending cross-eval replay; not promoted |
+
+The run produced no product evidence after reaching the assignment gate.
+Defer its candidate pending replay.
+
+## Explicit CTO disposition — run-1785973900575
+
+| Candidate SHA-256 | Disposition |
+| --- | --- |
+| `edab528c77fd443a36a85006ce5f94c0603c4bfce0c0e2455c5fa23300f498f3` | deferred pending cross-eval replay; not promoted |
+| `d8065b5ae7970ba17c1b6ba3098f3fc0663816eb98ad9d310dd5f186cf226443` | deferred pending cross-eval replay; not promoted |
+
+The successful organization cycle staged single-trial handbook candidates
+about typed filesystem permissions and integer arithmetic. Both remain
+deferred pending the specified cross-eval replays; the approved handbook is
+unchanged.
