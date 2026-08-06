@@ -1,0 +1,170 @@
+{
+  "artifacts": [
+    {
+      "kind": "phase-reports",
+      "path": "phases/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 59,
+      "budget_failures": 0,
+      "cost_usd": 0.036639756,
+      "tool_errors": 0,
+      "total_bucket_tokens": 1276967.0,
+      "unknown_costs": 0,
+      "workers": 3
+    },
+    "mode": "organization",
+    "outcomes": {
+      "cycle": "fail",
+      "evaluator": "fail",
+      "infrastructure": "pass",
+      "product": "fail"
+    },
+    "phases": [
+      {
+        "id": "01-ticket",
+        "path": "phases/01-ticket/report.json",
+        "result": "fail",
+        "valid": true
+      },
+      {
+        "id": "02-reeval-task-findexec-001",
+        "path": "phases/02-reeval-task-findexec-001/report.json",
+        "result": "missing",
+        "valid": false
+      },
+      {
+        "id": "03-eval",
+        "path": "phases/03-eval/report.json",
+        "result": "pass",
+        "valid": true
+      }
+    ],
+    "tool_errors": [],
+    "workers": [
+      {
+        "identity": {
+          "role": "director",
+          "worker_id": "director"
+        },
+        "path": "phases/01-ticket/workers/director/director/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 9,
+          "budget_usd": 0.06,
+          "cache_read_cost_usd": 0.002116224,
+          "cache_read_tokens": 117568,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.005678154,
+          "input_cost_usd": 0.00228861,
+          "input_tokens": 25429,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00127332,
+          "output_tokens": 7074,
+          "provider_total_tokens": 150071,
+          "reasoning_tokens": 3731,
+          "thinking_blocks": 8,
+          "tool_calls": 20,
+          "tool_errors": 0,
+          "tool_results": 20,
+          "total_bucket_tokens": 150071,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-histogram"
+        },
+        "path": "phases/03-eval/workers/eval-manager/task-histogram/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 12,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.00486144,
+          "cache_read_tokens": 270080,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.01053144,
+          "input_cost_usd": 0.003429,
+          "input_tokens": 38100,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.002241,
+          "output_tokens": 12450,
+          "provider_total_tokens": 320630,
+          "reasoning_tokens": 6387,
+          "thinking_blocks": 12,
+          "tool_calls": 21,
+          "tool_errors": 0,
+          "tool_results": 21,
+          "total_bucket_tokens": 320630,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-histogram-1"
+        },
+        "path": "phases/03-eval/workers/eval-worker/task-histogram-1/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 38,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.013479551999999995,
+          "cache_read_tokens": 748864,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.020430162,
+          "input_cost_usd": 0.00338175,
+          "input_tokens": 37575,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.003568859999999999,
+          "output_tokens": 19827,
+          "provider_total_tokens": 806266,
+          "reasoning_tokens": 13665,
+          "thinking_blocks": 34,
+          "tool_calls": 54,
+          "tool_errors": 0,
+          "tool_results": 54,
+          "total_bucket_tokens": 806266,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "1cf4ad3d7ee5fde9b3160b11d8073cbd7ce5e7c4"
+  },
+  "findings": [
+    {
+      "id": "01-ticket",
+      "kind": "phase",
+      "result": "fail"
+    },
+    {
+      "id": "02-reeval-task-findexec-001",
+      "kind": "phase",
+      "result": "missing"
+    }
+  ],
+  "identity": {
+    "mode": "organization",
+    "run_id": "run-1785966217772"
+  },
+  "kind": "run",
+  "result": "fail",
+  "schema_version": 1,
+  "state": "completed"
+}
