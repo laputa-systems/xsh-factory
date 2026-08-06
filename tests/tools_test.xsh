@@ -371,6 +371,685 @@ proc test_controller_and_tool_entrypoints_fail_closed(ctx: TestContext) [fs, pro
   test.ok(cleanup.can_remove(fp"${root}/run", fp"${root}/run/ACTIVE", "ACTIVE")?)?
 }
 
+proc test_ticket_controller_happy_path_with_fake_pi(ctx: TestContext) [fs, process, env, error] {
+  let root = test.temp_dir(ctx, name: "ticket-controller-happy-path")?
+  let source_factory = fs.cwd()?
+  let fixture_root = fp"${root}/fixture"
+  let product = fp"${root}/product"
+  let run_dir = fp"${source_factory}/runs/run-ticket-coverage-${root.name()}"
+  let bin_dir = fp"${root}/bin"
+  let fake_pi = fp"${bin_dir}/factory-coverage-pi"
+  let ticket_id = "coverage-ticket"
+  fs.mkdir(fixture_root)?
+  fs.mkdir(run_dir.parent())?
+  test.ok(! fs.exists(run_dir)?)?
+  defer fs.remove(run_dir, missing_ok: true)?
+  fs.mkdir(product)?
+  fs.mkdir(bin_dir)?
+  let canonical_product = product.resolve()?
+  let canonical_run_dir = fp"${source_factory.resolve()?.display()}/runs/run-ticket-coverage-${root.name()}"
+  let ticket_path = fp"${source_factory}/tickets/${ticket_id}.md"
+  test.ok(! fs.exists(ticket_path)?)?
+  defer fs.remove(ticket_path, missing_ok: true)?
+  fs.write(
+    ticket_path,
+    """# Ticket coverage-ticket
+
+## Status
+
+Approved.
+
+## Change target
+
+- `product`
+
+## Observation
+
+Deterministic controller coverage fixture.
+
+## Proposed XSH change
+
+The fixture makes one product change.
+
+## Acceptance criteria
+
+The controller validates the worker evidence and portable patch.
+
+## North-star impact
+
+The controller path remains bounded and evidence-driven.
+""",
+  )?
+  fs.write(
+    fp"${fixture_root}/ticket-request.md",
+    """# Coverage ticket cycle
+
+## Mode
+
+- `ticket-implementation`
+
+## Approved tickets
+
+- `coverage-ticket`
+""",
+  )?
+  fs.write(
+    fp"${product}/README.md",
+    """fixture product
+""",
+  )?
+  let git = process.which("git")?
+  test.ok(command_ok(git, ["git", "init", "-q", product.display()])?)?
+  test.ok(command_ok(git, ["git", "-C", product.display(), "config", "user.email", "coverage@example.test"])?)?
+  test.ok(command_ok(git, ["git", "-C", product.display(), "config", "user.name", "Coverage Fixture"])?)?
+  test.ok(command_ok(git, ["git", "-C", product.display(), "add", "README.md"])?)?
+  test.ok(command_ok(git, ["git", "-C", product.display(), "commit", "-qm", "fixture baseline"])?)?
+  fs.write(
+    fp"${root}/auth.json",
+    """{}
+""",
+  )?
+  fs.write(fp"${root}/active", "")?
+  fs.write(fp"${root}/factory.lock", "")?
+  fs.write(
+    fake_pi,
+    r"""#!/bin/sh
+session=""
+previous=""
+for argument in "$@"; do
+  if [ "$previous" = "--session" ]; then
+    session="$argument"
+  fi
+  previous="$argument"
+done
+worker_dir="$FACTORY_RUN_DIR/workers/$FACTORY_ROLE/$FACTORY_WORKER_ID"
+mkdir -p "$worker_dir"
+if [ "$FACTORY_ROLE" = "engineer" ]; then
+  printf 'fixture change\n' > "$FACTORY_WORKDIR/coverage-fixture.txt"
+  git -C "$FACTORY_WORKDIR" add coverage-fixture.txt
+  git -C "$FACTORY_WORKDIR" commit -qm 'fixture engineer change'
+  branch=$(git -C "$FACTORY_WORKDIR" branch --show-current)
+  commit=$(git -C "$FACTORY_WORKDIR" rev-parse HEAD)
+  cat > "$worker_dir/REPORT.md" <<EOF
+# Engineer report
+
+## Result
+
+ready-for-review
+
+## Branch
+
+$branch
+
+## Commit
+
+$commit
+
+## Files changed
+
+coverage-fixture.txt
+
+## Tests
+
+fixture commit
+
+## North-star impact
+
+Deterministic controller integration coverage.
+
+## Remaining risks
+
+None.
+EOF
+else
+  cat > "$worker_dir/REPORT.md" <<EOF
+# Director report
+
+## Result
+
+pass
+
+## Cycle
+
+ticket-implementation coverage fixture
+
+## Children
+
+engineer/$FACTORY_TICKET_ID: pass
+
+## Required-output status
+
+All required outputs are present and valid.
+
+## North-star impact
+
+The bounded controller evidence is reconciled.
+EOF
+fi
+cat > "$session" <<EOF
+{"type":"message","timestamp":"2026-08-06T00:00:00.000Z","message":{"role":"assistant","provider":"fixture","model":"fixture","stopReason":"stop","content":[{"type":"toolCall","name":"read","arguments":{"path":"$FACTORY_NORTH_STAR_FILE"}}],"usage":{"input":1,"output":1,"cost":{"total":0.01}}}}
+{"type":"message","timestamp":"2026-08-06T00:00:01.000Z","message":{"role":"assistant","provider":"fixture","model":"fixture","stopReason":"stop","content":[{"type":"toolCall","name":"read","arguments":{"path":"$FACTORY_HANDBOOK_FILE"}}],"usage":{"input":1,"output":1,"cost":{"total":0.01}}}}
+EOF
+exit 0
+""",
+  )?
+  test.ok(command_ok(process.which("chmod")?, ["chmod", "+x", fake_pi.display()])?)?
+  let xsh = process.which("xsh")?
+  let inherited_path = env.get("PATH")?
+  let env_path = f"${bin_dir.display()}:${inherited_path}"
+  let status = process.run(
+    process.command_argv(
+      xsh,
+      [
+        xsh.display(),
+        fp"${source_factory}/factory/controllers/ticket.xsh",
+        "--",
+        fp"${fixture_root}/ticket-request.md".display(),
+      ],
+      cwd: source_factory,
+      env: {
+        FACTORY_DIR: source_factory.display(),
+        FACTORY_ACTIVE_RUN: fp"${root}/active".resolve()?.display(),
+        FACTORY_LOCK_PATH: fp"${root}/factory.lock".resolve()?.display(),
+        FACTORY_PHASE_DIR: canonical_run_dir.display(),
+        FACTORY_SKIP_CYCLE_BUDGET: "true",
+        FACTORY_XSH_REPO: canonical_product.display(),
+        HOME: root.display(),
+        PATH: env_path,
+        PI_AUTH_FILE: fp"${root}/auth.json".display(),
+        PI_COMMAND: "factory-coverage-pi",
+        XSH_MODULE_PATH: source_factory.display(),
+      },
+      stdout: fp"${root}/controller.stdout",
+      stderr: fp"${root}/controller.stderr",
+    ),
+  )?
+  test.ok(status.ok, fs.read_text(fp"${root}/controller.stderr")?)?
+  test.ok(fs.exists(fp"${run_dir}/report.json")?)?
+  test.ok(fs.exists(fp"${run_dir}/CTO-REPORT.md")?)?
+  test.ok(fs.exists(fp"${run_dir}/events.jsonl")?)?
+  test.ok(fs.exists(fp"${run_dir}/patches/${ticket_id}.diff")?)?
+  test.ok(! fs.exists(runtime.ticket_worktree_path(product, run_dir, ticket_id))?)?
+  let branches = run.text "git" "-C" $product "branch" "--format=%(refname:short)" ?
+  test.ok(f"factory/${ticket_id}/" in branches)?
+  let phase_report = json.read(fp"${run_dir}/report.json")?
+  test.eq(schema.value_text(json.get(phase_report, ["result"], "")), "pass")?
+}
+
+proc test_eval_controller_persists_build_preflight_failure(ctx: TestContext) [fs, process, env, error] {
+  let root = test.temp_dir(ctx, name: "eval-controller-preflight")?
+  let factory = fs.cwd()?
+  let xsh_repo = fp"${factory}/../xsh".resolve()?
+  let run_dir = fp"${factory}/runs/run-eval-preflight-${root.name()}"
+  let bin_dir = fp"${root}/bin"
+  let fake_make = fp"${bin_dir}/make"
+  fs.mkdir(bin_dir)?
+  test.ok(! fs.exists(run_dir)?)?
+  defer fs.remove(run_dir, missing_ok: true)?
+  fs.write(
+    fp"${root}/eval-request.md",
+    """# Coverage eval request
+
+## Mode
+
+- `eval`
+
+## Active evals
+
+- `task-bigfiles`
+
+## Trial plan
+
+- Count: `1`
+
+## New eval proposals
+
+- Count: `0`
+""",
+  )?
+  fs.write(
+    fp"${root}/auth.json",
+    """{}
+""",
+  )?
+  fs.write(fp"${root}/active", "")?
+  fs.write(fp"${root}/factory.lock", "")?
+  fs.write(
+    fake_make,
+    r"""#!/bin/sh
+exit 17
+""",
+  )?
+  test.ok(command_ok(process.which("chmod")?, ["chmod", "+x", fake_make.display()])?)?
+  let inherited_path = env.get("PATH")?
+  let env_path = f"${bin_dir.display()}:${inherited_path}"
+  let xsh = process.which("xsh")?
+  let status = process.run(
+    process.command_argv(
+      xsh,
+      [
+        xsh.display(),
+        fp"${factory}/factory/controllers/eval.xsh",
+        "--",
+        fp"${root}/eval-request.md".display(),
+      ],
+      cwd: factory,
+      env: {
+        FACTORY_DIR: factory.display(),
+        FACTORY_ACTIVE_RUN: fp"${root}/active".resolve()?.display(),
+        FACTORY_FORCE_XSH_TOOLCHAIN_REBUILD: "true",
+        FACTORY_LOCK_PATH: fp"${root}/factory.lock".resolve()?.display(),
+        FACTORY_PHASE_DIR: run_dir.display(),
+        FACTORY_SKIP_TICKET_RECONCILE: "true",
+        FACTORY_XSH_REPO: xsh_repo.display(),
+        HOME: root.display(),
+        PATH: env_path,
+        PI_AUTH_FILE: fp"${root}/auth.json".display(),
+        XSH_MODULE_PATH: factory.display(),
+      },
+      stdout: fp"${root}/controller.stdout",
+      stderr: fp"${root}/controller.stderr",
+    ),
+  )?
+  test.ok(! status.ok, fs.read_text(fp"${root}/controller.stderr")?)?
+  test.ok(fs.exists(fp"${run_dir}/report.json")?)?
+  let report = json.read(fp"${run_dir}/report.json")?
+  test.ok(schema.valid(report, "phase"))?
+  test.eq(schema.value_text(json.get(report, ["result"], "")), "fail")?
+  let report_text = fs.read_text(fp"${run_dir}/report.json")?
+  test.contains(report_text, "\"stage\": \"xsh\"")?
+}
+
+proc test_eval_controller_completes_with_fake_build_docker_and_pi(ctx: TestContext) [fs, process, env, error] {
+  let root = test.temp_dir(ctx, name: "eval-controller-success")?
+  let factory = fs.cwd()?
+  let xsh_repo = fp"${factory}/../xsh".resolve()?
+  let run_dir = fp"${factory}/runs/run-eval-success-${root.name()}"
+  let bin_dir = fp"${root}/bin"
+  let fake_make = fp"${bin_dir}/make"
+  let fake_docker = fp"${bin_dir}/docker"
+  let fake_pi = fp"${bin_dir}/factory-eval-pi"
+  fs.mkdir(bin_dir)?
+  test.ok(! fs.exists(run_dir)?)?
+  defer fs.remove(run_dir, missing_ok: true)?
+  fs.write(
+    fp"${root}/eval-request.md",
+    """# Coverage eval request
+
+## Mode
+
+- `eval`
+
+## Active evals
+
+- `task-bigfiles`
+
+## Trial plan
+
+- Count: `1`
+
+## New eval proposals
+
+- Count: `0`
+""",
+  )?
+  fs.write(
+    fp"${root}/auth.json",
+    """{}
+""",
+  )?
+  fs.write(fp"${root}/active", "")?
+  fs.write(fp"${root}/factory.lock", "")?
+  fs.write(
+    fake_make,
+    r"""#!/bin/sh
+repo=""
+target=""
+previous=""
+for argument in "$@"; do
+  if [ "$previous" = "-C" ]; then
+    repo="$argument"
+  fi
+  case "$argument" in
+    TARGET=*) target="${argument#TARGET=}" ;;
+  esac
+  previous="$argument"
+done
+dist="$repo/target/docker-${target}-release/${target}/dist"
+mkdir -p "$dist"
+printf '#!/bin/sh\nexit 0\n' > "$dist/xsh"
+printf '#!/bin/sh\nexit 0\n' > "$dist/xsht"
+chmod +x "$dist/xsh" "$dist/xsht"
+exit 0
+""",
+  )?
+  fs.write(
+    fake_docker,
+    r"""#!/bin/sh
+if [ "$1" = "image" ]; then
+  for argument in "$@"; do
+    if [ "$argument" = "--format" ]; then
+      printf 'sha256:coverage-image\n'
+      exit 0
+    fi
+  done
+  exit 1
+fi
+if [ "$1" = "run" ]; then
+  work_dir=""
+  session_dir=""
+  export_dir=""
+  is_agent=false
+  previous=""
+  for argument in "$@"; do
+    if [ "$argument" = "/usr/local/lib/xsh-factory/eval-worker.xsh" ]; then
+      is_agent=true
+    fi
+    if [ "$previous" = "--mount" ]; then
+      source="${argument#*src=}"
+      source="${source%%,dst=*}"
+      destination="${argument##*,dst=}"
+      case "$destination" in
+        /work) work_dir="$source" ;;
+        /session) session_dir="$source" ;;
+        /export) export_dir="$source" ;;
+      esac
+    fi
+    previous="$argument"
+  done
+  if [ "$is_agent" = "true" ]; then
+    mkdir -p "$work_dir" "$session_dir"
+    printf '#!/bin/sh\nexit 0\n' > "$work_dir/bigfiles.xsh"
+    cat > "$work_dir/review.md" <<'EOF'
+## XSH language proposals
+
+None.
+
+## xsht friction
+
+None.
+EOF
+    cat > "$session_dir/session.jsonl" <<EOF
+{"type":"message","timestamp":"2026-08-06T00:00:00.000Z","message":{"role":"assistant","provider":"fixture","model":"fixture","stopReason":"stop","content":[{"type":"toolCall","name":"read","arguments":{"path":"/work/handbook.md"}}],"usage":{"input":1,"output":1,"cost":{"total":0.01}}}}
+EOF
+  else
+    mkdir -p "$session_dir"
+    cat > "$session_dir/run.json" <<'EOF'
+{"eval_id":"task-bigfiles","trial_id":"1","result":"pass","classification":"pass","protocol":{"artifact_present":true,"review_ok":true},"correctness":{"all_exact":true,"passed":true},"restrictions":{"passed":true},"timings":{"passed":true}}
+EOF
+  fi
+  exit 0
+fi
+exit 0
+""",
+  )?
+  fs.write(
+    fake_pi,
+    r"""#!/bin/sh
+session=""
+previous=""
+for argument in "$@"; do
+  if [ "$previous" = "--session" ]; then
+    session="$argument"
+  fi
+  previous="$argument"
+done
+worker_dir="$FACTORY_RUN_DIR/workers/$FACTORY_ROLE/$FACTORY_WORKER_ID"
+mkdir -p "$worker_dir"
+cp "$FACTORY_HANDBOOK_FILE" "$FACTORY_RUN_DIR/lineage/handbook-candidate.md"
+cat > "$worker_dir/REPORT.md" <<EOF
+# Eval manager report
+
+## Result
+
+pass
+
+## Effort metrics
+
+One deterministic fixture session.
+
+## Usage and cost
+
+One assistant turn and zero tool errors.
+
+## Thinking evidence
+
+No provider reasoning tokens reported.
+
+## Tool-error findings
+
+None.
+
+## Timing evidence
+
+Evaluator timing passed.
+
+## Observation classification
+
+Infrastructure integration signal.
+
+## Handbook decision
+
+unchanged
+
+## Tickets created
+
+None.
+
+## Post-merge decisions
+
+None.
+
+## Next replay
+
+None.
+
+## North-star impact
+
+The deterministic eval path preserves trustworthy evidence.
+EOF
+cat > "$session" <<EOF
+{"type":"message","timestamp":"2026-08-06T00:00:00.000Z","message":{"role":"assistant","provider":"fixture","model":"fixture","stopReason":"stop","content":[{"type":"toolCall","name":"read","arguments":{"path":"$FACTORY_NORTH_STAR_FILE"}}],"usage":{"input":1,"output":1,"cost":{"total":0.01}}}}
+{"type":"message","timestamp":"2026-08-06T00:00:01.000Z","message":{"role":"assistant","provider":"fixture","model":"fixture","stopReason":"stop","content":[{"type":"toolCall","name":"read","arguments":{"path":"$FACTORY_HANDBOOK_FILE"}}],"usage":{"input":1,"output":1,"cost":{"total":0.01}}}}
+{"type":"message","timestamp":"2026-08-06T00:00:02.000Z","message":{"role":"assistant","provider":"fixture","model":"fixture","stopReason":"stop","content":[{"type":"toolCall","name":"read","arguments":{"path":"$FACTORY_RUN_DIR/report.json"}}],"usage":{"input":1,"output":1,"cost":{"total":0.01}}}}
+EOF
+exit 0
+""",
+  )?
+  test.ok(
+    command_ok(process.which("chmod")?, ["chmod", "+x", fake_make.display(), fake_docker.display(), fake_pi.display()])?,
+  )?
+  let xsh = process.which("xsh")?
+  let inherited_path = env.get("PATH")?
+  let env_path = f"${bin_dir.display()}:${inherited_path}"
+  let status = process.run(
+    process.command_argv(
+      xsh,
+      [
+        xsh.display(),
+        fp"${factory}/factory/controllers/eval.xsh",
+        "--",
+        fp"${root}/eval-request.md".display(),
+      ],
+      cwd: factory,
+      env: {
+        DOCKER: fake_docker.display(),
+        FACTORY_ACTIVE_RUN: fp"${root}/active".resolve()?.display(),
+        FACTORY_DIR: factory.display(),
+        FACTORY_FORCE_XSH_TOOLCHAIN_REBUILD: "true",
+        FACTORY_LOCK_PATH: fp"${root}/factory.lock".resolve()?.display(),
+        FACTORY_PHASE_DIR: run_dir.display(),
+        FACTORY_SKIP_CYCLE_BUDGET: "true",
+        FACTORY_SKIP_TICKET_RECONCILE: "true",
+        FACTORY_XSH_REPO: xsh_repo.display(),
+        HOME: root.display(),
+        PATH: env_path,
+        PI_AUTH_FILE: fp"${root}/auth.json".display(),
+        PI_COMMAND: "factory-eval-pi",
+        XSH_MODULE_PATH: factory.display(),
+      },
+      stdout: fp"${root}/controller.stdout",
+      stderr: fp"${root}/controller.stderr",
+    ),
+  )?
+  test.ok(status.ok, fs.read_text(fp"${root}/controller.stderr")?)?
+  let report = json.read(fp"${run_dir}/report.json")?
+  test.ok(schema.valid(report, "phase"))?
+  test.eq(schema.value_text(json.get(report, ["result"], "")), "pass")?
+  test.eq(json.get(json.read(fp"${run_dir}/required-outputs.json")?, ["required"], false), true)?
+  test.eq(json.get(json.read(fp"${run_dir}/workers/eval-worker/task-bigfiles-1/run.json")?, ["result"], ""), "pass")?
+  test.ok(fs.exists(fp"${run_dir}/CTO-REPORT.md")?)?
+}
+
+proc test_organization_controller_completes_primary_and_design_phases(ctx: TestContext) [fs, process, env, error] {
+  let root = test.temp_dir(ctx, name: "organization-controller-success")?
+  let factory = fs.cwd()?
+  let fixture_factory = fp"${root}/factory"
+  let xsh_repo = fp"${factory}/../xsh".resolve()?
+  let bin_dir = fp"${root}/bin"
+  let fake_phase = fp"${bin_dir}/fake-phase-controller.xsh"
+  fs.mkdir(bin_dir)?
+  fs.mkdir(fixture_factory)?
+  fs.mkdir(fp"${fixture_factory}/factory")?
+  fs.mkdir(fp"${fixture_factory}/factory/tools")?
+  fs.mkdir(fp"${fixture_factory}/runtime")?
+  fs.mkdir(fp"${fixture_factory}/templates")?
+  fs.mkdir(fp"${fixture_factory}/tickets")?
+  fs.mkdir(fp"${fixture_factory}/evals")?
+  fs.mkdir(fp"${fixture_factory}/evals/task-bigfiles")?
+  for relative in [
+    "factory/control.xsh",
+    "factory/schema.xsh",
+    "factory/tools/audit.xsh",
+    "factory/tools/cto-report.xsh",
+    "runtime/handbook.md",
+    "runtime/handbook-ledger.md",
+    "evals/task-bigfiles/EVAL.md",
+    "templates/CTO-IMPROVEMENT.md",
+    "templates/CTO-PRODUCTIVITY-REPORT.md",
+    "templates/ORGANIZATION-PHASE-REQUEST.md",
+    "templates/TICKET.md",
+    "templates/TICKET-RETIRED-EVAL-DISPOSITION.md",
+    "templates/CTO-REPORT.md",
+    "templates/CTO-EMPLOYEE.md",
+    "templates/CTO-WORKER.md",
+    "templates/CTO-TOOL-ERROR.md",
+    "templates/CTO-PHASE.md",
+    "templates/CTO-TOTAL.md",
+  ] {
+    fs.copy(fp"${factory}/${relative}", fp"${fixture_factory}/${relative}", overwrite: true)?
+  }
+
+  fs.write(
+    fp"${root}/organization-request.md",
+    """# Coverage organization request
+
+## Mode
+
+- `organization`
+
+## Active evals
+
+- `task-bigfiles`
+
+## Trial plan
+
+- Count: `1`
+
+## New eval proposals
+
+- Count: `1`
+
+## Approved tickets
+
+- None.
+""",
+  )?
+  fs.write(
+    fp"${root}/auth.json",
+    """{}
+""",
+  )?
+  fs.write(
+    fake_phase,
+    r"""#!/bin/sh
+mkdir -p "$FACTORY_PHASE_DIR"
+cat > "$FACTORY_PHASE_DIR/report.json" <<EOF
+{
+  "schema_version": 1,
+  "kind": "phase",
+  "identity": {
+    "run_id": "$(basename "$FACTORY_PHASE_DIR")",
+    "mode": "$FACTORY_MODE"
+  },
+  "state": "completed",
+  "result": "pass",
+  "data": {
+    "mode": "$FACTORY_MODE",
+    "cost": {
+      "workers": 0,
+      "assistant_turns": 0,
+      "total_bucket_tokens": 0,
+      "cost_usd": 0.0,
+      "tool_errors": 0
+    }
+  },
+  "findings": [],
+  "artifacts": []
+}
+EOF
+exit 0
+""",
+  )?
+  test.ok(command_ok(process.which("chmod")?, ["chmod", "+x", fake_phase.display()])?)?
+  test.ok(! fs.exists(fp"${fixture_factory}/runs/ORGANIZATION-ACTIVE")?)?
+
+  let xsh = process.which("xsh")?
+  let inherited_path = env.get("PATH")?
+  let status = process.run(
+    process.command_argv(
+      xsh,
+      [
+        xsh.display(),
+        fp"${factory}/factory/controllers/organization.xsh",
+        "--",
+        fp"${root}/organization-request.md".display(),
+      ],
+      cwd: factory,
+      env: {
+        FACTORY_DESIGN_CONTROLLER: fake_phase.display(),
+        FACTORY_CHILD_RUNNER: fake_phase.display(),
+        FACTORY_DIR: fixture_factory.display(),
+        FACTORY_FORCE_IMAGE_REBUILD: "false",
+        FACTORY_PRIMARY_CONTROLLER: fake_phase.display(),
+        FACTORY_SKIP_CYCLE_BUDGET: "true",
+        FACTORY_XSH_REPO: xsh_repo.display(),
+        HOME: root.display(),
+        PATH: f"${bin_dir.display()}:${inherited_path}",
+        PI_AUTH_FILE: fp"${root}/auth.json".display(),
+        PI_COMMAND: "unused-fixture-pi",
+        XSH_MODULE_PATH: factory.display(),
+      },
+      stdout: fp"${root}/organization.stdout",
+      stderr: fp"${root}/organization.stderr",
+    ),
+  )?
+  test.ok(status.ok, fs.read_text(fp"${root}/organization.stderr")?)?
+  let output = fs.read_text(fp"${root}/organization.stdout")?
+  test.contains(output, "factory organization run:")?
+  test.contains(output, "(pass)")?
+  let run_text = output.lines().get(1, "").replace("factory organization run: ", "").split(" (").get(0, "").trim()
+  let organization_run = fp"${run_text}"
+  defer fs.remove(organization_run, missing_ok: true)?
+  let report = json.read(fp"${organization_run}/report.json")?
+  test.ok(schema.valid(report, "run"))?
+  test.eq(schema.value_text(json.get(report, ["result"], "")), "pass")?
+  test.eq(schema.value_text(json.get(report, ["data", "outcomes", "evaluator"], "")), "pass")?
+  test.ok(fs.exists(fp"${organization_run}/phases/01-eval/report.json")?)?
+  test.ok(fs.exists(fp"${organization_run}/phases/02-eval-design/report.json")?)?
+  test.ok(fs.exists(fp"${organization_run}/CTO-PRODUCTIVITY-REPORT.md")?)?
+}
+
 proc test_untried_approved_eval_selection(ctx: TestContext) [fs, error] {
   let root = test.temp_dir(ctx, name: "untried-eval-selection")?
   fs.mkdir(fp"${root}/evals/task-a")?
