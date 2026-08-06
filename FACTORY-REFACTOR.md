@@ -527,7 +527,7 @@ Use a staged migration. Do not move every file in one commit.
 - Establish a rule that no new top-level core factory module may be added.
 
 Exit criteria: inventory is complete, imports are mapped, no paid cycle is
-needed to validate the inventory, and `XSH_MODULE_PATH=. xsht test` passes.
+needed to validate the inventory, and `xsht test` passes.
 
 ### Phase 1: introduce types and pure policy
 
@@ -711,7 +711,7 @@ The refactor is complete only when all of the following are true:
    lifecycle, evidence, cleanup, budget, and failure behavior without Pi.
 10. The migration preserves historical evidence and operator-visible durable
     outputs.
-11. `XSH_MODULE_PATH=. xsht test` passes with no skipped invariant tests.
+11. `xsht test` passes with no skipped invariant tests.
 12. The final migration report identifies any remaining intentional escape
     hatch and names its owner, boundary, and test.
 

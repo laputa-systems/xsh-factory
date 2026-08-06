@@ -191,6 +191,87 @@ proc test_admission_and_report_contracts() [error] {
   test.eq(control.report_field("# Report\n\n## Result\n\npass\n\nDetails.\n\n## Evidence\n\nready\n", "Result"), "pass")?
 }
 
+proc test_control_text_contracts_cover_fallbacks_and_transitions() [error] {
+  let ticket = "# Ticket\n\n## Status\n\nApproved.\n\n## Change target\n\n- product\n\n## Source eval and manager\n\n- Eval: `task-envcfg`\n\n## Body\n\ncontent\n"
+  test.eq(control.ticket_status(ticket), "Approved.")?
+  test.eq(control.ticket_change_target(ticket), "product")?
+  test.eq(control.ticket_eval(ticket), "task-envcfg")?
+  test.ok(control.ticket_is_accepted(ticket))?
+  test.ok(! control.ticket_is_merged(ticket))?
+  test.eq(control.ticket_status("# Ticket\n\n## Status\n\n## Next\n"), "")?
+  test.eq(control.ticket_change_target("## Change target\n\n- factory\n"), "factory")?
+  test.eq(control.ticket_eval("## Source eval and manager\n\n- Eval: task-plain\n"), "task-plain")?
+  test.eq(control.role_prefix("unknown"), "")?
+  test.eq(control.default_provider("unknown"), "")?
+  test.eq(control.default_model("unknown"), "")?
+  test.eq(control.default_tools("eval-worker"), "read,write,edit,bash")?
+  test.eq(control.default_tools("unknown"), "")?
+  test.eq(control.clamp_session_limit("engineer", "MAX_TURNS", "999")?, "220")?
+  test.eq(control.clamp_session_limit("engineer", "MAX_TURNS", "20")?, "20")?
+  test.eq(control.clamp_session_limit("unknown", "MAX_TURNS", "20")?, "20")?
+  test.eq(control.clamp_budget("engineer", "2.0")?, "0.35")?
+  test.eq(control.clamp_budget("engineer", "0.10")?, "0.10")?
+  test.eq(control.clamp_budget("unknown", "2.0")?, "2.0")?
+  test.eq(control.clamp_cycle_budget("0.25")?, "0.25")?
+  test.ok(control.ecount_oracle_ok(true, "data"))?
+  test.ok(! control.ecount_oracle_ok(false, "data"))?
+  test.eq(control.ecount_classification(false, true, true, true, true, true), "worker_missing_artifact")?
+  test.eq(control.ecount_classification(true, false, true, true, true, true), "protocol_failed")?
+  test.eq(control.ecount_classification(true, true, false, true, true, true), "restriction_failed")?
+  test.eq(control.ecount_classification(true, true, true, false, true, true), "evaluator_failed")?
+  test.eq(control.ecount_classification(true, true, true, true, false, true), "candidate_failed")?
+  test.eq(control.ecount_classification(true, true, true, true, true, false), "timing_failed")?
+  test.eq(control.ecount_classification(true, true, true, true, true, true), "pass")?
+  let replaced = control.replace_ticket_status(ticket, "Merged.")
+  test.ok(control.ticket_is_merged(replaced))?
+  test.contains(control.replace_section(ticket, "Body", "replacement"), "replacement")?
+  test.contains(control.replace_section("# Ticket\n", "Body", "appended"), "appended")?
+  test.eq(control.factory_relative_path("/factory", Path("/factory/runs/run-1/report.json")), "runs/run-1/report.json")?
+  test.eq(control.factory_relative_path("/factory/", Path("/outside/report.json")), "/outside/report.json")?
+  test.ok(control.transition_allowed("validated", "ready-for-review"))?
+  test.ok(control.transition_allowed("ready-for-review", "accepted"))?
+  test.ok(control.transition_allowed("accepted", "reverted"))?
+  test.ok(! control.transition_allowed("accepted", "failed"))?
+  test.ok(control.retry_allowed("transient-harness", 1, 2))?
+  test.ok(! control.retry_allowed("permanent", 1, 2))?
+  test.ok(! control.retry_allowed("worker-failed", 2, 2))?
+  test.contains(control.fill_template("Hello {{NAME}}", [{key: "NAME", value: "factory"}]), "Hello factory")?
+}
+
+proc test_control_build_identity_and_report_helpers() [env, error] {
+  let ticket = "# Ticket\n\n## Status\n\nOpen.\n"
+  let args = control.eval_overlay_build_args("xsh-base", "build-1", "factory:latest", "linux/amd64", Path("/factory/Dockerfile"), Path("/factory"), true)
+  test.eq(args[0], "build")?
+  test.ok(args.contains("--no-cache"))?
+  let cached = control.eval_overlay_build_args("xsh-base", "build-1", "factory:latest", "linux/amd64", Path("/factory/Dockerfile"), Path("/factory"))
+  test.ok(! cached.contains("--no-cache"))?
+  test.ok(control.toolchain_cache_valid(false, true, "key", "key", true))?
+  test.ok(! control.toolchain_cache_valid(true, true, "key", "key", true))?
+  test.ok(! control.toolchain_cache_valid(false, true, "old", "key", true))?
+  test.ok(! control.toolchain_cache_valid(false, true, "key", "key", false))?
+  test.ok(control.factory_image_tag("xsh", "control", "runtime", "schema", "worker", "base", "toolchain", "make", "linux", "amd64") != "")?
+  test.eq(control.ecount_oracle_command()[0], "sh")?
+  env FACTORY_ENGINEER_PROVIDER="fixture" {
+    test.eq(control.configured_role_setting("engineer", "PROVIDER")?, "fixture")?
+  }
+  env FACTORY_ENGINEER_MAX_TURNS="999" {
+    test.eq(control.configured_role_setting("engineer", "MAX_TURNS")?, "220")?
+  }
+  test.eq(control.configured_role_setting("unknown", "MODEL")?, "")?
+  test.eq(control.configured_role_setting("engineer", "UNKNOWN")?, "")?
+  let report = "## Result\n\nready-for-review. Details\n\nBranch: `factory/task-a`\n\n## Merge record\n\nbranch\ncommit\nrun\n"
+  test.eq(control.report_line_value(report, "Branch:"), "factory/task-a")?
+  test.ok(control.report_result_is(report, "ready-for-review"))?
+  test.contains(control.section_text(report, "Merge record"), "commit")?
+  test.ok(control.ticket_merge_record_complete(report))?
+  test.ok(! control.ticket_merge_record_complete("## Merge record\n\n{{IMPLEMENTATION_BRANCH}}\n"))?
+  test.eq(control.replace_status(report, "ready-for-review"), report)?
+  test.eq(control.replace_status("# Empty\n", "Closed."), "# Empty\n")?
+  test.contains(control.replace_eval_status(ticket, "Approved."), "Approved.")?
+  test.contains(control.replace_ticket_section("# Ticket\n", "Status", "## Status\n\nOpen."), "Open.")?
+  test.ok(! control.report_contract_ok("## Result\n\npass\n{{pending}}", [], "pass"))?
+}
+
 proc test_eval_proposal_is_promoted_without_acceptance(ctx: TestContext) [fs, error] {
   let factory = test.temp_dir(ctx, name: "eval-promotion")?
   let proposal = fp"${factory}/runs/run-1/proposals/proposal-1"
@@ -348,6 +429,22 @@ proc test_report_schema_is_single_machine_contract(ctx: TestContext) [fs, error]
   test.ok(schema.valid(value, "worker"))?
   test.ok(! schema.valid(value, "phase"))?
   test.eq(schema.value_text(json.get(value, ["result"], null)), "pass")?
+}
+
+proc test_report_schema_preserves_outcome_and_scalar_contracts() [error] {
+  let identity = {run_id: "run-1"}
+  let envelope = schema.envelope("worker", identity, "completed", "pass")
+  test.ok(schema.valid(envelope, "worker"))?
+  test.ok(! schema.valid(envelope, "phase"))?
+  let outcome = schema.outcome(true, false, true)
+  test.eq(json.get(outcome, ["product"], ""), "pass")?
+  test.eq(json.get(outcome, ["evaluator"], ""), "fail")?
+  test.eq(json.get(outcome, ["cycle"], ""), "fail")?
+  test.eq(schema.value_text("text"), "text")?
+  test.eq(schema.value_text(7), "7")?
+  test.eq(schema.value_text(0.5), "0.500000")?
+  test.eq(schema.value_text(true), "true")?
+  test.eq(schema.value_text([]), "")?
 }
 
 proc test_lifecycle_rejects_improvised_transitions() [error] {

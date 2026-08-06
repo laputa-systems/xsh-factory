@@ -178,7 +178,7 @@ refuses to run during an active cycle.
 Run the cheap native infrastructure suite before spending model budget:
 
 ```sh
-XSH_MODULE_PATH=. xsht test
+xsht test
 ```
 
 The tests use synthetic Pi JSONL and process/container doubles. They do not

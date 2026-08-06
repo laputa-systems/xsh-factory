@@ -62,7 +62,7 @@ From this directory, inspect both repositories before editing:
 ```sh
 git status --short
 git -C ../xsh status --short
-XSH_MODULE_PATH=. xsht test
+xsht test
 ```
 
 For a cycle, use the documented request through `run.xsh`; run its preflight
@@ -222,7 +222,7 @@ trailer-verification, idempotency, patch-hash, and cleanup cases live in
   boundaries, organization reuse, eval promotion, and engineer provenance
   amendment.
 - The nearest hard judge for factory changes is
-  `XSH_MODULE_PATH=. xsht test`. Use synthetic sessions, Git repositories, and
+  `xsht test`. Use synthetic sessions, Git repositories, and
   harmless process doubles; deterministic infrastructure must not consume Pi
   budget.
 

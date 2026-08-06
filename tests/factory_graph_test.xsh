@@ -44,6 +44,43 @@ proc test_graph_validation_rejects_cycles_and_duplicates() [error] {
   }
 }
 
+proc test_graph_readiness_and_results_follow_plan_contract() [error] {
+  let first = fixture_node("implementation", "task-a", "dispatch-a", "engineer")?
+  let second = fixture_node("replay", "task-a-replay", "dispatch-b", "eval-manager")?
+  let a = types.make_node_id("implementation")?
+  let b = types.make_node_id("replay")?
+  let edge = graph.make_edge(a, b, "hard", "stop-dependents")?
+  let run_id = types.make_run_id("run-2")?
+  let mode = types.make_mode("organization")?
+  let plan = {run_id: run_id.value, mode: mode.value, nodes: [first, second], edges: [edge], source_hashes: [], required_outputs: ["report.json"], aggregate_budget: 1.0}
+  test.ok(! graph.startable(plan, "missing", []))?
+  test.ok(! graph.startable(plan, "replay", [{node_id: "implementation", state: "started"}]))?
+  test.ok(! graph.startable(plan, "replay", [{node_id: "implementation", state: "failed"}]))?
+  let continue_plan = {run_id: run_id.value, mode: mode.value, nodes: [first, second], edges: [graph.make_edge(a, b, "replay", "continue-on-failure")?], source_hashes: [], required_outputs: [], aggregate_budget: 1.0}
+  test.ok(graph.startable(continue_plan, "replay", [{node_id: "implementation", state: "failed"}]))?
+  test.eq(graph.root_result(plan, [{node_id: "implementation", state: "completed"}, {node_id: "replay", state: "validated"}], ["report.json"]), "pass")?
+  test.eq(graph.root_result(plan, [{node_id: "implementation", state: "completed"}, {node_id: "replay", state: "validated"}], []), "fail")?
+  test.eq(graph.root_result(plan, [{node_id: "implementation", state: "failed"}, {node_id: "replay", state: "validated"}], ["report.json"]), "fail")?
+  match graph.make_node(a, types.make_role("engineer")?, types.make_worker_id("worker")?, types.make_dispatch_id("dispatch")?, "", [], [], types.make_budget(0.1, 1.0)?, []) {
+    Ok(_) => test.fail("incomplete graph node was accepted")?,
+    Err(_) => {},
+  }
+  match graph.make_edge(a, a, "hard", "stop-dependents") {
+    Ok(_) => test.fail("self-referential graph edge was accepted")?,
+    Err(_) => {},
+  }
+  let missing_edge = {run_id: run_id.value, mode: mode.value, nodes: [first, second], edges: [graph.make_edge(a, types.make_node_id("missing")?, "hard", "stop-dependents")?], source_hashes: [], required_outputs: [], aggregate_budget: 1.0}
+  match graph.validate(missing_edge) {
+    Ok(_) => test.fail("graph edge to missing node was accepted")?,
+    Err(_) => {},
+  }
+  let orphan = {run_id: run_id.value, mode: mode.value, nodes: [first, second], edges: [], source_hashes: [], required_outputs: [], aggregate_budget: 1.0}
+  match graph.validate(orphan) {
+    Ok(_) => test.fail("orphan graph node was accepted")?,
+    Err(_) => {},
+  }
+}
+
 proc fixture_dispatch() [error] -> Result[dispatch.DispatchSpec] {
   return {
     run_id: types.make_run_id("run-1")?,
@@ -82,6 +119,9 @@ proc test_dispatch_requires_exact_identity_and_single_claim(ctx: TestContext) [f
   let spec = fixture_dispatch()?
   let plan = {run_id: spec.run_id, controller_identity: "controller-1", controller_token: "run-token", specs: [spec]}
   dispatch.validate_plan(plan)?
+  let manifest = dispatch.manifest_value(spec)
+  test.eq(json.get(manifest, ["dispatch_id"], ""), "dispatch-a")?
+  test.eq(json.get(manifest, ["aggregate_budget"], 0.0), 1.0)?
   let invocation = {
     run_id: spec.run_id, phase_id: spec.phase_id, node_id: spec.node_id, dispatch_id: spec.dispatch_id,
     role: spec.role, worker_id: spec.worker_id, mode: spec.mode, ticket_id: spec.ticket_id, eval_id: spec.eval_id,
@@ -117,11 +157,21 @@ proc test_dispatch_requires_exact_identity_and_single_claim(ctx: TestContext) [f
   }
 
   let root = test.temp_dir(ctx, name: "dispatch-plan")?
-  dispatch.persist_spec(root, spec)?
-  test.ok(fs.exists(fp"${root}/dispatch/dispatch-a.json")?)
-  dispatch.claim_persisted_once(root, "dispatch-a", "claim-a", "runner-1")?
-  test.ok(fs.exists(fp"${root}/dispatch/dispatch-a.claim.json")?)
-  match dispatch.claim_persisted_once(root, "dispatch-a", "claim-a", "runner-2") {
+  dispatch.persist_plan(root, plan)?
+  test.ok(fs.exists(fp"${root}/dispatch/PLAN.json")?)?
+  let claim_once = dispatch.claim_once(root, spec, "runner-0")?
+  test.eq(claim_once.claimed_by, "runner-0")?
+  match dispatch.claim_once(root, spec, "runner-1") {
+    Ok(_) => test.fail("dispatch claim was duplicated")?,
+    Err(_) => {},
+  }
+
+  let persisted = test.temp_dir(ctx, name: "persisted-dispatch")?
+  dispatch.persist_spec(persisted, spec)?
+  test.ok(fs.exists(fp"${persisted}/dispatch/dispatch-a.json")?)?
+  dispatch.claim_persisted_once(persisted, "dispatch-a", "claim-a", "runner-1")?
+  test.ok(fs.exists(fp"${persisted}/dispatch/dispatch-a.claim.json")?)?
+  match dispatch.claim_persisted_once(persisted, "dispatch-a", "claim-a", "runner-2") {
     Ok(_) => test.fail("persisted dispatch was claimed twice")?,
     Err(_) => {},
   }

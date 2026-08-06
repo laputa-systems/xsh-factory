@@ -824,6 +824,41 @@ proc test_host_agent_dispatch_requires_controller_manifest(ctx: TestContext) [fs
   test.contains(runner, "agent invocation does not match controller dispatch record")?
 }
 
+proc test_runtime_registration_and_bound_dispatch_are_durable(ctx: TestContext) [fs, process, error] {
+  let root = test.temp_dir(ctx, name: "runtime-registration")?
+  let factory = fp"${root}/factory"
+  let run_dir = fp"${root}/runs/run-1/01-ticket"
+  let system_prompt = fp"${factory}/roles/engineer.md"
+  let message_file = fp"${run_dir}/messages/task-a.md"
+  let workdir = fp"${root}/product/worktree"
+  fs.mkdir(fp"${factory}/roles")?
+  fs.mkdir(fp"${run_dir}/messages")?
+  fs.mkdir(workdir)?
+  fs.write(system_prompt, "engineer prompt\n")?
+  fs.write(message_file, "assignment\n")?
+  runtime.register_cycle_controller(run_dir)?
+  runtime.register_process(run_dir, "engineer", 42)?
+  test.ok(fs.exists(fp"${run_dir}/processes/controller.pids")?)?
+  test.eq(fs.read_text(fp"${run_dir}/processes/engineer.pids")?.trim(), "42")?
+  runtime.write_dispatch_record(run_dir, "eval-manager", "manager", message_file, workdir, "eval", "task-ecount", "", "")?
+  let legacy = json.read(fp"${run_dir}/dispatch/eval-manager-manager.json")?
+  test.eq(json.get(legacy, ["worker_id"], ""), "manager")?
+  runtime.write_bound_dispatch_record(factory, run_dir, "engineer", "task-a", system_prompt, message_file, workdir, "ticket-implementation", "task-ecount", "task-a", "assignment-hash")?
+  let bound = json.read(fp"${run_dir}/dispatch/engineer-task-a.json")?
+  test.eq(json.get(bound, ["schema_version"], 0), 2)?
+  test.eq(json.get(bound, ["claim_token"], ""), "assignment-hash")?
+  match runtime.write_bound_dispatch_record(factory, run_dir, "engineer", "task-a", system_prompt, message_file, workdir, "ticket-implementation", "task-ecount", "task-a", "assignment-hash") {
+    Ok(_) => test.fail("bound dispatch record was overwritten")?,
+    Err(_) => {},
+  }
+  match runtime.write_bound_dispatch_record(factory, run_dir, "engineer", "task-b", fp"${factory}/missing.md", message_file, workdir, "ticket-implementation", "task-ecount", "task-b", "") {
+    Ok(_) => test.fail("dispatch with missing prompt was accepted")?,
+    Err(_) => {},
+  }
+  runtime.stop_cycle_budget_watch(run_dir)?
+  test.contains(fs.read_text(fp"${run_dir}/AGGREGATE-BUDGET-STOP")?, "normal controller shutdown")?
+}
+
 proc test_ticket_worktree_is_outside_factory_checkout() [error] {
   let factory = paths.make_factory_root(Path("/srv/factory"))?
   let product = paths.make_product_root(Path("/srv/xsh"), factory)?

@@ -193,7 +193,7 @@ prompts or handbook only when the evidence warrants it.
 The nearest hard judge for factory changes is:
 
 ```sh
-XSH_MODULE_PATH=. xsht test
+xsht test
 ```
 
 Then run a minimum user-facing cycle through `run.xsh`, inspect its

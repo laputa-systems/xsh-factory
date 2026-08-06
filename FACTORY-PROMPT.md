@@ -88,7 +88,7 @@ admission. Review `README.md`, `FACTORY.md`, `CTO.md`, `roles/**`,
 Run the nearest native factory check before editing documentation:
 
 ```text
-XSH_MODULE_PATH=. xsht test
+xsht test
 ```
 
 Run Englishlint on the active directories. Review the full repository separately:
