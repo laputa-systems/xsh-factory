@@ -110,6 +110,12 @@ human-authored inputs or judgments. They are not machine-to-machine state.
 
 ## Cycle boundaries
 
+One operator request for one cycle permits one paid `run.xsh` invocation.
+Controller failures must be repaired through native tests and deterministic
+preflight, not by relaunching the same paid organization request. If a run
+directory or paid child exists, preserve that attempt and stop; a later paid
+invocation requires a new explicit request.
+
 `run.xsh` admits one explicit mode after preflight. Operators pass a request
 template from `templates/`; no `cycle-*.md` files are kept at repository top
 level. The selected request is copied into the appropriate run directory as

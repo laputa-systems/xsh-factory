@@ -260,6 +260,7 @@ proc test_standard_cycle_uses_diverse_active_eval() [fs, error] {
   let productivity = fs.read_text(fp"${fs.cwd()?}/templates/CTO-PRODUCTIVITY-REPORT.md")?
   let ledger = fs.read_text(fp"${fs.cwd()?}/runtime/handbook-ledger.md")?
   let launcher = fs.read_text(fp"${fs.cwd()?}/run.xsh")?
+  let readme = fs.read_text(fp"${fs.cwd()?}/README.md")?
   let organization = fs.read_text(fp"${fs.cwd()?}/factory/controllers/organization.xsh")?
   let runtime_source = fs.read_text(fp"${fs.cwd()?}/factory/runtime.xsh")?
   let cto_runner = fs.read_text(fp"${fs.cwd()?}/factory/tools/cto.xsh")?
@@ -281,11 +282,10 @@ proc test_standard_cycle_uses_diverse_active_eval() [fs, error] {
   test.contains(cto, "not a request for approval")?
   test.contains(cto, "may finish the cycle with `pending-validation`")?
   test.contains(cto, "product merge is a CTO decision")?
-  test.contains(cto, "Before declaring any cycle complete")?
+  test.contains(cto, "Before declaring a user-requested cycle complete")?
   test.contains(cto, "cto: close <run-id>")?
-  test.contains(cto, "unconditionally closes")?
   test.contains(cto, "regardless of")?
-  test.contains(cto, "do not batch multiple runs")?
+  test.contains(cto, "do not manufacture a")?
   test.contains(cto, "The CTO decides whether to merge or apply")?
   test.contains(cto, "Admission is an explicit CTO decision")?
   test.contains(cto, "Throughput invariant")?
@@ -306,6 +306,7 @@ proc test_standard_cycle_uses_diverse_active_eval() [fs, error] {
   test.ok(! factory.contains("user authority"))?
   test.ok(! factory.contains("user approves"))?
   test.contains(launcher, "templates/CTO-IMPROVEMENT.md")?
+  test.contains(readme, "one paid `run.xsh` invocation")?
   test.contains(launcher, "paths.real_within")?
   test.contains(launcher, "cycle request must be a template")?
   test.contains(launcher, "candidate_tickets")?

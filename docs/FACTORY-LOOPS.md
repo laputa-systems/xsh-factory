@@ -90,6 +90,13 @@ stay out of active cycles.
 
 ## Organization loop
 
+The top-level request is single-attempt: one user request permits one paid
+`run.xsh` invocation. Do not relaunch an organization request to debug a
+controller failure. Repair path, dispatch, lifecycle, and schema defects with
+native tests, synthetic sessions, harmless process doubles, and preflight;
+preserve the failed attempt and require a new explicit cycle request for a
+later paid run.
+
 `run.xsh` is a signal-safe dispatcher. Operators pass a request template under
 `templates/`; `run.xsh` copies that request into the appropriate run directory
 as `CYCLE-REQUEST.md` before paid children start. No top-level `cycle-*.md`
@@ -117,14 +124,14 @@ The CTO is the authority for product merges, handbook promotion, eval
 approval, and reversion. It reviews the evidence and chooses the next narrow
 cycle within the coded spend and eval-count limits.
 
-The CTO unconditionally closes each paid cycle individually, including failed
-or partial runs, by committing the reviewed factory changes and that run's
-durable evidence with a dedicated `cto: close <run-id>` commit. `runs/.gitignore` allowlists
-the evidence hierarchy—reports, narratives, manifests, compressed sessions,
-events, and patches—while excluding transient controller plumbing such as
-locks, PIDs, logs, worktrees, and active markers. Unrelated local work is not
-part of that commit; runs are never batched and no further explicit
-finalization is required.
+The CTO closes each user-requested paid cycle once, including a failed or
+partial attempt, by committing the reviewed factory changes and that cycle's
+durable evidence. A controller repair must not create a chain of close commits:
+diagnostic attempts are listed in the primary cycle handoff, while unrelated
+historical runs are not bulk-closed. `runs/.gitignore` allowlists the evidence
+hierarchy—reports, narratives, manifests, compressed sessions, events, and
+patches—while excluding transient controller plumbing such as locks, PIDs,
+logs, worktrees, and active markers.
 
 ## Durable output hierarchy
 

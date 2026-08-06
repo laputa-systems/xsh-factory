@@ -92,6 +92,12 @@ controller copies each immutable request into its run directory. `run.xsh`
 performs preflight, owns cancellation,
 and delegates every Pi process through `factory/entrypoints/run-agent.xsh`.
 
+An operator request for one cycle permits one paid `run.xsh` invocation. If
+that attempt exposes a controller defect, stop and repair it with native tests;
+do not relaunch the same organization request to probe the fix. Preflight and
+synthetic controller tests are the retry boundary. A later paid run requires a
+new explicit cycle request.
+
 ## Inspect a run
 
 Every cycle is stored under `runs/run-<id>/`. The durable machine-readable
@@ -148,9 +154,12 @@ The CTO reviews the patch and decides whether to merge or apply the product
 change. The next reconciliation updates the linked `TICKET.md` to `Merged.`
 when the recorded implementation is proven in XSH `HEAD`.
 
-The CTO unconditionally closes each paid cycle individually, including failed
-or partial runs, by committing that run's scoped factory changes and durable
-evidence with a dedicated `cto: close <run-id>` commit. The
+The CTO closes each user-requested paid cycle once, including failed or
+partial runs, by committing that cycle's scoped factory changes and durable
+evidence with a dedicated `cto: close <run-id>` commit. A failed controller
+attempt and its repair evidence belong to the same cycle closeout; do not
+create a close commit for every diagnostic relaunch or bulk-close unrelated
+historical runs. The
 `runs/.gitignore` allowlist keeps transient controller plumbing (locks, PIDs,
 stdout/stderr copies, worktrees, and active markers) out while retaining the
 reports, narratives, manifests, compressed sessions, events, patches, and

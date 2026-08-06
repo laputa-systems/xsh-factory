@@ -43,6 +43,28 @@ condition. A report-only observation, a new ticket, or a new eval proposal is
 not sufficient unless the CTO also changes the factory's controller, prompt,
 test, policy, or other reusable infrastructure.
 
+## Single-attempt and closeout discipline
+
+One user request to “run one cycle” permits exactly one paid `run.xsh`
+invocation. A controller or launcher failure is not an invitation to relaunch
+the organization request. Stop, preserve the failed attempt, add a deterministic
+regression test, and wait for a subsequent explicitly requested cycle.
+
+Controller debugging must happen before paid admission using `xsht` tests,
+synthetic sessions, harmless process doubles, or a controller-only preflight.
+Do not use an organization launch to discover path, dispatch, lock, schema, or
+cleanup defects. If a preflight fails before a run directory or paid child is
+created, repair it and rerun preflight; if a run directory or child exists,
+that is the one attempt for the request.
+
+Closeout is per user-requested cycle, not per debugging attempt or generated
+run directory. One closeout commit may contain the scoped evidence from a
+failed attempt and its later successful validation, but do not manufacture a
+chain of `cto: close run-*` commits while repairing one incident. The closeout
+must name the primary run and list any superseded diagnostic attempts in its
+handoff. Unrelated historical runs are never bulk-closed as part of the
+current request.
+
 ## Bounds
 
 One cycle may:
@@ -257,18 +279,18 @@ exists, identifies the exact next-cycle verification or safe inverse, and is
 linked from the CTO briefing. The improvement must address the bottleneck
 identified for that cycle, not merely record that the cycle produced no ticket.
 
-Before declaring any cycle complete, the CTO unconditionally closes that
-individual run with a dedicated commit in the factory checkout, regardless of
-whether the run passed, failed, or stopped with partial evidence. Stage only
+Before declaring a user-requested cycle complete, the CTO closes that cycle
+once with a dedicated commit in the factory checkout, regardless of whether
+its one attempt passed, failed, or stopped with partial evidence. Stage only
 the run's factory changes and durable evidence (including any scoped policy,
 ticket, eval, handbook-ledger, documentation, and run-evidence changes).
 `runs/.gitignore` excludes transient controller plumbing; it does not exclude
 the reports, narratives, manifests, compressed sessions, events, patches, or
 other evidence needed for later review. Keep unrelated user work out of the
 commit. Verify `git diff --check`, commit with `cto: close <run-id>`, and
-record the commit hash in the cycle handoff. A run without this individual
-factory-and-evidence commit is not closed; do not batch multiple runs or wait
-for an additional explicit finalization decision.
+record the commit hash in the cycle handoff. A cycle without this
+factory-and-evidence commit is not closed. Do not create close commits for
+diagnostic relaunches or batch unrelated historical runs.
 
 Retire an eval when the evidence shows it is solved, redundant, or stagnant,
 no ticket or handbook replay depends on it, and a replacement scenario keeps
