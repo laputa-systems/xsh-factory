@@ -60,6 +60,7 @@ proc run_task_ecount() [fs, process, env, time, error, io] -> Result[Int] {
     if ! candidate_status.ok {
       eval_status = candidate_status.exit_code() ?? 1
     }
+
     let oracle_args = control.ecount_oracle_command()
     let oracle = time.measure(
       process.command_argv(
@@ -114,6 +115,7 @@ proc run_task_ecount() [fs, process, env, time, error, io] -> Result[Int] {
   if ! timing_ok {
     eval_status = 1
   }
+
   let classification = control.ecount_classification(
     artifact_present,
     review_ok,

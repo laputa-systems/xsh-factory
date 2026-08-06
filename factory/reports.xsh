@@ -114,16 +114,20 @@ export pure audit_plan(plan: Any, observed: List[NodeEvidence]) -> AuditResult {
   if duplicate != "" {
     invalid = invalid.push(duplicate)
   }
+
   var findings: List[Any] = []
   if missing.len() > 0 {
     findings = findings.push({kind: "missing-node", nodes: missing})
   }
+
   if extra.len() > 0 {
     findings = findings.push({kind: "extra-node", nodes: extra})
   }
+
   if invalid.len() > 0 {
     findings = findings.push({kind: "invalid-evidence", nodes: invalid})
   }
+
   return {
     pass: missing.len() == 0 and extra.len() == 0 and invalid.len() == 0,
     missing_nodes: missing,

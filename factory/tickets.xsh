@@ -39,8 +39,10 @@ export pure reconciled_status(current: types.TicketStatus, merge_proven: Bool) -
   if current.value == "Merged." {
     return Ok(current)
   }
+
   if merge_proven {
     return types.make_ticket_status("Merged.")
   }
+
   return Err(types.DomainError.InvalidCombination(message: "ticket merge status requires proven product HEAD"))
 }

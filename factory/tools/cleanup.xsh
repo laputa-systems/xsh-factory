@@ -1,5 +1,4 @@
 ##! Canonical run-scoped cleanup tool helpers.
-
 use factory.cleanup as cleanup
 
 ## Exposes the shared durable-evidence boundary to operators and tests.

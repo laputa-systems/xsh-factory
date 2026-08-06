@@ -46,6 +46,7 @@ export pure ticket_change_target(text: Str) -> Str {
     if trimmed == "- `product`" or trimmed == "- product" {
       return "product"
     }
+
     if trimmed == "- `factory`" or trimmed == "- factory" {
       return "factory"
     }
@@ -86,18 +87,23 @@ export pure role_prefix(role: Str) -> Str {
   if role == "director" {
     return "DIRECTOR"
   }
+
   if role == "eval-designer" {
     return "EVAL_DESIGNER"
   }
+
   if role == "eval-manager" {
     return "EVAL_MANAGER"
   }
+
   if role == "eval-worker" {
     return "EVAL_WORKER"
   }
+
   if role == "engineer" {
     return "ENGINEER"
   }
+
   return ""
 }
 
@@ -106,6 +112,7 @@ export pure default_provider(role: Str) -> Str {
   if role_prefix(role) != "" {
     return "openrouter"
   }
+
   return ""
 }
 
@@ -114,9 +121,11 @@ export pure default_model(role: Str) -> Str {
   if role == "engineer" {
     return "openai/gpt-5.6-luna"
   }
+
   if role_prefix(role) != "" {
     return "deepseek/deepseek-v4-flash-0731"
   }
+
   return ""
 }
 
@@ -125,6 +134,7 @@ export pure default_thinking(role: Str) -> Str {
   if role_prefix(role) != "" {
     return "high"
   }
+
   return ""
 }
 
@@ -133,18 +143,23 @@ export pure default_budget(role: Str) -> Str {
   if role == "director" {
     return "0.06"
   }
+
   if role == "eval-designer" {
     return "0.30"
   }
+
   if role == "eval-manager" {
     return "0.15"
   }
+
   if role == "eval-worker" {
     return "0.50"
   }
+
   if role == "engineer" {
     return "0.35"
   }
+
   return ""
 }
 
@@ -153,18 +168,23 @@ export pure default_max_turns(role: Str) -> Str {
   if role == "director" {
     return "24"
   }
+
   if role == "eval-designer" {
     return "64"
   }
+
   if role == "eval-manager" {
     return "40"
   }
+
   if role == "eval-worker" {
     return "160"
   }
+
   if role == "engineer" {
     return "220"
   }
+
   return ""
 }
 
@@ -175,18 +195,23 @@ export pure default_max_wall_seconds(role: Str) -> Str {
   if role == "director" {
     return "1800"
   }
+
   if role == "eval-designer" {
     return "720"
   }
+
   if role == "eval-manager" {
     return "900"
   }
+
   if role == "eval-worker" {
     return "1800"
   }
+
   if role == "engineer" {
     return "1800"
   }
+
   return ""
 }
 
@@ -260,9 +285,11 @@ export pure default_tools(role: Str) -> Str {
   if role == "eval-worker" {
     return "read,write,edit,bash"
   }
+
   if role_prefix(role) != "" {
     return "read,write,edit,bash,grep,find,ls"
   }
+
   return ""
 }
 
@@ -404,21 +431,27 @@ export pure ecount_classification(
   if ! artifact_present {
     return "worker_missing_artifact"
   }
+
   if ! review_ok {
     return "protocol_failed"
   }
+
   if ! restriction_ok {
     return "restriction_failed"
   }
+
   if ! oracle_ok {
     return "evaluator_failed"
   }
+
   if ! correctness_ok {
     return "candidate_failed"
   }
+
   if ! timing_ok {
     return "timing_failed"
   }
+
   return "pass"
 }
 
@@ -875,27 +908,35 @@ export pure transition_allowed(current: Str, next: Str) -> Bool {
   if current == "created" and next == "started" {
     return true
   }
+
   if current == "created" and next == "admitted" {
     return true
   }
+
   if current == "admitted" and next == "started" {
     return true
   }
+
   if current == "started" and next == "completed" {
     return true
   }
+
   if current == "completed" and next == "validated" {
     return true
   }
+
   if current == "validated" and next == "ready-for-review" {
     return true
   }
+
   if current == "ready-for-review" and next == "accepted" {
     return true
   }
+
   if current == "accepted" and next == "reverted" {
     return true
   }
+
   return false
 }
 

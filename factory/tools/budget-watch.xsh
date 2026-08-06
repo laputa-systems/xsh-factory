@@ -17,6 +17,7 @@ proc reported_cost(session_path: Path) [fs, process, error] -> Result[CostReport
   if ! fs.exists(session_path)? {
     return Ok({total: total, seen: seen})
   }
+
   let session_text = runtime.session_text(session_path)?
   for line in session_text.lines() {
     match json.decode(line) {
@@ -66,14 +67,17 @@ proc parse_budget(value: Str) [error] -> Result[Float] {
   if parts.len() == 1 or parts[1] == "" {
     return Ok(whole.float())
   }
+
   let fraction = parts[1].parse_int()?
   var divisor = 1
   for _ in range(parts[1].count_chars()) {
     divisor *= 10
   }
+
   if whole < 0 {
     return Ok(whole.float() - fraction.float() / divisor.float())
   }
+
   whole.float() + fraction.float() / divisor.float()
 }
 

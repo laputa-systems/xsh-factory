@@ -41,6 +41,7 @@ pure section_lines(text: Str, heading: Str) -> List[Str] {
     if in_section and trimmed.starts_with("## ") {
       return lines
     }
+
     if in_section {
       lines = lines.push(trimmed)
     }
@@ -83,6 +84,7 @@ pure count_value(lines: List[Str], fallback: Int) -> Result[Int] {
       if quoted.len() >= 2 {
         return quoted[1].parse_int()
       }
+
       let parts = line.split(":")
       if parts.len() >= 2 {
         return parts[1].trim().parse_int()
@@ -98,6 +100,7 @@ pure parsed_ticket_policy(text: Str) -> Str {
     if line == "- None." or line == "- None" {
       return "none"
     }
+
     if line.starts_with("- `") {
       return "explicit"
     }
@@ -153,6 +156,7 @@ export pure parse_aggregate_budget(text: Str) -> Result[Float] {
       if quoted.len() >= 2 {
         return quoted[1].parse_float()
       }
+
       let parts = line.split(":")
       if parts.len() >= 2 {
         return parts[1].trim().parse_float()
@@ -169,6 +173,7 @@ export pure parse(text: Str) -> Result[CycleRequest] {
   if parsed_mode_value == "" {
     return Err(types.DomainError.Missing(value: "Mode"))
   }
+
   let mode = types.parse_mode(parsed_mode_value)?
   let tickets = parse_ticket_ids(text)?
   let evals = parse_eval_ids(text)?
@@ -178,6 +183,7 @@ export pure parse(text: Str) -> Result[CycleRequest] {
   if aggregate_budget <= 0.0 {
     return Err(types.DomainError.InvalidFormat(kind: "aggregate-budget", value: f"${aggregate_budget}"))
   }
+
   return Ok({
     mode: mode,
     tickets: tickets,

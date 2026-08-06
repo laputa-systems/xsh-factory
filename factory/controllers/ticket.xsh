@@ -600,9 +600,11 @@ proc run_ticket_cycle(
     if ! final_ticket_ok {
       all_tickets_ok = false
     }
+
     if ! patch_ok {
       all_patches_ok = false
     }
+
     if final_ticket_ok {
       runtime.emit_event(
         event_template,

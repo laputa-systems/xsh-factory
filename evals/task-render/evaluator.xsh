@@ -4,6 +4,7 @@ proc review_ok() [fs, error] -> Result[Bool] {
   if ! fs.exists(review)? or fs.metadata(review)?.size == 0 {
     return false
   }
+
   let text = review.read_text()?
   return text.contains("## XSH language proposals") and text.contains("## xsht friction") and ! ("{{" in text)
 }

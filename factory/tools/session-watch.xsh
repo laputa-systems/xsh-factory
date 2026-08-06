@@ -16,6 +16,7 @@ proc assistant_turns(session_path: Path) [fs, process, error] -> Result[Int] {
   if ! fs.exists(session_path)? {
     return Ok(turns)
   }
+
   let session_text = runtime.session_text(session_path)?
   for line in session_text.lines() {
     match json.decode(line) {
@@ -46,6 +47,7 @@ proc parse_positive(value: Str) [error] -> Result[Int] {
   if parsed <= 0 {
     return Ok(1)
   }
+
   parsed
 }
 

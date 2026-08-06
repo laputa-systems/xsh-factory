@@ -1,5 +1,4 @@
 ##! Normalize Pi session JSONL into the factory's structured report schema.
-
 use factory.control as control
 use factory.runtime as runtime
 use factory.schema as schema
@@ -110,11 +109,14 @@ pure content_text(value: Any) -> Str {
         match block {
           block_record is Record => {
             let text = json_text(json.get(block_record, ["text"], ""))
-            if text != "" { parts = parts.push(text) }
+            if text != "" {
+              parts = parts.push(text)
+            }
           }
           _ => {}
         }
       }
+
       return parts.join("\n")
     }
     _ => return ""
@@ -154,9 +156,9 @@ pure usage_delta(value: Any) -> UsageDelta {
             cache_write_cost_usd: json_number(raw_cache_write),
             cost_usd: json_number(raw_total),
             cost_seen: json_is_number(raw_total),
-            cost_components_seen: json_is_number(raw_input) or
-              json_is_number(raw_output) or json_is_number(raw_cache_read) or
-              json_is_number(raw_cache_write),
+            cost_components_seen: json_is_number(raw_input) or json_is_number(raw_output) or json_is_number(
+              raw_cache_read,
+            ) or json_is_number(raw_cache_write),
           }
         }
         _ => return {
@@ -206,6 +208,7 @@ proc iso_millis(value: Str) [error] -> Result[Int] {
   if value.byte_len() < 20 or value.byte_slice(10, 1) != "T" {
     return "invalid".parse_int()
   }
+
   let year = iso_component(value, 0, 4)?
   let month = iso_component(value, 5, 2)?
   let day = iso_component(value, 8, 2)?
@@ -218,10 +221,10 @@ proc iso_millis(value: Str) [error] -> Result[Int] {
   }
 
   # Howard Hinnant's civil-date conversion, valid for Pi's modern UTC dates.
-  let adjusted_year = year - if month <= 2 { 1 } else { 0 }
+  let adjusted_year = year - (if month <= 2 { 1 } else { 0 })
   let era = adjusted_year / 400
   let year_of_era = adjusted_year - era * 400
-  let month_prime = month + if month > 2 { -3 } else { 9 }
+  let month_prime = month + (if month > 2 { -3 } else { 9 })
   let day_of_year = (153 * month_prime + 2) / 5 + day - 1
   let day_of_era = year_of_era * 365 + year_of_era / 4 - year_of_era / 100 + day_of_year
   let days = era * 146097 + day_of_era - 719468
@@ -269,8 +272,12 @@ proc read_session(session_path: Path) [fs, process, error] -> Result[SessionRepo
             value is Str => {
               match iso_millis(value) {
                 Ok(timestamp) => {
-                  if start_ms < 0 or timestamp < start_ms { start_ms = timestamp }
-                  if timestamp > end_ms { end_ms = timestamp }
+                  if start_ms < 0 or timestamp < start_ms {
+                    start_ms = timestamp
+                  }
+                  if timestamp > end_ms {
+                    end_ms = timestamp
+                  }
                 }
                 Err(_) => {}
               }
@@ -297,33 +304,45 @@ proc read_session(session_path: Path) [fs, process, error] -> Result[SessionRepo
                       text: if detail == "" { "(no tool error text reported)" } else { detail },
                     })
                   }
+
                   let delta = usage_delta(json.get(message, ["usage"], null))
                   input_tokens += delta.input_tokens
                   output_tokens += delta.output_tokens
                   cache_read_tokens += delta.cache_read_tokens
                   cache_write_tokens += delta.cache_write_tokens
                   reasoning_tokens += delta.reasoning_tokens
-                  if delta.reasoning_seen { reasoning_seen = true }
+                  if delta.reasoning_seen {
+                    reasoning_seen = true
+                  }
                   provider_total_tokens += delta.provider_total_tokens
-                  if delta.provider_total_seen { provider_total_seen = true }
+                  if delta.provider_total_seen {
+                    provider_total_seen = true
+                  }
                   input_cost_usd += delta.input_cost_usd
                   output_cost_usd += delta.output_cost_usd
                   cache_read_cost_usd += delta.cache_read_cost_usd
                   cache_write_cost_usd += delta.cache_write_cost_usd
-                  if delta.cost_components_seen { cost_components_seen = true }
+                  if delta.cost_components_seen {
+                    cost_components_seen = true
+                  }
                   cost_usd += delta.cost_usd
-                  if delta.cost_seen { cost_seen = true }
+                  if delta.cost_seen {
+                    cost_seen = true
+                  }
                 } else if role == "assistant" {
                   assistant_turns += 1
                   let stop = json_text(json.get(message, ["stopReason"], null))
                   if stop != "" {
                     stop_reasons = stop_reasons.set(stop, stop_reasons.get(stop, 0) + 1)
                   }
+
                   let provider = json_text(json.get(message, ["provider"], null))
                   let model = json_text(json.get(message, ["model"], null))
                   if provider != "" and model != "" {
                     let label = f"${provider}/${model}"
-                    if label not in models { models = models.push(label) }
+                    if label not in models {
+                      models = models.push(label)
+                    }
                   }
 
                   match json.get(message, ["content"], null) {
@@ -355,21 +374,30 @@ proc read_session(session_path: Path) [fs, process, error] -> Result[SessionRepo
                   cache_read_tokens += delta.cache_read_tokens
                   cache_write_tokens += delta.cache_write_tokens
                   reasoning_tokens += delta.reasoning_tokens
-                  if delta.reasoning_seen { reasoning_seen = true }
+                  if delta.reasoning_seen {
+                    reasoning_seen = true
+                  }
                   provider_total_tokens += delta.provider_total_tokens
-                  if delta.provider_total_seen { provider_total_seen = true }
+                  if delta.provider_total_seen {
+                    provider_total_seen = true
+                  }
                   input_cost_usd += delta.input_cost_usd
                   output_cost_usd += delta.output_cost_usd
                   cache_read_cost_usd += delta.cache_read_cost_usd
                   cache_write_cost_usd += delta.cache_write_cost_usd
-                  if delta.cost_components_seen { cost_components_seen = true }
+                  if delta.cost_components_seen {
+                    cost_components_seen = true
+                  }
                   cost_usd += delta.cost_usd
-                  if delta.cost_seen { cost_seen = true }
+                  if delta.cost_seen {
+                    cost_seen = true
+                  }
                 }
               }
               _ => malformed_lines += 1
             }
           }
+
           let entry_type = json_text(json.get(entry, ["type"], null))
           if entry_type == "compaction" or entry_type == "branch_summary" {
             let delta = usage_delta(json.get(entry, ["usage"], null))
@@ -378,16 +406,24 @@ proc read_session(session_path: Path) [fs, process, error] -> Result[SessionRepo
             cache_read_tokens += delta.cache_read_tokens
             cache_write_tokens += delta.cache_write_tokens
             reasoning_tokens += delta.reasoning_tokens
-            if delta.reasoning_seen { reasoning_seen = true }
+            if delta.reasoning_seen {
+              reasoning_seen = true
+            }
             provider_total_tokens += delta.provider_total_tokens
-            if delta.provider_total_seen { provider_total_seen = true }
+            if delta.provider_total_seen {
+              provider_total_seen = true
+            }
             input_cost_usd += delta.input_cost_usd
             output_cost_usd += delta.output_cost_usd
             cache_read_cost_usd += delta.cache_read_cost_usd
             cache_write_cost_usd += delta.cache_write_cost_usd
-            if delta.cost_components_seen { cost_components_seen = true }
+            if delta.cost_components_seen {
+              cost_components_seen = true
+            }
             cost_usd += delta.cost_usd
-            if delta.cost_seen { cost_seen = true }
+            if delta.cost_seen {
+              cost_seen = true
+            }
           }
         }
       }
@@ -461,7 +497,9 @@ proc parse_pi_events(events_path: Path) [fs, process, error] -> Result[ProviderT
     response_elapsed_ms: 0,
     output_tokens_per_second: 0.0,
   }
-  if ! fs.exists(events_path)? { return empty }
+  if ! fs.exists(events_path)? {
+    return empty
+  }
   var retries = 0
   var retry_delay = 0
   var errors: List[Str] = []
@@ -482,7 +520,9 @@ proc parse_pi_events(events_path: Path) [fs, process, error] -> Result[ProviderT
           retries += 1
           retry_delay += json_text(json.get(event, ["delayMs"], "0")).parse_int()?
           let message = json_text(json.get(event, ["errorMessage"], ""))
-          if message != "" { errors = errors.push(message) }
+          if message != "" {
+            errors = errors.push(message)
+          }
         } else if kind == "auto_retry_end" {
           if json_text(json.get(event, ["success"], false)) == "true" {
             retry_successes += 1
@@ -500,19 +540,24 @@ proc parse_pi_events(events_path: Path) [fs, process, error] -> Result[ProviderT
               if turn_start >= 0 and end >= turn_start {
                 response_elapsed += end - turn_start
               }
+
               output_tokens += json_number(json.get(message_record, ["usage", "output"], null))
             }
             _ => {}
           }
+
           turn_start = -1
         } else if kind == "message_end" {
           let message = json.get(event, ["message"], null)
           match message {
             message_record is Record => {
-              if json_text(json.get(message_record, ["role"], "")) == "assistant" and
-                json_text(json.get(message_record, ["stopReason"], "")) == "error" {
+              if json_text(json.get(message_record, ["role"], "")) == "assistant" and json_text(
+                json.get(message_record, ["stopReason"], ""),
+              ) == "error" {
                 let error = json_text(json.get(message_record, ["errorMessage"], ""))
-                if error != "" { provider_errors = provider_errors.push(error) }
+                if error != "" {
+                  provider_errors = provider_errors.push(error)
+                }
               }
             }
             _ => {}
@@ -521,6 +566,7 @@ proc parse_pi_events(events_path: Path) [fs, process, error] -> Result[ProviderT
       }
     }
   }
+
   return {
     events_path: events_path.display(),
     present: true,
@@ -538,41 +584,55 @@ proc parse_pi_events(events_path: Path) [fs, process, error] -> Result[ProviderT
 
 pure optional_number(value: Float, seen: Bool) -> Any {
   var result: Any = null
-  if seen { result = value }
+  if seen {
+    result = value
+  }
   return result
 }
 
 pure optional_int(value: Int, seen: Bool) -> Any {
   var result: Any = null
-  if seen { result = value }
+  if seen {
+    result = value
+  }
   return result
 }
 
 pure session_report_json(report: SessionReport, role: Str, worker_id: Str, budget: Float) -> Any {
   let usage = report.usage
-  let errors = [{
+  let errors = [
+    {
       turn: error.turn,
       tool: error.tool,
       summary: error.text,
       raw_session: report.path,
-    } for error in report.tool_error_details]
+    }
+    for error in report.tool_error_details
+  ]
   var findings: List[Any] = []
   if report.tool_errors > 0 {
     findings = findings.push({kind: "tool-error", severity: "warning", count: report.tool_errors})
   }
+
   if report.malformed_lines > 0 {
     findings = findings.push({kind: "malformed-session-line", severity: "error", count: report.malformed_lines})
   }
+
   let result = if ! report.cost_seen { "unknown" } else if usage.cost_usd > budget { "fail" } else { "pass" }
   return {
     schema_version: schema.SCHEMA_VERSION,
     kind: "worker",
-    identity: {role: role, worker_id: worker_id},
+    identity: {
+      role: role,
+      worker_id: worker_id,
+    },
     state: "completed",
     result: result,
     session: report.path,
     models: report.models,
-    timing: {session_span_ms: optional_int(report.session_span_ms, report.session_span_ms >= 0)},
+    timing: {
+      session_span_ms: optional_int(report.session_span_ms, report.session_span_ms >= 0),
+    },
     provider_telemetry: report.provider_telemetry,
     usage: {
       assistant_turns: report.assistant_turns,
@@ -600,7 +660,12 @@ pure session_report_json(report: SessionReport, role: Str, worker_id: Str, budge
     tools: count_rows(report.tool_names),
     tool_errors: errors,
     findings: findings,
-    artifacts: [{kind: "pi-session", path: report.path}],
+    artifacts: [
+      {
+        kind: "pi-session",
+        path: report.path,
+      },
+    ],
   }
 }
 
@@ -608,14 +673,19 @@ proc parse_budget(value: Str) [error] -> Result[Float] {
   let parts = value.split(".", maxsplit: 1)
   let whole_text = if parts[0] == "" or parts[0] == "-" { "0" } else { parts[0] }
   let whole = whole_text.parse_int()?
-  if parts.len() == 1 { return Ok(whole.float()) }
+  if parts.len() == 1 {
+    return Ok(whole.float())
+  }
   let fraction_text = parts[1]
-  if fraction_text == "" { return Ok(whole.float()) }
+  if fraction_text == "" {
+    return Ok(whole.float())
+  }
   let fraction = fraction_text.parse_int()?
   var divisor = 1
   for _ in range(fraction_text.count_chars()) {
     divisor *= 10
   }
+
   let magnitude = whole.float() + fraction.float() / divisor.float()
   return if whole < 0 { whole.float() - fraction.float() / divisor.float() } else { magnitude }
 }
@@ -625,6 +695,7 @@ proc run_worker(argv: List[Str]) [fs, process, env, error] -> Result[Int] {
     eprint "usage: session-report.xsh worker --session PATH --output PATH --role ROLE --worker-id ID --budget-usd USD"
     return Ok(2)
   }
+
   let session = fp"${argv[2]}"
   let output = fp"${argv[4]}"
   let role = argv[6]
@@ -635,6 +706,7 @@ proc run_worker(argv: List[Str]) [fs, process, env, error] -> Result[Int] {
     eprint f"missing session: ${session.display()}"
     return Ok(1)
   }
+
   let report = read_session(session)?
   let events_path = if argv.len() > 12 { fp"${argv[12]}" } else { fp"${session.display()}.events.jsonl" }
   let telemetry = parse_pi_events(events_path)?
@@ -657,8 +729,12 @@ proc run_worker(argv: List[Str]) [fs, process, env, error] -> Result[Int] {
     provider_telemetry: telemetry,
   }
   json.write(output, session_report_json(enriched, role, worker_id, budget), pretty: true)?
-  if ! report.cost_seen { return Ok(2) }
-  if report.usage.cost_usd > budget { return Ok(3) }
+  if ! report.cost_seen {
+    return Ok(2)
+  }
+  if report.usage.cost_usd > budget {
+    return Ok(3)
+  }
   0
 }
 
@@ -667,11 +743,13 @@ proc main(...argv: List[Str]) [fs, error, io] {
     eprint "usage: session-report.xsh worker ..."
     abort(2)
   }
+
   var status = 2
   if argv[0] == "worker" {
     status = run_worker(argv)?
   } else {
     eprint f"unknown session report command: ${argv[0]}"
   }
+
   abort(status)
 }

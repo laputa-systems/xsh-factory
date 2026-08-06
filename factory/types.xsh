@@ -160,6 +160,7 @@ export pure make_ticket_id(value: Str) -> Result[TicketId] {
   if ! valid_identifier(value) {
     return Err(DomainError.InvalidFormat(kind: "ticket-id", value: value))
   }
+
   return Ok({value: value})
 }
 
@@ -168,6 +169,7 @@ export pure make_eval_id(value: Str) -> Result[EvalId] {
   if ! valid_identifier(value) {
     return Err(DomainError.InvalidFormat(kind: "eval-id", value: value))
   }
+
   return Ok({value: value})
 }
 
@@ -176,6 +178,7 @@ export pure make_worker_id(value: Str) -> Result[WorkerId] {
   if ! valid_identifier(value) {
     return Err(DomainError.InvalidFormat(kind: "worker-id", value: value))
   }
+
   return Ok({value: value})
 }
 
@@ -193,6 +196,7 @@ export pure make_phase_id(value: Str) -> Result[PhaseId] {
   if ! valid_identifier(value) {
     return Err(DomainError.InvalidFormat(kind: "phase-id", value: value))
   }
+
   return Ok({value: value})
 }
 
@@ -201,6 +205,7 @@ export pure make_node_id(value: Str) -> Result[NodeId] {
   if ! valid_identifier(value) {
     return Err(DomainError.InvalidFormat(kind: "node-id", value: value))
   }
+
   return Ok({value: value})
 }
 
@@ -209,6 +214,7 @@ export pure make_dispatch_id(value: Str) -> Result[DispatchId] {
   if ! valid_identifier(value) {
     return Err(DomainError.InvalidFormat(kind: "dispatch-id", value: value))
   }
+
   return Ok({value: value})
 }
 
@@ -217,6 +223,7 @@ export pure make_content_hash(kind: Str, value: Str) -> Result[ContentHash] {
   if ! valid_hash_text(value) {
     return Err(DomainError.InvalidFormat(kind: kind, value: value))
   }
+
   return Ok({value: value})
 }
 
@@ -225,6 +232,7 @@ export pure make_assignment_hash(value: Str) -> Result[AssignmentHash] {
   if ! valid_hash_text(value) {
     return Err(DomainError.InvalidFormat(kind: "assignment-hash", value: value))
   }
+
   return Ok({value: value})
 }
 
@@ -233,6 +241,7 @@ export pure make_prompt_hash(value: Str) -> Result[PromptHash] {
   if ! valid_hash_text(value) {
     return Err(DomainError.InvalidFormat(kind: "prompt-hash", value: value))
   }
+
   return Ok({value: value})
 }
 
@@ -241,6 +250,7 @@ export pure make_commit_hash(value: Str) -> Result[CommitHash] {
   if ! valid_hash_text(value) {
     return Err(DomainError.InvalidFormat(kind: "commit-hash", value: value))
   }
+
   return Ok({value: value})
 }
 
@@ -249,6 +259,7 @@ export pure make_trial_count(value: Int) -> Result[TrialCount] {
   if value < 1 or value > 2 {
     return Err(DomainError.InvalidFormat(kind: "trial-count", value: f"${value}"))
   }
+
   return Ok({value: value})
 }
 
@@ -309,6 +320,7 @@ export pure make_change_target(value: Str) -> Result[ChangeTarget] {
   if value == "product" or value == "factory" {
     return Ok({value: value})
   }
+
   return Err(DomainError.InvalidFormat(kind: "change-target", value: value))
 }
 
@@ -346,6 +358,7 @@ export pure make_eval_status(value: Str) -> Result[EvalStatus] {
   if value == "Draft." or value == "Approved." or value == "Disabled." {
     return Ok({value: value})
   }
+
   return Err(DomainError.InvalidFormat(kind: "eval-status", value: value))
 }
 

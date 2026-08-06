@@ -439,7 +439,9 @@ export proc amend_engineer_commit(
   }
 
   let commit_id = head_commit.trim()
-  if commit_id == "" { return Ok("") }
+  if commit_id == "" {
+    return Ok("")
+  }
   let existing_output = run.text "git" "-C" $worktree "log" "-1" "--format=%B" $commit_id ?
   let existing_message = existing_output.trim()
   if "Factory-Provenance-Version:" in existing_message {

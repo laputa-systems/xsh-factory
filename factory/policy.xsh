@@ -150,12 +150,15 @@ export pure admit(cycle: Any, repository: RepositoryState, portfolio: PortfolioS
   if ! repository.product_clean {
     return Err(types.DomainError.InvalidCombination(message: "product checkout is dirty"))
   }
+
   if ! repository.active_run_clear {
     return Err(types.DomainError.InvalidCombination(message: "another run is active"))
   }
+
   if ! repository.lock_clear {
     return Err(types.DomainError.InvalidCombination(message: "factory admission lock is held"))
   }
+
   if ! portfolio.handbook_dispositioned {
     return Err(types.DomainError.InvalidCombination(message: "handbook candidate lacks a disposition"))
   }
@@ -189,6 +192,7 @@ export pure admit(cycle: Any, repository: RepositoryState, portfolio: PortfolioS
     if factory_target_rejected(candidate) {
       return Err(types.DomainError.InvalidCombination(message: f"factory ticket is CTO-owned: ${ticket_id.value}"))
     }
+
     if candidate.status.value != "Approved." and candidate.status.value != "Accepted." {
       return Err(types.DomainError.InvalidCombination(message: f"ticket is not approved: ${ticket_id.value}"))
     }
@@ -196,9 +200,11 @@ export pure admit(cycle: Any, repository: RepositoryState, portfolio: PortfolioS
     if ! candidate.api_surface_ok {
       return Err(types.DomainError.InvalidCombination(message: f"ticket API-surface gate failed: ${ticket_id.value}"))
     }
+
     if candidate.open_branch != "" {
       return Err(types.DomainError.InvalidCombination(message: f"ticket has an open branch: ${ticket_id.value}"))
     }
+
     let linked = find_eval(portfolio.evals, candidate.eval_id)
     if linked.id.value == "" {
       return Err(types.DomainError.Missing(value: f"eval:${candidate.eval_id}"))
@@ -208,6 +214,7 @@ export pure admit(cycle: Any, repository: RepositoryState, portfolio: PortfolioS
     if ! eval_dispatchable(eval) {
       return Err(types.DomainError.InvalidCombination(message: f"linked eval is not approved: ${candidate.eval_id}"))
     }
+
     admitted_tickets = admitted_tickets.push(candidate)
   }
 
@@ -222,16 +229,15 @@ export pure admit(cycle: Any, repository: RepositoryState, portfolio: PortfolioS
     if ! eval_dispatchable(eval) {
       return Err(types.DomainError.InvalidCombination(message: f"eval is not approved: ${eval_id.value}"))
     }
+
     admitted_evals = admitted_evals.push(eval)
   }
 
-  return Ok(
-    {
-      request: cycle,
-      tickets: admitted_tickets,
-      evals: admitted_evals,
-      aggregate_budget: cycle.aggregate_budget,
-      required_outputs: cycle.required_outputs,
-    },
-  )
+  return Ok({
+    request: cycle,
+    tickets: admitted_tickets,
+    evals: admitted_evals,
+    aggregate_budget: cycle.aggregate_budget,
+    required_outputs: cycle.required_outputs,
+  })
 }
