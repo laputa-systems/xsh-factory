@@ -54,11 +54,14 @@ cannot discover another ticket.
 
 The output is the portable `patches/<ticket>.diff`, the raw session,
 `report.json`, and the engineer's `REPORT.md`. After the patch is captured, a
-clean temporary worktree is removed. The CTO reviews and applies or merges the
-patch. Each passing engineer row gets its own linked replay; one sibling's
-failure does not suppress another ticket's replay. Reconciliation then updates
-the linked `TICKET.md` to `Merged.`; the linked manager replay decides whether
-the change should remain.
+clean temporary worktree is removed. A standalone ticket cycle leaves the
+patch for CTO review and application. In an organization cycle, each passing
+engineer row gets its own linked replay; one sibling's failure does not
+suppress another ticket's replay, and a passing replay authorizes the
+controller to deliver the exact provenance commit into XSH `HEAD`. A delivery
+failure leaves the branch for review and fails the cycle. Reconciliation then
+updates the linked `TICKET.md` to `Merged.`; the linked manager replay decides
+whether the change should remain.
 
 ## Eval-strength loop: `factory/tools/eval-trends.xsh`
 
@@ -121,8 +124,11 @@ have disjoint inputs and may overlap with implementation. If no ticket is
 admitted, the independent eval becomes the primary phase.
 
 The CTO is the authority for product merges, handbook promotion, eval
-approval, and reversion. It reviews the evidence and chooses the next narrow
-cycle within the coded spend and eval-count limits.
+approval, and reversion. The organization controller executes the CTO's
+bounded merge decision only after its linked replay passes and exact commit
+checks succeed; standalone ticket cycles remain review-only. The CTO reviews
+the evidence and chooses the next narrow cycle within the coded spend and
+eval-count limits.
 
 The CTO closes each user-requested paid cycle once, including a failed or
 partial attempt, by committing the reviewed factory changes and that cycle's

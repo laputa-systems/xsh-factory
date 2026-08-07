@@ -200,10 +200,14 @@ tested, unless the CTO records evidence for reusing the current eval.
 
 For a completed engineer patch, inspect scope, tests, exact assignment,
 portable diff, and linked replay. Each passing engineer row receives its own
-linked replay; a sibling ticket failure does not suppress it. The CTO decides whether to merge or apply
-the patch. When it does, reconciliation updates the linked `TICKET.md` to `Merged.`
-once the recorded implementation is proven in XSH `HEAD`; the manager replay
-then accepts or rejects the product change.
+linked replay; a sibling ticket failure does not suppress it. A standalone
+ticket-implementation cycle leaves the patch for this CTO decision. An
+organization cycle is authorized to complete this decision in its controller:
+after the linked replay passes, it verifies the exact provenance commit and
+delivers it into XSH `HEAD`, failing closed and retaining the branch if that
+delivery cannot be proven. Reconciliation updates the linked `TICKET.md` to
+`Merged.` only after the recorded implementation is proven in XSH `HEAD`; the
+manager replay then accepts or rejects the product change.
 
 If the selected ticket already has an unmerged implementation branch, reuse that
 branch for replay and do not dispatch another engineer. The controller captures

@@ -161,11 +161,16 @@ Eval packages follow a separate path: the CTO promotes them into `evals/`
 immediately, then sets `Approved.` only after the evaluator and evidence pass.
 `Draft.` status keeps rejected or incomplete packages out of paid admission.
 
-The CTO reviews and promotes new eval packages, admits work to active cycles,
-and decides product merges. Reconciliation examines the linked ticket's
-recorded implementation and changes only that `TICKET.md` status to `Merged.`
-when the merge is proven. A linked manager replay can then accept or reject the
-product change with evidence.
+The CTO reviews and promotes new eval packages and admits work to active
+cycles. A ticket-implementation cycle remains review-only: the CTO decides
+whether to merge or apply its portable patch. An organization cycle is the
+end-to-end delivery path; after its linked replay passes, the controller
+performs the bounded CTO merge decision against the exact provenance commit.
+It uses a fast-forward when possible and a checked merge for multiple
+independent branches. Any delivery failure fails the cycle and preserves the
+branch for review. Reconciliation then changes only the linked `TICKET.md`
+status to `Merged.` when the merge is proven. A linked manager replay can then
+accept or reject the product change with evidence.
 
 Before each CTO inventory, director lifecycle reconciliation closes an active
 ticket only when its linked eval is explicitly retired (`Disabled.` or recorded

@@ -81,3 +81,8 @@ invocation with a role-specific setting.
 - one `CTO-PRODUCTIVITY-REPORT.md` with a critical throughput/efficiency
   comparison against the prior cycle;
 - a `CTO-REPORT.md` briefing generated from the structured reports.
+
+When a ticket is admitted, the organization controller also owns final product
+delivery after the linked replay: the exact validated implementation commit
+must be reachable from XSH `HEAD`, and the linked ticket must be reconciled to
+`Merged.`. A delivery failure fails the cycle and retains the branch.

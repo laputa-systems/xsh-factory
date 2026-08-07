@@ -669,6 +669,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
 
   var reeval_pass_for_result = selected_ticket == ""
   var worktree_cleanup_ok = selected_ticket == ""
+  var delivery_ok = selected_ticket == ""
   if selected_ticket != "" {
     reeval_pass_for_result = primary_pass
     worktree_cleanup_ok = primary_pass
@@ -739,6 +740,35 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
       let reeval_report_ok = phase_run_pass(ticket_reeval_phase, "report.json")?
       let reeval_pass = reeval_ok and reeval_report_ok
       reeval_pass_for_result = reeval_pass_for_result and reeval_pass
+      let delivery = if ticket_primary_pass and reeval_pass {
+        runtime.merge_validated_ticket(xsh_repo, primary_phase, ticket_id, xsh_commit.trim())?
+      } else {
+        {
+          merged: false,
+          ticket_id: ticket_id,
+          branch: "",
+          implementation_commit: "",
+        }
+      }
+      delivery_ok = delivery_ok and delivery.merged
+      runtime.emit_event(
+        event_template,
+        run_dir,
+        if delivery.merged {
+          f"86-ticket-${ticket_id}-delivered"
+        } else {
+          f"86-ticket-${ticket_id}-delivery-failed"
+        },
+        ticket_id,
+        if delivery.merged { "delivered" } else { "failed" },
+        1,
+        "controller",
+        if delivery.merged {
+          f"${delivery.implementation_commit} is now reachable from XSH HEAD"
+        } else {
+          "validated implementation was not delivered; branch retained for review"
+        },
+      )?
       let reeval_exit = if reeval_pass { 0 } else { 1 }
       runtime.emit_process_output(
         run_dir,
@@ -789,6 +819,8 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
 
   let final_worktree_cleanup_ok = runtime.remove_run_worktrees(xsh_repo, run_dir)?
   worktree_cleanup_ok = worktree_cleanup_ok and final_worktree_cleanup_ok
+  let delivered_xsh_commit = run.text "git" "-C" $xsh_repo "rev-parse" "HEAD" ?
+  let _ = runtime.reconcile_tickets(factory_dir, xsh_repo, delivered_xsh_commit.trim())?
 
   var independent_eval_state = if selected_ticket == "" { "not-applicable" } else { "not-run" }
   var independent_eval_report_state = if selected_ticket == "" { "not-applicable" } else { "not-run" }
@@ -902,7 +934,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   let audit_pass = audit_report_ok and audit_result == "pass"
   let independent_eval_pass_for_result = if selected_ticket == "" { true } else { independent_eval_state == "pass" }
   let design_pass_for_result = design_state == "pass" or design_state == "not-requested"
-  let product_result = if primary_pass and reeval_pass_for_result { "pass" } else { "fail" }
+  let product_result = if primary_pass and reeval_pass_for_result and delivery_ok { "pass" } else { "fail" }
   let evaluator_result = if independent_eval_pass_for_result and design_pass_for_result { "pass" } else { "fail" }
   let infrastructure_result = if worktree_cleanup_ok and audit_pass { "pass" } else { "fail" }
   let initial_result = if product_result == "pass" and evaluator_result == "pass" and infrastructure_result == "pass" {

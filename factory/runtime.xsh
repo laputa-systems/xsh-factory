@@ -23,6 +23,16 @@ export type MergedTicket = {
   detected_xsh_commit: Str,
 }
 
+## The exact product branch and provenance commit eligible for organization
+## delivery. A false result is normal controller state: the branch and its
+## evidence remain available for CTO inspection and a later reuse cycle.
+export type DeliveryEvidence = {
+  merged: Bool,
+  ticket_id: Str,
+  branch: Str,
+  implementation_commit: Str,
+}
+
 ## Terminates all registered children of the active run.
 export proc cleanup_active_run() [fs, process, env, error] -> Result[Unit] {
   let configured_factory = env.get_or("FACTORY_DIR", "")?
@@ -1175,6 +1185,20 @@ proc commit_is_ancestor(xsh_repo: Path, commit: Str) [process, error] -> Result[
   return status.ok
 }
 
+proc ref_contains_commit(xsh_repo: Path, ref: Str, commit: Str) [process, error] -> Result[Bool] {
+  if ref == "" or commit == "" {
+    return false
+  }
+
+  let status = process.run(
+    process.command_argv(
+      "git",
+      ["git", "-C", xsh_repo.display(), "merge-base", "--is-ancestor", commit, ref],
+    ),
+  )?
+  return status.ok
+}
+
 proc commit_is_patch_applied(xsh_repo: Path, branch: Str, commit: Str) [process, error] -> Result[Bool] {
   if branch == "" or commit == "" {
     return false
@@ -1272,6 +1296,96 @@ export proc open_ticket_branch(xsh_repo: Path, ticket_id: Str) [process, error] 
   }
 
   return ""
+}
+
+## Delivers one validated organization-cycle implementation into XSH HEAD.
+## The controller supplies the phase containing the controller-owned engineer
+## or reuse evidence. The exact report commit must still be the branch tip,
+## must descend from the cycle baseline, and the product checkout must be
+## clean. A single branch fast-forwards; a second independent branch is merged
+## with an explicit checked merge so two admitted tickets cannot strand the
+## first delivery. Any Git failure returns false and leaves the branch intact.
+export proc merge_validated_ticket(
+  xsh_repo: Path,
+  phase_dir: Path,
+  ticket_id: Str,
+  base_commit: Str,
+) [fs, process, error] -> Result[DeliveryEvidence] {
+  let worker_report = fp"${phase_dir}/workers/engineer/${ticket_id}/REPORT.md"
+  let phase_report = fp"${phase_dir}/report.json"
+  var branch = ""
+  var implementation_commit = ""
+
+  if fs.exists(worker_report)? {
+    let report_text = fs.read_text(worker_report)?
+    branch = control.report_field(report_text, "Branch")
+    implementation_commit = control.report_field(report_text, "Commit")
+  } else if fs.exists(phase_report)? {
+    let report = json.read(phase_report)?
+    branch = schema.value_text(json.get(report, ["data", "branch"], ""))
+    implementation_commit = schema.value_text(json.get(report, ["data", "implementation_commit"], ""))
+  }
+
+  let evidence = {
+    merged: false,
+    ticket_id: ticket_id,
+    branch: branch,
+    implementation_commit: implementation_commit,
+  }
+  if branch == "" or implementation_commit == "" or ! branch.starts_with(f"factory/${ticket_id}/") {
+    return evidence
+  }
+
+  let product_status = run.text "git" "-C" $xsh_repo "status" "--porcelain" ?
+  if product_status.trim() != "" or ! ref_contains_commit(xsh_repo, "HEAD", base_commit.trim())? {
+    return evidence
+  }
+
+  let branch_head_status = process.run(
+    process.command_argv(
+      "git",
+      ["git", "-C", xsh_repo.display(), "rev-parse", "--verify", f"refs/heads/${branch}"],
+    ),
+  )?
+  if ! branch_head_status.ok {
+    return evidence
+  }
+  let branch_head = run.text "git" "-C" $xsh_repo "rev-parse" $branch ?
+  if branch_head.trim() != implementation_commit.trim() or ! ref_contains_commit(xsh_repo, branch, base_commit.trim())? {
+    return evidence
+  }
+
+  if ref_contains_commit(xsh_repo, "HEAD", implementation_commit.trim())? {
+    return {
+      merged: true,
+      ticket_id: ticket_id,
+      branch: branch,
+      implementation_commit: implementation_commit.trim(),
+    }
+  }
+
+  let current_head = run.text "git" "-C" $xsh_repo "rev-parse" "HEAD" ?
+  let head_is_branch_ancestor = ref_contains_commit(xsh_repo, branch, current_head.trim())?
+  let merge_args = if head_is_branch_ancestor {
+    ["git", "-C", xsh_repo.display(), "merge", "--ff-only", branch]
+  } else {
+    ["git", "-C", xsh_repo.display(), "merge", "--no-ff", "--no-edit", branch]
+  }
+  let merge_status = process.run(process.command_argv("git", merge_args))?
+  if ! merge_status.ok {
+    let _ = process.run(
+      process.command_argv("git", ["git", "-C", xsh_repo.display(), "merge", "--abort"]),
+    )?
+    return evidence
+  }
+
+  let delivered = ref_contains_commit(xsh_repo, "HEAD", implementation_commit.trim())?
+  return {
+    merged: delivered,
+    ticket_id: ticket_id,
+    branch: branch,
+    implementation_commit: implementation_commit.trim(),
+  }
 }
 
 proc find_merged_implementation(

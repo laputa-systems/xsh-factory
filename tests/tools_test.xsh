@@ -1837,6 +1837,105 @@ proc test_structured_provenance_event_exists() [fs, error] {
   test.contains(ticket, "amended_commit")?
 }
 
+proc test_organization_delivery_merges_exact_engineer_commit(ctx: TestContext) [fs, process, error] {
+  let root = test.temp_dir(ctx, name: "organization-delivery")?
+  let factory = fp"${root}/factory"
+  let product = fp"${root}/product"
+  let phase = fp"${factory}/runs/run-1/phases/01-ticket"
+  let worker = fp"${phase}/workers/engineer/task-a"
+  let worktree = fp"${root}/worktree"
+  fs.mkdir(worker)?
+  fs.mkdir(product)?
+  let git = process.which("git")?
+  test.ok(command_ok(git, ["git", "-C", product.display(), "init", "-q", "-b", "main"])?)?
+  test.ok(command_ok(git, ["git", "-C", product.display(), "config", "user.email", "factory@test"])?)?
+  test.ok(command_ok(git, ["git", "-C", product.display(), "config", "user.name", "Factory Test"])?)?
+  fs.write(fp"${product}/README", "base\n")?
+  test.ok(command_ok(git, ["git", "-C", product.display(), "add", "README"])?)?
+  test.ok(command_ok(git, ["git", "-C", product.display(), "commit", "-qm", "base"])?)?
+  let base = run.text "git" "-C" $product "rev-parse" "HEAD" ?
+  test.ok(
+    command_ok(
+      git,
+      [
+        "git",
+        "-C",
+        product.display(),
+        "worktree",
+        "add",
+        "-q",
+        "-b",
+        "factory/task-a/run-1",
+        worktree.display(),
+        base.trim(),
+      ],
+    )?,
+  )?
+  fs.write(fp"${worktree}/README", "base\nengineer\n")?
+  test.ok(command_ok(git, ["git", "-C", worktree.display(), "add", "README"])?)?
+  test.ok(command_ok(git, ["git", "-C", worktree.display(), "commit", "-qm", "engineer"])?)?
+  let implementation = run.text "git" "-C" $worktree "rev-parse" "HEAD" ?
+  fs.write(
+    fp"${worker}/REPORT.md",
+    f"""## Branch
+
+factory/task-a/run-1
+
+## Commit
+
+${implementation.trim()}
+""",
+  )?
+  let evidence = runtime.merge_validated_ticket(product, phase, "task-a", base.trim())?
+  test.ok(evidence.merged, "validated organization delivery must update product HEAD")?
+  let product_head = run.text "git" "-C" $product "rev-parse" "HEAD" ?
+  let product_status = run.text "git" "-C" $product "status" "--porcelain" ?
+  test.eq(product_head.trim(), implementation.trim())?
+  test.ok(product_status.trim() == "")?
+  test.ok(command_ok(git, ["git", "-C", product.display(), "worktree", "remove", "-f", worktree.display()])?)?
+
+  let second_worker = fp"${phase}/workers/engineer/task-b"
+  let second_worktree = fp"${root}/second-worktree"
+  fs.mkdir(second_worker)?
+  test.ok(
+    command_ok(
+      git,
+      [
+        "git",
+        "-C",
+        product.display(),
+        "worktree",
+        "add",
+        "-q",
+        "-b",
+        "factory/task-b/run-1",
+        second_worktree.display(),
+        base.trim(),
+      ],
+    )?,
+  )?
+  fs.write(fp"${second_worktree}/SECOND", "second\n")?
+  test.ok(command_ok(git, ["git", "-C", second_worktree.display(), "add", "SECOND"])?)?
+  test.ok(command_ok(git, ["git", "-C", second_worktree.display(), "commit", "-qm", "second engineer"])?)?
+  let second_implementation = run.text "git" "-C" $second_worktree "rev-parse" "HEAD" ?
+  fs.write(
+    fp"${second_worker}/REPORT.md",
+    f"""## Branch
+
+factory/task-b/run-1
+
+## Commit
+
+${second_implementation.trim()}
+""",
+  )?
+  let second_evidence = runtime.merge_validated_ticket(product, phase, "task-b", base.trim())?
+  test.ok(second_evidence.merged, "a second admitted branch must also be delivered")?
+  test.ok(command_ok(git, ["git", "-C", product.display(), "merge-base", "--is-ancestor", implementation.trim(), "HEAD"])?)?
+  test.ok(command_ok(git, ["git", "-C", product.display(), "merge-base", "--is-ancestor", second_implementation.trim(), "HEAD"])?)?
+  test.ok(command_ok(git, ["git", "-C", product.display(), "worktree", "remove", "-f", second_worktree.display()])?)?
+}
+
 proc test_engineer_provenance_amend(ctx: TestContext) [fs, process, error] {
   let root = test.temp_dir(ctx, name: "engineer-provenance")?
   let factory = fp"${root}/factory"
@@ -2143,6 +2242,18 @@ proc test_organization_starts_independent_eval_before_primary_wait() [fs, error]
   test.contains(before_primary_wait, "10-independent-eval-started")?
   test.contains(before_primary_wait, "let independent_eval_handle = spawn_child")?
   test.contains(before_primary_wait, "independent_eval_handles = independent_eval_handles.push")?
+}
+
+proc test_organization_delivery_is_a_success_gate() [fs, error] {
+  let organization = fs.read_text(fp"${fs.cwd()?}/factory/controllers/organization.xsh")?
+  let runtime = fs.read_text(fp"${fs.cwd()?}/factory/runtime.xsh")?
+  test.contains(organization, "runtime.merge_validated_ticket")?
+  test.contains(organization, "var delivery_ok")?
+  test.contains(organization, "delivery_ok = delivery_ok and delivery.merged")?
+  test.contains(organization, "runtime.reconcile_tickets(factory_dir, xsh_repo, delivered_xsh_commit.trim())")?
+  test.contains(runtime, "export proc merge_validated_ticket")?
+  test.contains(runtime, "--ff-only")?
+  test.contains(runtime, "--no-ff")?
 }
 
 proc test_ticket_cycle_bounds_concurrent_engineers() [fs, error] {

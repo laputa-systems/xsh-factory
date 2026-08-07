@@ -934,7 +934,8 @@ proc test_standard_cycle_uses_diverse_active_eval() [fs, error] {
   test.contains(cto, "cto: close <run-id>")?
   test.contains(cto, "regardless of")?
   test.contains(cto, "do not manufacture a")?
-  test.contains(cto, "The CTO decides whether to merge or apply")?
+  test.contains(cto, "A standalone")?
+  test.contains(cto, "delivers it into XSH `HEAD`")?
   test.contains(cto, "Admission is an explicit CTO decision")?
   test.contains(cto, "Throughput invariant")?
   test.contains(cto, "Factory-efficiency gate")?
