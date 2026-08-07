@@ -487,6 +487,17 @@ positional-only API guidance candidate, but it is single-eval evidence. Keep
 the approved handbook unchanged until `task-dupcheck` and a second
 defaulted-parameter eval confirm the guidance generalizes.
 
+## Explicit CTO disposition — run-1786140236250
+
+| Candidate SHA-256 | Disposition |
+| --- | --- |
+| `f1e6d2e909b66a42b05861ab94610aabd6ed16796d6d291debc1ae1e1d476183` | deferred pending cross-eval replay; not promoted |
+
+The recovered `task-jsonfilter` replay supplied a handbook candidate about
+exact JSON output and newline behavior. It is still evidence from one eval;
+keep the approved handbook unchanged until a nearby output-format eval
+confirms that the guidance generalizes.
+
 ## Explicit CTO disposition — run-1786136684797
 
 | Candidate SHA-256 | Disposition |
