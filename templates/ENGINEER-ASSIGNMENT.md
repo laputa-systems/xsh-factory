@@ -57,6 +57,11 @@ language, tooling, test, or canonical-documentation change supported by the
 ticket. Run the narrowest relevant checks, commit the product change on this
 branch, and leave the worktree clean.
 
+For ordinary product tickets, use `xsht lint --fix` for linting, then rerun the
+relevant checks. If this ticket specifically targets lint, parsing, or
+diagnostics, preserve the behavior under test and follow its explicit
+acceptance procedure instead of auto-fixing away the evidence.
+
 The controller has staged a fail-closed `not-ready` report at
 `{{ENGINEER_REPORT}}`. Complete that file in place; do not spend turns
 reconstructing its headings. Keep `## Result` as `not-ready` until the

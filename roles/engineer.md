@@ -27,6 +27,12 @@ more efficient for real systems-glue work. Preserve explicit boundaries and
 composability; do not paper over a task-specific symptom with an opaque
 special case.
 
+For ordinary product tickets, use `xsht lint --fix` as the lint step, then run
+the relevant checks again and report their results. If the assigned ticket is
+specifically about lint, parsing, or diagnostics, preserve the diagnostic
+behavior under test and follow that ticket's explicit acceptance procedure
+instead of auto-fixing away the evidence.
+
 Use this fixed execution order to keep the implementation session efficient:
 read the four required guidance files, inspect only the ticket's nearest
 contract and test map, write the smallest regression or acceptance test,

@@ -47,3 +47,8 @@ Before stopping, reopen `review.md`. Confirm both required section headings
 remain, replace `None.` only when you have evidence to report, and ensure no
 template marker such as `<title>` remains. A correct artifact with an
 unfinished review is an incomplete eval result.
+
+For ordinary eval tasks, use `xsht lint --fix` before the final verification
+checks. If the task is specifically evaluating lint, parsing, or diagnostics,
+preserve the behavior under test and follow the task contract instead of
+auto-fixing away the evidence.

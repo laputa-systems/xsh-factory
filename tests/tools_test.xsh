@@ -2612,6 +2612,8 @@ proc test_eval_worker_prompt_matches_task_image() [fs, error] {
   test.contains(prompt, "The task image is Alpine-based and provides BusyBox `sh`, not `bash`; use `sh`")?
   test.contains(prompt, "avoid bash-only syntax")?
   test.contains(prompt, "`and` and `or`, not shell `&&` and `||`")?
+  test.contains(prompt, "xsht lint --fix")?
+  test.contains(prompt, "specifically evaluating lint")?
 }
 
 proc test_host_agent_dispatch_requires_controller_manifest(ctx: TestContext) [fs, error] {
