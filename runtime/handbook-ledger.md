@@ -464,3 +464,14 @@ The `task-bigfiles` manager observed the hidden-dotfile behavior in one trial
 and explicitly required an independent filesystem replay before promotion.
 The approved handbook remains unchanged; the candidate is rejected for this
 cycle's admission purposes until that evidence exists.
+
+## Explicit CTO disposition — run-1786126514242
+
+| Candidate SHA-256 | Disposition |
+| --- | --- |
+| `ce6a8e8d17a6ed1788b44a86eb37c75156fc29fe55f0509b45295beb24450646` | deferred pending cross-eval replay; not promoted |
+
+The focused `task-histogram` replay passed 9/9 and supplied useful arithmetic
+and record-literal guidance, but it is single-eval evidence. Keep the approved
+handbook unchanged until the named histogram replay and a second
+record/division-heavy eval confirm reduced discovery friction.

@@ -2,7 +2,22 @@
 
 ## Status
 
-Open.
+Approved.
+
+## CTO decision — focused replay run-1786126514242
+
+- Decision: Approved for one bounded engineer implementation row.
+- Basis: The fresh current-HEAD `task-histogram` replay reproduced the
+  fold-with-print `err[compact.indexed-build]: indexed IR could not encode
+  full_ir_function_blocker` diagnostic, while the pure fold-then-`each`
+  workaround remained 9/9 byte-exact. This satisfies the ticket's focused
+  diagnostic gate; implementation remains limited to the proposed actionable
+  check-time diagnostic and its native tests.
+- Evidence: `runs/run-1786126514242/phases/01-eval/workers/eval-worker/task-histogram-1/session.jsonl.bz2`,
+  `runs/run-1786126514242/phases/01-eval/workers/eval-worker/task-histogram-1/run.json`,
+  and `runs/run-1786126514242/phases/01-eval/workers/eval-manager/task-histogram/REPORT.md`.
+- Dispatch constraint: admit no more than this one ticket until the remaining
+  histogram observations receive their named cross-eval replays.
 
 ## CTO decision — clean-slate cycle 2026-08-07
 
