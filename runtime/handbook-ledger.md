@@ -453,3 +453,14 @@ The task-grep candidate adds general guidance for standard-module shadowing
 and the `in` membership operator, but it has only one eval's evidence. Defer
 promotion until the specified nearby text-search replays complete; keep the
 approved handbook unchanged.
+
+## Explicit CTO disposition — run-1786124624556
+
+| Candidate SHA-256 | Disposition |
+| --- | --- |
+| `1c4fa79ffd580b7e07ccd2476d1274220c3b51c08ad09601cbe0089524aa8cfb` | deferred pending cross-eval replay; not promoted |
+
+The `task-bigfiles` manager observed the hidden-dotfile behavior in one trial
+and explicitly required an independent filesystem replay before promotion.
+The approved handbook remains unchanged; the candidate is rejected for this
+cycle's admission purposes until that evidence exists.

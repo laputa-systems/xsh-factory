@@ -1,0 +1,126 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786125701225/phases/01-eval/workers/eval-worker/task-colsum-1/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_state": "pass",
+    "agent_wall_ms": 150187,
+    "artifact": {
+      "name": "colsum.xsh",
+      "state": "present"
+    },
+    "budget_state": "pass",
+    "classification": "pass",
+    "evaluator_manifest": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786125701225/phases/01-eval/workers/eval-worker/task-colsum-1/run.json",
+    "evaluator_state": "pass",
+    "reporting_state": "pass",
+    "result": "pass",
+    "review": {
+      "state": "present"
+    }
+  },
+  "findings": [
+    {
+      "count": 2,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "eval_id": "task-colsum",
+    "role": "eval-worker",
+    "run_id": "01-eval",
+    "worker_id": "task-colsum-1"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "provider_telemetry": {
+    "event_turns": 29,
+    "events_path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786125701225/phases/01-eval/workers/eval-worker/task-colsum-1/session.jsonl.events.jsonl",
+    "output_tokens_per_second": 0,
+    "present": true,
+    "provider_errors": [],
+    "response_elapsed_ms": 0,
+    "retry_count": 0,
+    "retry_delay_ms": 0,
+    "retry_errors": [],
+    "retry_failures": 0,
+    "retry_successes": 0
+  },
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786125701225/phases/01-eval/workers/eval-worker/task-colsum-1/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 28,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 148822
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786125701225/phases/01-eval/workers/eval-worker/task-colsum-1/session.jsonl.bz2",
+      "summary": "query: api:fs.read_text\nstatus: exact\n\napi: module.fs.read_text\nkind: module-function\npurpose: Reads a UTF-8 file into Str.\ncontract: Invalid byte sequences are an error; use the byte API when opaque content is valid input.\neffects: fs\nsignature: fs.read_text(path: Path) -> Result[Str, Error]\ntags: fs, read_text, filesystem, read, utf8\nexample:\n  let text = p\"config.txt\".read_text()?\n===\nxsht api: invalid API query 'api:method.Str.parse_int'; expected NAME.MEMBER\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 5
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786125701225/phases/01-eval/workers/eval-worker/task-colsum-1/session.jsonl.bz2",
+      "summary": "xsht api: invalid API query 'language.core.results'; expected KIND:VALUE\n=====\nxsht api: invalid API query 'language.core.postfix-question'; expected KIND:VALUE\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 12
+    }
+  ],
+  "tools": [
+    {
+      "count": 28,
+      "name": "bash"
+    },
+    {
+      "count": 2,
+      "name": "edit"
+    },
+    {
+      "count": 3,
+      "name": "read"
+    },
+    {
+      "count": 1,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 29,
+    "budget_usd": 0.5,
+    "cache_read_cost_usd": 0.005650560000000001,
+    "cache_read_tokens": 313920,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.008777069999999998,
+    "input_cost_usd": 0.00185625,
+    "input_tokens": 20625,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.0012702600000000005,
+    "output_tokens": 7057,
+    "provider_total_tokens": 341602,
+    "reasoning_tokens": 3752,
+    "thinking_blocks": 17,
+    "tool_calls": 34,
+    "tool_errors": 2,
+    "tool_results": 34,
+    "total_bucket_tokens": 341602,
+    "user_messages": 1
+  }
+}

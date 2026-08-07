@@ -1,0 +1,136 @@
+{
+  "artifacts": [
+    {
+      "kind": "phase-reports",
+      "path": "phases/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 48,
+      "budget_failures": 0,
+      "cost_usd": 0.019344959999999998,
+      "tool_errors": 2,
+      "total_bucket_tokens": 737393.0,
+      "unknown_costs": 0,
+      "workers": 2
+    },
+    "mode": "organization",
+    "outcomes": {
+      "cycle": "pass",
+      "evaluator": "pass",
+      "infrastructure": "pass",
+      "product": "pass"
+    },
+    "phases": [
+      {
+        "id": "01-eval",
+        "path": "phases/01-eval/report.json",
+        "result": "pass",
+        "valid": true
+      }
+    ],
+    "tool_errors": [
+      {
+        "report": "phases/01-eval/workers/eval-worker/task-colsum-1/report.json",
+        "summary": "query: api:fs.read_text\nstatus: exact\n\napi: module.fs.read_text\nkind: module-function\npurpose: Reads a UTF-8 file into Str.\ncontract: Invalid byte sequences are an error; use the byte API when opaque content is valid input.\neffects: fs\nsignature: fs.read_text(path: Path) -> Result[Str, Error]\ntags: fs, read_text, filesystem, read, utf8\nexample:\n  let text = p\"config.txt\".read_text()?\n===\nxsht api: invalid API query 'api:method.Str.parse_int'; expected NAME.MEMBER\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 5,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-colsum-1"
+        }
+      },
+      {
+        "report": "phases/01-eval/workers/eval-worker/task-colsum-1/report.json",
+        "summary": "xsht api: invalid API query 'language.core.results'; expected KIND:VALUE\n=====\nxsht api: invalid API query 'language.core.postfix-question'; expected KIND:VALUE\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 12,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-colsum-1"
+        }
+      }
+    ],
+    "workers": [
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-colsum"
+        },
+        "path": "phases/01-eval/workers/eval-manager/task-colsum/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 19,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.006433919999999999,
+          "cache_read_tokens": 357440,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.01056789,
+          "input_cost_usd": 0.0027692100000000007,
+          "input_tokens": 30769,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00136476,
+          "output_tokens": 7582,
+          "provider_total_tokens": 395791,
+          "reasoning_tokens": 2243,
+          "thinking_blocks": 15,
+          "tool_calls": 25,
+          "tool_errors": 0,
+          "tool_results": 25,
+          "total_bucket_tokens": 395791,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-colsum-1"
+        },
+        "path": "phases/01-eval/workers/eval-worker/task-colsum-1/report.json",
+        "result": "pass",
+        "tool_errors": 2,
+        "usage": {
+          "assistant_turns": 29,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.005650560000000001,
+          "cache_read_tokens": 313920,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.008777069999999998,
+          "input_cost_usd": 0.00185625,
+          "input_tokens": 20625,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0012702600000000005,
+          "output_tokens": 7057,
+          "provider_total_tokens": 341602,
+          "reasoning_tokens": 3752,
+          "thinking_blocks": 17,
+          "tool_calls": 34,
+          "tool_errors": 2,
+          "tool_results": 34,
+          "total_bucket_tokens": 341602,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "1477f472d5b4d57db3584357116ef97c32358ab6"
+  },
+  "findings": [],
+  "identity": {
+    "mode": "organization",
+    "run_id": "run-1786125701225"
+  },
+  "kind": "run",
+  "result": "pass",
+  "schema_version": 1,
+  "state": "completed"
+}
