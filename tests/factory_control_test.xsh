@@ -712,6 +712,9 @@ Open.
   test.ok(! control.toolchain_cache_valid(true, true, "key", "key", true))?
   test.ok(! control.toolchain_cache_valid(false, true, "old", "key", true))?
   test.ok(! control.toolchain_cache_valid(false, true, "key", "key", false))?
+  test.ok(control.shared_image_cache_valid(false, true))?
+  test.ok(! control.shared_image_cache_valid(true, true))?
+  test.ok(! control.shared_image_cache_valid(false, false))?
   test.ok(control.toolchain_image_platform_matches("linux/arm64\n", "linux/arm64"))?
   test.ok(! control.toolchain_image_platform_matches("linux/amd64", "linux/arm64"))?
   test.ok(

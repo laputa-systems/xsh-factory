@@ -14,6 +14,7 @@ proc test_control_contracts_reject_ambiguous_reports_and_fill_templates() [error
   test.eq(control.clamp_cycle_budget("2.00")?, "1.00")?
   test.ok("--no-cache" in control.eval_overlay_build_args("base", "build", "image", "linux/amd64", /factory/Dockerfile, /factory, true))?
   test.ok(control.toolchain_cache_valid(false, true, "key", "key", true))?
+  test.ok(control.shared_image_cache_valid(false, true))?
   test.ok(control.factory_image_tag("xsh", "control", "runtime", "schema", "worker", "base", "toolchain", "make", "linux", "amd64") != "")?
   test.ok(control.ecount_oracle_ok(true, "output"))?
   test.eq(control.ecount_classification(false, true, true, true, true, true), "worker_missing_artifact")?
