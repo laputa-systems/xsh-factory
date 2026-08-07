@@ -2377,6 +2377,39 @@ proc test_compressed_session_support_round_trips(ctx: TestContext) [fs, process,
   test.contains(runtime.session_text(session)?, "message")?
 }
 
+proc test_compressed_session_rewrite_is_idempotent(ctx: TestContext) [fs, process, error] {
+  let root = test.temp_dir(ctx, name: "compressed-session-rewrite")?
+  let session = fp"${root}/session.jsonl"
+  let report = fp"${root}/report.json"
+  fs.write(
+    session,
+    """{"type":"message"}
+""",
+  )?
+  fs.write(
+    report,
+    f"""{{
+  "raw": "${session.display()}",
+  "archive": "${session.display()}.bz2",
+  "events": "${session.display()}.events.jsonl",
+  "event_archive": "${session.display()}.events.jsonl.bz2",
+  "container": "/session/session.jsonl",
+  "container_events": "/session/session.jsonl.events.jsonl",
+  "container_archive": "/session/session.jsonl.bz2"
+}}
+""",
+  )?
+  runtime.compress_run_sessions(root)?
+  let first = report.read_text()?
+  runtime.compress_run_sessions(root)?
+  let second = report.read_text()?
+  test.eq(first, second)?
+  test.ok(".bz2.bz2" not in second, "archive references must not gain a second suffix")?
+  test.contains(second, "session.jsonl.bz2")?
+  test.contains(second, "/session/session.jsonl")?
+  test.contains(second, "/session/session.jsonl.events.jsonl.bz2")?
+}
+
 proc test_compressed_session_support_is_documented() [fs, error] {
   let runtime = fs.read_text(fp"${fs.cwd()?}/factory/runtime.xsh")?
   let report = fs.read_text(fp"${fs.cwd()?}/factory/tools/session.xsh")?

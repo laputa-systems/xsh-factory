@@ -1454,11 +1454,19 @@ export proc compress_run_sessions(run_dir: Path) [fs, process, error] -> Result[
   for entry in fs.walk(run_dir, gitignore: false, hidden: true)? |> where .kind == "file" {
     continue when entry.name.ends_with(".bz2") or ! session_reference_file(entry.name)
     let text = entry.path.read_text()?
-    let normalized = text.replace("/session/session.jsonl.events.jsonl", "/session/__SESSION_EVENTS_JSONL__")
+    let normalized = text.replace("/session/session.jsonl.events.jsonl.bz2", "/session/__SESSION_EVENTS_ARCHIVE__")
+      .replace("/session/session.jsonl.bz2", "/session/__SESSION_ARCHIVE__")
+      .replace("/session/session.jsonl.events.jsonl", "/session/__SESSION_EVENTS_JSONL__")
       .replace("/session/session.jsonl", "/session/__SESSION_JSONL__")
+      .replace("session.jsonl.events.jsonl.bz2", "__SESSION_EVENTS_ARCHIVE__")
+      .replace("session.jsonl.bz2", "__SESSION_ARCHIVE__")
+      .replace("session.jsonl.events.jsonl", "__SESSION_EVENTS_RAW__")
       .replace("session.jsonl", "session.jsonl.bz2")
       .replace("__SESSION_JSONL__", "session.jsonl")
       .replace("__SESSION_EVENTS_JSONL__", "session.jsonl.events.jsonl.bz2")
+      .replace("__SESSION_EVENTS_RAW__", "session.jsonl.events.jsonl")
+      .replace("__SESSION_ARCHIVE__", "session.jsonl.bz2")
+      .replace("__SESSION_EVENTS_ARCHIVE__", "session.jsonl.events.jsonl.bz2")
     if normalized != text {
       fs.write_atomic(entry.path, normalized)?
     }
