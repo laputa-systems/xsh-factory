@@ -2240,7 +2240,7 @@ proc test_organization_reuses_existing_branch_without_duplicate_dispatch() [fs, 
 proc test_organization_starts_independent_eval_before_primary_wait() [fs, error] {
   let organization = fs.read_text(fp"${fs.cwd()?}/factory/controllers/organization.xsh")?
   let before_primary_wait = organization.split("primary_ok = wait_child(primary_handle)?").get(0, "")
-  test.contains(before_primary_wait, "10-independent-eval-started")?
+  test.contains(before_primary_wait, "for eval_id in independent_eval_ids")?
   test.contains(before_primary_wait, "let independent_eval_handle = spawn_child")?
   test.contains(before_primary_wait, "independent_eval_handles = independent_eval_handles.push")?
 }
@@ -2248,12 +2248,13 @@ proc test_organization_starts_independent_eval_before_primary_wait() [fs, error]
 proc test_organization_supports_two_discovery_evals() [fs, error] {
   let organization = fs.read_text(fp"${fs.cwd()?}/factory/controllers/organization.xsh")?
   let launcher = fs.read_text(fp"${fs.cwd()?}/run.xsh")?
-  test.contains(organization, "secondary_eval")?
+  test.contains(organization, "request_evals.len() > 1")?
   test.contains(organization, "independent_eval_requested")?
-  test.contains(organization, "02-eval")?
-  test.contains(organization, "independent_eval_id")?
+  test.contains(organization, "discovery_phase_number")?
+  test.contains(organization, "independent_eval_ids")?
   test.contains(launcher, "next_untried_approved_evals(factory_dir, eval_values.len())")?
-  test.contains(launcher, "ticketless organization discovery requires one or two active evals")?
+  test.contains(launcher, "ticketless organization discovery requires one to")?
+  test.contains(organization, "max_concurrent_discovery_evals()")?
 }
 
 proc test_organization_delivery_is_a_success_gate() [fs, error] {

@@ -371,8 +371,8 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   }
 
   let request_evals = typed_request.eval_values(request_text)?
-  if request_evals.len() < 1 or request_evals.len() > 2 {
-    eprint "organization cycles require one eval, or at most two discovery evals"
+  if request_evals.len() < 1 or request_evals.len() > control.max_concurrent_discovery_evals() {
+    eprint f"organization cycles require one eval, or at most ${control.max_concurrent_discovery_evals()} discovery evals"
     abort(2)
   }
   if selected_ticket != "" and request_evals.len() != 1 {
@@ -380,17 +380,17 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     abort(2)
   }
   let requested_eval = if request_evals.len() > 0 { request_evals[0] } else { "" }
-  let secondary_eval = if selected_ticket == "" and request_evals.len() > 1 {
-    request_evals[1]
-  } else {
-    ""
+  if selected_ticket == "" {
+    var seen_evals: List[Str] = []
+    for eval_id in request_evals {
+      if eval_id in seen_evals {
+        eprint f"organization discovery evals must be distinct: ${eval_id}"
+        abort(2)
+      }
+      seen_evals = seen_evals.push(eval_id)
+    }
   }
-  if secondary_eval == requested_eval and secondary_eval != "" {
-    eprint f"organization discovery evals must be distinct: ${requested_eval}"
-    abort(2)
-  }
-  let independent_eval_id = if selected_ticket == "" { secondary_eval } else { requested_eval }
-  let independent_eval_requested = selected_ticket != "" or secondary_eval != ""
+  let independent_eval_requested = selected_ticket != "" or request_evals.len() > 1
   let ticket_eval = if selected_ticket != "" {
     control.ticket_eval(selected_ticket_path.read_text()?)
   } else {
@@ -432,28 +432,14 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   } else {
     fp"${phases_dir}/01-ticket"
   }
-  let independent_eval_phase = if selected_ticket == "" {
-    fp"${phases_dir}/02-eval"
-  } else {
-    fp"${phases_dir}/03-eval"
-  }
-  let design_phase = if selected_ticket == "" and ! independent_eval_requested {
-    fp"${phases_dir}/02-eval-design"
-  } else if selected_ticket == "" {
-    fp"${phases_dir}/03-eval-design"
+  let design_phase = if selected_ticket == "" {
+    fp"${phases_dir}/0${request_evals.len() + 1}-eval-design"
   } else {
     fp"${phases_dir}/04-eval-design"
   }
   let primary_request = fp"${phase_requests_dir}/01-primary.md"
-  let independent_eval_request = if selected_ticket == "" {
-    fp"${phase_requests_dir}/02-eval.md"
-  } else {
-    fp"${phase_requests_dir}/03-eval.md"
-  }
-  let design_request = if selected_ticket == "" and ! independent_eval_requested {
-    fp"${phase_requests_dir}/02-eval-design.md"
-  } else if selected_ticket == "" {
-    fp"${phase_requests_dir}/03-eval-design.md"
+  let design_request = if selected_ticket == "" {
+    fp"${phase_requests_dir}/0${request_evals.len() + 1}-eval-design.md"
   } else {
     fp"${phase_requests_dir}/04-eval-design.md"
   }
@@ -482,8 +468,31 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     fs.mkdir(design_phase)?
   }
 
-  if independent_eval_requested {
-    fs.mkdir(independent_eval_phase)?
+  var independent_eval_ids: List[Str] = []
+  var independent_eval_phases: List[Path] = []
+  var independent_eval_requests: List[Path] = []
+  var independent_eval_stdout: List[Path] = []
+  var independent_eval_stderr: List[Path] = []
+  if selected_ticket != "" {
+    independent_eval_ids = independent_eval_ids.push(requested_eval)
+    independent_eval_phases = independent_eval_phases.push(fp"${phases_dir}/03-eval")
+    independent_eval_requests = independent_eval_requests.push(fp"${phase_requests_dir}/03-eval.md")
+    independent_eval_stdout = independent_eval_stdout.push(fp"${run_dir}/independent-eval-${requested_eval}.stdout")
+    independent_eval_stderr = independent_eval_stderr.push(fp"${run_dir}/independent-eval-${requested_eval}.stderr")
+  } else {
+    var discovery_phase_number = 2
+    for eval_id in request_evals {
+      continue when eval_id == requested_eval
+      let phase = fp"${phases_dir}/0${discovery_phase_number}-eval"
+      let phase_request_path = fp"${phase_requests_dir}/0${discovery_phase_number}-eval.md"
+      independent_eval_ids = independent_eval_ids.push(eval_id)
+      independent_eval_phases = independent_eval_phases.push(phase)
+      independent_eval_requests = independent_eval_requests.push(phase_request_path)
+      independent_eval_stdout = independent_eval_stdout.push(fp"${run_dir}/independent-eval-${eval_id}.stdout")
+      independent_eval_stderr = independent_eval_stderr.push(fp"${run_dir}/independent-eval-${eval_id}.stderr")
+      fs.mkdir(phase)?
+      discovery_phase_number += 1
+    }
   }
 
   fs.write(active_run, run_dir.display() + "\n")?
@@ -525,23 +534,27 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     primary_objective,
   )?
   if independent_eval_requested {
+  var independent_eval_index = 0
+  for eval_id in independent_eval_ids {
     phase_request(
       phase_template,
-      independent_eval_request,
+      independent_eval_requests[independent_eval_index],
       "eval",
-      independent_eval_id,
+      eval_id,
       trial_count,
       0,
       "None.",
-      f"Run the independent ${independent_eval_id} eval against the XSH main commit.",
+      f"Run the independent ${eval_id} eval against the XSH main commit.",
     )?
+    independent_eval_index += 1
+  }
   }
   if design_requested {
     phase_request(
       phase_template,
       design_request,
       "eval-design",
-      independent_eval_id,
+      requested_eval,
       1,
       1,
       "None.",
@@ -594,21 +607,22 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     primary_mode,
   )?
 
-  if independent_eval_requested {
+  var independent_eval_spawn_index = 0
+  for eval_id in independent_eval_ids {
     runtime.emit_event(
       event_template,
       run_dir,
-      "10-independent-eval-started",
-      independent_eval_id,
+      f"10-independent-eval-${eval_id}-started",
+      eval_id,
       "started",
       1,
       "organization",
-      "running the requested independent eval in parallel with ticket implementation",
+      "running the discovery eval in parallel with the primary phase",
     )?
     let independent_eval_handle = spawn_child(
       eval_controller,
-      independent_eval_request,
-      independent_eval_phase,
+      independent_eval_requests[independent_eval_spawn_index],
+      independent_eval_phases[independent_eval_spawn_index],
       factory_dir,
       xsh_repo,
       run_dir,
@@ -621,15 +635,16 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
       platform,
       [
         "FACTORY_MODE=eval",
-        f"FACTORY_EVAL_ID=${independent_eval_id}",
+        f"FACTORY_EVAL_ID=${eval_id}",
         "FACTORY_REEVAL_TICKET=not-reevaluation",
         "FACTORY_REEVAL_WORKTREE=not-reevaluation",
         "FACTORY_SKIP_TICKET_RECONCILE=false",
       ],
-      fp"${run_dir}/independent-eval.stdout",
-      fp"${run_dir}/independent-eval.stderr",
+      independent_eval_stdout[independent_eval_spawn_index],
+      independent_eval_stderr[independent_eval_spawn_index],
     )?
     independent_eval_handles = independent_eval_handles.push(independent_eval_handle)
+    independent_eval_spawn_index += 1
   }
 
   var primary_ok = false
@@ -858,56 +873,63 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   var independent_eval_state = if independent_eval_requested { "not-run" } else { "not-applicable" }
   var independent_eval_report_state = if independent_eval_requested { "not-run" } else { "not-applicable" }
   if independent_eval_requested {
-    let independent_eval_ok = if independent_eval_handles.len() == 1 {
-      wait_child(independent_eval_handles[0])?
-    } else {
-      false
-    }
-    let independent_eval_report_ok = phase_run_pass(independent_eval_phase, "report.json")?
-    let independent_eval_pass = independent_eval_ok and independent_eval_report_ok
-    let independent_eval_exit = if independent_eval_pass { 0 } else { 1 }
-    runtime.emit_process_output(
-      run_dir,
-      f"independent-eval-${independent_eval_id}",
-      "stdout",
-      fp"${run_dir}/independent-eval.stdout",
-      independent_eval_exit,
-    )?
-    runtime.emit_process_output(
-      run_dir,
-      f"independent-eval-${independent_eval_id}",
-      "stderr",
-      fp"${run_dir}/independent-eval.stderr",
-      independent_eval_exit,
-    )?
-    independent_eval_state = if independent_eval_pass { "pass" } else { "fail" }
-    independent_eval_report_state = if independent_eval_report_ok { "pass" } else { "missing-or-failed" }
-    runtime.emit_event(
-      event_template,
-      run_dir,
-      "80-independent-eval-completed",
-      independent_eval_id,
-      if independent_eval_pass {
-        "completed"
-      } else {
-        "failed"
-      },
-      1,
-      "controller",
-      "independent eval phase returned",
-    )?
-    if independent_eval_pass {
+    var independent_eval_wait_index = 0
+    var all_independent_evals_pass = true
+    var all_independent_eval_reports_pass = true
+    for eval_id in independent_eval_ids {
+      let independent_eval_ok = wait_child(independent_eval_handles[independent_eval_wait_index])?
+      let independent_eval_report_ok = phase_run_pass(
+        independent_eval_phases[independent_eval_wait_index],
+        "report.json",
+      )?
+      let independent_eval_pass = independent_eval_ok and independent_eval_report_ok
+      let independent_eval_exit = if independent_eval_pass { 0 } else { 1 }
+      runtime.emit_process_output(
+        run_dir,
+        f"independent-eval-${eval_id}",
+        "stdout",
+        independent_eval_stdout[independent_eval_wait_index],
+        independent_eval_exit,
+      )?
+      runtime.emit_process_output(
+        run_dir,
+        f"independent-eval-${eval_id}",
+        "stderr",
+        independent_eval_stderr[independent_eval_wait_index],
+        independent_eval_exit,
+      )?
+      all_independent_evals_pass = all_independent_evals_pass and independent_eval_pass
+      all_independent_eval_reports_pass = all_independent_eval_reports_pass and independent_eval_report_ok
       runtime.emit_event(
         event_template,
         run_dir,
-        "85-independent-eval-validated",
-        independent_eval_id,
-        "validated",
+        f"80-independent-eval-${eval_id}-completed",
+        eval_id,
+        if independent_eval_pass {
+          "completed"
+        } else {
+          "failed"
+        },
         1,
         "controller",
-        "independent eval report.json passed",
+        "discovery eval phase returned",
       )?
+      if independent_eval_pass {
+        runtime.emit_event(
+          event_template,
+          run_dir,
+          f"85-independent-eval-${eval_id}-validated",
+          eval_id,
+          "validated",
+          1,
+          "controller",
+          "discovery eval report.json passed",
+        )?
+      }
+      independent_eval_wait_index += 1
     }
+    independent_eval_state = if all_independent_evals_pass { "pass" } else { "fail" }
+    independent_eval_report_state = if all_independent_eval_reports_pass { "pass" } else { "missing-or-failed" }
   }
 
   var design_state = "not-requested"

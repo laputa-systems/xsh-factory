@@ -1,0 +1,97 @@
+{
+  "classification": "pass",
+  "correctness": {
+    "all_exact": true,
+    "cases": [
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 12501106,
+        "exact": true,
+        "name": "public",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 11627559
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 12903608,
+        "exact": true,
+        "name": "hidden_accumulate",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 12115478
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 12391438,
+        "exact": true,
+        "name": "hidden_order",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 15653080
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 11947353,
+        "exact": true,
+        "name": "hidden_many",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 11866602
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 15435495,
+        "exact": true,
+        "name": "hidden_blank",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 13256526
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 11673101,
+        "exact": true,
+        "name": "hidden_empty",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 11944728
+      },
+      {
+        "candidate_exit": 3,
+        "candidate_wall_ns": 10956389,
+        "exact": true,
+        "name": "hidden_bad_fields",
+        "oracle_exit": 1,
+        "oracle_wall_ns": 1507841
+      },
+      {
+        "candidate_exit": 3,
+        "candidate_wall_ns": 11955936,
+        "exact": true,
+        "name": "hidden_bad_value",
+        "oracle_exit": 1,
+        "oracle_wall_ns": 11943936
+      },
+      {
+        "candidate_exit": 3,
+        "candidate_wall_ns": 11170391,
+        "exact": true,
+        "name": "hidden_missing",
+        "oracle_exit": 1,
+        "oracle_wall_ns": 11977894
+      }
+    ],
+    "passed": true
+  },
+  "eval_id": "task-groupsum",
+  "image_id": "sha256:676de4dbc73d5b7c26f96843ef443055e25274380b92a3dd29c91e76ca9363b7",
+  "platform": "linux/arm64",
+  "protocol": {
+    "artifact_present": true,
+    "review_ok": true
+  },
+  "restrictions": {
+    "passed": true,
+    "reads_text": true
+  },
+  "result": "pass",
+  "timings": {
+    "passed": true
+  },
+  "trial_id": "1"
+}

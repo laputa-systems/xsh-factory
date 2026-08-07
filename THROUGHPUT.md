@@ -19,18 +19,18 @@ not more concurrent work for its own sake.
 
 ## Recommendations
 
-### 1. Run two independent discovery evals in no-ticket organization cycles
+### 1. Run up to four independent discovery evals in no-ticket organization cycles
 
-When no approved ticket is admitted, select the next two distinct untried
-approved evals and run them concurrently. Keep one eval worker and one manager
-per eval, and retain the aggregate cycle budget as the hard ceiling. This
-increases discovery throughput without increasing engineer concurrency or
+When no approved ticket is admitted, select the next one to four distinct
+untried approved evals and run them concurrently. Keep one eval worker and one
+manager per eval, and retain the aggregate cycle budget as the hard ceiling.
+This increases discovery throughput without increasing engineer concurrency or
 asking agents to choose work.
 
-The controller must validate both IDs, create separate phase directories and
-reports, and fail closed if the request is not the deterministic next pair
-(unless measured reuse is explicitly allowed). A cycle passes only when both
-eval phases pass and infrastructure evidence remains valid.
+The controller must validate every ID, create separate phase directories and
+reports, and fail closed if the request is not the deterministic next batch
+(unless measured reuse is explicitly allowed). A cycle passes only when every
+eval phase passes and infrastructure evidence remains valid.
 
 ### 2. Tier ticket admission by risk
 
@@ -59,9 +59,9 @@ must remain bounded by the coded engineer ceiling and the aggregate budget.
 ## Implementation status
 
 Recommendation 1 is implemented first. The organization request may name up to
-two active evals for a no-ticket discovery cycle. `run.xsh` admits only the next
-deterministic untried approved evals, and
-`factory/controllers/organization.xsh` runs the second eval in a separate
-independent phase concurrently with the primary eval. The remaining
+four active evals for a no-ticket discovery cycle. `run.xsh` admits only the
+next deterministic untried approved evals, and
+`factory/controllers/organization.xsh` runs every additional eval in a
+separate independent phase concurrently with the primary eval. The remaining
 recommendations are intentionally proposals until their contracts, metrics,
 and tests are separately defined.

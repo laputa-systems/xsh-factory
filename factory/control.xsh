@@ -252,6 +252,11 @@ export pure max_concurrent_engineers() -> Int {
   return 2
 }
 
+## Maximum concurrent discovery eval phases in a ticketless organization cycle.
+export pure max_concurrent_discovery_evals() -> Int {
+  return 4
+}
+
 ## Clamps an operator-supplied budget to the role's hard ceiling.
 export pure clamp_budget(role: Str, configured: Str) -> Result[Str] {
   let ceiling_text = default_budget(role)

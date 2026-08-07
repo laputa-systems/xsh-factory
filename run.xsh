@@ -207,8 +207,8 @@ proc preflight(
       eprint "organization request must select an eval"
       return false
     }
-    if mode == "organization" and candidate_tickets.len() == 0 and (eval_values.len() < 1 or eval_values.len() > 2) {
-      eprint "ticketless organization discovery requires one or two active evals"
+    if mode == "organization" and candidate_tickets.len() == 0 and (eval_values.len() < 1 or eval_values.len() > control.max_concurrent_discovery_evals()) {
+      eprint f"ticketless organization discovery requires one to ${control.max_concurrent_discovery_evals()} active evals"
       return false
     }
     if mode == "organization" and candidate_tickets.len() > 0 and eval_values.len() != 1 {

@@ -977,8 +977,9 @@ proc test_standard_cycle_uses_diverse_active_eval() [fs, error] {
   test.contains(runtime_source, "passing engineer report")?
   test.ok("git branch provenance" not in runtime_source)?
   test.contains(throughput, "## Recommendations")?
-  test.contains(throughput, "two independent discovery evals")?
+  test.contains(throughput, "up to four independent discovery evals")?
   test.contains(throughput, "Tier ticket admission by risk")?
+  test.eq(control.max_concurrent_discovery_evals(), 4)?
 }
 
 proc test_agent_completion_is_report_bound() [error] {
