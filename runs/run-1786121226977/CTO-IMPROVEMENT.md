@@ -2,7 +2,7 @@
 
 ## Status
 
-pending-validation
+validated
 
 ## Change
 
@@ -39,9 +39,10 @@ check and a mismatched image must trigger a local rebuild, with zero
 
 ## Validation
 
-Run `xsht test` and inspect the next phase report and `xsh-build.stderr`.
-Validation passes when the native suite is green and the next eval phase is
-not rejected at stage `xsh` for a cached-image platform mismatch.
+`xsht test` passed 111/111. The exact product build command from the failed
+phase was rerun with `XSH_TEST_IMAGE_BUILD=1`; Docker rebuilt `xsh-test` as
+`linux/arm64` and the cross-build completed successfully in 3m29s, producing
+the staged `xsh` and `xsht` binaries under the expected target directory.
 
 ## Revert condition
 
@@ -52,5 +53,4 @@ new focused regression test.
 
 ## Next-cycle disposition
 
-The next CTO must replace `pending-validation` with `validated` or `reverted`
-after running the named verification and linking the evidence.
+Validated by the native suite and the successful arm64 Docker build above.
