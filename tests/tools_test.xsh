@@ -669,7 +669,9 @@ proc test_eval_controller_completes_with_fake_build_docker_and_pi(ctx: TestConte
   let fake_make = fp"${bin_dir}/make"
   let fake_docker = fp"${bin_dir}/docker"
   let fake_pi = fp"${bin_dir}/factory-eval-pi"
-  let toolchain_stamp = fp"${factory}/runs/.cache/xsh-test-aarch64-unknown-linux-musl.stamp"
+  let fixture_target = "fixture-target"
+  let toolchain_stamp = fp"${factory}/runs/.cache/xsh-test-${fixture_target}.stamp"
+  let fixture_dist = fp"${xsh_repo}/target/${fixture_target}"
   let staged_eval_context = fp"${factory}/evals/.dist"
   fs.mkdir(bin_dir)?
   test.ok(! fs.exists(run_dir)?)?
@@ -678,6 +680,7 @@ proc test_eval_controller_completes_with_fake_build_docker_and_pi(ctx: TestConte
   # Remove both shared transient outputs so a later real eval cannot accept the
   # fixture's cache stamp and stage the no-op doubles into its Docker image.
   defer fs.remove(toolchain_stamp, missing_ok: true)?
+  defer fs.remove(fixture_dist, missing_ok: true)?
   defer fs.remove(staged_eval_context, missing_ok: true)?
   fs.write(
     fp"${root}/eval-request.md",
@@ -722,7 +725,7 @@ for argument in "$@"; do
   esac
   previous="$argument"
 done
-dist="$repo/target/docker-${target}-release/${target}/dist"
+dist="$repo/target/${target}/dist"
 mkdir -p "$dist"
 printf '#!/bin/sh\nexit 0\n' > "$dist/xsh"
 printf '#!/bin/sh\nexit 0\n' > "$dist/xsht"
@@ -895,6 +898,7 @@ exit 0
         PATH: env_path,
         PI_AUTH_FILE: fp"${root}/auth.json".display(),
         PI_COMMAND: "factory-eval-pi",
+        XSH_TARGET: fixture_target,
         XSH_MODULE_PATH: factory.display(),
       },
       stdout: fp"${root}/controller.stdout",

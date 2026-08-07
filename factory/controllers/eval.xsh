@@ -405,7 +405,9 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   )
   let toolchain_build_flag = if toolchain_cache_hit { "0" } else { "1" }
   let build_started = time.now()
-  let dist_dir = fp"${xsh_repo}/target/docker-${target}-release/${target}/dist"
+  # `dist-Linux-docker` sets CARGO_TARGET_DIR to `<repo>/target`, so Cargo
+  # writes the cross-built binaries under `target/<target>/dist`.
+  let dist_dir = fp"${xsh_repo}/target/${target}/dist"
   let dist_xsh = fp"${dist_dir}/xsh"
   let dist_xsht = fp"${dist_dir}/xsht"
   let build = process.run(
