@@ -14,6 +14,13 @@ Open.
 - Admission: Keep `Open.`. Revisit after the typed-`Path` restriction and
   `xsht lint` contract have a named repair and an isolated acceptance plan.
 
+## CTO review
+
+- Review cycle: ramp recovery admission.
+- Decision: Deferred; do not approve or dispatch.
+- Basis: Preserve this reproducible lint-versus-restriction conflict for a
+  separate repair cycle; it is not a safe dependency of JSON-filter delivery.
+
 ## Change target
 
 - `product`
