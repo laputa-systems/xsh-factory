@@ -1,0 +1,116 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786141413750/phases/03-eval/workers/eval-manager/task-render/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_process": "pass",
+    "dispatch_claim": "aa4f5d08bf52f4816642bc666924915e97297b61626f0c8d5c1731c542bfaf28",
+    "dispatch_id": "eval-manager-task-render",
+    "message_sha256": "aa4f5d08bf52f4816642bc666924915e97297b61626f0c8d5c1731c542bfaf28",
+    "reporting": "pass",
+    "required_report": "present",
+    "session_limit_watcher": "pass",
+    "system_prompt_sha256": "a5ab31790989af39c06a7fec953a65b5b782b1be43779a76401f77f02f7995f3",
+    "watcher": "pass"
+  },
+  "findings": [
+    {
+      "count": 1,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "role": "eval-manager",
+    "worker_id": "task-render"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "provider_telemetry": {
+    "event_turns": 20,
+    "events_path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786141413750/phases/03-eval/workers/eval-manager/task-render/session.jsonl.events.jsonl",
+    "output_tokens_per_second": 0,
+    "present": true,
+    "provider_errors": [],
+    "response_elapsed_ms": 0,
+    "retry_count": 0,
+    "retry_delay_ms": 0,
+    "retry_errors": [],
+    "retry_failures": 0,
+    "retry_successes": 0
+  },
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786141413750/phases/03-eval/workers/eval-manager/task-render/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 19,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 159070
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786141413750/phases/03-eval/workers/eval-manager/task-render/session.jsonl.bz2",
+      "summary": "Could not find the exact text in /Users/josh/d/laputa-systems/xsh-factory/tickets/task-render-001.md. The old text must match exactly including all whitespace and newlines.",
+      "tool": "edit",
+      "turn": 16
+    }
+  ],
+  "tools": [
+    {
+      "count": 9,
+      "name": "bash"
+    },
+    {
+      "count": 1,
+      "name": "edit"
+    },
+    {
+      "count": 1,
+      "name": "ls"
+    },
+    {
+      "count": 13,
+      "name": "read"
+    },
+    {
+      "count": 3,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 20,
+    "budget_usd": 0.15,
+    "cache_read_cost_usd": 0.01691136,
+    "cache_read_tokens": 939520,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.025806869999999996,
+    "input_cost_usd": 0.006375150000000001,
+    "input_tokens": 70835,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.00252036,
+    "output_tokens": 14002,
+    "provider_total_tokens": 1024357,
+    "reasoning_tokens": 5335,
+    "thinking_blocks": 17,
+    "tool_calls": 27,
+    "tool_errors": 1,
+    "tool_results": 27,
+    "total_bucket_tokens": 1024357,
+    "user_messages": 1
+  }
+}

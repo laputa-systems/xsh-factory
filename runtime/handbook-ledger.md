@@ -498,6 +498,17 @@ exact JSON output and newline behavior. It is still evidence from one eval;
 keep the approved handbook unchanged until a nearby output-format eval
 confirms that the guidance generalizes.
 
+## Explicit CTO disposition — run-1786141413750
+
+| Candidate SHA-256 | Disposition |
+| --- | --- |
+| `134025e768dd555c713c9ba269505d968a820f38655a593aeea36eeca1094870` | deferred pending cross-eval replay; not promoted |
+
+The `task-render` manager proposed a concise Map-construction lesson centered
+on `map.empty()`. It is useful but single-eval evidence; keep the approved
+handbook unchanged until the named render replay and a second map-building
+eval confirm that the guidance generalizes.
+
 ## Explicit CTO disposition — run-1786136684797
 
 | Candidate SHA-256 | Disposition |
