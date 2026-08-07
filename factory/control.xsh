@@ -372,6 +372,11 @@ export pure toolchain_cache_valid(
   return ! force_rebuild and stamp_exists and cached_key == expected_key and image_present
 }
 
+## A cached Docker toolchain is usable only for the platform the build will run.
+export pure toolchain_image_platform_matches(actual: Str, expected: Str) -> Bool {
+  return actual.trim() == expected.trim()
+}
+
 ## Creates a stable Docker tag from every input that can change the shared image.
 export pure factory_image_tag(
   xsh_commit: Str,

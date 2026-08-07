@@ -712,6 +712,8 @@ Open.
   test.ok(! control.toolchain_cache_valid(true, true, "key", "key", true))?
   test.ok(! control.toolchain_cache_valid(false, true, "old", "key", true))?
   test.ok(! control.toolchain_cache_valid(false, true, "key", "key", false))?
+  test.ok(control.toolchain_image_platform_matches("linux/arm64\n", "linux/arm64"))?
+  test.ok(! control.toolchain_image_platform_matches("linux/amd64", "linux/arm64"))?
   test.ok(
     control.factory_image_tag(
       "xsh",
@@ -908,9 +910,10 @@ proc test_standard_cycle_uses_diverse_active_eval() [fs, error] {
     request,
     """## Active evals
 
-- `task-histogram`""",
+- `task-bigfiles`""",
   )?
   test.contains(request, "Allow measured eval reuse")?
+  test.contains(request, "- None.")?
   test.contains(fs.read_text(fp"${fs.cwd()?}/factory/tools/eval-trends.xsh")?, "median_turns")?
   test.contains(request, "## Bottleneck review")?
   test.ok("`task-tags`" not in request)?

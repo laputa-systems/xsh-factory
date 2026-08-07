@@ -385,12 +385,10 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   let toolchain_present = if force_toolchain_rebuild {
     false
   } else {
-    process.run(
-      process.command_argv(
-        docker,
-        [docker, "image", "inspect", toolchain_image],
-      ),
-    )?.ok
+    match run.text docker image inspect "--format" "{{.Os}}/{{.Architecture}}" $toolchain_image {
+      Ok(actual_platform) => control.toolchain_image_platform_matches(actual_platform, platform),
+      Err(_) => false,
+    }
   }
   let toolchain_cache_exists = fs.exists(toolchain_cache)?
   let cached_toolchain_key = if toolchain_cache_exists {

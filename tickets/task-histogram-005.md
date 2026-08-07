@@ -4,6 +4,13 @@
 
 Open.
 
+## CTO decision — clean-slate cycle 2026-08-07
+
+- Decision: Deferred; do not approve or dispatch.
+- Basis: `runs/` was intentionally reset, so this single-eval strict-decimal
+  observation has no fresh discovery probe or numeric cross-eval replay.
+  Preserve it until that evidence is restored.
+
 ## Change target
 
 - `product`

@@ -4,6 +4,13 @@
 
 Open.
 
+## CTO decision — clean-slate cycle 2026-08-07
+
+- Decision: Deferred; do not approve or dispatch.
+- Basis: `runs/` was intentionally reset, so the required focused helper
+  check and second helper-heavy replay are not available as fresh evidence.
+  Preserve the observation until those checks are recorded.
+
 ## Change target
 
 - `product`

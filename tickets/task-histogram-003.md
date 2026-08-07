@@ -4,6 +4,14 @@
 
 Open.
 
+## CTO decision — clean-slate cycle 2026-08-07
+
+- Decision: Deferred; do not approve or dispatch.
+- Basis: `runs/` was intentionally reset, so no fresh controlled replay is
+  available to satisfy this ticket's fold-with-print evidence gate. Preserve
+  the existing single-eval observation until a new focused replay records the
+  diagnostic on current XSH `HEAD`.
+
 ## Change target
 
 - `product`
