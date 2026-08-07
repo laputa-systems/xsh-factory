@@ -1,0 +1,138 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786136684797/phases/03-eval/workers/eval-worker/task-pathparts-1/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_state": "pass",
+    "agent_wall_ms": 305466,
+    "artifact": {
+      "name": "pathparts.xsh",
+      "state": "present"
+    },
+    "budget_state": "pass",
+    "classification": "evaluator_failed",
+    "evaluator_manifest": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786136684797/phases/03-eval/workers/eval-worker/task-pathparts-1/run.json",
+    "evaluator_state": "fail",
+    "reporting_state": "pass",
+    "result": "fail",
+    "review": {
+      "state": "present"
+    }
+  },
+  "findings": [
+    {
+      "count": 4,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "eval_id": "task-pathparts",
+    "role": "eval-worker",
+    "run_id": "03-eval",
+    "worker_id": "task-pathparts-1"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "provider_telemetry": {
+    "event_turns": 36,
+    "events_path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786136684797/phases/03-eval/workers/eval-worker/task-pathparts-1/session.jsonl.events.jsonl",
+    "output_tokens_per_second": 0,
+    "present": true,
+    "provider_errors": [],
+    "response_elapsed_ms": 0,
+    "retry_count": 0,
+    "retry_delay_ms": 0,
+    "retry_errors": [],
+    "retry_failures": 0,
+    "retry_successes": 0
+  },
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786136684797/phases/03-eval/workers/eval-worker/task-pathparts-1/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 35,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 303203
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786136684797/phases/03-eval/workers/eval-worker/task-pathparts-1/session.jsonl.bz2",
+      "summary": "=== diff vs oracle ===\nMISMATCH [/srv/app/server.cfg]\n  oracle: dir=/srv/app\nname=server.cfg\next=cfg\n  xsh:    dir= /srv/app\nname= server.cfg\next= cfg\nMISMATCH [app.yaml]\n  oracle: dir=.\nname=app.yaml\next=yaml\n  xsh:    dir= .\nname= app.yaml\next= yaml\nMISMATCH [pkg.tar.gz]\n  oracle: dir=.\nname=pkg.tar.gz\next=gz\n  xsh:    dir= .\nname= pkg.tar.gz\next= gz\nMISMATCH [.profile]\n  oracle: dir=.\nname=.profile\next=none\n  xsh:    dir= .\nname= .profile\next= none\nMISMATCH [.profile.foo]\n  oracle: dir=.\nname=.profile.foo\next=foo\n  xsh:    dir= .\nname= .profile.foo\next= foo\nMISMATCH [plain]\n  oracle: dir=.\nname=plain\next=none\n  xsh:    dir= .\nname= plain\next= none\nMISMATCH [dir/]\n  oracle: dir=.\nname=dir\next=none\n  xsh:    dir= .\nname= dir\next= none\nMISMATCH [file.]\n  oracle: dir=.\nname=file.\next=\n  xsh:    dir= .\nname= file.\next= \nMISMATCH [trailing.]\n  oracle: dir=.\nname=trailing.\next=\n  xsh:    dir= .\nname= trailing.\next= \nMISMATCH [a.b.c]\n  oracle: dir=.\nname=a.b.c\next=c\n  xsh:    dir= .\nname= a.b.c\next= c\nMISMATCH [a.b]\n  oracle: dir=.\nname=a.b\next=b\n  xsh:    dir= .\nname= a.b\next= b\nMISMATCH [dir//my.txt]\n  oracle: dir=dir\nname=my.txt\next=txt\n  xsh:    dir= dir\nname= my.txt\next= txt\nMISMATCH [/tmp/x]\n  oracle: dir=/tmp\nname=x\next=none\n  xsh:    dir= /tmp\nname= x\next= none\nMISMATCH [/root/.bashrc]\n  oracle: dir=/root\nname=.bashrc\next=none\n  xsh:    dir= /root\nname= .bashrc\next= none\nMISMATCH [/]\n  oracle: dir=/\nname=/\next=none\n  xsh:    dir= /\nname= \next= none\nMISMATCH [.]\n  oracle: dir=.\nname=.\next=none\n  xsh:    dir= .\nname= \next= none\nMISMATCH [..]\n  oracle: dir=.\nname=..\next=\n  xsh:    dir= .\nname= \next= none\nMISMATCH [..hidden]\n  oracle: dir=.\nname=..hidden\next=hidden\n  xsh:    dir= .\nname= ..hidden\next= hidden\nMISMATCH [name.with.dots]\n  oracle: dir=.\nname=name.with.dots\next=dots\n  xsh:    dir= .\nname= name.with.dots\next= dots\nMISMATCH []\n  oracle: dir=.\nname=\next=none\n  xsh:    dir= .\nname= \next= none\nMISMATCH [a.]\n  oracle: dir=.\nname=a.\next=\n  xsh:    dir= .\nname= a.\next= \n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 11
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786136684797/phases/03-eval/workers/eval-worker/task-pathparts-1/session.jsonl.bz2",
+      "summary": "=== diff vs oracle ===\nMISMATCH [/srv/app/server.cfg]\n  oracle: dir=/srv/app\nname=server.cfg\next=cfg\n  xsh:    \nMISMATCH [app.yaml]\n  oracle: dir=.\nname=app.yaml\next=yaml\n  xsh:    \nMISMATCH [pkg.tar.gz]\n  oracle: dir=.\nname=pkg.tar.gz\next=gz\n  xsh:    \nMISMATCH [.profile]\n  oracle: dir=.\nname=.profile\next=none\n  xsh:    \nMISMATCH [.profile.foo]\n  oracle: dir=.\nname=.profile.foo\next=foo\n  xsh:    \nMISMATCH [plain]\n  oracle: dir=.\nname=plain\next=none\n  xsh:    \nMISMATCH [dir/]\n  oracle: dir=.\nname=dir\next=none\n  xsh:    \nMISMATCH [file.]\n  oracle: dir=.\nname=file.\next=\n  xsh:    \nMISMATCH [trailing.]\n  oracle: dir=.\nname=trailing.\next=\n  xsh:    \nMISMATCH [a.b.c]\n  oracle: dir=.\nname=a.b.c\next=c\n  xsh:    \nMISMATCH [a.b]\n  oracle: dir=.\nname=a.b\next=b\n  xsh:    \nMISMATCH [dir//my.txt]\n  oracle: dir=dir\nname=my.txt\next=txt\n  xsh:    \nMISMATCH [/tmp/x]\n  oracle: dir=/tmp\nname=x\next=none\n  xsh:    \nMISMATCH [/root/.bashrc]\n  oracle: dir=/root\nname=.bashrc\next=none\n  xsh:    \nMISMATCH [/]\n  oracle: dir=/\nname=/\next=none\n  xsh:    \nMISMATCH [.]\n  oracle: dir=.\nname=.\next=none\n  xsh:    \nMISMATCH [..]\n  oracle: dir=.\nname=..\next=\n  xsh:    \nMISMATCH [..hidden]\n  oracle: dir=.\nname=..hidden\next=hidden\n  xsh:    \nMISMATCH [name.with.dots]\n  oracle: dir=.\nname=name.with.dots\next=dots\n  xsh:    \nMISMATCH []\n  oracle: dir=.\nname=\next=none\n  xsh:    \nMISMATCH [a.]\n  oracle: dir=.\nname=a.\next=\n  xsh:    \nMISMATCH [a//b]\n  oracle: dir=a\nname=b\next=none\n  xsh:    \nMISMATCH [a/b/]\n  oracle: dir=a\nname=b\next=none\n  xsh:    \nMISMATCH [/a/b/c.gz]\n  oracle: dir=/a/b\nname=c.gz\next=gz\n  xsh:    \nMISMATCH [./c]\n  oracle: dir=.\nname=c\next=none\n  xsh:    \nMISMATCH [a/.]\n  oracle: dir=a\nname=.\next=none\n  xsh:    \nMISMATCH [d//]\n  oracle: dir=.\nname=d\next=none\n  xsh:    \nMISMATCH [x]\n  oracle: dir=.\nname=x\next=none\n  xsh:    \nMISMATCH [//]\n  oracle: dir=/\nname=/\next=none\n  xsh:    \n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 16
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786136684797/phases/03-eval/workers/eval-worker/task-pathparts-1/session.jsonl.bz2",
+      "summary": "=== diff vs oracle ===\nMISMATCH [a/.]\n  oracle: dir=a\nname=.\next=none\n  xsh:    dir=.\nname=.\next=none\n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 19
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786136684797/phases/03-eval/workers/eval-worker/task-pathparts-1/session.jsonl.bz2",
+      "summary": "=== diff vs oracle ===\nMISMATCH [dir//my.txt]\n  oracle: dir=dir\nname=my.txt\next=txt\n  xsh:    dir=dir/\nname=my.txt\next=txt\nMISMATCH [a//b]\n  oracle: dir=a\nname=b\next=none\n  xsh:    dir=a/\nname=b\next=none\ntested 38 shapes\n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 22
+    }
+  ],
+  "tools": [
+    {
+      "count": 29,
+      "name": "bash"
+    },
+    {
+      "count": 3,
+      "name": "edit"
+    },
+    {
+      "count": 3,
+      "name": "read"
+    },
+    {
+      "count": 2,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 36,
+    "budget_usd": 0.5,
+    "cache_read_cost_usd": 0.013064832,
+    "cache_read_tokens": 725824,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.022098131999999996,
+    "input_cost_usd": 0.005512499999999999,
+    "input_tokens": 61250,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.0035207999999999997,
+    "output_tokens": 19560,
+    "provider_total_tokens": 806634,
+    "reasoning_tokens": 11792,
+    "thinking_blocks": 29,
+    "tool_calls": 37,
+    "tool_errors": 4,
+    "tool_results": 37,
+    "total_bucket_tokens": 806634,
+    "user_messages": 1
+  }
+}

@@ -1,0 +1,128 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786136684797/phases/02-eval/workers/eval-worker/task-manifest-1/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_state": "pass",
+    "agent_wall_ms": 236481,
+    "artifact": {
+      "name": "manifest.xsh",
+      "state": "present"
+    },
+    "budget_state": "pass",
+    "classification": "pass",
+    "evaluator_manifest": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786136684797/phases/02-eval/workers/eval-worker/task-manifest-1/run.json",
+    "evaluator_state": "pass",
+    "reporting_state": "pass",
+    "result": "pass",
+    "review": {
+      "state": "present"
+    }
+  },
+  "findings": [
+    {
+      "count": 3,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "eval_id": "task-manifest",
+    "role": "eval-worker",
+    "run_id": "02-eval",
+    "worker_id": "task-manifest-1"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "provider_telemetry": {
+    "event_turns": 31,
+    "events_path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786136684797/phases/02-eval/workers/eval-worker/task-manifest-1/session.jsonl.events.jsonl",
+    "output_tokens_per_second": 0,
+    "present": true,
+    "provider_errors": [],
+    "response_elapsed_ms": 0,
+    "retry_count": 0,
+    "retry_delay_ms": 0,
+    "retry_errors": [],
+    "retry_failures": 0,
+    "retry_successes": 0
+  },
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786136684797/phases/02-eval/workers/eval-worker/task-manifest-1/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 30,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 235126
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786136684797/phases/02-eval/workers/eval-worker/task-manifest-1/session.jsonl.bz2",
+      "summary": "api: language.stream.flat-map\nsignature: flat-map(block) -> Stream[U]\ncontract: The terminal materializes groups and preserves each group's source order. Each emitted record has a `key` field holding the projected key and an `items` field holding the list of source items in that group; it is a record, not a Map.\napi: language.stream.map\ncontract: Mapping preserves source order unless a later stage explicitly changes ordering. The transform block may contain multiple statements, including local `let` bindings.\nsignature: map(block) -> Stream[U]\napi: language.stream.par-map\nsignature: par-map(block, --jobs: Int = default) -> Stream[U]\n    |> par-map { |value|\n    |> reduce(map.empty()) { |acc, item|\napi: language.stream.sort\npurpose: Sorts all stream items.\ncontract: Sorting materializes the input and therefore requires a finite source and a defined item ordering. Supported items are Int, Str, Bool, Path, and Records whose fields are themselves supported items; records compare field by field in sorted field-name order. The sort is stable, so equal items keep their source order.\nsignature: sort() -> Stream[T]\ntags: stream, sorting, materialization, stable\napi: language.stream.sort-by\npurpose: Sorts stream items by a projected key.\ncontract: The key projection controls ordering and the stage materializes the input before emitting results. Supported key types are Int, Str, Bool, Path, and Records whose fields are themselves supported keys; records compare field by field in sorted field-name order. The default order is ascending and --desc reverses it. The sort is stable, so items with equal keys keep their source order and the two-pass idiom (sort by the secondary key first, then by the primary key) produces a reliable compound ordering. Other key types are rejected at check time and fail with a runtime diagnostic that names the stage and key type.\nsignature: sort-by(--desc: Bool = false, block) -> Stream[T]\ntags: stream, sorting, projection, stable\napi: language.stream.where\nsignature: where(block) -> Stream[T]\n  let files = fs.files(p\".\") |> where .kind == \"file\"\n===\nquery: language:stream.sort\nstatus: exact\n\napi: language.stream.sort\nkind: language\npurpose: Sorts all stream items.\ncontract: Sorting materializes the input and therefore requires a finite source and a defined item ordering. Supported items are Int, Str, Bool, Path, and Records whose fields are themselves supported items; records compare field by field in sorted field-name order. The sort is stable, so equal items keep their source order.\neffects: none\nsignature: sort() -> Stream[T]\ntags: stream, sorting, materialization, stable\n=== list sort ===\n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 4
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786136684797/phases/02-eval/workers/eval-worker/task-manifest-1/session.jsonl.bz2",
+      "summary": "normal exit=0\nNORMAL-MATCH\nruntime traceback\nexecutable: /usr/local/bin/xsh\noperation: result.propagate\nerror: path-resolve: No such file or directory (os error 2)\ncall path:\n  1. proc main at manifest.xsh:1:1-1:1\nnonexistent exit=3\nls: /tmp/ne: No such file or directory\nempty exit=0\n0 /tmp/emptyout\nruntime traceback\nexecutable: /usr/local/bin/xsh\noperation: result.propagate\nerror: fs-metadata: Not a directory (os error 20)\ncall path:\n  1. proc main at manifest.xsh:1:1-1:1\nfile-root exit=3\nls: /tmp/singleout: No such file or directory\n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 21
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786136684797/phases/02-eval/workers/eval-worker/task-manifest-1/session.jsonl.bz2",
+      "summary": "=== current file ===\nproc main(...argv: List[Str]) [fs, error] {\n  let root = fp\"${argv[0]}\"\n  let out = fp\"${argv[1]}\"\n  let resolved = root.resolve()?\n  let meta = fs.metadata(root)?\n  if meta.kind != \"dir\" {\n    # non-directory root must exit nonzero without writing OUT\n    let _ = fs.metadata(fp\"${root.display() + \"/.xsh_nondir_fail\"}\")?\n  }\n\n  let rels = fs.files(root)?\n    |> where .kind == \"file\"\n    |> map { |e|\n      e.path.relative_to(resolved).display()\n    }\n    |> sort\n    |> collect()\n  let body = rels.join(\"\\n\")\n  let text = if rels.len() > 0 { body + \"\\n\" } else { \"\" }\n  fs.write(out, text)?\n}\n=== tests ===\nnormal exit=0\nNORMAL-MATCH\nnonexistent exit=3\nls: /tmp/ne: No such file or directory\nempty exit=0\n0 /tmp/emptyout\nfile-root exit=3\nls: /tmp/singleout: No such file or directory\n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 25
+    }
+  ],
+  "tools": [
+    {
+      "count": 30,
+      "name": "bash"
+    },
+    {
+      "count": 4,
+      "name": "read"
+    },
+    {
+      "count": 1,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 31,
+    "budget_usd": 0.5,
+    "cache_read_cost_usd": 0.009004032,
+    "cache_read_tokens": 500224,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.013672782,
+    "input_cost_usd": 0.0025114499999999997,
+    "input_tokens": 27905,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.002157299999999999,
+    "output_tokens": 11985,
+    "provider_total_tokens": 540114,
+    "reasoning_tokens": 7100,
+    "thinking_blocks": 27,
+    "tool_calls": 35,
+    "tool_errors": 3,
+    "tool_results": 35,
+    "total_bucket_tokens": 540114,
+    "user_messages": 1
+  }
+}

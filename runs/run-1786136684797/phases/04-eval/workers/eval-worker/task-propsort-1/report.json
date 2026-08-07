@@ -1,0 +1,138 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786136684797/phases/04-eval/workers/eval-worker/task-propsort-1/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_state": "pass",
+    "agent_wall_ms": 59902,
+    "artifact": {
+      "name": "propsort.xsh",
+      "state": "present"
+    },
+    "budget_state": "pass",
+    "classification": "evaluator_failed",
+    "evaluator_manifest": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786136684797/phases/04-eval/workers/eval-worker/task-propsort-1/run.json",
+    "evaluator_state": "fail",
+    "reporting_state": "pass",
+    "result": "fail",
+    "review": {
+      "state": "present"
+    }
+  },
+  "findings": [
+    {
+      "count": 4,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "eval_id": "task-propsort",
+    "role": "eval-worker",
+    "run_id": "04-eval",
+    "worker_id": "task-propsort-1"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "provider_telemetry": {
+    "event_turns": 24,
+    "events_path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786136684797/phases/04-eval/workers/eval-worker/task-propsort-1/session.jsonl.events.jsonl",
+    "output_tokens_per_second": 0,
+    "present": true,
+    "provider_errors": [],
+    "response_elapsed_ms": 0,
+    "retry_count": 0,
+    "retry_delay_ms": 0,
+    "retry_errors": [],
+    "retry_failures": 0,
+    "retry_successes": 0
+  },
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786136684797/phases/04-eval/workers/eval-worker/task-propsort-1/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 23,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 55891
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786136684797/phases/04-eval/workers/eval-worker/task-propsort-1/session.jsonl.bz2",
+      "summary": "query: language:stream.sort-by\nstatus: exact\n\napi: language.stream.sort-by\nkind: language\npurpose: Sorts stream items by a projected key.\ncontract: The key projection controls ordering and the stage materializes the input before emitting results. Supported key types are Int, Str, Bool, Path, and Records whose fields are themselves supported keys; records compare field by field in sorted field-name order. The default order is ascending and --desc reverses it. The sort is stable, so items with equal keys keep their source order and the two-pass idiom (sort by the secondary key first, then by the primary key) produces a reliable compound ordering. Other key types are rejected at check time and fail with a runtime diagnostic that names the stage and key type.\neffects: none\nsignature: sort-by(--desc: Bool = false, block) -> Stream[T]\ntags: stream, sorting, projection, stable\n===LIST===\n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 6
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786136684797/phases/04-eval/workers/eval-worker/task-propsort-1/session.jsonl.bz2",
+      "summary": "err[check.effect-violation]: `?` requires the `error` effect\n  /tmp/probe.xsh:2:11\n    let t = p\"/tmp/t2.txt\".read_text()?\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^ `?` requires the `error` effect\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 9
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786136684797/phases/04-eval/workers/eval-worker/task-propsort-1/session.jsonl.bz2",
+      "summary": "err[parse.expected-terminator]: expected statement terminator\n  propsort.xsh:2:31\n    let path = p\"${argv.get(0, \"\")}\"\n                                ^^^^ expected statement terminator\n===FMT===\nerr[parse.expected-terminator]: expected statement terminator\n  propsort.xsh:2:31\n    let path = p\"${argv.get(0, \"\")}\"\n                                ^^^^ expected statement terminator\n===LINT===\nerr[parse.expected-terminator]: expected statement terminator\n  propsort.xsh:2:31\n    let path = p\"${argv.get(0, \"\")}\"\n                                ^^^^ expected statement terminator\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 12
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786136684797/phases/04-eval/workers/eval-worker/task-propsort-1/session.jsonl.bz2",
+      "summary": "err[check.standard-module-shadow]: name `path` shadows the standard module `path`\n  propsort.xsh:3:3\n    let path = fp\"${name}\"\n    ^^^^^^^^^^^^^^^^^^^^^^ name `path` shadows the standard module `path`\n\nerr[check.unknown-module-api]: unknown module API\n  propsort.xsh:4:14\n    let text = path.read_text()?\n               ^^^^^^^^^^^^^^^^ unknown module API\n\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  propsort.xsh:12:11\n      print l\n            ^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $l\n===FMT===\nerr[check.standard-module-shadow]: name `path` shadows the standard module `path`\n  propsort.xsh:3:3\n    let path = fp\"${name}\"\n    ^^^^^^^^^^^^^^^^^^^^^^ name `path` shadows the standard module `path`\n\nerr[check.unknown-module-api]: unknown module API\n  propsort.xsh:4:14\n    let text = path.read_text()?\n               ^^^^^^^^^^^^^^^^ unknown module API\n\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  propsort.xsh:12:11\n      print l\n            ^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $l\n===LINT===\nerr[check.standard-module-shadow]: name `path` shadows the standard module `path`\n  propsort.xsh:3:3\n    let path = fp\"${name}\"\n    ^^^^^^^^^^^^^^^^^^^^^^ name `path` shadows the standard module `path`\nerr[check.unknown-module-api]: unknown module API\n  propsort.xsh:4:14\n    let text = path.read_text()?\n               ^^^^^^^^^^^^^^^^ unknown module API\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  propsort.xsh:12:11\n      print l\n            ^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $l\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 17
+    }
+  ],
+  "tools": [
+    {
+      "count": 20,
+      "name": "bash"
+    },
+    {
+      "count": 1,
+      "name": "edit"
+    },
+    {
+      "count": 4,
+      "name": "read"
+    },
+    {
+      "count": 3,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 24,
+    "budget_usd": 0.5,
+    "cache_read_cost_usd": 0.003902976,
+    "cache_read_tokens": 216832,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.005960286,
+    "input_cost_usd": 0.0013448700000000004,
+    "input_tokens": 14943,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.00071244,
+    "output_tokens": 3958,
+    "provider_total_tokens": 235733,
+    "reasoning_tokens": 1169,
+    "thinking_blocks": 14,
+    "tool_calls": 28,
+    "tool_errors": 4,
+    "tool_results": 28,
+    "total_bucket_tokens": 235733,
+    "user_messages": 1
+  }
+}

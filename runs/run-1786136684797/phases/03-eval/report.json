@@ -1,0 +1,284 @@
+{
+  "artifacts": [
+    {
+      "kind": "session-directory",
+      "path": "workers/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 53,
+      "budget_failures": 0,
+      "cost_usd": 0.04019144399999999,
+      "tool_errors": 5,
+      "total_bucket_tokens": 1463012.0,
+      "unknown_costs": 0,
+      "workers": 2
+    },
+    "designer": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786136684797/phases/03-eval/workers/eval-designer/proposal-1/REPORT.md",
+      "present": false,
+      "result": "not-requested",
+      "role": "eval-designer",
+      "valid": true
+    },
+    "director": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786136684797/phases/03-eval/workers/director/director/REPORT.md",
+      "present": false,
+      "result": "not-requested",
+      "role": "director",
+      "valid": true
+    },
+    "engineer": [],
+    "handbook_lineage": {
+      "approved": "lineage/handbook-approved.md",
+      "candidate": "lineage/handbook-candidate.md"
+    },
+    "manager": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786136684797/phases/03-eval/workers/eval-manager/task-pathparts/REPORT.md",
+      "present": true,
+      "result": "fail",
+      "role": "eval-manager",
+      "valid": true
+    },
+    "mode": "eval",
+    "narratives": [
+      {
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786136684797/phases/03-eval/workers/eval-manager/task-pathparts/REPORT.md",
+        "present": true,
+        "result": "fail",
+        "role": "eval-manager",
+        "valid": true
+      }
+    ],
+    "open_tickets": [
+      {
+        "eval_id": "task-dupcheck",
+        "id": "task-dupcheck-002",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-dupcheck-002.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-004",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-004.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-005",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-005.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-006",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-006.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-007",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-007.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-008",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-008.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-pathparts",
+        "id": "task-pathparts-001",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-pathparts-001.md",
+        "status": "Open."
+      }
+    ],
+    "outcomes": {
+      "cycle": "fail",
+      "evaluator": "fail",
+      "infrastructure": "fail",
+      "product": "fail"
+    },
+    "required_outputs": {
+      "audit": false,
+      "candidate_handbook": true,
+      "designer_handbook_read": true,
+      "designer_output": true,
+      "handbook_lineage": true,
+      "manager_evidence_read": true,
+      "manager_handbook_read": true,
+      "manager_report": true,
+      "manager_session": true,
+      "required": false,
+      "trial1_process": false,
+      "trial1_report": true,
+      "trial2_process": true,
+      "trial2_report": true,
+      "worker_handbook_read": true
+    },
+    "sessions": [
+      "workers/eval-manager/task-pathparts/session.jsonl.bz2",
+      "workers/eval-worker/task-pathparts-1/session.jsonl.bz2"
+    ],
+    "tool_errors": [
+      {
+        "report": "workers/eval-manager/task-pathparts/report.json",
+        "summary": "      77 session.jsonl.bz2\n---EVENTS---\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 5,
+        "worker": {
+          "role": "eval-manager",
+          "worker_id": "task-pathparts"
+        }
+      },
+      {
+        "report": "workers/eval-worker/task-pathparts-1/report.json",
+        "summary": "=== diff vs oracle ===\nMISMATCH [/srv/app/server.cfg]\n  oracle: dir=/srv/app\nname=server.cfg\next=cfg\n  xsh:    dir= /srv/app\nname= server.cfg\next= cfg\nMISMATCH [app.yaml]\n  oracle: dir=.\nname=app.yaml\next=yaml\n  xsh:    dir= .\nname= app.yaml\next= yaml\nMISMATCH [pkg.tar.gz]\n  oracle: dir=.\nname=pkg.tar.gz\next=gz\n  xsh:    dir= .\nname= pkg.tar.gz\next= gz\nMISMATCH [.profile]\n  oracle: dir=.\nname=.profile\next=none\n  xsh:    dir= .\nname= .profile\next= none\nMISMATCH [.profile.foo]\n  oracle: dir=.\nname=.profile.foo\next=foo\n  xsh:    dir= .\nname= .profile.foo\next= foo\nMISMATCH [plain]\n  oracle: dir=.\nname=plain\next=none\n  xsh:    dir= .\nname= plain\next= none\nMISMATCH [dir/]\n  oracle: dir=.\nname=dir\next=none\n  xsh:    dir= .\nname= dir\next= none\nMISMATCH [file.]\n  oracle: dir=.\nname=file.\next=\n  xsh:    dir= .\nname= file.\next= \nMISMATCH [trailing.]\n  oracle: dir=.\nname=trailing.\next=\n  xsh:    dir= .\nname= trailing.\next= \nMISMATCH [a.b.c]\n  oracle: dir=.\nname=a.b.c\next=c\n  xsh:    dir= .\nname= a.b.c\next= c\nMISMATCH [a.b]\n  oracle: dir=.\nname=a.b\next=b\n  xsh:    dir= .\nname= a.b\next= b\nMISMATCH [dir//my.txt]\n  oracle: dir=dir\nname=my.txt\next=txt\n  xsh:    dir= dir\nname= my.txt\next= txt\nMISMATCH [/tmp/x]\n  oracle: dir=/tmp\nname=x\next=none\n  xsh:    dir= /tmp\nname= x\next= none\nMISMATCH [/root/.bashrc]\n  oracle: dir=/root\nname=.bashrc\next=none\n  xsh:    dir= /root\nname= .bashrc\next= none\nMISMATCH [/]\n  oracle: dir=/\nname=/\next=none\n  xsh:    dir= /\nname= \next= none\nMISMATCH [.]\n  oracle: dir=.\nname=.\next=none\n  xsh:    dir= .\nname= \next= none\nMISMATCH [..]\n  oracle: dir=.\nname=..\next=\n  xsh:    dir= .\nname= \next= none\nMISMATCH [..hidden]\n  oracle: dir=.\nname=..hidden\next=hidden\n  xsh:    dir= .\nname= ..hidden\next= hidden\nMISMATCH [name.with.dots]\n  oracle: dir=.\nname=name.with.dots\next=dots\n  xsh:    dir= .\nname= name.with.dots\next= dots\nMISMATCH []\n  oracle: dir=.\nname=\next=none\n  xsh:    dir= .\nname= \next= none\nMISMATCH [a.]\n  oracle: dir=.\nname=a.\next=\n  xsh:    dir= .\nname= a.\next= \n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 11,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-pathparts-1"
+        }
+      },
+      {
+        "report": "workers/eval-worker/task-pathparts-1/report.json",
+        "summary": "=== diff vs oracle ===\nMISMATCH [/srv/app/server.cfg]\n  oracle: dir=/srv/app\nname=server.cfg\next=cfg\n  xsh:    \nMISMATCH [app.yaml]\n  oracle: dir=.\nname=app.yaml\next=yaml\n  xsh:    \nMISMATCH [pkg.tar.gz]\n  oracle: dir=.\nname=pkg.tar.gz\next=gz\n  xsh:    \nMISMATCH [.profile]\n  oracle: dir=.\nname=.profile\next=none\n  xsh:    \nMISMATCH [.profile.foo]\n  oracle: dir=.\nname=.profile.foo\next=foo\n  xsh:    \nMISMATCH [plain]\n  oracle: dir=.\nname=plain\next=none\n  xsh:    \nMISMATCH [dir/]\n  oracle: dir=.\nname=dir\next=none\n  xsh:    \nMISMATCH [file.]\n  oracle: dir=.\nname=file.\next=\n  xsh:    \nMISMATCH [trailing.]\n  oracle: dir=.\nname=trailing.\next=\n  xsh:    \nMISMATCH [a.b.c]\n  oracle: dir=.\nname=a.b.c\next=c\n  xsh:    \nMISMATCH [a.b]\n  oracle: dir=.\nname=a.b\next=b\n  xsh:    \nMISMATCH [dir//my.txt]\n  oracle: dir=dir\nname=my.txt\next=txt\n  xsh:    \nMISMATCH [/tmp/x]\n  oracle: dir=/tmp\nname=x\next=none\n  xsh:    \nMISMATCH [/root/.bashrc]\n  oracle: dir=/root\nname=.bashrc\next=none\n  xsh:    \nMISMATCH [/]\n  oracle: dir=/\nname=/\next=none\n  xsh:    \nMISMATCH [.]\n  oracle: dir=.\nname=.\next=none\n  xsh:    \nMISMATCH [..]\n  oracle: dir=.\nname=..\next=\n  xsh:    \nMISMATCH [..hidden]\n  oracle: dir=.\nname=..hidden\next=hidden\n  xsh:    \nMISMATCH [name.with.dots]\n  oracle: dir=.\nname=name.with.dots\next=dots\n  xsh:    \nMISMATCH []\n  oracle: dir=.\nname=\next=none\n  xsh:    \nMISMATCH [a.]\n  oracle: dir=.\nname=a.\next=\n  xsh:    \nMISMATCH [a//b]\n  oracle: dir=a\nname=b\next=none\n  xsh:    \nMISMATCH [a/b/]\n  oracle: dir=a\nname=b\next=none\n  xsh:    \nMISMATCH [/a/b/c.gz]\n  oracle: dir=/a/b\nname=c.gz\next=gz\n  xsh:    \nMISMATCH [./c]\n  oracle: dir=.\nname=c\next=none\n  xsh:    \nMISMATCH [a/.]\n  oracle: dir=a\nname=.\next=none\n  xsh:    \nMISMATCH [d//]\n  oracle: dir=.\nname=d\next=none\n  xsh:    \nMISMATCH [x]\n  oracle: dir=.\nname=x\next=none\n  xsh:    \nMISMATCH [//]\n  oracle: dir=/\nname=/\next=none\n  xsh:    \n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 16,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-pathparts-1"
+        }
+      },
+      {
+        "report": "workers/eval-worker/task-pathparts-1/report.json",
+        "summary": "=== diff vs oracle ===\nMISMATCH [a/.]\n  oracle: dir=a\nname=.\next=none\n  xsh:    dir=.\nname=.\next=none\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 19,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-pathparts-1"
+        }
+      },
+      {
+        "report": "workers/eval-worker/task-pathparts-1/report.json",
+        "summary": "=== diff vs oracle ===\nMISMATCH [dir//my.txt]\n  oracle: dir=dir\nname=my.txt\next=txt\n  xsh:    dir=dir/\nname=my.txt\next=txt\nMISMATCH [a//b]\n  oracle: dir=a\nname=b\next=none\n  xsh:    dir=a/\nname=b\next=none\ntested 38 shapes\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 22,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-pathparts-1"
+        }
+      }
+    ],
+    "trials": [
+      {
+        "evidence": {
+          "candidate_sha256": "54ab1746ef6e90d4eb8d64f08a74b859eb33ad6f010602ec954fedd5574ad2e3",
+          "classification": "restriction_failed",
+          "correctness": "fail",
+          "eval_id": "task-pathparts",
+          "handbook_sha256": "3b56a781606faa1ae0eb811af09d10094080152dae78d9f057cca7de101e126b",
+          "oracle_sha256": "54ab1746ef6e90d4eb8d64f08a74b859eb33ad6f010602ec954fedd5574ad2e3",
+          "passed": false,
+          "protocol": "pass",
+          "restrictions": "fail",
+          "result": "fail",
+          "timing": "pass",
+          "trial_id": "1",
+          "valid": true
+        },
+        "path": "workers/eval-worker/task-pathparts-1/run.json"
+      }
+    ],
+    "workers": [
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-pathparts"
+        },
+        "path": "workers/eval-manager/task-pathparts/report.json",
+        "result": "pass",
+        "tool_errors": 1,
+        "usage": {
+          "assistant_turns": 17,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.010639872000000002,
+          "cache_read_tokens": 591104,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.018093312,
+          "input_cost_usd": 0.004295879999999999,
+          "input_tokens": 47732,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0031575599999999994,
+          "output_tokens": 17542,
+          "provider_total_tokens": 656378,
+          "reasoning_tokens": 11848,
+          "thinking_blocks": 14,
+          "tool_calls": 27,
+          "tool_errors": 1,
+          "tool_results": 27,
+          "total_bucket_tokens": 656378,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-pathparts-1"
+        },
+        "path": "workers/eval-worker/task-pathparts-1/report.json",
+        "result": "pass",
+        "tool_errors": 4,
+        "usage": {
+          "assistant_turns": 36,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.013064832,
+          "cache_read_tokens": 725824,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.022098131999999996,
+          "input_cost_usd": 0.005512499999999999,
+          "input_tokens": 61250,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0035207999999999997,
+          "output_tokens": 19560,
+          "provider_total_tokens": 806634,
+          "reasoning_tokens": 11792,
+          "thinking_blocks": 29,
+          "tool_calls": 37,
+          "tool_errors": 4,
+          "tool_results": 37,
+          "total_bucket_tokens": 806634,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "857154dfe505f0d01053c1b5311f44422070eb34"
+  },
+  "findings": [
+    {
+      "kind": "required-outputs",
+      "state": "failed"
+    }
+  ],
+  "identity": {
+    "eval_id": "task-pathparts",
+    "mode": "eval",
+    "run_id": "03-eval"
+  },
+  "kind": "phase",
+  "result": "fail",
+  "schema_version": 1,
+  "state": "completed"
+}

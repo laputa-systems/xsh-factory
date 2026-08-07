@@ -1,0 +1,108 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786136684797/phases/04-eval/workers/eval-manager/task-propsort/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_process": "pass",
+    "dispatch_claim": "61a2a0eda8362e1c695b6b4731a96ce6e65e4e251bda2752085e2808f93b1015",
+    "dispatch_id": "eval-manager-task-propsort",
+    "message_sha256": "61a2a0eda8362e1c695b6b4731a96ce6e65e4e251bda2752085e2808f93b1015",
+    "reporting": "pass",
+    "required_report": "present",
+    "session_limit_watcher": "pass",
+    "system_prompt_sha256": "a5ab31790989af39c06a7fec953a65b5b782b1be43779a76401f77f02f7995f3",
+    "watcher": "pass"
+  },
+  "findings": [
+    {
+      "count": 1,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "role": "eval-manager",
+    "worker_id": "task-propsort"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "provider_telemetry": {
+    "event_turns": 14,
+    "events_path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786136684797/phases/04-eval/workers/eval-manager/task-propsort/session.jsonl.events.jsonl",
+    "output_tokens_per_second": 0,
+    "present": true,
+    "provider_errors": [],
+    "response_elapsed_ms": 0,
+    "retry_count": 0,
+    "retry_delay_ms": 0,
+    "retry_errors": [],
+    "retry_failures": 0,
+    "retry_successes": 0
+  },
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786136684797/phases/04-eval/workers/eval-manager/task-propsort/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 13,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 198228
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786136684797/phases/04-eval/workers/eval-manager/task-propsort/session.jsonl.bz2",
+      "summary": "d9c18b999618bd757177d25568065b5bbd17bc65\n---\nd9c18b9 cto: close four-way discovery cycle 1\n3db703a cto: add paired discovery throughput\nfc8e0b1 cto: close run-1786131191668\n---commit under test---\n\n\nCommand exited with code 128",
+      "tool": "bash",
+      "turn": 10
+    }
+  ],
+  "tools": [
+    {
+      "count": 12,
+      "name": "bash"
+    },
+    {
+      "count": 11,
+      "name": "read"
+    },
+    {
+      "count": 1,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 14,
+    "budget_usd": 0.15,
+    "cache_read_cost_usd": 0.006511103999999999,
+    "cache_read_tokens": 361728,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.012254994000000002,
+    "input_cost_usd": 0.00362421,
+    "input_tokens": 40269,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.0021196799999999997,
+    "output_tokens": 11776,
+    "provider_total_tokens": 413773,
+    "reasoning_tokens": 8269,
+    "thinking_blocks": 13,
+    "tool_calls": 24,
+    "tool_errors": 1,
+    "tool_results": 24,
+    "total_bucket_tokens": 413773,
+    "user_messages": 1
+  }
+}

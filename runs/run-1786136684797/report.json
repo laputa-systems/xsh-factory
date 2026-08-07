@@ -1,0 +1,507 @@
+{
+  "artifacts": [
+    {
+      "kind": "phase-reports",
+      "path": "phases/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 223,
+      "budget_failures": 0,
+      "cost_usd": 0.12588192,
+      "tool_errors": 17,
+      "total_bucket_tokens": 4825138.0,
+      "unknown_costs": 0,
+      "workers": 8
+    },
+    "mode": "organization",
+    "outcomes": {
+      "cycle": "fail",
+      "evaluator": "fail",
+      "infrastructure": "pass",
+      "product": "fail"
+    },
+    "phases": [
+      {
+        "id": "01-eval",
+        "path": "phases/01-eval/report.json",
+        "result": "pass",
+        "valid": true
+      },
+      {
+        "id": "02-eval",
+        "path": "phases/02-eval/report.json",
+        "result": "pass",
+        "valid": true
+      },
+      {
+        "id": "03-eval",
+        "path": "phases/03-eval/report.json",
+        "result": "fail",
+        "valid": true
+      },
+      {
+        "id": "04-eval",
+        "path": "phases/04-eval/report.json",
+        "result": "fail",
+        "valid": true
+      }
+    ],
+    "tool_errors": [
+      {
+        "report": "phases/01-eval/workers/eval-manager/task-jsonfilter/report.json",
+        "summary": "runs/run-1786126514242/phases/01-eval/lineage/handbook-candidate.md\nruns/run-1786123087467/phases/01-eval/lineage/handbook-candidate.md\nruns/run-1786125701225/phases/01-eval/lineage/handbook-candidate.md\nruns/run-1786122407717/phases/01-eval/lineage/handbook-candidate.md\nruns/run-1786135120835/phases/01-eval/lineage/handbook-candidate.md\nruns/run-1786135120835/phases/02-eval/lineage/handbook-candidate.md\nruns/run-1786135120835/phases/03-eval/lineage/handbook-candidate.md\nruns/run-1786135120835/phases/04-eval/lineage/handbook-candidate.md\nruns/run-1786124624556/phases/01-eval/lineage/handbook-candidate.md\nruns/run-1786128115649/phases/02-reeval-task-histogram-003/lineage/handbook-candidate.md\n---\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 7,
+        "worker": {
+          "role": "eval-manager",
+          "worker_id": "task-jsonfilter"
+        }
+      },
+      {
+        "report": "phases/01-eval/workers/eval-worker/task-jsonfilter-1/report.json",
+        "summary": "err[parse.expected-terminator]: expected statement terminator\n  jsonfilter.xsh:26:52\n    return {name: name, active: active, count: count}: Item\n                                                     ^ expected statement terminator\n\nerr[parse.expected-expression]: expected expression\n  jsonfilter.xsh:26:52\n    return {name: name, active: active, count: count}: Item\n                                                     ^ expected expression\n===RUN===\nerr[parse.expected-terminator]: expected statement terminator\n  jsonfilter.xsh:26:52\n    return {name: name, active: active, count: count}: Item\n                                                     ^ expected statement terminator\n\nerr[parse.expected-expression]: expected expression\n  jsonfilter.xsh:26:52\n    return {name: name, active: active, count: count}: Item\n                                                     ^ expected expression\nrc=2\ncat: can't open 'out.json': No such file or directory\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 44,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-jsonfilter-1"
+        }
+      },
+      {
+        "report": "phases/02-eval/workers/eval-manager/task-manifest/report.json",
+        "summary": "total 680\ndrwxr-xr-x  46 josh  staff    1472 Aug  7 14:12 .\ndrwxr-xr-x   3 josh  staff      96 Aug  7 14:08 ..\n-rw-r--r--@  1 josh  staff      64 Aug  7 14:08 agent.cid\n-rw-r--r--   1 josh  staff       0 Aug  7 14:08 container.stderr\n-rw-r--r--   1 josh  staff  122312 Aug  7 14:12 container.stdout\n-rw-r--r--@  1 josh  staff      64 Aug  7 14:12 evaluator.cid\n-rw-r--r--   1 josh  staff       0 Aug  7 14:12 evaluator.stderr\n-rw-r--r--   1 josh  staff       0 Aug  7 14:12 evaluator.stdout\n-rw-r--r--@  1 josh  staff       0 Aug  7 14:12 manifest-candidate-1.stderr\n-rw-r--r--@  1 josh  staff       0 Aug  7 14:12 manifest-candidate-2.stderr\n-rw-r--r--@  1 josh  staff       0 Aug  7 14:12 manifest-candidate-3.stderr\n-rw-r--r--@  1 josh  staff       0 Aug  7 14:12 manifest-candidate-4.stderr\n-rw-r--r--@  1 josh  staff       0 Aug  7 14:12 manifest-candidate-5.stderr\n-rw-r--r--@  1 josh  staff       0 Aug  7 14:12 manifest-candidate-6.stderr\n-rw-r--r--@  1 josh  staff       0 Aug  7 14:12 manifest-candidate-7.stderr\n-rw-r--r--@  1 josh  staff     193 Aug  7 14:12 manifest-candidate-8.stderr\n-rw-r--r--@  1 josh  staff       0 Aug  7 14:12 manifest-oracle-1.stderr\n-rw-r--r--@  1 josh  staff      44 Aug  7 14:12 manifest-oracle-1.txt\n-rw-r--r--@  1 josh  staff       0 Aug  7 14:12 manifest-oracle-2.stderr\n-rw-r--r--@  1 josh  staff      32 Aug  7 14:12 manifest-oracle-2.txt\n-rw-r--r--@  1 josh  staff       0 Aug  7 14:12 manifest-oracle-3.stderr\n-rw-r--r--@  1 josh  staff       9 Aug  7 14:12 manifest-oracle-3.txt\n-rw-r--r--@  1 josh  staff       0 Aug  7 14:12 manifest-oracle-4.stderr\n-rw-r--r--@  1 josh  staff       9 Aug  7 14:12 manifest-oracle-4.txt\n-rw-r--r--@  1 josh  staff       0 Aug  7 14:12 manifest-oracle-5.stderr\n-rw-r--r--@  1 josh  staff      33 Aug  7 14:12 manifest-oracle-5.txt\n-rw-r--r--@  1 josh  staff       0 Aug  7 14:12 manifest-oracle-6.stderr\n-rw-r--r--@  1 josh  staff      29 Aug  7 14:12 manifest-oracle-6.txt\n-rw-r--r--@  1 josh  staff       0 Aug  7 14:12 manifest-oracle-7.stderr\n-rw-r--r--@  1 josh  staff       0 Aug  7 14:12 manifest-oracle-7.txt\n-rw-r--r--@  1 josh  staff       0 Aug  7 14:12 manifest-oracle-8.stderr\n-rw-r--r--@  1 josh  staff       0 Aug  7 14:12 manifest-oracle-8.txt\n-rw-r--r--@  1 josh  staff      44 Aug  7 14:12 manifest-out-1.txt\n-rw-r--r--@  1 josh  staff      32 Aug  7 14:12 manifest-out-2.txt\n-rw-r--r--@  1 josh  staff       9 Aug  7 14:12 manifest-out-3.txt\n-rw-r--r--@  1 josh  staff       9 Aug  7 14:12 manifest-out-4.txt\n-rw-r--r--@  1 josh  staff      33 Aug  7 14:12 manifest-out-5.txt\n-rw-r--r--@  1 josh  staff      29 Aug  7 14:12 manifest-out-6.txt\n-rw-r--r--@  1 josh  staff       0 Aug  7 14:12 manifest-out-7.txt\n-rw-r--r--@  1 josh  staff     596 Aug  7 14:12 manifest.xsh\n-rw-r--r--@  1 josh  staff       0 Aug  7 14:08 pi.stderr\n-rw-r--r--   1 josh  staff    7589 Aug  7 14:12 report.json\n-rw-r--r--@  1 josh  staff    1117 Aug  7 14:12 review.md\n-rw-r--r--@  1 josh  staff    2075 Aug  7 14:12 run.json\n-rw-r--r--@  1 josh  staff  122312 Aug  7 14:12 session.jsonl.bz2\ndrwxr-xr-x   7 josh  staff     224 Aug  7 14:12 work\nTraceback (most recent call last):\n  File \"<string>\", line 3, in <module>\n    with open('session.jsonl.events.jsonl') as f:\n         ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: 'session.jsonl.events.jsonl'\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 7,
+        "worker": {
+          "role": "eval-manager",
+          "worker_id": "task-manifest"
+        }
+      },
+      {
+        "report": "phases/02-eval/workers/eval-manager/task-manifest/report.json",
+        "summary": "agents.md\nhandbook.md\nmanifest.xsh\nreview.md\ntask.md\n---events---\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 21,
+        "worker": {
+          "role": "eval-manager",
+          "worker_id": "task-manifest"
+        }
+      },
+      {
+        "report": "phases/02-eval/workers/eval-worker/task-manifest-1/report.json",
+        "summary": "api: language.stream.flat-map\nsignature: flat-map(block) -> Stream[U]\ncontract: The terminal materializes groups and preserves each group's source order. Each emitted record has a `key` field holding the projected key and an `items` field holding the list of source items in that group; it is a record, not a Map.\napi: language.stream.map\ncontract: Mapping preserves source order unless a later stage explicitly changes ordering. The transform block may contain multiple statements, including local `let` bindings.\nsignature: map(block) -> Stream[U]\napi: language.stream.par-map\nsignature: par-map(block, --jobs: Int = default) -> Stream[U]\n    |> par-map { |value|\n    |> reduce(map.empty()) { |acc, item|\napi: language.stream.sort\npurpose: Sorts all stream items.\ncontract: Sorting materializes the input and therefore requires a finite source and a defined item ordering. Supported items are Int, Str, Bool, Path, and Records whose fields are themselves supported items; records compare field by field in sorted field-name order. The sort is stable, so equal items keep their source order.\nsignature: sort() -> Stream[T]\ntags: stream, sorting, materialization, stable\napi: language.stream.sort-by\npurpose: Sorts stream items by a projected key.\ncontract: The key projection controls ordering and the stage materializes the input before emitting results. Supported key types are Int, Str, Bool, Path, and Records whose fields are themselves supported keys; records compare field by field in sorted field-name order. The default order is ascending and --desc reverses it. The sort is stable, so items with equal keys keep their source order and the two-pass idiom (sort by the secondary key first, then by the primary key) produces a reliable compound ordering. Other key types are rejected at check time and fail with a runtime diagnostic that names the stage and key type.\nsignature: sort-by(--desc: Bool = false, block) -> Stream[T]\ntags: stream, sorting, projection, stable\napi: language.stream.where\nsignature: where(block) -> Stream[T]\n  let files = fs.files(p\".\") |> where .kind == \"file\"\n===\nquery: language:stream.sort\nstatus: exact\n\napi: language.stream.sort\nkind: language\npurpose: Sorts all stream items.\ncontract: Sorting materializes the input and therefore requires a finite source and a defined item ordering. Supported items are Int, Str, Bool, Path, and Records whose fields are themselves supported items; records compare field by field in sorted field-name order. The sort is stable, so equal items keep their source order.\neffects: none\nsignature: sort() -> Stream[T]\ntags: stream, sorting, materialization, stable\n=== list sort ===\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 4,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-manifest-1"
+        }
+      },
+      {
+        "report": "phases/02-eval/workers/eval-worker/task-manifest-1/report.json",
+        "summary": "normal exit=0\nNORMAL-MATCH\nruntime traceback\nexecutable: /usr/local/bin/xsh\noperation: result.propagate\nerror: path-resolve: No such file or directory (os error 2)\ncall path:\n  1. proc main at manifest.xsh:1:1-1:1\nnonexistent exit=3\nls: /tmp/ne: No such file or directory\nempty exit=0\n0 /tmp/emptyout\nruntime traceback\nexecutable: /usr/local/bin/xsh\noperation: result.propagate\nerror: fs-metadata: Not a directory (os error 20)\ncall path:\n  1. proc main at manifest.xsh:1:1-1:1\nfile-root exit=3\nls: /tmp/singleout: No such file or directory\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 21,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-manifest-1"
+        }
+      },
+      {
+        "report": "phases/02-eval/workers/eval-worker/task-manifest-1/report.json",
+        "summary": "=== current file ===\nproc main(...argv: List[Str]) [fs, error] {\n  let root = fp\"${argv[0]}\"\n  let out = fp\"${argv[1]}\"\n  let resolved = root.resolve()?\n  let meta = fs.metadata(root)?\n  if meta.kind != \"dir\" {\n    # non-directory root must exit nonzero without writing OUT\n    let _ = fs.metadata(fp\"${root.display() + \"/.xsh_nondir_fail\"}\")?\n  }\n\n  let rels = fs.files(root)?\n    |> where .kind == \"file\"\n    |> map { |e|\n      e.path.relative_to(resolved).display()\n    }\n    |> sort\n    |> collect()\n  let body = rels.join(\"\\n\")\n  let text = if rels.len() > 0 { body + \"\\n\" } else { \"\" }\n  fs.write(out, text)?\n}\n=== tests ===\nnormal exit=0\nNORMAL-MATCH\nnonexistent exit=3\nls: /tmp/ne: No such file or directory\nempty exit=0\n0 /tmp/emptyout\nfile-root exit=3\nls: /tmp/singleout: No such file or directory\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 25,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-manifest-1"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-manager/task-pathparts/report.json",
+        "summary": "      77 session.jsonl.bz2\n---EVENTS---\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 5,
+        "worker": {
+          "role": "eval-manager",
+          "worker_id": "task-pathparts"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-worker/task-pathparts-1/report.json",
+        "summary": "=== diff vs oracle ===\nMISMATCH [/srv/app/server.cfg]\n  oracle: dir=/srv/app\nname=server.cfg\next=cfg\n  xsh:    dir= /srv/app\nname= server.cfg\next= cfg\nMISMATCH [app.yaml]\n  oracle: dir=.\nname=app.yaml\next=yaml\n  xsh:    dir= .\nname= app.yaml\next= yaml\nMISMATCH [pkg.tar.gz]\n  oracle: dir=.\nname=pkg.tar.gz\next=gz\n  xsh:    dir= .\nname= pkg.tar.gz\next= gz\nMISMATCH [.profile]\n  oracle: dir=.\nname=.profile\next=none\n  xsh:    dir= .\nname= .profile\next= none\nMISMATCH [.profile.foo]\n  oracle: dir=.\nname=.profile.foo\next=foo\n  xsh:    dir= .\nname= .profile.foo\next= foo\nMISMATCH [plain]\n  oracle: dir=.\nname=plain\next=none\n  xsh:    dir= .\nname= plain\next= none\nMISMATCH [dir/]\n  oracle: dir=.\nname=dir\next=none\n  xsh:    dir= .\nname= dir\next= none\nMISMATCH [file.]\n  oracle: dir=.\nname=file.\next=\n  xsh:    dir= .\nname= file.\next= \nMISMATCH [trailing.]\n  oracle: dir=.\nname=trailing.\next=\n  xsh:    dir= .\nname= trailing.\next= \nMISMATCH [a.b.c]\n  oracle: dir=.\nname=a.b.c\next=c\n  xsh:    dir= .\nname= a.b.c\next= c\nMISMATCH [a.b]\n  oracle: dir=.\nname=a.b\next=b\n  xsh:    dir= .\nname= a.b\next= b\nMISMATCH [dir//my.txt]\n  oracle: dir=dir\nname=my.txt\next=txt\n  xsh:    dir= dir\nname= my.txt\next= txt\nMISMATCH [/tmp/x]\n  oracle: dir=/tmp\nname=x\next=none\n  xsh:    dir= /tmp\nname= x\next= none\nMISMATCH [/root/.bashrc]\n  oracle: dir=/root\nname=.bashrc\next=none\n  xsh:    dir= /root\nname= .bashrc\next= none\nMISMATCH [/]\n  oracle: dir=/\nname=/\next=none\n  xsh:    dir= /\nname= \next= none\nMISMATCH [.]\n  oracle: dir=.\nname=.\next=none\n  xsh:    dir= .\nname= \next= none\nMISMATCH [..]\n  oracle: dir=.\nname=..\next=\n  xsh:    dir= .\nname= \next= none\nMISMATCH [..hidden]\n  oracle: dir=.\nname=..hidden\next=hidden\n  xsh:    dir= .\nname= ..hidden\next= hidden\nMISMATCH [name.with.dots]\n  oracle: dir=.\nname=name.with.dots\next=dots\n  xsh:    dir= .\nname= name.with.dots\next= dots\nMISMATCH []\n  oracle: dir=.\nname=\next=none\n  xsh:    dir= .\nname= \next= none\nMISMATCH [a.]\n  oracle: dir=.\nname=a.\next=\n  xsh:    dir= .\nname= a.\next= \n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 11,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-pathparts-1"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-worker/task-pathparts-1/report.json",
+        "summary": "=== diff vs oracle ===\nMISMATCH [/srv/app/server.cfg]\n  oracle: dir=/srv/app\nname=server.cfg\next=cfg\n  xsh:    \nMISMATCH [app.yaml]\n  oracle: dir=.\nname=app.yaml\next=yaml\n  xsh:    \nMISMATCH [pkg.tar.gz]\n  oracle: dir=.\nname=pkg.tar.gz\next=gz\n  xsh:    \nMISMATCH [.profile]\n  oracle: dir=.\nname=.profile\next=none\n  xsh:    \nMISMATCH [.profile.foo]\n  oracle: dir=.\nname=.profile.foo\next=foo\n  xsh:    \nMISMATCH [plain]\n  oracle: dir=.\nname=plain\next=none\n  xsh:    \nMISMATCH [dir/]\n  oracle: dir=.\nname=dir\next=none\n  xsh:    \nMISMATCH [file.]\n  oracle: dir=.\nname=file.\next=\n  xsh:    \nMISMATCH [trailing.]\n  oracle: dir=.\nname=trailing.\next=\n  xsh:    \nMISMATCH [a.b.c]\n  oracle: dir=.\nname=a.b.c\next=c\n  xsh:    \nMISMATCH [a.b]\n  oracle: dir=.\nname=a.b\next=b\n  xsh:    \nMISMATCH [dir//my.txt]\n  oracle: dir=dir\nname=my.txt\next=txt\n  xsh:    \nMISMATCH [/tmp/x]\n  oracle: dir=/tmp\nname=x\next=none\n  xsh:    \nMISMATCH [/root/.bashrc]\n  oracle: dir=/root\nname=.bashrc\next=none\n  xsh:    \nMISMATCH [/]\n  oracle: dir=/\nname=/\next=none\n  xsh:    \nMISMATCH [.]\n  oracle: dir=.\nname=.\next=none\n  xsh:    \nMISMATCH [..]\n  oracle: dir=.\nname=..\next=\n  xsh:    \nMISMATCH [..hidden]\n  oracle: dir=.\nname=..hidden\next=hidden\n  xsh:    \nMISMATCH [name.with.dots]\n  oracle: dir=.\nname=name.with.dots\next=dots\n  xsh:    \nMISMATCH []\n  oracle: dir=.\nname=\next=none\n  xsh:    \nMISMATCH [a.]\n  oracle: dir=.\nname=a.\next=\n  xsh:    \nMISMATCH [a//b]\n  oracle: dir=a\nname=b\next=none\n  xsh:    \nMISMATCH [a/b/]\n  oracle: dir=a\nname=b\next=none\n  xsh:    \nMISMATCH [/a/b/c.gz]\n  oracle: dir=/a/b\nname=c.gz\next=gz\n  xsh:    \nMISMATCH [./c]\n  oracle: dir=.\nname=c\next=none\n  xsh:    \nMISMATCH [a/.]\n  oracle: dir=a\nname=.\next=none\n  xsh:    \nMISMATCH [d//]\n  oracle: dir=.\nname=d\next=none\n  xsh:    \nMISMATCH [x]\n  oracle: dir=.\nname=x\next=none\n  xsh:    \nMISMATCH [//]\n  oracle: dir=/\nname=/\next=none\n  xsh:    \n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 16,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-pathparts-1"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-worker/task-pathparts-1/report.json",
+        "summary": "=== diff vs oracle ===\nMISMATCH [a/.]\n  oracle: dir=a\nname=.\next=none\n  xsh:    dir=.\nname=.\next=none\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 19,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-pathparts-1"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-worker/task-pathparts-1/report.json",
+        "summary": "=== diff vs oracle ===\nMISMATCH [dir//my.txt]\n  oracle: dir=dir\nname=my.txt\next=txt\n  xsh:    dir=dir/\nname=my.txt\next=txt\nMISMATCH [a//b]\n  oracle: dir=a\nname=b\next=none\n  xsh:    dir=a/\nname=b\next=none\ntested 38 shapes\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 22,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-pathparts-1"
+        }
+      },
+      {
+        "report": "phases/04-eval/workers/eval-manager/task-propsort/report.json",
+        "summary": "d9c18b999618bd757177d25568065b5bbd17bc65\n---\nd9c18b9 cto: close four-way discovery cycle 1\n3db703a cto: add paired discovery throughput\nfc8e0b1 cto: close run-1786131191668\n---commit under test---\n\n\nCommand exited with code 128",
+        "tool": "bash",
+        "turn": 10,
+        "worker": {
+          "role": "eval-manager",
+          "worker_id": "task-propsort"
+        }
+      },
+      {
+        "report": "phases/04-eval/workers/eval-worker/task-propsort-1/report.json",
+        "summary": "query: language:stream.sort-by\nstatus: exact\n\napi: language.stream.sort-by\nkind: language\npurpose: Sorts stream items by a projected key.\ncontract: The key projection controls ordering and the stage materializes the input before emitting results. Supported key types are Int, Str, Bool, Path, and Records whose fields are themselves supported keys; records compare field by field in sorted field-name order. The default order is ascending and --desc reverses it. The sort is stable, so items with equal keys keep their source order and the two-pass idiom (sort by the secondary key first, then by the primary key) produces a reliable compound ordering. Other key types are rejected at check time and fail with a runtime diagnostic that names the stage and key type.\neffects: none\nsignature: sort-by(--desc: Bool = false, block) -> Stream[T]\ntags: stream, sorting, projection, stable\n===LIST===\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 6,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-propsort-1"
+        }
+      },
+      {
+        "report": "phases/04-eval/workers/eval-worker/task-propsort-1/report.json",
+        "summary": "err[check.effect-violation]: `?` requires the `error` effect\n  /tmp/probe.xsh:2:11\n    let t = p\"/tmp/t2.txt\".read_text()?\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^ `?` requires the `error` effect\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 9,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-propsort-1"
+        }
+      },
+      {
+        "report": "phases/04-eval/workers/eval-worker/task-propsort-1/report.json",
+        "summary": "err[parse.expected-terminator]: expected statement terminator\n  propsort.xsh:2:31\n    let path = p\"${argv.get(0, \"\")}\"\n                                ^^^^ expected statement terminator\n===FMT===\nerr[parse.expected-terminator]: expected statement terminator\n  propsort.xsh:2:31\n    let path = p\"${argv.get(0, \"\")}\"\n                                ^^^^ expected statement terminator\n===LINT===\nerr[parse.expected-terminator]: expected statement terminator\n  propsort.xsh:2:31\n    let path = p\"${argv.get(0, \"\")}\"\n                                ^^^^ expected statement terminator\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 12,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-propsort-1"
+        }
+      },
+      {
+        "report": "phases/04-eval/workers/eval-worker/task-propsort-1/report.json",
+        "summary": "err[check.standard-module-shadow]: name `path` shadows the standard module `path`\n  propsort.xsh:3:3\n    let path = fp\"${name}\"\n    ^^^^^^^^^^^^^^^^^^^^^^ name `path` shadows the standard module `path`\n\nerr[check.unknown-module-api]: unknown module API\n  propsort.xsh:4:14\n    let text = path.read_text()?\n               ^^^^^^^^^^^^^^^^ unknown module API\n\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  propsort.xsh:12:11\n      print l\n            ^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $l\n===FMT===\nerr[check.standard-module-shadow]: name `path` shadows the standard module `path`\n  propsort.xsh:3:3\n    let path = fp\"${name}\"\n    ^^^^^^^^^^^^^^^^^^^^^^ name `path` shadows the standard module `path`\n\nerr[check.unknown-module-api]: unknown module API\n  propsort.xsh:4:14\n    let text = path.read_text()?\n               ^^^^^^^^^^^^^^^^ unknown module API\n\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  propsort.xsh:12:11\n      print l\n            ^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $l\n===LINT===\nerr[check.standard-module-shadow]: name `path` shadows the standard module `path`\n  propsort.xsh:3:3\n    let path = fp\"${name}\"\n    ^^^^^^^^^^^^^^^^^^^^^^ name `path` shadows the standard module `path`\nerr[check.unknown-module-api]: unknown module API\n  propsort.xsh:4:14\n    let text = path.read_text()?\n               ^^^^^^^^^^^^^^^^ unknown module API\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  propsort.xsh:12:11\n      print l\n            ^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $l\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 17,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-propsort-1"
+        }
+      }
+    ],
+    "workers": [
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-jsonfilter"
+        },
+        "path": "phases/01-eval/workers/eval-manager/task-jsonfilter/report.json",
+        "result": "pass",
+        "tool_errors": 1,
+        "usage": {
+          "assistant_turns": 17,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.007566336000000001,
+          "cache_read_tokens": 420352,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.012522366,
+          "input_cost_usd": 0.00325179,
+          "input_tokens": 36131,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00170424,
+          "output_tokens": 9468,
+          "provider_total_tokens": 465951,
+          "reasoning_tokens": 3210,
+          "thinking_blocks": 12,
+          "tool_calls": 26,
+          "tool_errors": 1,
+          "tool_results": 26,
+          "total_bucket_tokens": 465951,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-jsonfilter-1"
+        },
+        "path": "phases/01-eval/workers/eval-worker/task-jsonfilter-1/report.json",
+        "result": "pass",
+        "tool_errors": 1,
+        "usage": {
+          "assistant_turns": 59,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.016636032,
+          "cache_read_tokens": 924224,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.021922902,
+          "input_cost_usd": 0.0029551499999999993,
+          "input_tokens": 32835,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00233172,
+          "output_tokens": 12954,
+          "provider_total_tokens": 970013,
+          "reasoning_tokens": 4998,
+          "thinking_blocks": 41,
+          "tool_calls": 76,
+          "tool_errors": 1,
+          "tool_results": 76,
+          "total_bucket_tokens": 970013,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-manifest"
+        },
+        "path": "phases/02-eval/workers/eval-manager/task-manifest/report.json",
+        "result": "pass",
+        "tool_errors": 2,
+        "usage": {
+          "assistant_turns": 25,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.012157056,
+          "cache_read_tokens": 675392,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.019357146,
+          "input_cost_usd": 0.00380691,
+          "input_tokens": 42299,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00339318,
+          "output_tokens": 18851,
+          "provider_total_tokens": 736542,
+          "reasoning_tokens": 8418,
+          "thinking_blocks": 24,
+          "tool_calls": 30,
+          "tool_errors": 2,
+          "tool_results": 30,
+          "total_bucket_tokens": 736542,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-manifest-1"
+        },
+        "path": "phases/02-eval/workers/eval-worker/task-manifest-1/report.json",
+        "result": "pass",
+        "tool_errors": 3,
+        "usage": {
+          "assistant_turns": 31,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.009004032,
+          "cache_read_tokens": 500224,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.013672782,
+          "input_cost_usd": 0.0025114499999999997,
+          "input_tokens": 27905,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.002157299999999999,
+          "output_tokens": 11985,
+          "provider_total_tokens": 540114,
+          "reasoning_tokens": 7100,
+          "thinking_blocks": 27,
+          "tool_calls": 35,
+          "tool_errors": 3,
+          "tool_results": 35,
+          "total_bucket_tokens": 540114,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-pathparts"
+        },
+        "path": "phases/03-eval/workers/eval-manager/task-pathparts/report.json",
+        "result": "pass",
+        "tool_errors": 1,
+        "usage": {
+          "assistant_turns": 17,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.010639872000000002,
+          "cache_read_tokens": 591104,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.018093312,
+          "input_cost_usd": 0.004295879999999999,
+          "input_tokens": 47732,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0031575599999999994,
+          "output_tokens": 17542,
+          "provider_total_tokens": 656378,
+          "reasoning_tokens": 11848,
+          "thinking_blocks": 14,
+          "tool_calls": 27,
+          "tool_errors": 1,
+          "tool_results": 27,
+          "total_bucket_tokens": 656378,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-pathparts-1"
+        },
+        "path": "phases/03-eval/workers/eval-worker/task-pathparts-1/report.json",
+        "result": "pass",
+        "tool_errors": 4,
+        "usage": {
+          "assistant_turns": 36,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.013064832,
+          "cache_read_tokens": 725824,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.022098131999999996,
+          "input_cost_usd": 0.005512499999999999,
+          "input_tokens": 61250,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0035207999999999997,
+          "output_tokens": 19560,
+          "provider_total_tokens": 806634,
+          "reasoning_tokens": 11792,
+          "thinking_blocks": 29,
+          "tool_calls": 37,
+          "tool_errors": 4,
+          "tool_results": 37,
+          "total_bucket_tokens": 806634,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-propsort"
+        },
+        "path": "phases/04-eval/workers/eval-manager/task-propsort/report.json",
+        "result": "pass",
+        "tool_errors": 1,
+        "usage": {
+          "assistant_turns": 14,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.006511103999999999,
+          "cache_read_tokens": 361728,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.012254994000000002,
+          "input_cost_usd": 0.00362421,
+          "input_tokens": 40269,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0021196799999999997,
+          "output_tokens": 11776,
+          "provider_total_tokens": 413773,
+          "reasoning_tokens": 8269,
+          "thinking_blocks": 13,
+          "tool_calls": 24,
+          "tool_errors": 1,
+          "tool_results": 24,
+          "total_bucket_tokens": 413773,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-propsort-1"
+        },
+        "path": "phases/04-eval/workers/eval-worker/task-propsort-1/report.json",
+        "result": "pass",
+        "tool_errors": 4,
+        "usage": {
+          "assistant_turns": 24,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.003902976,
+          "cache_read_tokens": 216832,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.005960286,
+          "input_cost_usd": 0.0013448700000000004,
+          "input_tokens": 14943,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00071244,
+          "output_tokens": 3958,
+          "provider_total_tokens": 235733,
+          "reasoning_tokens": 1169,
+          "thinking_blocks": 14,
+          "tool_calls": 28,
+          "tool_errors": 4,
+          "tool_results": 28,
+          "total_bucket_tokens": 235733,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "857154dfe505f0d01053c1b5311f44422070eb34"
+  },
+  "findings": [
+    {
+      "id": "03-eval",
+      "kind": "phase",
+      "result": "fail"
+    },
+    {
+      "id": "04-eval",
+      "kind": "phase",
+      "result": "fail"
+    }
+  ],
+  "identity": {
+    "mode": "organization",
+    "run_id": "run-1786136684797"
+  },
+  "kind": "run",
+  "result": "fail",
+  "schema_version": 1,
+  "state": "completed"
+}

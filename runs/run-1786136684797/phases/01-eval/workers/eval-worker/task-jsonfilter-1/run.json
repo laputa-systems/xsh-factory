@@ -1,0 +1,104 @@
+{
+  "classification": "pass",
+  "correctness": {
+    "all_exact": true,
+    "cases": [
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 24542118,
+        "exact": true,
+        "name": "public",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 14509004
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 21560068,
+        "exact": true,
+        "name": "hidden_empty",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 18151266
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 16370093,
+        "exact": true,
+        "name": "hidden_all_inactive",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 33356689
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 20790940,
+        "exact": true,
+        "name": "hidden_single",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 17922931
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 16191676,
+        "exact": true,
+        "name": "hidden_unicode",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 13466667
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 14612629,
+        "exact": true,
+        "name": "hidden_spaces",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 25403414
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 31729599,
+        "exact": true,
+        "name": "hidden_zero",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 47473691
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 16710969,
+        "exact": true,
+        "name": "hidden_large",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 14811838
+      },
+      {
+        "candidate_exit": 3,
+        "candidate_wall_ns": 16652052,
+        "exact": true,
+        "name": "hidden_malformed",
+        "oracle_exit": 1,
+        "oracle_wall_ns": 17414680
+      },
+      {
+        "candidate_exit": 3,
+        "candidate_wall_ns": 15403132,
+        "exact": true,
+        "name": "hidden_missing",
+        "oracle_exit": 1,
+        "oracle_wall_ns": 16499886
+      }
+    ],
+    "passed": true
+  },
+  "eval_id": "task-jsonfilter",
+  "image_id": "sha256:9abc1c562ef04a5b4623e8fa7775d4148a7dc0b3a48ab0b3670d0b154818a21d",
+  "platform": "linux/arm64",
+  "protocol": {
+    "artifact_present": true,
+    "review_ok": true
+  },
+  "restrictions": {
+    "passed": true
+  },
+  "result": "pass",
+  "timings": {
+    "passed": true
+  },
+  "trial_id": "1"
+}

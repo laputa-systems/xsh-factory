@@ -1,0 +1,300 @@
+{
+  "artifacts": [
+    {
+      "kind": "session-directory",
+      "path": "workers/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 38,
+      "budget_failures": 0,
+      "cost_usd": 0.01821528,
+      "tool_errors": 5,
+      "total_bucket_tokens": 649506.0,
+      "unknown_costs": 0,
+      "workers": 2
+    },
+    "designer": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786136684797/phases/04-eval/workers/eval-designer/proposal-1/REPORT.md",
+      "present": false,
+      "result": "not-requested",
+      "role": "eval-designer",
+      "valid": true
+    },
+    "director": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786136684797/phases/04-eval/workers/director/director/REPORT.md",
+      "present": false,
+      "result": "not-requested",
+      "role": "director",
+      "valid": true
+    },
+    "engineer": [],
+    "handbook_lineage": {
+      "approved": "lineage/handbook-approved.md",
+      "candidate": "lineage/handbook-candidate.md"
+    },
+    "manager": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786136684797/phases/04-eval/workers/eval-manager/task-propsort/REPORT.md",
+      "present": true,
+      "result": "fail",
+      "role": "eval-manager",
+      "valid": false
+    },
+    "mode": "eval",
+    "narratives": [
+      {
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786136684797/phases/04-eval/workers/eval-manager/task-propsort/REPORT.md",
+        "present": true,
+        "result": "fail",
+        "role": "eval-manager",
+        "valid": false
+      }
+    ],
+    "open_tickets": [
+      {
+        "eval_id": "task-dupcheck",
+        "id": "task-dupcheck-002",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-dupcheck-002.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-004",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-004.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-005",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-005.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-006",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-006.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-007",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-007.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-008",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-008.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-jsonfilter",
+        "id": "task-jsonfilter-001",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-jsonfilter-001.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-pathparts",
+        "id": "task-pathparts-001",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-pathparts-001.md",
+        "status": "Open."
+      }
+    ],
+    "outcomes": {
+      "cycle": "fail",
+      "evaluator": "fail",
+      "infrastructure": "fail",
+      "product": "fail"
+    },
+    "required_outputs": {
+      "audit": false,
+      "candidate_handbook": true,
+      "designer_handbook_read": true,
+      "designer_output": true,
+      "handbook_lineage": true,
+      "manager_evidence_read": true,
+      "manager_handbook_read": false,
+      "manager_report": false,
+      "manager_session": true,
+      "required": false,
+      "trial1_process": false,
+      "trial1_report": true,
+      "trial2_process": true,
+      "trial2_report": true,
+      "worker_handbook_read": true
+    },
+    "sessions": [
+      "workers/eval-manager/task-propsort/session.jsonl.bz2",
+      "workers/eval-worker/task-propsort-1/session.jsonl.bz2"
+    ],
+    "tool_errors": [
+      {
+        "report": "workers/eval-manager/task-propsort/report.json",
+        "summary": "d9c18b999618bd757177d25568065b5bbd17bc65\n---\nd9c18b9 cto: close four-way discovery cycle 1\n3db703a cto: add paired discovery throughput\nfc8e0b1 cto: close run-1786131191668\n---commit under test---\n\n\nCommand exited with code 128",
+        "tool": "bash",
+        "turn": 10,
+        "worker": {
+          "role": "eval-manager",
+          "worker_id": "task-propsort"
+        }
+      },
+      {
+        "report": "workers/eval-worker/task-propsort-1/report.json",
+        "summary": "query: language:stream.sort-by\nstatus: exact\n\napi: language.stream.sort-by\nkind: language\npurpose: Sorts stream items by a projected key.\ncontract: The key projection controls ordering and the stage materializes the input before emitting results. Supported key types are Int, Str, Bool, Path, and Records whose fields are themselves supported keys; records compare field by field in sorted field-name order. The default order is ascending and --desc reverses it. The sort is stable, so items with equal keys keep their source order and the two-pass idiom (sort by the secondary key first, then by the primary key) produces a reliable compound ordering. Other key types are rejected at check time and fail with a runtime diagnostic that names the stage and key type.\neffects: none\nsignature: sort-by(--desc: Bool = false, block) -> Stream[T]\ntags: stream, sorting, projection, stable\n===LIST===\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 6,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-propsort-1"
+        }
+      },
+      {
+        "report": "workers/eval-worker/task-propsort-1/report.json",
+        "summary": "err[check.effect-violation]: `?` requires the `error` effect\n  /tmp/probe.xsh:2:11\n    let t = p\"/tmp/t2.txt\".read_text()?\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^ `?` requires the `error` effect\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 9,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-propsort-1"
+        }
+      },
+      {
+        "report": "workers/eval-worker/task-propsort-1/report.json",
+        "summary": "err[parse.expected-terminator]: expected statement terminator\n  propsort.xsh:2:31\n    let path = p\"${argv.get(0, \"\")}\"\n                                ^^^^ expected statement terminator\n===FMT===\nerr[parse.expected-terminator]: expected statement terminator\n  propsort.xsh:2:31\n    let path = p\"${argv.get(0, \"\")}\"\n                                ^^^^ expected statement terminator\n===LINT===\nerr[parse.expected-terminator]: expected statement terminator\n  propsort.xsh:2:31\n    let path = p\"${argv.get(0, \"\")}\"\n                                ^^^^ expected statement terminator\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 12,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-propsort-1"
+        }
+      },
+      {
+        "report": "workers/eval-worker/task-propsort-1/report.json",
+        "summary": "err[check.standard-module-shadow]: name `path` shadows the standard module `path`\n  propsort.xsh:3:3\n    let path = fp\"${name}\"\n    ^^^^^^^^^^^^^^^^^^^^^^ name `path` shadows the standard module `path`\n\nerr[check.unknown-module-api]: unknown module API\n  propsort.xsh:4:14\n    let text = path.read_text()?\n               ^^^^^^^^^^^^^^^^ unknown module API\n\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  propsort.xsh:12:11\n      print l\n            ^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $l\n===FMT===\nerr[check.standard-module-shadow]: name `path` shadows the standard module `path`\n  propsort.xsh:3:3\n    let path = fp\"${name}\"\n    ^^^^^^^^^^^^^^^^^^^^^^ name `path` shadows the standard module `path`\n\nerr[check.unknown-module-api]: unknown module API\n  propsort.xsh:4:14\n    let text = path.read_text()?\n               ^^^^^^^^^^^^^^^^ unknown module API\n\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  propsort.xsh:12:11\n      print l\n            ^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $l\n===LINT===\nerr[check.standard-module-shadow]: name `path` shadows the standard module `path`\n  propsort.xsh:3:3\n    let path = fp\"${name}\"\n    ^^^^^^^^^^^^^^^^^^^^^^ name `path` shadows the standard module `path`\nerr[check.unknown-module-api]: unknown module API\n  propsort.xsh:4:14\n    let text = path.read_text()?\n               ^^^^^^^^^^^^^^^^ unknown module API\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  propsort.xsh:12:11\n      print l\n            ^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $l\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 17,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-propsort-1"
+        }
+      }
+    ],
+    "trials": [
+      {
+        "evidence": {
+          "candidate_sha256": "unknown",
+          "classification": "unknown",
+          "correctness": "pass",
+          "eval_id": "task-propsort",
+          "handbook_sha256": "unknown",
+          "oracle_sha256": "unknown",
+          "passed": false,
+          "protocol": "pass",
+          "restrictions": "fail",
+          "result": "fail",
+          "timing": "pass",
+          "trial_id": "1",
+          "valid": true
+        },
+        "path": "workers/eval-worker/task-propsort-1/run.json"
+      }
+    ],
+    "workers": [
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-propsort"
+        },
+        "path": "workers/eval-manager/task-propsort/report.json",
+        "result": "pass",
+        "tool_errors": 1,
+        "usage": {
+          "assistant_turns": 14,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.006511103999999999,
+          "cache_read_tokens": 361728,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.012254994000000002,
+          "input_cost_usd": 0.00362421,
+          "input_tokens": 40269,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0021196799999999997,
+          "output_tokens": 11776,
+          "provider_total_tokens": 413773,
+          "reasoning_tokens": 8269,
+          "thinking_blocks": 13,
+          "tool_calls": 24,
+          "tool_errors": 1,
+          "tool_results": 24,
+          "total_bucket_tokens": 413773,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-propsort-1"
+        },
+        "path": "workers/eval-worker/task-propsort-1/report.json",
+        "result": "pass",
+        "tool_errors": 4,
+        "usage": {
+          "assistant_turns": 24,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.003902976,
+          "cache_read_tokens": 216832,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.005960286,
+          "input_cost_usd": 0.0013448700000000004,
+          "input_tokens": 14943,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00071244,
+          "output_tokens": 3958,
+          "provider_total_tokens": 235733,
+          "reasoning_tokens": 1169,
+          "thinking_blocks": 14,
+          "tool_calls": 28,
+          "tool_errors": 4,
+          "tool_results": 28,
+          "total_bucket_tokens": 235733,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "857154dfe505f0d01053c1b5311f44422070eb34"
+  },
+  "findings": [
+    {
+      "kind": "manager-report",
+      "state": {
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786136684797/phases/04-eval/workers/eval-manager/task-propsort/REPORT.md",
+        "present": true,
+        "result": "fail",
+        "role": "eval-manager",
+        "valid": false
+      }
+    },
+    {
+      "kind": "required-outputs",
+      "state": "failed"
+    }
+  ],
+  "identity": {
+    "eval_id": "task-propsort",
+    "mode": "eval",
+    "run_id": "04-eval"
+  },
+  "kind": "phase",
+  "result": "fail",
+  "schema_version": 1,
+  "state": "completed"
+}

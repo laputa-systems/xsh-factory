@@ -1,0 +1,273 @@
+{
+  "artifacts": [
+    {
+      "kind": "session-directory",
+      "path": "workers/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 56,
+      "budget_failures": 0,
+      "cost_usd": 0.033029928,
+      "tool_errors": 5,
+      "total_bucket_tokens": 1276656.0,
+      "unknown_costs": 0,
+      "workers": 2
+    },
+    "designer": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786136684797/phases/02-eval/workers/eval-designer/proposal-1/REPORT.md",
+      "present": false,
+      "result": "not-requested",
+      "role": "eval-designer",
+      "valid": true
+    },
+    "director": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786136684797/phases/02-eval/workers/director/director/REPORT.md",
+      "present": false,
+      "result": "not-requested",
+      "role": "director",
+      "valid": true
+    },
+    "engineer": [],
+    "handbook_lineage": {
+      "approved": "lineage/handbook-approved.md",
+      "candidate": "lineage/handbook-candidate.md"
+    },
+    "manager": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786136684797/phases/02-eval/workers/eval-manager/task-manifest/REPORT.md",
+      "present": true,
+      "result": "pass",
+      "role": "eval-manager",
+      "valid": true
+    },
+    "mode": "eval",
+    "narratives": [
+      {
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786136684797/phases/02-eval/workers/eval-manager/task-manifest/REPORT.md",
+        "present": true,
+        "result": "pass",
+        "role": "eval-manager",
+        "valid": true
+      }
+    ],
+    "open_tickets": [
+      {
+        "eval_id": "task-dupcheck",
+        "id": "task-dupcheck-002",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-dupcheck-002.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-004",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-004.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-005",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-005.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-006",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-006.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-007",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-007.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-008",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-008.md",
+        "status": "Open."
+      }
+    ],
+    "outcomes": {
+      "cycle": "pass",
+      "evaluator": "pass",
+      "infrastructure": "pass",
+      "product": "pass"
+    },
+    "required_outputs": {
+      "audit": true,
+      "candidate_handbook": true,
+      "designer_handbook_read": true,
+      "designer_output": true,
+      "handbook_lineage": true,
+      "manager_evidence_read": true,
+      "manager_handbook_read": true,
+      "manager_report": true,
+      "manager_session": true,
+      "required": true,
+      "trial1_process": true,
+      "trial1_report": true,
+      "trial2_process": true,
+      "trial2_report": true,
+      "worker_handbook_read": true
+    },
+    "sessions": [
+      "workers/eval-manager/task-manifest/session.jsonl.bz2",
+      "workers/eval-worker/task-manifest-1/session.jsonl.bz2"
+    ],
+    "tool_errors": [
+      {
+        "report": "workers/eval-manager/task-manifest/report.json",
+        "summary": "total 680\ndrwxr-xr-x  46 josh  staff    1472 Aug  7 14:12 .\ndrwxr-xr-x   3 josh  staff      96 Aug  7 14:08 ..\n-rw-r--r--@  1 josh  staff      64 Aug  7 14:08 agent.cid\n-rw-r--r--   1 josh  staff       0 Aug  7 14:08 container.stderr\n-rw-r--r--   1 josh  staff  122312 Aug  7 14:12 container.stdout\n-rw-r--r--@  1 josh  staff      64 Aug  7 14:12 evaluator.cid\n-rw-r--r--   1 josh  staff       0 Aug  7 14:12 evaluator.stderr\n-rw-r--r--   1 josh  staff       0 Aug  7 14:12 evaluator.stdout\n-rw-r--r--@  1 josh  staff       0 Aug  7 14:12 manifest-candidate-1.stderr\n-rw-r--r--@  1 josh  staff       0 Aug  7 14:12 manifest-candidate-2.stderr\n-rw-r--r--@  1 josh  staff       0 Aug  7 14:12 manifest-candidate-3.stderr\n-rw-r--r--@  1 josh  staff       0 Aug  7 14:12 manifest-candidate-4.stderr\n-rw-r--r--@  1 josh  staff       0 Aug  7 14:12 manifest-candidate-5.stderr\n-rw-r--r--@  1 josh  staff       0 Aug  7 14:12 manifest-candidate-6.stderr\n-rw-r--r--@  1 josh  staff       0 Aug  7 14:12 manifest-candidate-7.stderr\n-rw-r--r--@  1 josh  staff     193 Aug  7 14:12 manifest-candidate-8.stderr\n-rw-r--r--@  1 josh  staff       0 Aug  7 14:12 manifest-oracle-1.stderr\n-rw-r--r--@  1 josh  staff      44 Aug  7 14:12 manifest-oracle-1.txt\n-rw-r--r--@  1 josh  staff       0 Aug  7 14:12 manifest-oracle-2.stderr\n-rw-r--r--@  1 josh  staff      32 Aug  7 14:12 manifest-oracle-2.txt\n-rw-r--r--@  1 josh  staff       0 Aug  7 14:12 manifest-oracle-3.stderr\n-rw-r--r--@  1 josh  staff       9 Aug  7 14:12 manifest-oracle-3.txt\n-rw-r--r--@  1 josh  staff       0 Aug  7 14:12 manifest-oracle-4.stderr\n-rw-r--r--@  1 josh  staff       9 Aug  7 14:12 manifest-oracle-4.txt\n-rw-r--r--@  1 josh  staff       0 Aug  7 14:12 manifest-oracle-5.stderr\n-rw-r--r--@  1 josh  staff      33 Aug  7 14:12 manifest-oracle-5.txt\n-rw-r--r--@  1 josh  staff       0 Aug  7 14:12 manifest-oracle-6.stderr\n-rw-r--r--@  1 josh  staff      29 Aug  7 14:12 manifest-oracle-6.txt\n-rw-r--r--@  1 josh  staff       0 Aug  7 14:12 manifest-oracle-7.stderr\n-rw-r--r--@  1 josh  staff       0 Aug  7 14:12 manifest-oracle-7.txt\n-rw-r--r--@  1 josh  staff       0 Aug  7 14:12 manifest-oracle-8.stderr\n-rw-r--r--@  1 josh  staff       0 Aug  7 14:12 manifest-oracle-8.txt\n-rw-r--r--@  1 josh  staff      44 Aug  7 14:12 manifest-out-1.txt\n-rw-r--r--@  1 josh  staff      32 Aug  7 14:12 manifest-out-2.txt\n-rw-r--r--@  1 josh  staff       9 Aug  7 14:12 manifest-out-3.txt\n-rw-r--r--@  1 josh  staff       9 Aug  7 14:12 manifest-out-4.txt\n-rw-r--r--@  1 josh  staff      33 Aug  7 14:12 manifest-out-5.txt\n-rw-r--r--@  1 josh  staff      29 Aug  7 14:12 manifest-out-6.txt\n-rw-r--r--@  1 josh  staff       0 Aug  7 14:12 manifest-out-7.txt\n-rw-r--r--@  1 josh  staff     596 Aug  7 14:12 manifest.xsh\n-rw-r--r--@  1 josh  staff       0 Aug  7 14:08 pi.stderr\n-rw-r--r--   1 josh  staff    7589 Aug  7 14:12 report.json\n-rw-r--r--@  1 josh  staff    1117 Aug  7 14:12 review.md\n-rw-r--r--@  1 josh  staff    2075 Aug  7 14:12 run.json\n-rw-r--r--@  1 josh  staff  122312 Aug  7 14:12 session.jsonl.bz2\ndrwxr-xr-x   7 josh  staff     224 Aug  7 14:12 work\nTraceback (most recent call last):\n  File \"<string>\", line 3, in <module>\n    with open('session.jsonl.events.jsonl') as f:\n         ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: 'session.jsonl.events.jsonl'\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 7,
+        "worker": {
+          "role": "eval-manager",
+          "worker_id": "task-manifest"
+        }
+      },
+      {
+        "report": "workers/eval-manager/task-manifest/report.json",
+        "summary": "agents.md\nhandbook.md\nmanifest.xsh\nreview.md\ntask.md\n---events---\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 21,
+        "worker": {
+          "role": "eval-manager",
+          "worker_id": "task-manifest"
+        }
+      },
+      {
+        "report": "workers/eval-worker/task-manifest-1/report.json",
+        "summary": "api: language.stream.flat-map\nsignature: flat-map(block) -> Stream[U]\ncontract: The terminal materializes groups and preserves each group's source order. Each emitted record has a `key` field holding the projected key and an `items` field holding the list of source items in that group; it is a record, not a Map.\napi: language.stream.map\ncontract: Mapping preserves source order unless a later stage explicitly changes ordering. The transform block may contain multiple statements, including local `let` bindings.\nsignature: map(block) -> Stream[U]\napi: language.stream.par-map\nsignature: par-map(block, --jobs: Int = default) -> Stream[U]\n    |> par-map { |value|\n    |> reduce(map.empty()) { |acc, item|\napi: language.stream.sort\npurpose: Sorts all stream items.\ncontract: Sorting materializes the input and therefore requires a finite source and a defined item ordering. Supported items are Int, Str, Bool, Path, and Records whose fields are themselves supported items; records compare field by field in sorted field-name order. The sort is stable, so equal items keep their source order.\nsignature: sort() -> Stream[T]\ntags: stream, sorting, materialization, stable\napi: language.stream.sort-by\npurpose: Sorts stream items by a projected key.\ncontract: The key projection controls ordering and the stage materializes the input before emitting results. Supported key types are Int, Str, Bool, Path, and Records whose fields are themselves supported keys; records compare field by field in sorted field-name order. The default order is ascending and --desc reverses it. The sort is stable, so items with equal keys keep their source order and the two-pass idiom (sort by the secondary key first, then by the primary key) produces a reliable compound ordering. Other key types are rejected at check time and fail with a runtime diagnostic that names the stage and key type.\nsignature: sort-by(--desc: Bool = false, block) -> Stream[T]\ntags: stream, sorting, projection, stable\napi: language.stream.where\nsignature: where(block) -> Stream[T]\n  let files = fs.files(p\".\") |> where .kind == \"file\"\n===\nquery: language:stream.sort\nstatus: exact\n\napi: language.stream.sort\nkind: language\npurpose: Sorts all stream items.\ncontract: Sorting materializes the input and therefore requires a finite source and a defined item ordering. Supported items are Int, Str, Bool, Path, and Records whose fields are themselves supported items; records compare field by field in sorted field-name order. The sort is stable, so equal items keep their source order.\neffects: none\nsignature: sort() -> Stream[T]\ntags: stream, sorting, materialization, stable\n=== list sort ===\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 4,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-manifest-1"
+        }
+      },
+      {
+        "report": "workers/eval-worker/task-manifest-1/report.json",
+        "summary": "normal exit=0\nNORMAL-MATCH\nruntime traceback\nexecutable: /usr/local/bin/xsh\noperation: result.propagate\nerror: path-resolve: No such file or directory (os error 2)\ncall path:\n  1. proc main at manifest.xsh:1:1-1:1\nnonexistent exit=3\nls: /tmp/ne: No such file or directory\nempty exit=0\n0 /tmp/emptyout\nruntime traceback\nexecutable: /usr/local/bin/xsh\noperation: result.propagate\nerror: fs-metadata: Not a directory (os error 20)\ncall path:\n  1. proc main at manifest.xsh:1:1-1:1\nfile-root exit=3\nls: /tmp/singleout: No such file or directory\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 21,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-manifest-1"
+        }
+      },
+      {
+        "report": "workers/eval-worker/task-manifest-1/report.json",
+        "summary": "=== current file ===\nproc main(...argv: List[Str]) [fs, error] {\n  let root = fp\"${argv[0]}\"\n  let out = fp\"${argv[1]}\"\n  let resolved = root.resolve()?\n  let meta = fs.metadata(root)?\n  if meta.kind != \"dir\" {\n    # non-directory root must exit nonzero without writing OUT\n    let _ = fs.metadata(fp\"${root.display() + \"/.xsh_nondir_fail\"}\")?\n  }\n\n  let rels = fs.files(root)?\n    |> where .kind == \"file\"\n    |> map { |e|\n      e.path.relative_to(resolved).display()\n    }\n    |> sort\n    |> collect()\n  let body = rels.join(\"\\n\")\n  let text = if rels.len() > 0 { body + \"\\n\" } else { \"\" }\n  fs.write(out, text)?\n}\n=== tests ===\nnormal exit=0\nNORMAL-MATCH\nnonexistent exit=3\nls: /tmp/ne: No such file or directory\nempty exit=0\n0 /tmp/emptyout\nfile-root exit=3\nls: /tmp/singleout: No such file or directory\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 25,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-manifest-1"
+        }
+      }
+    ],
+    "trials": [
+      {
+        "evidence": {
+          "candidate_sha256": "unknown",
+          "classification": "pass",
+          "correctness": "pass",
+          "eval_id": "task-manifest",
+          "handbook_sha256": "unknown",
+          "oracle_sha256": "unknown",
+          "passed": true,
+          "protocol": "pass",
+          "restrictions": "pass",
+          "result": "pass",
+          "timing": "pass",
+          "trial_id": "1",
+          "valid": true
+        },
+        "path": "workers/eval-worker/task-manifest-1/run.json"
+      }
+    ],
+    "workers": [
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-manifest"
+        },
+        "path": "workers/eval-manager/task-manifest/report.json",
+        "result": "pass",
+        "tool_errors": 2,
+        "usage": {
+          "assistant_turns": 25,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.012157056,
+          "cache_read_tokens": 675392,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.019357146,
+          "input_cost_usd": 0.00380691,
+          "input_tokens": 42299,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00339318,
+          "output_tokens": 18851,
+          "provider_total_tokens": 736542,
+          "reasoning_tokens": 8418,
+          "thinking_blocks": 24,
+          "tool_calls": 30,
+          "tool_errors": 2,
+          "tool_results": 30,
+          "total_bucket_tokens": 736542,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-manifest-1"
+        },
+        "path": "workers/eval-worker/task-manifest-1/report.json",
+        "result": "pass",
+        "tool_errors": 3,
+        "usage": {
+          "assistant_turns": 31,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.009004032,
+          "cache_read_tokens": 500224,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.013672782,
+          "input_cost_usd": 0.0025114499999999997,
+          "input_tokens": 27905,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.002157299999999999,
+          "output_tokens": 11985,
+          "provider_total_tokens": 540114,
+          "reasoning_tokens": 7100,
+          "thinking_blocks": 27,
+          "tool_calls": 35,
+          "tool_errors": 3,
+          "tool_results": 35,
+          "total_bucket_tokens": 540114,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "857154dfe505f0d01053c1b5311f44422070eb34"
+  },
+  "findings": [],
+  "identity": {
+    "eval_id": "task-manifest",
+    "mode": "eval",
+    "run_id": "02-eval"
+  },
+  "kind": "phase",
+  "result": "pass",
+  "schema_version": 1,
+  "state": "completed"
+}

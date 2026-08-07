@@ -1,0 +1,118 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786136684797/phases/02-eval/workers/eval-manager/task-manifest/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_process": "pass",
+    "dispatch_claim": "4e887080245a5916d260d6a20d381850492c23b370f91437a8c23b8949c227cf",
+    "dispatch_id": "eval-manager-task-manifest",
+    "message_sha256": "4e887080245a5916d260d6a20d381850492c23b370f91437a8c23b8949c227cf",
+    "reporting": "pass",
+    "required_report": "present",
+    "session_limit_watcher": "pass",
+    "system_prompt_sha256": "a5ab31790989af39c06a7fec953a65b5b782b1be43779a76401f77f02f7995f3",
+    "watcher": "pass"
+  },
+  "findings": [
+    {
+      "count": 2,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "role": "eval-manager",
+    "worker_id": "task-manifest"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "provider_telemetry": {
+    "event_turns": 25,
+    "events_path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786136684797/phases/02-eval/workers/eval-manager/task-manifest/session.jsonl.events.jsonl",
+    "output_tokens_per_second": 0,
+    "present": true,
+    "provider_errors": [],
+    "response_elapsed_ms": 0,
+    "retry_count": 0,
+    "retry_delay_ms": 0,
+    "retry_errors": [],
+    "retry_failures": 0,
+    "retry_successes": 0
+  },
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786136684797/phases/02-eval/workers/eval-manager/task-manifest/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 24,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 270222
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786136684797/phases/02-eval/workers/eval-manager/task-manifest/session.jsonl.bz2",
+      "summary": "total 680\ndrwxr-xr-x  46 josh  staff    1472 Aug  7 14:12 .\ndrwxr-xr-x   3 josh  staff      96 Aug  7 14:08 ..\n-rw-r--r--@  1 josh  staff      64 Aug  7 14:08 agent.cid\n-rw-r--r--   1 josh  staff       0 Aug  7 14:08 container.stderr\n-rw-r--r--   1 josh  staff  122312 Aug  7 14:12 container.stdout\n-rw-r--r--@  1 josh  staff      64 Aug  7 14:12 evaluator.cid\n-rw-r--r--   1 josh  staff       0 Aug  7 14:12 evaluator.stderr\n-rw-r--r--   1 josh  staff       0 Aug  7 14:12 evaluator.stdout\n-rw-r--r--@  1 josh  staff       0 Aug  7 14:12 manifest-candidate-1.stderr\n-rw-r--r--@  1 josh  staff       0 Aug  7 14:12 manifest-candidate-2.stderr\n-rw-r--r--@  1 josh  staff       0 Aug  7 14:12 manifest-candidate-3.stderr\n-rw-r--r--@  1 josh  staff       0 Aug  7 14:12 manifest-candidate-4.stderr\n-rw-r--r--@  1 josh  staff       0 Aug  7 14:12 manifest-candidate-5.stderr\n-rw-r--r--@  1 josh  staff       0 Aug  7 14:12 manifest-candidate-6.stderr\n-rw-r--r--@  1 josh  staff       0 Aug  7 14:12 manifest-candidate-7.stderr\n-rw-r--r--@  1 josh  staff     193 Aug  7 14:12 manifest-candidate-8.stderr\n-rw-r--r--@  1 josh  staff       0 Aug  7 14:12 manifest-oracle-1.stderr\n-rw-r--r--@  1 josh  staff      44 Aug  7 14:12 manifest-oracle-1.txt\n-rw-r--r--@  1 josh  staff       0 Aug  7 14:12 manifest-oracle-2.stderr\n-rw-r--r--@  1 josh  staff      32 Aug  7 14:12 manifest-oracle-2.txt\n-rw-r--r--@  1 josh  staff       0 Aug  7 14:12 manifest-oracle-3.stderr\n-rw-r--r--@  1 josh  staff       9 Aug  7 14:12 manifest-oracle-3.txt\n-rw-r--r--@  1 josh  staff       0 Aug  7 14:12 manifest-oracle-4.stderr\n-rw-r--r--@  1 josh  staff       9 Aug  7 14:12 manifest-oracle-4.txt\n-rw-r--r--@  1 josh  staff       0 Aug  7 14:12 manifest-oracle-5.stderr\n-rw-r--r--@  1 josh  staff      33 Aug  7 14:12 manifest-oracle-5.txt\n-rw-r--r--@  1 josh  staff       0 Aug  7 14:12 manifest-oracle-6.stderr\n-rw-r--r--@  1 josh  staff      29 Aug  7 14:12 manifest-oracle-6.txt\n-rw-r--r--@  1 josh  staff       0 Aug  7 14:12 manifest-oracle-7.stderr\n-rw-r--r--@  1 josh  staff       0 Aug  7 14:12 manifest-oracle-7.txt\n-rw-r--r--@  1 josh  staff       0 Aug  7 14:12 manifest-oracle-8.stderr\n-rw-r--r--@  1 josh  staff       0 Aug  7 14:12 manifest-oracle-8.txt\n-rw-r--r--@  1 josh  staff      44 Aug  7 14:12 manifest-out-1.txt\n-rw-r--r--@  1 josh  staff      32 Aug  7 14:12 manifest-out-2.txt\n-rw-r--r--@  1 josh  staff       9 Aug  7 14:12 manifest-out-3.txt\n-rw-r--r--@  1 josh  staff       9 Aug  7 14:12 manifest-out-4.txt\n-rw-r--r--@  1 josh  staff      33 Aug  7 14:12 manifest-out-5.txt\n-rw-r--r--@  1 josh  staff      29 Aug  7 14:12 manifest-out-6.txt\n-rw-r--r--@  1 josh  staff       0 Aug  7 14:12 manifest-out-7.txt\n-rw-r--r--@  1 josh  staff     596 Aug  7 14:12 manifest.xsh\n-rw-r--r--@  1 josh  staff       0 Aug  7 14:08 pi.stderr\n-rw-r--r--   1 josh  staff    7589 Aug  7 14:12 report.json\n-rw-r--r--@  1 josh  staff    1117 Aug  7 14:12 review.md\n-rw-r--r--@  1 josh  staff    2075 Aug  7 14:12 run.json\n-rw-r--r--@  1 josh  staff  122312 Aug  7 14:12 session.jsonl.bz2\ndrwxr-xr-x   7 josh  staff     224 Aug  7 14:12 work\nTraceback (most recent call last):\n  File \"<string>\", line 3, in <module>\n    with open('session.jsonl.events.jsonl') as f:\n         ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: 'session.jsonl.events.jsonl'\n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 7
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786136684797/phases/02-eval/workers/eval-manager/task-manifest/session.jsonl.bz2",
+      "summary": "agents.md\nhandbook.md\nmanifest.xsh\nreview.md\ntask.md\n---events---\n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 21
+    }
+  ],
+  "tools": [
+    {
+      "count": 19,
+      "name": "bash"
+    },
+    {
+      "count": 1,
+      "name": "ls"
+    },
+    {
+      "count": 8,
+      "name": "read"
+    },
+    {
+      "count": 2,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 25,
+    "budget_usd": 0.15,
+    "cache_read_cost_usd": 0.012157056,
+    "cache_read_tokens": 675392,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.019357146,
+    "input_cost_usd": 0.00380691,
+    "input_tokens": 42299,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.00339318,
+    "output_tokens": 18851,
+    "provider_total_tokens": 736542,
+    "reasoning_tokens": 8418,
+    "thinking_blocks": 24,
+    "tool_calls": 30,
+    "tool_errors": 2,
+    "tool_results": 30,
+    "total_bucket_tokens": 736542,
+    "user_messages": 1
+  }
+}

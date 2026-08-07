@@ -1,0 +1,15 @@
+{
+  "correctness": {
+    "exact": true
+  },
+  "eval_id": "task-propsort",
+  "protocol": {
+    "artifact_present": true,
+    "review_ok": true
+  },
+  "restrictions": {
+    "passed": false
+  },
+  "result": "fail",
+  "trial_id": "1"
+}

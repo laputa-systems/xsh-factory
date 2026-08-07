@@ -1,0 +1,88 @@
+{
+  "classification": "pass",
+  "correctness": {
+    "all_exact": true,
+    "cases": [
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 11364647,
+        "exact": true,
+        "name": "public",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 11969076
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 12050952,
+        "exact": true,
+        "name": "hidden_nested",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 1931081
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 11372230,
+        "exact": true,
+        "name": "hidden_empty_dirs",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 11822281
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 10670591,
+        "exact": true,
+        "name": "hidden_single",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 11499608
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 12989972,
+        "exact": true,
+        "name": "hidden_spaces",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 11853907
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 11062640,
+        "exact": true,
+        "name": "hidden_utf8",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 12196456
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 11077891,
+        "exact": true,
+        "name": "hidden_empty",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 11497941
+      },
+      {
+        "candidate_exit": 3,
+        "candidate_wall_ns": 11276520,
+        "exact": true,
+        "name": "hidden_missing_root",
+        "oracle_exit": 1,
+        "oracle_wall_ns": 11316271
+      }
+    ],
+    "passed": true
+  },
+  "eval_id": "task-manifest",
+  "image_id": "sha256:b4bb8a270e2a3cc7fa6be70db072be11e7c005f95490a6a369e3c5c177d2bc3b",
+  "platform": "linux/arm64",
+  "protocol": {
+    "artifact_present": true,
+    "review_ok": true
+  },
+  "restrictions": {
+    "passed": true
+  },
+  "result": "pass",
+  "timings": {
+    "passed": true
+  },
+  "trial_id": "1"
+}

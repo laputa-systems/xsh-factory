@@ -487,6 +487,19 @@ positional-only API guidance candidate, but it is single-eval evidence. Keep
 the approved handbook unchanged until `task-dupcheck` and a second
 defaulted-parameter eval confirm the guidance generalizes.
 
+## Explicit CTO disposition — run-1786136684797
+
+| Candidate SHA-256 | Disposition |
+| --- | --- |
+| `417e9281eb2d40e6d5e17a03dfcd06085764a4c3357df074580a44c91e34d2b7` | deferred pending cross-eval replay; not promoted |
+| `51468c5c14cb9152128239fc804c521fac8389aa428f53cf20b97d282886c814` | deferred pending cross-eval replay; not promoted |
+| `83b0202d30fbfb80eb0755582bfd015f69adf5d538ecd1d5c360ee6b2e08dba3` | deferred pending cross-eval replay; not promoted |
+
+The `task-jsonfilter`, `task-manifest`, and `task-pathparts` managers staged
+single-eval handbook candidates. Defer all three until the named replays and
+independent nearby evals confirm generalization; the approved handbook stays
+unchanged.
+
 ## Explicit CTO disposition — run-1786135120835
 
 | Candidate SHA-256 | Disposition |
