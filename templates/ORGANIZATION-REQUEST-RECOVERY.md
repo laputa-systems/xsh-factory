@@ -14,11 +14,11 @@ resolved and reviewed.
 ## Eval admission
 
 - Allow measured eval reuse: `no`
-- Select the next untried Approved eval: `task-renamex`
+- Select the next untried Approved eval: `task-render`
 
 ## Active evals
 
-- `task-renamex`
+- `task-render`
 
 ## Trial plan
 
@@ -48,6 +48,6 @@ Use the normal role defaults; no reduced-intensity overrides.
 ## Required outputs
 
 - one retained-branch replay with worker, evaluator, and manager evidence;
-- one independent `task-renamex` discovery evidence packet;
+- one independent `task-render` discovery evidence packet;
 - run/phase reports, CTO briefing, productivity report, and improvement
   handoff.
