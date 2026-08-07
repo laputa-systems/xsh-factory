@@ -1,4 +1,0 @@
-## Wrong heading
-
-## Another heading
-

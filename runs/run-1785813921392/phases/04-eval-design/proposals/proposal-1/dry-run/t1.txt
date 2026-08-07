@@ -1,2 +1,0 @@
-host=@HOST@
-port=@PORT@

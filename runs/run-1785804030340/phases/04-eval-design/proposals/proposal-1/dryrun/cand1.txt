@@ -1,4 +1,0 @@
-/t/.hdir/.deep
-/t/.hidden
-/t/sub/a.sh
-/t/sub/bonly

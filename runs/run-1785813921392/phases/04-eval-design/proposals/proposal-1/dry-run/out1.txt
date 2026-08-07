@@ -1,2 +1,0 @@
-host=alpha.local
-port=8080

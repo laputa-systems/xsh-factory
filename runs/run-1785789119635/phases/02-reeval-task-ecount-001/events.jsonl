@@ -1,1 +1,0 @@
-{"attempt":1,"caused_by":"controller","detail":"eval-manager cycle","event_id":"00-cycle-started","kind":"event","run_id":"/Users/josh/d/laputa-systems/xsh-factory/runs/run-1785789119635/phases/02-reeval-task-ecount-001","schema_version":1,"state":"started","subject":"task-ecount"}
