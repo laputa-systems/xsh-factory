@@ -2,7 +2,7 @@
 
 ## Status
 
-pending-validation
+validated
 
 ## Change
 
@@ -40,8 +40,8 @@ session, worker report, and evaluator manifest.
 
 ## Validation
 
-`xsht test tests/tools_test.xsh` passes 52/52 and leaves both transient paths
-absent. The next full suite must remain green, and the next replay must show a
+`xsht test tests/tools_test.xsh` passes 52/52 and the full `xsht test` passes
+112/112, with both transient paths absent afterward. The next replay must show a
 non-stub worker image with `workers/eval-worker/task-bigfiles-1/session.jsonl`
 before compression.
 

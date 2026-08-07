@@ -2,7 +2,7 @@
 
 ## Status
 
-pending-validation
+validated
 
 ## Change
 
@@ -32,8 +32,9 @@ persists worker session, report, and evaluator manifest.
 
 ## Validation
 
-Run `xsht test tests/tools_test.xsh`; verify the two transient paths are absent,
-then inspect the next phase report for a real worker session and `run.json`.
+`xsht test tests/tools_test.xsh` passes 52/52 and the full `xsht test` passes
+112/112; both transient paths are absent. The next replay must persist a real
+worker session, report, and evaluator manifest.
 
 ## Revert condition
 
