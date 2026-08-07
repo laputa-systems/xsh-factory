@@ -1,0 +1,126 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786138321778/phases/02-reeval-task-pathparts-001/workers/eval-worker/task-pathparts-1/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_state": "pass",
+    "agent_wall_ms": 136744,
+    "artifact": {
+      "name": "pathparts.xsh",
+      "state": "present"
+    },
+    "budget_state": "pass",
+    "classification": "evaluator_failed",
+    "evaluator_manifest": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786138321778/phases/02-reeval-task-pathparts-001/workers/eval-worker/task-pathparts-1/run.json",
+    "evaluator_state": "fail",
+    "reporting_state": "pass",
+    "result": "fail",
+    "review": {
+      "state": "present"
+    }
+  },
+  "findings": [
+    {
+      "count": 2,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "eval_id": "task-pathparts",
+    "role": "eval-worker",
+    "run_id": "02-reeval-task-pathparts-001",
+    "worker_id": "task-pathparts-1"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "provider_telemetry": {
+    "event_turns": 24,
+    "events_path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786138321778/phases/02-reeval-task-pathparts-001/workers/eval-worker/task-pathparts-1/session.jsonl.events.jsonl",
+    "output_tokens_per_second": 0,
+    "present": true,
+    "provider_errors": [],
+    "response_elapsed_ms": 0,
+    "retry_count": 0,
+    "retry_delay_ms": 0,
+    "retry_errors": [],
+    "retry_failures": 0,
+    "retry_successes": 0
+  },
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786138321778/phases/02-reeval-task-pathparts-001/workers/eval-worker/task-pathparts-1/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 23,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 135483
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786138321778/phases/02-reeval-task-pathparts-001/workers/eval-worker/task-pathparts-1/session.jsonl.bz2",
+      "summary": "[[ /srv/app/server.cfg ]]\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  /tmp/t.xsh:6:19\n    print \"dir=<\" + d + \">\"\n                    ^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $d\n\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  /tmp/t.xsh:7:20\n    print \"name=<\" + n + \">\"\n                     ^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $n\n\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  /tmp/t.xsh:8:19\n    print \"ext=<\" + e + \">\"\n                    ^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $e\n[[ app.yaml ]]\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  /tmp/t.xsh:6:19\n    print \"dir=<\" + d + \">\"\n                    ^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $d\n\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  /tmp/t.xsh:7:20\n    print \"name=<\" + n + \">\"\n                     ^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $n\n\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  /tmp/t.xsh:8:19\n    print \"ext=<\" + e + \">\"\n                    ^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $e\n[[ pkg.tar.gz ]]\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  /tmp/t.xsh:6:19\n    print \"dir=<\" + d + \">\"\n                    ^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $d\n\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  /tmp/t.xsh:7:20\n    print \"name=<\" + n + \">\"\n                     ^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $n\n\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  /tmp/t.xsh:8:19\n    print \"ext=<\" + e + \">\"\n                    ^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $e\n[[ .profile ]]\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  /tmp/t.xsh:6:19\n    print \"dir=<\" + d + \">\"\n                    ^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $d\n\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  /tmp/t.xsh:7:20\n    print \"name=<\" + n + \">\"\n                     ^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $n\n\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  /tmp/t.xsh:8:19\n    print \"ext=<\" + e + \">\"\n                    ^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $e\n[[ file. ]]\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  /tmp/t.xsh:6:19\n    print \"dir=<\" + d + \">\"\n                    ^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $d\n\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  /tmp/t.xsh:7:20\n    print \"name=<\" + n + \">\"\n                     ^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $n\n\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  /tmp/t.xsh:8:19\n    print \"ext=<\" + e + \">\"\n                    ^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $e\n[[ file ]]\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  /tmp/t.xsh:6:19\n    print \"dir=<\" + d + \">\"\n                    ^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $d\n\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  /tmp/t.xsh:7:20\n    print \"name=<\" + n + \">\"\n                     ^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $n\n\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  /tmp/t.xsh:8:19\n    print \"ext=<\" + e + \">\"\n                    ^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $e\n[[ noext ]]\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  /tmp/t.xsh:6:19\n    print \"dir=<\" + d + \">\"\n                    ^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $d\n\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  /tmp/t.xsh:7:20\n    print \"name=<\" + n + \">\"\n                     ^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $n\n\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  /tmp/t.xsh:8:19\n    print \"ext=<\" + e + \">\"\n                    ^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $e\n[[ /root/ ]]\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  /tmp/t.xsh:6:19\n    print \"dir=<\" + d + \">\"\n                    ^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $d\n\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  /tmp/t.xsh:7:20\n    print \"name=<\" + n + \">\"\n                     ^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $n\n\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  /tmp/t.xsh:8:19\n    print \"ext=<\" + e + \">\"\n                    ^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $e\n[[ / ]]\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  /tmp/t.xsh:6:19\n    print \"dir=<\" + d + \">\"\n                    ^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $d\n\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  /tmp/t.xsh:7:20\n    print \"name=<\" + n + \">\"\n                     ^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $n\n\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  /tmp/t.xsh:8:19\n    print \"ext=<\" + e + \">\"\n                    ^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $e\n[[ foo/bar/ ]]\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  /tmp/t.xsh:6:19\n    print \"dir=<\" + d + \">\"\n                    ^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $d\n\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  /tmp/t.xsh:7:20\n    print \"name=<\" + n + \">\"\n                     ^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $n\n\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  /tmp/t.xsh:8:19\n    print \"ext=<\" + e + \">\"\n                    ^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $e\n[[ .hidden.conf ]]\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  /tmp/t.xsh:6:19\n    print \"dir=<\" + d + \">\"\n                    ^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $d\n\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  /tmp/t.xsh:7:20\n    print \"name=<\" + n + \">\"\n                     ^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $n\n\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  /tmp/t.xsh:8:19\n    print \"ext=<\" + e + \">\"\n                    ^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $e\n[[ a.b/c ]]\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  /tmp/t.xsh:6:19\n    print \"dir=<\" + d + \">\"\n                    ^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $d\n\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  /tmp/t.xsh:7:20\n    print \"name=<\" + n + \">\"\n                     ^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $n\n\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  /tmp/t.xsh:8:19\n    print \"ext=<\" + e + \">\"\n                    ^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $e\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 8
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786138321778/phases/02-reeval-task-pathparts-001/workers/eval-worker/task-pathparts-1/session.jsonl.bz2",
+      "summary": "[[ .profile ]]\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  /tmp/t2.xsh:6:19\n    print \"name=\" + n\n                    ^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $n\n\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  /tmp/t2.xsh:7:21\n    print \"ext_or=\" + e2\n                      ^^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $e2\n\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  /tmp/t2.xsh:8:18\n    print \"ext=\" + e1\n                   ^^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $e1\n[[ file. ]]\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  /tmp/t2.xsh:6:19\n    print \"name=\" + n\n                    ^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $n\n\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  /tmp/t2.xsh:7:21\n    print \"ext_or=\" + e2\n                      ^^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $e2\n\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  /tmp/t2.xsh:8:18\n    print \"ext=\" + e1\n                   ^^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $e1\n[[ file ]]\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  /tmp/t2.xsh:6:19\n    print \"name=\" + n\n                    ^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $n\n\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  /tmp/t2.xsh:7:21\n    print \"ext_or=\" + e2\n                      ^^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $e2\n\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  /tmp/t2.xsh:8:18\n    print \"ext=\" + e1\n                   ^^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $e1\n[[ app.yaml ]]\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  /tmp/t2.xsh:6:19\n    print \"name=\" + n\n                    ^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $n\n\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  /tmp/t2.xsh:7:21\n    print \"ext_or=\" + e2\n                      ^^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $e2\n\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  /tmp/t2.xsh:8:18\n    print \"ext=\" + e1\n                   ^^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $e1\n[[ .x ]]\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  /tmp/t2.xsh:6:19\n    print \"name=\" + n\n                    ^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $n\n\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  /tmp/t2.xsh:7:21\n    print \"ext_or=\" + e2\n                      ^^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $e2\n\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  /tmp/t2.xsh:8:18\n    print \"ext=\" + e1\n                   ^^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $e1\n[[ a. ]]\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  /tmp/t2.xsh:6:19\n    print \"name=\" + n\n                    ^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $n\n\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  /tmp/t2.xsh:7:21\n    print \"ext_or=\" + e2\n                      ^^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $e2\n\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  /tmp/t2.xsh:8:18\n    print \"ext=\" + e1\n                   ^^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $e1\n[[ a.b. ]]\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  /tmp/t2.xsh:6:19\n    print \"name=\" + n\n                    ^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $n\n\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  /tmp/t2.xsh:7:21\n    print \"ext_or=\" + e2\n                      ^^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $e2\n\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  /tmp/t2.xsh:8:18\n    print \"ext=\" + e1\n                   ^^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $e1\n[[ c ]]\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  /tmp/t2.xsh:6:19\n    print \"name=\" + n\n                    ^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $n\n\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  /tmp/t2.xsh:7:21\n    print \"ext_or=\" + e2\n                      ^^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $e2\n\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  /tmp/t2.xsh:8:18\n    print \"ext=\" + e1\n                   ^^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $e1\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 10
+    }
+  ],
+  "tools": [
+    {
+      "count": 17,
+      "name": "bash"
+    },
+    {
+      "count": 2,
+      "name": "edit"
+    },
+    {
+      "count": 4,
+      "name": "read"
+    },
+    {
+      "count": 2,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 24,
+    "budget_usd": 0.5,
+    "cache_read_cost_usd": 0.006788735999999999,
+    "cache_read_tokens": 377152,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.013363236,
+    "input_cost_usd": 0.004832459999999999,
+    "input_tokens": 53694,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.0017420400000000005,
+    "output_tokens": 9678,
+    "provider_total_tokens": 440524,
+    "reasoning_tokens": 5373,
+    "thinking_blocks": 19,
+    "tool_calls": 25,
+    "tool_errors": 2,
+    "tool_results": 25,
+    "total_bucket_tokens": 440524,
+    "user_messages": 1
+  }
+}

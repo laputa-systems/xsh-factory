@@ -474,6 +474,9 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   var independent_eval_stdout: List[Path] = []
   var independent_eval_stderr: List[Path] = []
   if selected_ticket != "" {
+    # Ticket cycles still dispatch one independent eval; create its phase
+    # boundary before the child controller attempts its own lock and report.
+    fs.mkdir(fp"${phases_dir}/03-eval")?
     independent_eval_ids = independent_eval_ids.push(requested_eval)
     independent_eval_phases = independent_eval_phases.push(fp"${phases_dir}/03-eval")
     independent_eval_requests = independent_eval_requests.push(fp"${phase_requests_dir}/03-eval.md")

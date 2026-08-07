@@ -1,0 +1,108 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786138321778/phases/02-reeval-task-jsonfilter-001/workers/eval-manager/task-jsonfilter/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_process": "pass",
+    "dispatch_claim": "6fbfe43722c11969e9f6ba121390234303790ee68b57d14e88b9094036fe6f22",
+    "dispatch_id": "eval-manager-task-jsonfilter",
+    "message_sha256": "6fbfe43722c11969e9f6ba121390234303790ee68b57d14e88b9094036fe6f22",
+    "reporting": "pass",
+    "required_report": "present",
+    "session_limit_watcher": "pass",
+    "system_prompt_sha256": "a5ab31790989af39c06a7fec953a65b5b782b1be43779a76401f77f02f7995f3",
+    "watcher": "pass"
+  },
+  "findings": [
+    {
+      "count": 1,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "role": "eval-manager",
+    "worker_id": "task-jsonfilter"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "provider_telemetry": {
+    "event_turns": 18,
+    "events_path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786138321778/phases/02-reeval-task-jsonfilter-001/workers/eval-manager/task-jsonfilter/session.jsonl.events.jsonl",
+    "output_tokens_per_second": 0,
+    "present": true,
+    "provider_errors": [],
+    "response_elapsed_ms": 0,
+    "retry_count": 0,
+    "retry_delay_ms": 0,
+    "retry_errors": [],
+    "retry_failures": 0,
+    "retry_successes": 0
+  },
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786138321778/phases/02-reeval-task-jsonfilter-001/workers/eval-manager/task-jsonfilter/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 17,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 208613
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786138321778/phases/02-reeval-task-jsonfilter-001/workers/eval-manager/task-jsonfilter/session.jsonl.bz2",
+      "summary": "=== redundant tail / parse errors ===\n=== Item / type annotation usage ===\n0\n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 8
+    }
+  ],
+  "tools": [
+    {
+      "count": 12,
+      "name": "bash"
+    },
+    {
+      "count": 10,
+      "name": "read"
+    },
+    {
+      "count": 1,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 18,
+    "budget_usd": 0.15,
+    "cache_read_cost_usd": 0.007340544,
+    "cache_read_tokens": 407808,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.012672953999999998,
+    "input_cost_usd": 0.0028467900000000005,
+    "input_tokens": 31631,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.00248562,
+    "output_tokens": 13809,
+    "provider_total_tokens": 453248,
+    "reasoning_tokens": 9539,
+    "thinking_blocks": 16,
+    "tool_calls": 23,
+    "tool_errors": 1,
+    "tool_results": 23,
+    "total_bucket_tokens": 453248,
+    "user_messages": 1
+  }
+}

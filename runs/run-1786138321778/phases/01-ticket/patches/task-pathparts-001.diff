@@ -1,0 +1,271 @@
+diff --git a/crates/xsh-registry/src/signature/docs.rs b/crates/xsh-registry/src/signature/docs.rs
+index d19d06f..f6f3772 100644
+--- a/crates/xsh-registry/src/signature/docs.rs
++++ b/crates/xsh-registry/src/signature/docs.rs
+@@ -1243,13 +1243,28 @@ fn method_doc(receiver: &str, method: &str) -> Option<DocRow> {
+             &["path", "display"],
+         )),
+         ("Path", "name") => Some((
+-            "Returns the final path component.",
+-            "The result is text derived from the path spelling and may be empty for a root-like path.",
++            "Returns the final path component using native path semantics.",
++            "The result is text derived from the path spelling and may be empty for a root-like path; use basename for POSIX basename semantics.",
+             &["path", "component"],
+         )),
++        ("Path", "basename") => Some((
++            "Returns the final component using POSIX basename semantics.",
++            "Trailing slashes are ignored, and a root-only path returns `/`.",
++            &["path", "component", "posix"],
++        )),
++        ("Path", "dirname") => Some((
++            "Returns the directory component using POSIX dirname semantics.",
++            "Trailing slashes are ignored and the result is a Path; this is lexical and does not inspect the filesystem.",
++            &["path", "component", "posix"],
++        )),
+         ("Path", "ext") => Some((
+             "Returns the path extension.",
+-            "Extension parsing follows the path component rules and does not inspect file contents.",
++            "Extension parsing follows native path component rules and returns an empty string when no extension is present; use ext_or to distinguish no extension from an empty trailing-dot extension.",
++            &["path", "component"],
++        )),
++        ("Path", "ext_or") => Some((
++            "Returns the path extension, or a fallback when there is no extension.",
++            "Unlike ext(), this distinguishes a missing extension from an empty extension after a trailing dot; a leading dot alone is not an extension.",
+             &["path", "component"],
+         )),
+         ("Path", "normalize") => Some((
+diff --git a/crates/xsh-registry/src/signature/methods.rs b/crates/xsh-registry/src/signature/methods.rs
+index 2255dda..1c7b778 100644
+--- a/crates/xsh-registry/src/signature/methods.rs
++++ b/crates/xsh-registry/src/signature/methods.rs
+@@ -76,6 +76,20 @@ pub(in crate::signature) fn value_methods() -> Vec<MethodReceiverSig> {
+                     true,
+                     RuntimeOp::PathName,
+                 ),
++                method(
++                    "basename",
++                    Vec::new(),
++                    MethodReturn::Type(Type::Str),
++                    true,
++                    RuntimeOp::PathName,
++                ),
++                method(
++                    "dirname",
++                    Vec::new(),
++                    MethodReturn::Type(Type::Path),
++                    true,
++                    RuntimeOp::PathParent,
++                ),
+                 method(
+                     "ext",
+                     Vec::new(),
+@@ -83,6 +97,13 @@ pub(in crate::signature) fn value_methods() -> Vec<MethodReceiverSig> {
+                     true,
+                     RuntimeOp::PathExt,
+                 ),
++                method(
++                    "ext_or",
++                    vec![param("fallback", Type::Str)],
++                    MethodReturn::Type(Type::Str),
++                    true,
++                    RuntimeOp::PathExt,
++                ),
+                 method(
+                     "normalize",
+                     Vec::new(),
+diff --git a/docs/SPEC.md b/docs/SPEC.md
+index 16473cd..ce6294b 100644
+--- a/docs/SPEC.md
++++ b/docs/SPEC.md
+@@ -2006,8 +2006,9 @@ normalizes `.` and `..` components without requiring the resulting path to
+ exist. Absolute inputs are normalized in place. Use `.resolve()` when the path
+ must exist and symlinks should be resolved by the host filesystem.
+ 
+-Path values also expose `.parent`, `.name`, `.ext`, `.display()`,
+-`.normalize()`, `.resolve()`, `.exists()`, `.executable()`, `.du()`,
++Path values also expose `.parent`, `.name`, `.basename()`, `.dirname()`, `.ext`,
++`.ext_or(fallback)`, `.display()`, `.normalize()`, `.resolve()`, `.exists()`,
++`.executable()`, `.du()`,
+ `.metadata()`, `.read_bytes()`, `.read_text()`, `.lines()`, `.bytes_lines()`,
+ `.write(data: Bytes)`, `.write(data: Str)`,
+ `.write_atomic(data: Bytes)`, `.write_atomic(data: Str)`,
+diff --git a/src/runtime/eval.rs b/src/runtime/eval.rs
+index 520454b..6443878 100644
+--- a/src/runtime/eval.rs
++++ b/src/runtime/eval.rs
+@@ -2553,7 +2553,10 @@ const LOWERED_METHOD_NAMES: &[&str] = &[
+     "signal_number",
+     "display",
+     "name",
++    "basename",
++    "dirname",
+     "ext",
++    "ext_or",
+     "with_ext",
+     "normalize",
+     "parent",
+@@ -5285,7 +5288,7 @@ impl Evaluator {
+     }
+ }
+ 
+-fn path_parent(path: &PathValue) -> Result<PathValue, RuntimeError> {
++pub(super) fn path_parent(path: &PathValue) -> Result<PathValue, RuntimeError> {
+     let pathbuf = pathbuf_from_path_value(path);
+     let parent = pathbuf.parent().unwrap_or_else(|| {
+         if path.bytes.starts_with(b"/") {
+@@ -5301,13 +5304,32 @@ fn path_parent(path: &PathValue) -> Result<PathValue, RuntimeError> {
+     }
+ }
+ 
+-fn path_text_field(path: &PathValue, name: &str) -> Result<String, RuntimeError> {
++fn path_component_bytes(path: &PathValue) -> &[u8] {
++    let mut end = path.bytes.len();
++    while end > 1 && path.bytes[end - 1] == b'/' {
++        end -= 1;
++    }
++    let component_start = path.bytes[..end]
++        .iter()
++        .rposition(|byte| *byte == b'/')
++        .map_or(0, |index| index + 1);
++    &path.bytes[component_start..end]
++}
++
++pub(super) fn path_text_field(path: &PathValue, name: &str) -> Result<String, RuntimeError> {
+     let pathbuf = pathbuf_from_path_value(path);
+     Ok(match name {
+         "name" => pathbuf
+             .file_name()
+             .map(|name| name.to_string_lossy().into_owned())
+             .unwrap_or_default(),
++        "basename" => {
++            if path.bytes.iter().all(|byte| *byte == b'/') && !path.bytes.is_empty() {
++                "/".to_string()
++            } else {
++                String::from_utf8_lossy(path_component_bytes(path)).into_owned()
++            }
++        }
+         "ext" => pathbuf
+             .extension()
+             .map(|extension| extension.to_string_lossy().into_owned())
+@@ -5316,7 +5338,43 @@ fn path_text_field(path: &PathValue, name: &str) -> Result<String, RuntimeError>
+     })
+ }
+ 
+-fn path_with_ext(path: &PathValue, ext: &str) -> Result<PathValue, RuntimeError> {
++pub(super) fn path_posix_dirname(path: &PathValue) -> Result<PathValue, RuntimeError> {
++    if path.bytes.is_empty() {
++        return PathValue::from_text(".");
++    }
++
++    let mut end = path.bytes.len();
++    while end > 1 && path.bytes[end - 1] == b'/' {
++        end -= 1;
++    }
++    if path.bytes[..end].iter().all(|byte| *byte == b'/') {
++        return PathValue::from_text("/");
++    }
++
++    let Some(slash) = path.bytes[..end].iter().rposition(|byte| *byte == b'/') else {
++        return PathValue::from_text(".");
++    };
++    let mut parent_end = slash;
++    while parent_end > 1 && path.bytes[parent_end - 1] == b'/' {
++        parent_end -= 1;
++    }
++    if parent_end == 0 {
++        PathValue::from_text("/")
++    } else {
++        PathValue::new(path.bytes[..parent_end].to_vec())
++    }
++}
++
++pub(super) fn path_posix_extension(path: &PathValue) -> Option<String> {
++    let name = path_component_bytes(path);
++    if name.len() < 2 {
++        return None;
++    }
++    let dot = name[1..].iter().rposition(|byte| *byte == b'.')? + 1;
++    Some(String::from_utf8_lossy(&name[dot + 1..]).into_owned())
++}
++
++pub(super) fn path_with_ext(path: &PathValue, ext: &str) -> Result<PathValue, RuntimeError> {
+     let mut pathbuf = pathbuf_from_path_value(path);
+     pathbuf.set_extension(ext);
+     path_value_from_pathbuf(pathbuf)
+diff --git a/src/runtime/eval/lower.rs b/src/runtime/eval/lower.rs
+index 48ecb8a..a89e998 100644
+--- a/src/runtime/eval/lower.rs
++++ b/src/runtime/eval/lower.rs
+@@ -12356,9 +12356,11 @@ fn lowered_method_supported_for_type(ty: &Type, name: Name, arg_count: usize) ->
+             _ => false,
+         },
+         Type::Path => match name.as_str().as_str() {
+-            "display" | "name" | "ext" | "normalize" | "parent" | "lines" | "bytes_lines"
+-            | "read_text" | "read_bytes" | "exists" | "executable" | "du" | "metadata"
+-            | "readlink" | "resolve" | "remove_dir" | "unlink" => arg_count == 0,
++            "display" | "name" | "basename" | "dirname" | "ext" | "normalize" | "parent"
++            | "lines" | "bytes_lines" | "read_text" | "read_bytes" | "exists"
++            | "executable" | "du" | "metadata" | "readlink" | "resolve" | "remove_dir"
++            | "unlink" => arg_count == 0,
++            "ext_or" => arg_count == 1,
+             "with_ext" | "strip_prefix" | "relative_to" | "touch_from" | "truncate" | "chmod"
+             | "hardlink" | "write" | "write_atomic" => arg_count == 1,
+             "copy" | "rename" | "mkdir" | "remove" => arg_count == 1 || arg_count == 2,
+diff --git a/src/runtime/eval/lowered_ops.rs b/src/runtime/eval/lowered_ops.rs
+index d264343..080bc94 100644
+--- a/src/runtime/eval/lowered_ops.rs
++++ b/src/runtime/eval/lowered_ops.rs
+@@ -9,7 +9,8 @@ use super::{
+     LoweredValue, add_error_context, bytes_contains, bytes_find, format_duration,
+     lowered_bytes_view_value, lowered_inline_stats_field_value, lowered_record_vec_get,
+     lowered_stats_field_value, lowered_str_view_value, normalize_path_value, path_parent,
+-    path_text_field, path_value_from_pathbuf, path_with_ext, pathbuf_from_path_value,
++    path_posix_dirname, path_posix_extension, path_text_field, path_value_from_pathbuf,
++    path_with_ext, pathbuf_from_path_value,
+ };
+ use crate::runtime::process::{ProcessStatus, ProcessStatusKind};
+ use crate::runtime::value::{
+@@ -1692,9 +1693,23 @@ pub(super) fn lowered_path_method_value(
+         "name" if args.is_empty() => path_text_field(&path, "name")
+             .map(|value| LoweredValue::Str(value.into()))
+             .map_err(|error| error.with_span(span)),
++        "basename" if args.is_empty() => path_text_field(&path, "basename")
++            .map(|value| LoweredValue::Str(value.into()))
++            .map_err(|error| error.with_span(span)),
++        "dirname" if args.is_empty() => path_posix_dirname(&path)
++            .map(LoweredValue::Path)
++            .map_err(|error| error.with_span(span)),
+         "ext" if args.is_empty() => path_text_field(&path, "ext")
+             .map(|value| LoweredValue::Str(value.into()))
+             .map_err(|error| error.with_span(span)),
++        "ext_or" if args.len() == 1 => {
++            let fallback = lowered_str_arg(&args[0], "ext_or", span)?;
++            Ok(LoweredValue::Str(
++                path_posix_extension(&path)
++                    .unwrap_or_else(|| fallback.to_string())
++                    .into(),
++            ))
++        }
+         "with_ext" if args.len() == 1 => {
+             let ext = lowered_str_arg(&args[0], "with_ext", span)?;
+             path_with_ext(&path, ext)
+diff --git a/tests/xsh/stdlib/path.xsh b/tests/xsh/stdlib/path.xsh
+index 05f37bd..ac4787f 100644
+--- a/tests/xsh/stdlib/path.xsh
++++ b/tests/xsh/stdlib/path.xsh
+@@ -21,6 +21,15 @@ proc test_path_methods(ctx: TestContext) [fs, error] {
+   test.eq(file.read_bytes()?, b"bytes")?
+   test.eq(file.name(), "file.txt")?
+   test.eq(file.ext(), "txt")?
++  test.eq(file.basename(), "file.txt")?
++  test.eq(file.dirname().display(), fp"${root}/dir".display())?
++  test.eq(p"/".basename(), "/")?
++  test.eq(p".".basename(), ".")?
++  test.eq(p"a/.".dirname().display(), "a")?
++  test.eq(p"a/".basename(), "a")?
++  test.eq(p".profile".ext_or("none"), "none")?
++  test.eq(p"file.".ext_or("none"), "")?
++  test.eq(p"plain".ext_or("none"), "none")?
+   test.eq(file.with_ext("log").name(), "file.log")?
+   test.eq(fp"${root}/dir/../dir/file.txt".normalize(), file)?
+   test.eq(file.strip_prefix(root)?.display(), "dir/file.txt")?

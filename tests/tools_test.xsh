@@ -2257,6 +2257,18 @@ proc test_organization_supports_two_discovery_evals() [fs, error] {
   test.contains(organization, "max_concurrent_discovery_evals()")?
 }
 
+proc test_ticket_cycles_create_independent_eval_phase_boundary() [fs, error] {
+  let organization = fs.read_text(fp"${fs.cwd()?}/factory/controllers/organization.xsh")?
+  test.contains(organization, "if selected_ticket != \"\" {")?
+  test.contains(organization, r"""fs.mkdir(fp"${phases_dir}/03-eval")?""")?
+}
+
+proc test_eval_manager_assignment_proves_exact_handbook_read() [fs, error] {
+  let assignment = fs.read_text(fp"${fs.cwd()?}/templates/EVAL-MANAGER-ASSIGNMENT.md")?
+  test.contains(assignment, "Use the `read` tool, not `bash`, `cat`, or `grep`")?
+  test.contains(assignment, "{{RUN_DIR}}/lineage/handbook-approved.md")?
+}
+
 proc test_organization_delivery_is_a_success_gate() [fs, error] {
   let organization = fs.read_text(fp"${fs.cwd()?}/factory/controllers/organization.xsh")?
   let runtime = fs.read_text(fp"${fs.cwd()?}/factory/runtime.xsh")?
