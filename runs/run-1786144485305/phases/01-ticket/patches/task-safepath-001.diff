@@ -1,0 +1,97 @@
+diff --git a/crates/xsh-registry/src/examples.rs b/crates/xsh-registry/src/examples.rs
+index 35bac4b..848dcfb 100644
+--- a/crates/xsh-registry/src/examples.rs
++++ b/crates/xsh-registry/src/examples.rs
+@@ -93,6 +93,7 @@ pub(crate) fn source(id: &str) -> Option<String> {
+         "language.core.print" => {
+             include_str!("../../../docs/snippets/api/core-print.xsh")
+         }
++        "language.core.abort" => include_str!("../../../docs/snippets/api/core-abort.xsh"),
+         _ => return None,
+     };
+     Some(source.trim_end().to_string())
+diff --git a/crates/xsh-registry/src/reference.rs b/crates/xsh-registry/src/reference.rs
+index 7430439..aa9e792 100644
+--- a/crates/xsh-registry/src/reference.rs
++++ b/crates/xsh-registry/src/reference.rs
+@@ -222,6 +222,7 @@ pub const CORE_LANGUAGE_ITEMS: &[&str] = &[
+     "glob-literals",
+     "display-strings",
+     "print",
++    "abort",
+ ];
+ use crate::api_docs::ApiDocs;
+ 
+@@ -819,6 +820,15 @@ fn core_doc(item: &str) -> ReferenceDoc {
+                 &[],
+             );
+         }
++        "abort" => {
++            return reference_doc_full(
++                "Terminates the script with an explicit exit status.",
++                "`abort(status)` is a deliberate process exit, not Result error propagation: it produces the requested status without a runtime traceback on stderr. Deferred cleanup runs unless `force: true` is supplied.",
++                &["language", "abort", "exit-status", "validation", "builtin"],
++                "abort(status: Int, force: Bool = false)",
++                &[],
++            );
++        }
+         _ => panic!("missing core-language documentation for {item}"),
+     };
+     reference_doc(summary, contract, &["language", item])
+diff --git a/docs/SPEC.md b/docs/SPEC.md
+index e66d6a5..b853041 100644
+--- a/docs/SPEC.md
++++ b/docs/SPEC.md
+@@ -1172,9 +1172,10 @@ failure diagnostic and the runtime-failure CLI exit code. A final top-level
+ `Int` or `UInt` value exits with that status code. Status values must be in the
+ range `0..=255`.
+ 
+-`abort(status: Int, force: Bool = false)` exits the script with `status`.
+-Deferred cleanup runs while unwinding by default. `abort(status, force: true)`
+-skips deferred cleanup.
++`abort(status: Int, force: Bool = false)` exits the script with `status` as an
++explicit deliberate process termination. It does not use Result propagation and
++therefore emits no runtime traceback on stderr. Deferred cleanup runs while
++unwinding by default. `abort(status, force: true)` skips deferred cleanup.
+ 
+ `left ?? fallback` operates on `Result` and `Optional` values. For `Result`:
+ `Ok(value)` evaluates to `value`; `Err(error)` evaluates the fallback. For
+diff --git a/docs/snippets/api/core-abort.xsh b/docs/snippets/api/core-abort.xsh
+new file mode 100644
+index 0000000..65ddbe3
+--- /dev/null
++++ b/docs/snippets/api/core-abort.xsh
+@@ -0,0 +1,5 @@
++let invalid_input = true
++if invalid_input {
++  print "validation failed"
++  abort(1)
++}
+diff --git a/tests/xsh/run.xsh b/tests/xsh/run.xsh
+index 01bba4a..21ce52d 100644
+--- a/tests/xsh/run.xsh
++++ b/tests/xsh/run.xsh
+@@ -407,6 +407,23 @@ main()?
+   test.eq(forced.status, 11)?
+   test.eq(forced.stdout, "")?
+   test.eq(forced.stderr, "")?
++
++  let quiet_validation_failure = test.run_script(
++    ctx,
++    """
++print "escape"
++abort(17)
++print "unreachable"
++""",
++  )?
++
++  test.eq(quiet_validation_failure.status, 17)?
++  test.eq(
++    quiet_validation_failure.stdout,
++    """escape
++""",
++  )?
++  test.eq(quiet_validation_failure.stderr, "")?
+ }
+ 
+ proc test_whole_script_cli_usage_and_auto_main_errors(ctx: TestContext) [error] {

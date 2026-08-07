@@ -1,0 +1,116 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786144485305/phases/03-eval/workers/eval-manager/task-treecmp/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_process": "pass",
+    "dispatch_claim": "25f4192252bbcec07eb299a605a0d5fa27cd0507bbcec1000404e87500b0d5bd",
+    "dispatch_id": "eval-manager-task-treecmp",
+    "message_sha256": "25f4192252bbcec07eb299a605a0d5fa27cd0507bbcec1000404e87500b0d5bd",
+    "reporting": "pass",
+    "required_report": "present",
+    "session_limit_watcher": "pass",
+    "system_prompt_sha256": "a5ab31790989af39c06a7fec953a65b5b782b1be43779a76401f77f02f7995f3",
+    "watcher": "pass"
+  },
+  "findings": [
+    {
+      "count": 1,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "role": "eval-manager",
+    "worker_id": "task-treecmp"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "provider_telemetry": {
+    "event_turns": 22,
+    "events_path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786144485305/phases/03-eval/workers/eval-manager/task-treecmp/session.jsonl.events.jsonl",
+    "output_tokens_per_second": 0,
+    "present": true,
+    "provider_errors": [],
+    "response_elapsed_ms": 0,
+    "retry_count": 0,
+    "retry_delay_ms": 0,
+    "retry_errors": [],
+    "retry_failures": 0,
+    "retry_successes": 0
+  },
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786144485305/phases/03-eval/workers/eval-manager/task-treecmp/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 21,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 251317
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786144485305/phases/03-eval/workers/eval-manager/task-treecmp/session.jsonl.bz2",
+      "summary": "3b56a781606faa1ae0eb811af09d10094080152dae78d9f057cca7de101e126b  lineage/handbook-approved.md\n--- candidate exists? ---\ntotal 24\ndrwxr-xr-x   3 josh  staff     96 Aug  7 16:14 .\ndrwxr-xr-x  24 josh  staff    768 Aug  7 16:24 ..\n-rw-r--r--   1 josh  staff  10305 Aug  7 16:14 handbook-approved.md\n--- runtime handbook map.empty/for/bool ---\n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 15
+    }
+  ],
+  "tools": [
+    {
+      "count": 15,
+      "name": "bash"
+    },
+    {
+      "count": 1,
+      "name": "edit"
+    },
+    {
+      "count": 1,
+      "name": "ls"
+    },
+    {
+      "count": 12,
+      "name": "read"
+    },
+    {
+      "count": 1,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 22,
+    "budget_usd": 0.15,
+    "cache_read_cost_usd": 0.011390976,
+    "cache_read_tokens": 632832,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.019563966,
+    "input_cost_usd": 0.00501939,
+    "input_tokens": 55771,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.0031536000000000003,
+    "output_tokens": 17520,
+    "provider_total_tokens": 706123,
+    "reasoning_tokens": 12266,
+    "thinking_blocks": 20,
+    "tool_calls": 30,
+    "tool_errors": 1,
+    "tool_results": 30,
+    "total_bucket_tokens": 706123,
+    "user_messages": 1
+  }
+}

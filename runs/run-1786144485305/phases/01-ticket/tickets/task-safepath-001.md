@@ -2,7 +2,7 @@
 
 ## Status
 
-Merged.
+Approved.
 
 ## CTO decision — 2026-08-07
 
@@ -27,10 +27,10 @@ None.
 
 ## Merge record
 
-- Implementation branch: `factory/task-safepath-001/1786144489462`
-- Implementation commit: `630d14261ce5cf0160bf9809e79e2fca12922c70`
-- Detected at XSH commit: `630d14261ce5cf0160bf9809e79e2fca12922c70`
-- Implementation run: `/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786144485305/phases/01-ticket`
+- Implementation branch: `{{IMPLEMENTATION_BRANCH}}`
+- Implementation commit: `{{IMPLEMENTATION_COMMIT}}`
+- Detected at XSH commit: `{{DETECTED_XSH_COMMIT}}`
+- Implementation run: `{{IMPLEMENTATION_RUN}}`
 
 ## Source eval and manager
 
@@ -66,7 +66,7 @@ stricter stderr contract or a human reading a supervisor log would reject.
 
 ## Evidence
 
-- Worker session: `runs/run-1786142295779/phases/02-eval/workers/eval-worker/task-safepath-1/session.jsonl` — turns 25-28 the agent discovers the `parse_int?` exit idiom and confirms stdout carries only the escape line while stderr carries the traceback.
+- Worker session: `runs/run-1786142295779/phases/02-eval/workers/eval-worker/task-safepath-1/session.jsonl.bz2` — turns 25-28 the agent discovers the `parse_int?` exit idiom and confirms stdout carries only the escape line while stderr carries the traceback.
 - Artifact: `.../task-safepath-1/safepath.xsh` (lines using `"invalid".parse_int()?`).
 - Evaluator: `.../task-safepath-1/run.json` (result `pass`; escape cases exact).
 - Candidate/oracle stderr contrast: `candidate.5..8.stderr` each contain the traceback; `oracle.5..8.stderr` are empty.

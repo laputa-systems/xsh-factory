@@ -2272,6 +2272,7 @@ proc test_eval_manager_assignment_proves_exact_handbook_read() [fs, error] {
 proc test_organization_delivery_is_a_success_gate() [fs, error] {
   let organization = fs.read_text(fp"${fs.cwd()?}/factory/controllers/organization.xsh")?
   let runtime = fs.read_text(fp"${fs.cwd()?}/factory/runtime.xsh")?
+  let delivery = organization.split("let delivery =").get(1, "").split("let reeval_exit").get(0, "")
   test.contains(organization, "runtime.merge_validated_ticket")?
   test.contains(organization, "var delivery_ok")?
   test.contains(organization, "delivery_ok = delivery_ok and delivery.merged")?
@@ -2279,6 +2280,8 @@ proc test_organization_delivery_is_a_success_gate() [fs, error] {
   test.contains(runtime, "export proc merge_validated_ticket")?
   test.contains(runtime, "--ff-only")?
   test.contains(runtime, "--no-ff")?
+  test.contains(delivery, "runtime.emit_structured_event")?
+  test.ok("runtime.emit_event(" not in delivery, "delivery metadata must not advance ticket lifecycle state")?
 }
 
 proc test_ticket_cycle_bounds_concurrent_engineers() [fs, error] {

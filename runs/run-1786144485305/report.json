@@ -1,0 +1,416 @@
+{
+  "artifacts": [
+    {
+      "kind": "phase-reports",
+      "path": "phases/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 204,
+      "budget_failures": 0,
+      "cost_usd": 0.194628321,
+      "tool_errors": 16,
+      "total_bucket_tokens": 8001209.0,
+      "unknown_costs": 0,
+      "workers": 6
+    },
+    "mode": "organization",
+    "outcomes": {
+      "cycle": "pass",
+      "evaluator": "pass",
+      "infrastructure": "pass",
+      "product": "pass"
+    },
+    "phases": [
+      {
+        "id": "01-ticket",
+        "path": "phases/01-ticket/report.json",
+        "result": "pass",
+        "valid": true
+      },
+      {
+        "id": "02-reeval-task-safepath-001",
+        "path": "phases/02-reeval-task-safepath-001/report.json",
+        "result": "pass",
+        "valid": true
+      },
+      {
+        "id": "03-eval",
+        "path": "phases/03-eval/report.json",
+        "result": "pass",
+        "valid": true
+      }
+    ],
+    "tool_errors": [
+      {
+        "report": "phases/01-ticket/workers/engineer/task-safepath-001/report.json",
+        "summary": "Path not found: /Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786144485305/task-safepath-001/src/reference.rs",
+        "tool": "grep",
+        "turn": 5,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-safepath-001"
+        }
+      },
+      {
+        "report": "phases/01-ticket/workers/engineer/task-safepath-001/report.json",
+        "summary": "ENOENT: no such file or directory, access '/Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786144485305/task-safepath-001/src/reference.rs'",
+        "tool": "read",
+        "turn": 6,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-safepath-001"
+        }
+      },
+      {
+        "report": "phases/01-ticket/workers/engineer/task-safepath-001/report.json",
+        "summary": "ENOENT: no such file or directory, access '/Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786144485305/task-safepath-001/src/runtime_op.rs'",
+        "tool": "read",
+        "turn": 6,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-safepath-001"
+        }
+      },
+      {
+        "report": "phases/01-ticket/workers/engineer/task-safepath-001/report.json",
+        "summary": "ENOENT: no such file or directory, access '/Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786144485305/task-safepath-001/src/reference.rs'",
+        "tool": "read",
+        "turn": 8,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-safepath-001"
+        }
+      },
+      {
+        "report": "phases/01-ticket/workers/engineer/task-safepath-001/report.json",
+        "summary": "    Blocking waiting for file lock on package cache\n    Blocking waiting for file lock on package cache\n    Blocking waiting for file lock on package cache\n   Compiling xsh-registry v0.0.1 (/Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786144485305/task-safepath-001/crates/xsh-registry)\nerror[E0308]: `match` arms have incompatible types\n   --> crates/xsh-registry/src/reference.rs:823:20\n    |\n741 |       let (summary, contract) = match item {\n    |                                 ---------- `match` arms have incompatible types\n...\n810 |           \"display-strings\" => (\n    |  ______________________________-\n811 | |             \"Defines display-string interpolation.\",\n812 | |             \"Display strings are presentation text: they interpolate with `${expr}` and do not become command argv or filesystem ...\n813 | |         ),\n    | |_________- this and all prior arms are found to be of type `(&str, &str)`\n...\n823 |           \"abort\" => reference_doc_full(\n    |  ____________________^\n824 | |             \"Terminates the script with an explicit exit status.\",\n825 | |             \"`abort(status)` is a deliberate process exit, not Result error propagation: it produces the requested status without...\n826 | |             &[\"language\", \"abort\", \"exit-status\", \"validation\", \"builtin\"],\n827 | |             \"abort(status: Int, force: Bool = false)\",\n828 | |             &[],\n829 | |         ),\n    | |_________^ expected `(&str, &str)`, found `ReferenceDoc`\n    |\n    = note: expected tuple `(&str, &str)`\n              found struct `ReferenceDoc`\n\nFor more information about this error, try `rustc --explain E0308`.\nerror: could not compile `xsh-registry` (lib test) due to 1 previous error\n\n\nCommand exited with code 101",
+        "tool": "bash",
+        "turn": 18,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-safepath-001"
+        }
+      },
+      {
+        "report": "phases/01-ticket/workers/engineer/task-safepath-001/report.json",
+        "summary": "    Blocking waiting for file lock on package cache\n    Blocking waiting for file lock on package cache\n    Blocking waiting for file lock on build directory\n   Compiling xsh-registry v0.0.1 (/Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786144485305/task-safepath-001/crates/xsh-registry)\nerror[E0308]: `match` arms have incompatible types\n   --> crates/xsh-registry/src/reference.rs:823:20\n    |\n741 |       let (summary, contract) = match item {\n    |                                 ---------- `match` arms have incompatible types\n...\n810 |           \"display-strings\" => (\n    |  ______________________________-\n811 | |             \"Defines display-string interpolation.\",\n812 | |             \"Display strings are presentation text: they interpolate with `${expr}` and do not become command argv or filesystem ...\n813 | |         ),\n    | |_________- this and all prior arms are found to be of type `(&str, &str)`\n...\n823 |           \"abort\" => reference_doc_full(\n    |  ____________________^\n824 | |             \"Terminates the script with an explicit exit status.\",\n825 | |             \"`abort(status)` is a deliberate process exit, not Result error propagation: it produces the requested status without...\n826 | |             &[\"language\", \"abort\", \"exit-status\", \"validation\", \"builtin\"],\n827 | |             \"abort(status: Int, force: Bool = false)\",\n828 | |             &[],\n829 | |         ),\n    | |_________^ expected `(&str, &str)`, found `ReferenceDoc`\n    |\n    = note: expected tuple `(&str, &str)`\n              found struct `ReferenceDoc`\n\nFor more information about this error, try `rustc --explain E0308`.\nerror: could not compile `xsh-registry` (lib) due to 1 previous error\n\n\nCommand exited with code 101",
+        "tool": "bash",
+        "turn": 18,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-safepath-001"
+        }
+      },
+      {
+        "report": "phases/01-ticket/workers/engineer/task-safepath-001/report.json",
+        "summary": "err[check.unresolved-name]: unresolved name\n  /Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786144485305/task-safepath-001/docs/snippets/api/core-abort.xsh:1:4\n  if invalid_input {\n     ^^^^^^^^^^^^^ unresolved name\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 24,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-safepath-001"
+        }
+      },
+      {
+        "report": "phases/01-ticket/workers/engineer/task-safepath-001/report.json",
+        "summary": "    Blocking waiting for file lock on package cache\n    Blocking waiting for file lock on package cache\n    Blocking waiting for file lock on package cache\n    Blocking waiting for file lock on package cache\n    Blocking waiting for file lock on build directory\n   Compiling xsh v0.0.1 (/Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786144485305/task-safepath-001)\n    Finished `test` profile [unoptimized] target(s) in 21.37s\n     Running tests/integration.rs (target/debug/deps/integration-4d74d0805adc1abb)\n\nrunning 1 test\n    Blocking waiting for file lock on package cache\n    Blocking waiting for file lock on package cache\n    Blocking waiting for file lock on package cache\n    Blocking waiting for file lock on build directory\n    Finished `dev` profile [unoptimized] target(s) in 4.98s\ntest runtime::coverage::runnable_xsh_corpus_is_formatted_and_lints_without_warnings ... FAILED\n\nfailures:\n\n---- runtime::coverage::runnable_xsh_corpus_is_formatted_and_lints_without_warnings stdout ----\n\nthread 'runtime::coverage::runnable_xsh_corpus_is_formatted_and_lints_without_warnings' (12804341) panicked at tests/runtime/common.rs:541:5:\nstatus=Some(1)\nstdout:\ntests/xsh/run.xsh: needs formatting\n\nstderr:\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\n\nfailures:\n    runtime::coverage::runnable_xsh_corpus_is_formatted_and_lints_without_warnings\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 485 filtered out; finished in 5.55s\n\nerror: test failed, to rerun pass `-p xsh --test integration`\n\n\nCommand exited with code 101",
+        "tool": "bash",
+        "turn": 28,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-safepath-001"
+        }
+      },
+      {
+        "report": "phases/01-ticket/workers/engineer/task-safepath-001/report.json",
+        "summary": "(no output)\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 31,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-safepath-001"
+        }
+      },
+      {
+        "report": "phases/02-reeval-task-safepath-001/workers/eval-manager/task-safepath/report.json",
+        "summary": "(no output)\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 3,
+        "worker": {
+          "role": "eval-manager",
+          "worker_id": "task-safepath"
+        }
+      },
+      {
+        "report": "phases/02-reeval-task-safepath-001/workers/eval-manager/task-safepath/report.json",
+        "summary": "(no output)\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 3,
+        "worker": {
+          "role": "eval-manager",
+          "worker_id": "task-safepath"
+        }
+      },
+      {
+        "report": "phases/02-reeval-task-safepath-001/workers/eval-manager/task-safepath/report.json",
+        "summary": "=== .xsh-factory-worktrees ===\n=== run worktree ===\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 6,
+        "worker": {
+          "role": "eval-manager",
+          "worker_id": "task-safepath"
+        }
+      },
+      {
+        "report": "phases/02-reeval-task-safepath-001/workers/eval-worker/task-safepath-1/report.json",
+        "summary": "err[parse.unsupported-boolean-operator]: unsupported operator '||': XSH boolean operators are the word forms 'or'\n  safepath.xsh:16:27\n        } else if seg == \"\" || seg == \".\" {\n                            ^^ use 'or' instead of '||'\n\nerr[parse.expected-token]: expected `{` to start block\n  safepath.xsh:16:27\n        } else if seg == \"\" || seg == \".\" {\n                            ^ expected `{` to start block\n\nerr[parse.expected-terminator]: expected statement terminator\n  safepath.xsh:18:9\n        } else {\n          ^^^^ expected statement terminator\n\nerr[parse.expected-expression]: expected expression\n  safepath.xsh:18:9\n        } else {\n          ^^^^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  safepath.xsh:21:5\n      }\n      ^ expected expression\n\nerr[parse.unsupported-boolean-operator]: unsupported operator '||': XSH boolean operators are the word forms 'or'\n  safepath.xsh:23:32\n    let escaped = result.escaped || rel.starts_with(\"/\")\n                                 ^^ use 'or' instead of '||'\n\nerr[parse.expected-terminator]: expected statement terminator\n  safepath.xsh:23:32\n    let escaped = result.escaped || rel.starts_with(\"/\")\n                                 ^ expected statement terminator\n\nerr[parse.expected-expression]: expected expression\n  safepath.xsh:23:32\n    let escaped = result.escaped || rel.starts_with(\"/\")\n                                 ^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  safepath.xsh:35:1\n  }\n  ^ expected expression\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 19,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-safepath-1"
+        }
+      },
+      {
+        "report": "phases/02-reeval-task-safepath-001/workers/eval-worker/task-safepath-1/report.json",
+        "summary": "err[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  safepath.xsh:25:24\n      print \"escape: \" + rel\n                         ^^^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $rel\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 21,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-safepath-1"
+        }
+      },
+      {
+        "report": "phases/02-reeval-task-safepath-001/workers/eval-worker/task-safepath-1/report.json",
+        "summary": "err[compact.indexed-build]: indexed IR could not encode `full_ir_function_blocker`\n  safepath.xsh:1:31\n  proc main(...argv: List[Str]) {\n                                ^ indexed IR could not encode `full_ir_function_blocker`\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 23,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-safepath-1"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-manager/task-treecmp/report.json",
+        "summary": "3b56a781606faa1ae0eb811af09d10094080152dae78d9f057cca7de101e126b  lineage/handbook-approved.md\n--- candidate exists? ---\ntotal 24\ndrwxr-xr-x   3 josh  staff     96 Aug  7 16:14 .\ndrwxr-xr-x  24 josh  staff    768 Aug  7 16:24 ..\n-rw-r--r--   1 josh  staff  10305 Aug  7 16:14 handbook-approved.md\n--- runtime handbook map.empty/for/bool ---\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 15,
+        "worker": {
+          "role": "eval-manager",
+          "worker_id": "task-treecmp"
+        }
+      }
+    ],
+    "workers": [
+      {
+        "identity": {
+          "role": "director",
+          "worker_id": "director"
+        },
+        "path": "phases/01-ticket/workers/director/director/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 9,
+          "budget_usd": 0.06,
+          "cache_read_cost_usd": 0.002139264,
+          "cache_read_tokens": 118848,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.005186664,
+          "input_cost_usd": 0.00225198,
+          "input_tokens": 25022,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00079542,
+          "output_tokens": 4419,
+          "provider_total_tokens": 148289,
+          "reasoning_tokens": 1667,
+          "thinking_blocks": 7,
+          "tool_calls": 19,
+          "tool_errors": 0,
+          "tool_results": 19,
+          "total_bucket_tokens": 148289,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "engineer",
+          "worker_id": "task-safepath-001"
+        },
+        "path": "phases/01-ticket/workers/engineer/task-safepath-001/report.json",
+        "result": "pass",
+        "tool_errors": 9,
+        "usage": {
+          "assistant_turns": 35,
+          "budget_usd": 0.35,
+          "cache_read_cost_usd": 0.03453405,
+          "cache_read_tokens": 3453405,
+          "cache_write_cost_usd": 0.049300874999999994,
+          "cache_write_tokens": 394407,
+          "cost_usd": 0.09171922500000002,
+          "input_cost_usd": 0.0000105,
+          "input_tokens": 105,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0078738,
+          "output_tokens": 13123,
+          "provider_total_tokens": 3861040,
+          "reasoning_tokens": 4982,
+          "thinking_blocks": 16,
+          "tool_calls": 100,
+          "tool_errors": 9,
+          "tool_results": 100,
+          "total_bucket_tokens": 3861040,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-safepath"
+        },
+        "path": "phases/02-reeval-task-safepath-001/workers/eval-manager/task-safepath/report.json",
+        "result": "pass",
+        "tool_errors": 3,
+        "usage": {
+          "assistant_turns": 29,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.017750016,
+          "cache_read_tokens": 986112,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.026913996000000003,
+          "input_cost_usd": 0.005181660000000001,
+          "input_tokens": 57574,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00398232,
+          "output_tokens": 22124,
+          "provider_total_tokens": 1065810,
+          "reasoning_tokens": 12234,
+          "thinking_blocks": 28,
+          "tool_calls": 45,
+          "tool_errors": 3,
+          "tool_results": 45,
+          "total_bucket_tokens": 1065810,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-safepath-1"
+        },
+        "path": "phases/02-reeval-task-safepath-001/workers/eval-worker/task-safepath-1/report.json",
+        "result": "pass",
+        "tool_errors": 3,
+        "usage": {
+          "assistant_turns": 53,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.016929792,
+          "cache_read_tokens": 940544,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.02340988199999999,
+          "input_cost_usd": 0.003273570000000001,
+          "input_tokens": 36373,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.003206519999999999,
+          "output_tokens": 17814,
+          "provider_total_tokens": 994731,
+          "reasoning_tokens": 10907,
+          "thinking_blocks": 39,
+          "tool_calls": 54,
+          "tool_errors": 3,
+          "tool_results": 54,
+          "total_bucket_tokens": 994731,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-treecmp"
+        },
+        "path": "phases/03-eval/workers/eval-manager/task-treecmp/report.json",
+        "result": "pass",
+        "tool_errors": 1,
+        "usage": {
+          "assistant_turns": 22,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.011390976,
+          "cache_read_tokens": 632832,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.019563966,
+          "input_cost_usd": 0.00501939,
+          "input_tokens": 55771,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0031536000000000003,
+          "output_tokens": 17520,
+          "provider_total_tokens": 706123,
+          "reasoning_tokens": 12266,
+          "thinking_blocks": 20,
+          "tool_calls": 30,
+          "tool_errors": 1,
+          "tool_results": 30,
+          "total_bucket_tokens": 706123,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-treecmp-1"
+        },
+        "path": "phases/03-eval/workers/eval-worker/task-treecmp-1/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 56,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.020959487999999995,
+          "cache_read_tokens": 1164416,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.027834588000000004,
+          "input_cost_usd": 0.0040688999999999986,
+          "input_tokens": 45210,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0028062000000000004,
+          "output_tokens": 15590,
+          "provider_total_tokens": 1225216,
+          "reasoning_tokens": 8393,
+          "thinking_blocks": 47,
+          "tool_calls": 68,
+          "tool_errors": 0,
+          "tool_results": 68,
+          "total_bucket_tokens": 1225216,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "630d14261ce5cf0160bf9809e79e2fca12922c70"
+  },
+  "findings": [],
+  "identity": {
+    "mode": "organization",
+    "run_id": "run-1786144485305"
+  },
+  "kind": "run",
+  "result": "pass",
+  "schema_version": 1,
+  "state": "completed"
+}

@@ -1,0 +1,168 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786144485305/phases/01-ticket/workers/engineer/task-safepath-001/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_process": "pass",
+    "dispatch_claim": "99db838f163eeb04c326d215d4c10a1e73cc42e642719da87074449598ce8c43",
+    "dispatch_id": "engineer-task-safepath-001",
+    "message_sha256": "99db838f163eeb04c326d215d4c10a1e73cc42e642719da87074449598ce8c43",
+    "reporting": "pass",
+    "required_report": "present",
+    "session_limit_watcher": "pass",
+    "system_prompt_sha256": "deeae292423b30a10826cd18cee373f48510904bb1e919621255acbac1c24347",
+    "watcher": "pass"
+  },
+  "findings": [
+    {
+      "count": 9,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "role": "engineer",
+    "worker_id": "task-safepath-001"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/openai/gpt-5.6-luna"
+  ],
+  "provider_telemetry": {
+    "event_turns": 35,
+    "events_path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786144485305/phases/01-ticket/workers/engineer/task-safepath-001/session.jsonl.events.jsonl",
+    "output_tokens_per_second": 0,
+    "present": true,
+    "provider_errors": [],
+    "response_elapsed_ms": 0,
+    "retry_count": 0,
+    "retry_delay_ms": 0,
+    "retry_errors": [],
+    "retry_failures": 0,
+    "retry_successes": 0
+  },
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786144485305/phases/01-ticket/workers/engineer/task-safepath-001/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 34,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 404153
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786144485305/phases/01-ticket/workers/engineer/task-safepath-001/session.jsonl.bz2",
+      "summary": "Path not found: /Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786144485305/task-safepath-001/src/reference.rs",
+      "tool": "grep",
+      "turn": 5
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786144485305/phases/01-ticket/workers/engineer/task-safepath-001/session.jsonl.bz2",
+      "summary": "ENOENT: no such file or directory, access '/Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786144485305/task-safepath-001/src/reference.rs'",
+      "tool": "read",
+      "turn": 6
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786144485305/phases/01-ticket/workers/engineer/task-safepath-001/session.jsonl.bz2",
+      "summary": "ENOENT: no such file or directory, access '/Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786144485305/task-safepath-001/src/runtime_op.rs'",
+      "tool": "read",
+      "turn": 6
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786144485305/phases/01-ticket/workers/engineer/task-safepath-001/session.jsonl.bz2",
+      "summary": "ENOENT: no such file or directory, access '/Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786144485305/task-safepath-001/src/reference.rs'",
+      "tool": "read",
+      "turn": 8
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786144485305/phases/01-ticket/workers/engineer/task-safepath-001/session.jsonl.bz2",
+      "summary": "    Blocking waiting for file lock on package cache\n    Blocking waiting for file lock on package cache\n    Blocking waiting for file lock on package cache\n   Compiling xsh-registry v0.0.1 (/Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786144485305/task-safepath-001/crates/xsh-registry)\nerror[E0308]: `match` arms have incompatible types\n   --> crates/xsh-registry/src/reference.rs:823:20\n    |\n741 |       let (summary, contract) = match item {\n    |                                 ---------- `match` arms have incompatible types\n...\n810 |           \"display-strings\" => (\n    |  ______________________________-\n811 | |             \"Defines display-string interpolation.\",\n812 | |             \"Display strings are presentation text: they interpolate with `${expr}` and do not become command argv or filesystem ...\n813 | |         ),\n    | |_________- this and all prior arms are found to be of type `(&str, &str)`\n...\n823 |           \"abort\" => reference_doc_full(\n    |  ____________________^\n824 | |             \"Terminates the script with an explicit exit status.\",\n825 | |             \"`abort(status)` is a deliberate process exit, not Result error propagation: it produces the requested status without...\n826 | |             &[\"language\", \"abort\", \"exit-status\", \"validation\", \"builtin\"],\n827 | |             \"abort(status: Int, force: Bool = false)\",\n828 | |             &[],\n829 | |         ),\n    | |_________^ expected `(&str, &str)`, found `ReferenceDoc`\n    |\n    = note: expected tuple `(&str, &str)`\n              found struct `ReferenceDoc`\n\nFor more information about this error, try `rustc --explain E0308`.\nerror: could not compile `xsh-registry` (lib test) due to 1 previous error\n\n\nCommand exited with code 101",
+      "tool": "bash",
+      "turn": 18
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786144485305/phases/01-ticket/workers/engineer/task-safepath-001/session.jsonl.bz2",
+      "summary": "    Blocking waiting for file lock on package cache\n    Blocking waiting for file lock on package cache\n    Blocking waiting for file lock on build directory\n   Compiling xsh-registry v0.0.1 (/Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786144485305/task-safepath-001/crates/xsh-registry)\nerror[E0308]: `match` arms have incompatible types\n   --> crates/xsh-registry/src/reference.rs:823:20\n    |\n741 |       let (summary, contract) = match item {\n    |                                 ---------- `match` arms have incompatible types\n...\n810 |           \"display-strings\" => (\n    |  ______________________________-\n811 | |             \"Defines display-string interpolation.\",\n812 | |             \"Display strings are presentation text: they interpolate with `${expr}` and do not become command argv or filesystem ...\n813 | |         ),\n    | |_________- this and all prior arms are found to be of type `(&str, &str)`\n...\n823 |           \"abort\" => reference_doc_full(\n    |  ____________________^\n824 | |             \"Terminates the script with an explicit exit status.\",\n825 | |             \"`abort(status)` is a deliberate process exit, not Result error propagation: it produces the requested status without...\n826 | |             &[\"language\", \"abort\", \"exit-status\", \"validation\", \"builtin\"],\n827 | |             \"abort(status: Int, force: Bool = false)\",\n828 | |             &[],\n829 | |         ),\n    | |_________^ expected `(&str, &str)`, found `ReferenceDoc`\n    |\n    = note: expected tuple `(&str, &str)`\n              found struct `ReferenceDoc`\n\nFor more information about this error, try `rustc --explain E0308`.\nerror: could not compile `xsh-registry` (lib) due to 1 previous error\n\n\nCommand exited with code 101",
+      "tool": "bash",
+      "turn": 18
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786144485305/phases/01-ticket/workers/engineer/task-safepath-001/session.jsonl.bz2",
+      "summary": "err[check.unresolved-name]: unresolved name\n  /Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786144485305/task-safepath-001/docs/snippets/api/core-abort.xsh:1:4\n  if invalid_input {\n     ^^^^^^^^^^^^^ unresolved name\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 24
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786144485305/phases/01-ticket/workers/engineer/task-safepath-001/session.jsonl.bz2",
+      "summary": "    Blocking waiting for file lock on package cache\n    Blocking waiting for file lock on package cache\n    Blocking waiting for file lock on package cache\n    Blocking waiting for file lock on package cache\n    Blocking waiting for file lock on build directory\n   Compiling xsh v0.0.1 (/Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786144485305/task-safepath-001)\n    Finished `test` profile [unoptimized] target(s) in 21.37s\n     Running tests/integration.rs (target/debug/deps/integration-4d74d0805adc1abb)\n\nrunning 1 test\n    Blocking waiting for file lock on package cache\n    Blocking waiting for file lock on package cache\n    Blocking waiting for file lock on package cache\n    Blocking waiting for file lock on build directory\n    Finished `dev` profile [unoptimized] target(s) in 4.98s\ntest runtime::coverage::runnable_xsh_corpus_is_formatted_and_lints_without_warnings ... FAILED\n\nfailures:\n\n---- runtime::coverage::runnable_xsh_corpus_is_formatted_and_lints_without_warnings stdout ----\n\nthread 'runtime::coverage::runnable_xsh_corpus_is_formatted_and_lints_without_warnings' (12804341) panicked at tests/runtime/common.rs:541:5:\nstatus=Some(1)\nstdout:\ntests/xsh/run.xsh: needs formatting\n\nstderr:\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\n\nfailures:\n    runtime::coverage::runnable_xsh_corpus_is_formatted_and_lints_without_warnings\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 485 filtered out; finished in 5.55s\n\nerror: test failed, to rerun pass `-p xsh --test integration`\n\n\nCommand exited with code 101",
+      "tool": "bash",
+      "turn": 28
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786144485305/phases/01-ticket/workers/engineer/task-safepath-001/session.jsonl.bz2",
+      "summary": "(no output)\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 31
+    }
+  ],
+  "tools": [
+    {
+      "count": 35,
+      "name": "bash"
+    },
+    {
+      "count": 6,
+      "name": "edit"
+    },
+    {
+      "count": 3,
+      "name": "find"
+    },
+    {
+      "count": 18,
+      "name": "grep"
+    },
+    {
+      "count": 36,
+      "name": "read"
+    },
+    {
+      "count": 2,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 35,
+    "budget_usd": 0.35,
+    "cache_read_cost_usd": 0.03453405,
+    "cache_read_tokens": 3453405,
+    "cache_write_cost_usd": 0.049300874999999994,
+    "cache_write_tokens": 394407,
+    "cost_usd": 0.09171922500000002,
+    "input_cost_usd": 0.0000105,
+    "input_tokens": 105,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.0078738,
+    "output_tokens": 13123,
+    "provider_total_tokens": 3861040,
+    "reasoning_tokens": 4982,
+    "thinking_blocks": 16,
+    "tool_calls": 100,
+    "tool_errors": 9,
+    "tool_results": 100,
+    "total_bucket_tokens": 3861040,
+    "user_messages": 1
+  }
+}

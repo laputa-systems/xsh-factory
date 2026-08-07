@@ -1,0 +1,128 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786144485305/phases/02-reeval-task-safepath-001/workers/eval-manager/task-safepath/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_process": "pass",
+    "dispatch_claim": "588e4c1805c2759352031dd5fa0f1546920c8cb31c859c83b5f6f579bc00e8d8",
+    "dispatch_id": "eval-manager-task-safepath",
+    "message_sha256": "588e4c1805c2759352031dd5fa0f1546920c8cb31c859c83b5f6f579bc00e8d8",
+    "reporting": "pass",
+    "required_report": "present",
+    "session_limit_watcher": "pass",
+    "system_prompt_sha256": "a5ab31790989af39c06a7fec953a65b5b782b1be43779a76401f77f02f7995f3",
+    "watcher": "pass"
+  },
+  "findings": [
+    {
+      "count": 3,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "role": "eval-manager",
+    "worker_id": "task-safepath"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "provider_telemetry": {
+    "event_turns": 29,
+    "events_path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786144485305/phases/02-reeval-task-safepath-001/workers/eval-manager/task-safepath/session.jsonl.events.jsonl",
+    "output_tokens_per_second": 0,
+    "present": true,
+    "provider_errors": [],
+    "response_elapsed_ms": 0,
+    "retry_count": 0,
+    "retry_delay_ms": 0,
+    "retry_errors": [],
+    "retry_failures": 0,
+    "retry_successes": 0
+  },
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786144485305/phases/02-reeval-task-safepath-001/workers/eval-manager/task-safepath/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 28,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 249042
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786144485305/phases/02-reeval-task-safepath-001/workers/eval-manager/task-safepath/session.jsonl.bz2",
+      "summary": "(no output)\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 3
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786144485305/phases/02-reeval-task-safepath-001/workers/eval-manager/task-safepath/session.jsonl.bz2",
+      "summary": "(no output)\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 3
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786144485305/phases/02-reeval-task-safepath-001/workers/eval-manager/task-safepath/session.jsonl.bz2",
+      "summary": "=== .xsh-factory-worktrees ===\n=== run worktree ===\n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 6
+    }
+  ],
+  "tools": [
+    {
+      "count": 27,
+      "name": "bash"
+    },
+    {
+      "count": 2,
+      "name": "edit"
+    },
+    {
+      "count": 1,
+      "name": "find"
+    },
+    {
+      "count": 13,
+      "name": "read"
+    },
+    {
+      "count": 2,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 29,
+    "budget_usd": 0.15,
+    "cache_read_cost_usd": 0.017750016,
+    "cache_read_tokens": 986112,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.026913996000000003,
+    "input_cost_usd": 0.005181660000000001,
+    "input_tokens": 57574,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.00398232,
+    "output_tokens": 22124,
+    "provider_total_tokens": 1065810,
+    "reasoning_tokens": 12234,
+    "thinking_blocks": 28,
+    "tool_calls": 45,
+    "tool_errors": 3,
+    "tool_results": 45,
+    "total_bucket_tokens": 1065810,
+    "user_messages": 1
+  }
+}

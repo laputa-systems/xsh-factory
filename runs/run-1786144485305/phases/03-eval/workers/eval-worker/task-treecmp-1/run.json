@@ -1,0 +1,120 @@
+{
+  "classification": "pass",
+  "correctness": {
+    "all_exact": true,
+    "cases": [
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 16251312,
+        "exact": true,
+        "name": "public",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 14784166
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 15403383,
+        "exact": true,
+        "name": "hidden_all_ok",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 17243492
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 12496842,
+        "exact": true,
+        "name": "hidden_missing",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 15323673
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 13395688,
+        "exact": true,
+        "name": "hidden_changed",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 14489579
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 14528704,
+        "exact": true,
+        "name": "hidden_extra",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 13020183
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 13489106,
+        "exact": true,
+        "name": "hidden_combined",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 13045058
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 13108726,
+        "exact": true,
+        "name": "hidden_empty_tree",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 13604733
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 14723874,
+        "exact": true,
+        "name": "hidden_empty_manifest",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 25021893
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 12995891,
+        "exact": true,
+        "name": "hidden_spaces",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 24328216
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 13471439,
+        "exact": true,
+        "name": "hidden_utf8",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 16063225
+      },
+      {
+        "candidate_exit": 3,
+        "candidate_wall_ns": 14746415,
+        "exact": true,
+        "name": "hidden_missing_manifest",
+        "oracle_exit": 1,
+        "oracle_wall_ns": 13879112
+      },
+      {
+        "candidate_exit": 3,
+        "candidate_wall_ns": 14396785,
+        "exact": true,
+        "name": "hidden_bad_manifest",
+        "oracle_exit": 1,
+        "oracle_wall_ns": 14270492
+      }
+    ],
+    "passed": true
+  },
+  "eval_id": "task-treecmp",
+  "image_id": "sha256:a27da411f8f3b351bcf9825b83ba536021d6411c144ad7343aecc5304cd533cc",
+  "platform": "linux/arm64",
+  "protocol": {
+    "artifact_present": true,
+    "review_ok": true
+  },
+  "restrictions": {
+    "passed": true
+  },
+  "result": "pass",
+  "timings": {
+    "passed": true
+  },
+  "trial_id": "1"
+}

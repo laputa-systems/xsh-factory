@@ -802,7 +802,10 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
         }
       }
       delivery_ok = delivery_ok and delivery.merged
-      runtime.emit_event(
+      # Delivery is an outcome annotation, not a lifecycle transition. The
+      # ticket subject is already validated; recording a synthetic
+      # `validated -> delivered` state would violate the lifecycle contract.
+      runtime.emit_structured_event(
         event_template,
         run_dir,
         if delivery.merged {
@@ -811,13 +814,15 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
           f"86-ticket-${ticket_id}-delivery-failed"
         },
         ticket_id,
-        if delivery.merged { "delivered" } else { "failed" },
-        1,
-        "controller",
-        if delivery.merged {
-          f"${delivery.implementation_commit} is now reachable from XSH HEAD"
-        } else {
-          "validated implementation was not delivered; branch retained for review"
+        {
+          status: if delivery.merged { "delivered" } else { "delivery-failed" },
+          branch: delivery.branch,
+          implementation_commit: delivery.implementation_commit,
+          detail: if delivery.merged {
+            f"${delivery.implementation_commit} is now reachable from XSH HEAD"
+          } else {
+            "validated implementation was not delivered; branch retained for review"
+          },
         },
       )?
       let reeval_exit = if reeval_pass { 0 } else { 1 }

@@ -6,6 +6,19 @@ A candidate hash listed as `promoted` has been incorporated into the rolling
 must remain visible as unresolved work in the CTO briefing; controllers must
 not silently discard it.
 
+## Explicit CTO disposition — run-1786144485305
+
+| Candidate SHA-256 | Disposition |
+| --- | --- |
+| `725c9ae3a7e45f7371be2c880ac993f2f5cd97d9c0efd6e3b61ee058016df52b` | deferred pending cross-eval replay; not promoted |
+| `d71b018bb714011fded996e535a5ea2ac3ba630c525ced52ea41c98184f27ec7` | deferred pending cross-eval replay; not promoted |
+
+The safepath replay and independent treecmp eval staged general XSH guidance
+about fold-block stream limitations, quiet deliberate exits, Map construction,
+stream accumulation, and word-form Boolean operators. These candidates remain
+single-cycle evidence; keep the approved handbook unchanged until the named
+cross-eval replays confirm reduced discovery friction and generalization.
+
 ## One-time CTO consolidation — 2026-08-03
 
 The CTO personally consolidated every distinct historical candidate lesson into

@@ -1066,6 +1066,23 @@ proc test_event_ledger_is_jsonl_and_stateful(ctx: TestContext) [fs, error] {
   test.ok(! fs.exists(fp"${root}/events/02-complete.md")?)?
 }
 
+proc test_delivery_metadata_does_not_advance_lifecycle_state(ctx: TestContext) [fs, error] {
+  let root = test.temp_dir(ctx, name: "delivery-event")?
+  runtime.emit_event(root, root, "01-start", "ticket-a", "started", 1, "controller", "assigned")?
+  runtime.emit_event(root, root, "02-complete", "ticket-a", "completed", 1, "controller", "validated")?
+  runtime.emit_event(root, root, "03-validated", "ticket-a", "validated", 1, "controller", "ready")?
+  runtime.emit_structured_event(
+    root,
+    root,
+    "04-delivered",
+    "ticket-a",
+    {status: "delivered", implementation_commit: "abc123"},
+  )?
+  test.eq(fs.read_text(fp"${root}/states/ticket-a.state")?.trim(), "validated")?
+  test.contains(fs.read_text(fp"${root}/events.jsonl")?, "\"04-delivered\"")?
+  test.contains(fs.read_text(fp"${root}/events.jsonl")?, "\"implementation_commit\":\"abc123\"")?
+}
+
 proc test_budget_consequences_are_durable(ctx: TestContext) [fs, error] {
   let factory = test.temp_dir(ctx, name: "budget-consequences")?
   fs.mkdir(fp"${factory}/tickets")?

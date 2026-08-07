@@ -1,0 +1,103 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786144485305/phases/03-eval/workers/eval-worker/task-treecmp-1/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_state": "pass",
+    "agent_wall_ms": 245987,
+    "artifact": {
+      "name": "treecmp.xsh",
+      "state": "present"
+    },
+    "budget_state": "pass",
+    "classification": "pass",
+    "evaluator_manifest": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786144485305/phases/03-eval/workers/eval-worker/task-treecmp-1/run.json",
+    "evaluator_state": "pass",
+    "reporting_state": "pass",
+    "result": "pass",
+    "review": {
+      "state": "present"
+    }
+  },
+  "findings": [],
+  "identity": {
+    "eval_id": "task-treecmp",
+    "role": "eval-worker",
+    "run_id": "03-eval",
+    "worker_id": "task-treecmp-1"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "provider_telemetry": {
+    "event_turns": 56,
+    "events_path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786144485305/phases/03-eval/workers/eval-worker/task-treecmp-1/session.jsonl.events.jsonl",
+    "output_tokens_per_second": 0,
+    "present": true,
+    "provider_errors": [],
+    "response_elapsed_ms": 0,
+    "retry_count": 0,
+    "retry_delay_ms": 0,
+    "retry_errors": [],
+    "retry_failures": 0,
+    "retry_successes": 0
+  },
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786144485305/phases/03-eval/workers/eval-worker/task-treecmp-1/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 55,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 244418
+  },
+  "tool_errors": [],
+  "tools": [
+    {
+      "count": 63,
+      "name": "bash"
+    },
+    {
+      "count": 1,
+      "name": "edit"
+    },
+    {
+      "count": 4,
+      "name": "read"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 56,
+    "budget_usd": 0.5,
+    "cache_read_cost_usd": 0.020959487999999995,
+    "cache_read_tokens": 1164416,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.027834588000000004,
+    "input_cost_usd": 0.0040688999999999986,
+    "input_tokens": 45210,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.0028062000000000004,
+    "output_tokens": 15590,
+    "provider_total_tokens": 1225216,
+    "reasoning_tokens": 8393,
+    "thinking_blocks": 47,
+    "tool_calls": 68,
+    "tool_errors": 0,
+    "tool_results": 68,
+    "total_bucket_tokens": 1225216,
+    "user_messages": 1
+  }
+}
