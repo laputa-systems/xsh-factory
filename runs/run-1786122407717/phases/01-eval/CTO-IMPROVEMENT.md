@@ -2,7 +2,7 @@
 
 ## Status
 
-pending-validation
+validated
 
 `pending-validation` means the CTO has already implemented this change. It is
 not awaiting another approval; the next cycle verifies the named metric or
@@ -47,6 +47,5 @@ fails the repair and requires a focused session-path fix.
 
 ## Next-cycle disposition
 
-The next CTO must replace `pending-validation` with `validated` or `reverted`
-after running the named verification, and link the evidence before admitting
-paid work.
+Validated by the 112-test native suite; the next paid replay remains the
+end-to-end falsification target.

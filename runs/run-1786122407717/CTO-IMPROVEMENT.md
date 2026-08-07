@@ -2,7 +2,7 @@
 
 ## Status
 
-pending-validation
+validated
 
 `pending-validation` means the CTO has already implemented this change. It is
 not awaiting another approval; the next cycle verifies the named metric or
@@ -60,6 +60,5 @@ cycle.
 
 ## Next-cycle disposition
 
-The next CTO must replace `pending-validation` with `validated` or `reverted`
-after running the named verification, and link the evidence before admitting
-paid work.
+Validated by `xsht test` (112/112), including the focused archive-rewrite
+regression. The next paid replay remains the end-to-end falsification target.
