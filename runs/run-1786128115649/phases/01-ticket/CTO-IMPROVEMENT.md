@@ -44,4 +44,6 @@ controller gate.
 ## Next-cycle disposition
 
 The implementation is ready for CTO merge/reuse review; no merge was made in
-this closeout.
+the initial closeout. The subsequent CTO fast-forward merged commit
+`857154dfe505f0d01053c1b5311f44422070eb34` into product `master`, and
+`factory/tools/reconcile.xsh` recorded the ticket as `Merged.`.

@@ -64,3 +64,10 @@ evidence.
 The next CTO must mark this handoff `validated` only after the event-order
 invariant is observed in a real organization run; otherwise mark it `reverted`
 and repair the controller before further paid work.
+
+## Post-close CTO merge
+
+The validated implementation was subsequently fast-forwarded into `../xsh`
+`master` at `857154dfe505f0d01053c1b5311f44422070eb34`. Running
+`factory/tools/reconcile.xsh` recorded the merge and updated
+`tickets/task-histogram-003.md` to `Merged.`.

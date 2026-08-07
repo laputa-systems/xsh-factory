@@ -2,7 +2,7 @@
 
 ## Status
 
-Approved.
+Merged.
 
 ## CTO decision — focused replay run-1786126514242
 
@@ -21,15 +21,16 @@ Approved.
 
 ## CTO decision — implementation run-1786128115649
 
-- Decision: Implementation supported by linked replay; keep the ticket
-  `Approved.` pending product-branch merge/reconciliation.
+- Decision: Implementation supported by linked replay and merged into product
+  `HEAD`.
 - Evidence: Engineer commit `857154dfe505f0d01053c1b5311f44422070eb34`,
   engineer report under `runs/run-1786128115649/phases/01-ticket/`, and the
   linked `task-histogram` replay manager report under
   `runs/run-1786128115649/phases/02-reeval-task-histogram-003/`; all nine
   evaluator cases passed and the native fold-effect regression test passed.
-- Merge disposition: The implementation branch is retained for CTO review;
-  no product branch merge is performed in this closeout.
+- Merge disposition: Fast-forwarded `../xsh` from `1477f47` to
+  `857154dfe505f0d01053c1b5311f44422070eb34`; deterministic reconciliation
+  recorded the merge and changed this ticket to `Merged.`.
 
 ## CTO decision — clean-slate cycle 2026-08-07
 
@@ -79,10 +80,10 @@ None.
 
 ## Merge record
 
-- Implementation branch: `{{IMPLEMENTATION_BRANCH}}`
-- Implementation commit: `{{IMPLEMENTATION_COMMIT}}`
-- Detected at XSH commit: `{{DETECTED_XSH_COMMIT}}`
-- Implementation run: `{{IMPLEMENTATION_RUN}}`
+- Implementation branch: `factory/task-histogram-003/1786128117659`
+- Implementation commit: `857154dfe505f0d01053c1b5311f44422070eb34`
+- Detected at XSH commit: `857154dfe505f0d01053c1b5311f44422070eb34`
+- Implementation run: `/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786128115649/phases/01-ticket`
 
 ## Source eval and manager
 
