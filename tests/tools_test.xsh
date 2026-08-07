@@ -669,9 +669,16 @@ proc test_eval_controller_completes_with_fake_build_docker_and_pi(ctx: TestConte
   let fake_make = fp"${bin_dir}/make"
   let fake_docker = fp"${bin_dir}/docker"
   let fake_pi = fp"${bin_dir}/factory-eval-pi"
+  let toolchain_stamp = fp"${factory}/runs/.cache/xsh-test-aarch64-unknown-linux-musl.stamp"
+  let staged_eval_context = fp"${factory}/evals/.dist"
   fs.mkdir(bin_dir)?
   test.ok(! fs.exists(run_dir)?)?
   defer fs.remove(run_dir, missing_ok: true)?
+  # This fixture deliberately replaces the product build with shell doubles.
+  # Remove both shared transient outputs so a later real eval cannot accept the
+  # fixture's cache stamp and stage the no-op doubles into its Docker image.
+  defer fs.remove(toolchain_stamp, missing_ok: true)?
+  defer fs.remove(staged_eval_context, missing_ok: true)?
   fs.write(
     fp"${root}/eval-request.md",
     """# Coverage eval request

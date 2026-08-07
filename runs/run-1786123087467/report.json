@@ -1,0 +1,110 @@
+{
+  "artifacts": [
+    {
+      "kind": "phase-reports",
+      "path": "phases/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 14,
+      "budget_failures": 0,
+      "cost_usd": 0.0104202,
+      "tool_errors": 2,
+      "total_bucket_tokens": 283816.0,
+      "unknown_costs": 0,
+      "workers": 1
+    },
+    "mode": "organization",
+    "outcomes": {
+      "cycle": "fail",
+      "evaluator": "fail",
+      "infrastructure": "pass",
+      "product": "fail"
+    },
+    "phases": [
+      {
+        "id": "01-eval",
+        "path": "phases/01-eval/report.json",
+        "result": "fail",
+        "valid": true
+      }
+    ],
+    "tool_errors": [
+      {
+        "report": "phases/01-eval/workers/eval-manager/task-bigfiles/report.json",
+        "summary": "---\n\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 6,
+        "worker": {
+          "role": "eval-manager",
+          "worker_id": "task-bigfiles"
+        }
+      },
+      {
+        "report": "phases/01-eval/workers/eval-manager/task-bigfiles/report.json",
+        "summary": "=== handbooks hash ===\n3b56a781606faa1ae0eb811af09d10094080152dae78d9f057cca7de101e126b  phases/01-eval/lineage/handbook-approved.md\n=== work handbook hash ===\n3b56a781606faa1ae0eb811af09d10094080152dae78d9f057cca7de101e126b  phases/01-eval/workers/eval-worker/task-bigfiles-1/work/handbook.md\n=== runtime handbook exists? ===\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 8,
+        "worker": {
+          "role": "eval-manager",
+          "worker_id": "task-bigfiles"
+        }
+      }
+    ],
+    "workers": [
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-bigfiles"
+        },
+        "path": "phases/01-eval/workers/eval-manager/task-bigfiles/report.json",
+        "result": "pass",
+        "tool_errors": 2,
+        "usage": {
+          "assistant_turns": 14,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.0039456000000000005,
+          "cache_read_tokens": 219200,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.0104202,
+          "input_cost_usd": 0.00515628,
+          "input_tokens": 57292,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0013183200000000002,
+          "output_tokens": 7324,
+          "provider_total_tokens": 283816,
+          "reasoning_tokens": 2911,
+          "thinking_blocks": 12,
+          "tool_calls": 24,
+          "tool_errors": 2,
+          "tool_results": 24,
+          "total_bucket_tokens": 283816,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "1477f472d5b4d57db3584357116ef97c32358ab6"
+  },
+  "findings": [
+    {
+      "id": "01-eval",
+      "kind": "phase",
+      "result": "fail"
+    }
+  ],
+  "identity": {
+    "mode": "organization",
+    "run_id": "run-1786123087467"
+  },
+  "kind": "run",
+  "result": "fail",
+  "schema_version": 1,
+  "state": "completed"
+}
