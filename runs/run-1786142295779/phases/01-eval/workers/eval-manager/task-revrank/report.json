@@ -1,0 +1,116 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786142295779/phases/01-eval/workers/eval-manager/task-revrank/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_process": "pass",
+    "dispatch_claim": "b36566a272d84c2e83af932068d89ae468c19b37b2d5ccdfe91504024a460644",
+    "dispatch_id": "eval-manager-task-revrank",
+    "message_sha256": "b36566a272d84c2e83af932068d89ae468c19b37b2d5ccdfe91504024a460644",
+    "reporting": "pass",
+    "required_report": "present",
+    "session_limit_watcher": "pass",
+    "system_prompt_sha256": "a5ab31790989af39c06a7fec953a65b5b782b1be43779a76401f77f02f7995f3",
+    "watcher": "pass"
+  },
+  "findings": [
+    {
+      "count": 1,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "role": "eval-manager",
+    "worker_id": "task-revrank"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "provider_telemetry": {
+    "event_turns": 14,
+    "events_path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786142295779/phases/01-eval/workers/eval-manager/task-revrank/session.jsonl.events.jsonl",
+    "output_tokens_per_second": 0,
+    "present": true,
+    "provider_errors": [],
+    "response_elapsed_ms": 0,
+    "retry_count": 0,
+    "retry_delay_ms": 0,
+    "retry_errors": [],
+    "retry_failures": 0,
+    "retry_successes": 0
+  },
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786142295779/phases/01-eval/workers/eval-manager/task-revrank/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 13,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 148912
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786142295779/phases/01-eval/workers/eval-manager/task-revrank/session.jsonl.bz2",
+      "summary": "=== session: mentions of Map[Int] / restriction / map.empty ===\n3\n26\n   1 restrictions on subprocesses\n   1 restrictions stated by the\n=== tool error count in session ===\n0\n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 7
+    }
+  ],
+  "tools": [
+    {
+      "count": 8,
+      "name": "bash"
+    },
+    {
+      "count": 1,
+      "name": "find"
+    },
+    {
+      "count": 1,
+      "name": "ls"
+    },
+    {
+      "count": 13,
+      "name": "read"
+    },
+    {
+      "count": 1,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 14,
+    "budget_usd": 0.15,
+    "cache_read_cost_usd": 0.005478912,
+    "cache_read_tokens": 304384,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.010091502,
+    "input_cost_usd": 0.0022731300000000004,
+    "input_tokens": 25257,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.00233946,
+    "output_tokens": 12997,
+    "provider_total_tokens": 342638,
+    "reasoning_tokens": 8410,
+    "thinking_blocks": 13,
+    "tool_calls": 24,
+    "tool_errors": 1,
+    "tool_results": 24,
+    "total_bucket_tokens": 342638,
+    "user_messages": 1
+  }
+}

@@ -1,0 +1,138 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786142295779/phases/02-eval/workers/eval-worker/task-safepath-1/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_state": "pass",
+    "agent_wall_ms": 186349,
+    "artifact": {
+      "name": "safepath.xsh",
+      "state": "present"
+    },
+    "budget_state": "pass",
+    "classification": "pass",
+    "evaluator_manifest": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786142295779/phases/02-eval/workers/eval-worker/task-safepath-1/run.json",
+    "evaluator_state": "pass",
+    "reporting_state": "pass",
+    "result": "pass",
+    "review": {
+      "state": "present"
+    }
+  },
+  "findings": [
+    {
+      "count": 4,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "eval_id": "task-safepath",
+    "role": "eval-worker",
+    "run_id": "02-eval",
+    "worker_id": "task-safepath-1"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "provider_telemetry": {
+    "event_turns": 40,
+    "events_path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786142295779/phases/02-eval/workers/eval-worker/task-safepath-1/session.jsonl.events.jsonl",
+    "output_tokens_per_second": 0,
+    "present": true,
+    "provider_errors": [],
+    "response_elapsed_ms": 0,
+    "retry_count": 0,
+    "retry_delay_ms": 0,
+    "retry_errors": [],
+    "retry_failures": 0,
+    "retry_successes": 0
+  },
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786142295779/phases/02-eval/workers/eval-worker/task-safepath-1/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 39,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 184617
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786142295779/phases/02-eval/workers/eval-worker/task-safepath-1/session.jsonl.bz2",
+      "summary": "err[check.argv-conversion]: interpolation cannot convert to one command word\n  /tmp/s.xsh:3:9\n    print $l[0]\n          ^^ interpolation cannot convert to one command word\n\nerr[check.argv-conversion]: interpolation cannot convert to one command word\n  /tmp/s.xsh:4:9\n    print $l[0..2]\n          ^^ interpolation cannot convert to one command word\n\nerr[check.argv-conversion]: interpolation cannot convert to one command word\n  /tmp/s.xsh:5:9\n    print $l[..2]\n          ^^ interpolation cannot convert to one command word\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 18
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786142295779/phases/02-eval/workers/eval-worker/task-safepath-1/session.jsonl.bz2",
+      "summary": "err[check.display-conversion]: value cannot be displayed by print\n  /tmp/s.xsh:7:9\n    print $y\n          ^^ value cannot be displayed by print\n\nerr[check.display-conversion]: value cannot be displayed by print\n  /tmp/s.xsh:8:9\n    print $z\n          ^^ value cannot be displayed by print\n\nerr[check.display-conversion]: value cannot be displayed by print\n  /tmp/s.xsh:9:9\n    print $t\n          ^^ value cannot be displayed by print\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 20
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786142295779/phases/02-eval/workers/eval-worker/task-safepath-1/session.jsonl.bz2",
+      "summary": "fmt=0\nwarn[lint.unannotated-effects]: proc `main` has effects but no annotation\n  safepath.xsh:3:1\n  proc main(...argv: List[Str]) {\n  ------------------------------- suggest [error]\nhelp: add effect annotation `[error]` -> [error] \nwarn[lint.unused-type]: unused type declaration `Acc`\n  safepath.xsh:1:1\n  type Acc = {stack: List[Str], escaped: Bool}\n  -------------------------------------------- type is declared but never referenced\nhelp: remove unused type declaration (apply manually)\nlint=1\n===more tests\nescape: a/../b/../../c/x\n/srv/app/a\nescape: b/../../x\n\n\nCommand exited with code 3",
+      "tool": "bash",
+      "turn": 30
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786142295779/phases/02-eval/workers/eval-worker/task-safepath-1/session.jsonl.bz2",
+      "summary": "00000000: 6573 6361 7065 3a20 612f 2e2e 2f2e 2e2f  escape: a/../../\n00000010: 6574 630a                                etc.\nsh: syntax error: bad substitution\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 38
+    }
+  ],
+  "tools": [
+    {
+      "count": 39,
+      "name": "bash"
+    },
+    {
+      "count": 1,
+      "name": "edit"
+    },
+    {
+      "count": 3,
+      "name": "read"
+    },
+    {
+      "count": 3,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 40,
+    "budget_usd": 0.5,
+    "cache_read_cost_usd": 0.0094176,
+    "cache_read_tokens": 523200,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.01612611,
+    "input_cost_usd": 0.00455931,
+    "input_tokens": 50659,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.0021491999999999995,
+    "output_tokens": 11940,
+    "provider_total_tokens": 585799,
+    "reasoning_tokens": 6763,
+    "thinking_blocks": 31,
+    "tool_calls": 46,
+    "tool_errors": 4,
+    "tool_results": 46,
+    "total_bucket_tokens": 585799,
+    "user_messages": 1
+  }
+}

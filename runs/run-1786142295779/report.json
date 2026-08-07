@@ -1,0 +1,482 @@
+{
+  "artifacts": [
+    {
+      "kind": "phase-reports",
+      "path": "phases/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 233,
+      "budget_failures": 0,
+      "cost_usd": 0.14112154799999999,
+      "tool_errors": 15,
+      "total_bucket_tokens": 5071470.0,
+      "unknown_costs": 0,
+      "workers": 8
+    },
+    "mode": "organization",
+    "outcomes": {
+      "cycle": "fail",
+      "evaluator": "fail",
+      "infrastructure": "pass",
+      "product": "fail"
+    },
+    "phases": [
+      {
+        "id": "01-eval",
+        "path": "phases/01-eval/report.json",
+        "result": "fail",
+        "valid": true
+      },
+      {
+        "id": "02-eval",
+        "path": "phases/02-eval/report.json",
+        "result": "pass",
+        "valid": true
+      },
+      {
+        "id": "03-eval",
+        "path": "phases/03-eval/report.json",
+        "result": "pass",
+        "valid": true
+      },
+      {
+        "id": "04-eval",
+        "path": "phases/04-eval/report.json",
+        "result": "pass",
+        "valid": true
+      }
+    ],
+    "tool_errors": [
+      {
+        "report": "phases/01-eval/workers/eval-manager/task-revrank/report.json",
+        "summary": "=== session: mentions of Map[Int] / restriction / map.empty ===\n3\n26\n   1 restrictions on subprocesses\n   1 restrictions stated by the\n=== tool error count in session ===\n0\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 7,
+        "worker": {
+          "role": "eval-manager",
+          "worker_id": "task-revrank"
+        }
+      },
+      {
+        "report": "phases/02-eval/workers/eval-worker/task-safepath-1/report.json",
+        "summary": "err[check.argv-conversion]: interpolation cannot convert to one command word\n  /tmp/s.xsh:3:9\n    print $l[0]\n          ^^ interpolation cannot convert to one command word\n\nerr[check.argv-conversion]: interpolation cannot convert to one command word\n  /tmp/s.xsh:4:9\n    print $l[0..2]\n          ^^ interpolation cannot convert to one command word\n\nerr[check.argv-conversion]: interpolation cannot convert to one command word\n  /tmp/s.xsh:5:9\n    print $l[..2]\n          ^^ interpolation cannot convert to one command word\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 18,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-safepath-1"
+        }
+      },
+      {
+        "report": "phases/02-eval/workers/eval-worker/task-safepath-1/report.json",
+        "summary": "err[check.display-conversion]: value cannot be displayed by print\n  /tmp/s.xsh:7:9\n    print $y\n          ^^ value cannot be displayed by print\n\nerr[check.display-conversion]: value cannot be displayed by print\n  /tmp/s.xsh:8:9\n    print $z\n          ^^ value cannot be displayed by print\n\nerr[check.display-conversion]: value cannot be displayed by print\n  /tmp/s.xsh:9:9\n    print $t\n          ^^ value cannot be displayed by print\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 20,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-safepath-1"
+        }
+      },
+      {
+        "report": "phases/02-eval/workers/eval-worker/task-safepath-1/report.json",
+        "summary": "fmt=0\nwarn[lint.unannotated-effects]: proc `main` has effects but no annotation\n  safepath.xsh:3:1\n  proc main(...argv: List[Str]) {\n  ------------------------------- suggest [error]\nhelp: add effect annotation `[error]` -> [error] \nwarn[lint.unused-type]: unused type declaration `Acc`\n  safepath.xsh:1:1\n  type Acc = {stack: List[Str], escaped: Bool}\n  -------------------------------------------- type is declared but never referenced\nhelp: remove unused type declaration (apply manually)\nlint=1\n===more tests\nescape: a/../b/../../c/x\n/srv/app/a\nescape: b/../../x\n\n\nCommand exited with code 3",
+        "tool": "bash",
+        "turn": 30,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-safepath-1"
+        }
+      },
+      {
+        "report": "phases/02-eval/workers/eval-worker/task-safepath-1/report.json",
+        "summary": "00000000: 6573 6361 7065 3a20 612f 2e2e 2f2e 2e2f  escape: a/../../\n00000010: 6574 630a                                etc.\nsh: syntax error: bad substitution\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 38,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-safepath-1"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-worker/task-setdiff-1/report.json",
+        "summary": "err[parse.expected-expression]: expected expression\n  setdiff.xsh:6:20\n      |> where { |l| not set.has(setB, l) }\n                     ^^^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  setdiff.xsh:7:5\n      |> unique-by { |l| l }\n      ^^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  setdiff.xsh:8:5\n      |> sort()\n      ^^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  setdiff.xsh:9:5\n      |> collect()\n      ^^ expected expression\n\nerr[parse.expected-token]: expected `}` to close block\n  setdiff.xsh:14:1\n  \n  ^ expected `}` to close block\n=== fmt ===\nerr[parse.expected-expression]: expected expression\n  setdiff.xsh:6:20\n      |> where { |l| not set.has(setB, l) }\n                     ^^^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  setdiff.xsh:7:5\n      |> unique-by { |l| l }\n      ^^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  setdiff.xsh:8:5\n      |> sort()\n      ^^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  setdiff.xsh:9:5\n      |> collect()\n      ^^ expected expression\n\nerr[parse.expected-token]: expected `}` to close block\n  setdiff.xsh:14:1\n  \n  ^ expected `}` to close block\n=== lint ===\nerr[parse.expected-expression]: expected expression\n  setdiff.xsh:6:20\n      |> where { |l| not set.has(setB, l) }\n                     ^^^ expected expression\nerr[parse.expected-expression]: expected expression\n  setdiff.xsh:7:5\n      |> unique-by { |l| l }\n      ^^ expected expression\nerr[parse.expected-expression]: expected expression\n  setdiff.xsh:8:5\n      |> sort()\n      ^^ expected expression\nerr[parse.expected-expression]: expected expression\n  setdiff.xsh:9:5\n      |> collect()\n      ^^ expected expression\nerr[parse.expected-token]: expected `}` to close block\n  setdiff.xsh:14:1\n  \n  ^ expected `}` to close block\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 13,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-setdiff-1"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-worker/task-setdiff-1/report.json",
+        "summary": "skip\nerr[parse.expected-expression]: expected expression\n  /tmp/t2.xsh:4:20\n      |> where { |l| not(set.has(setB, l)) }\n                     ^^^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  /tmp/t2.xsh:5:5\n      |> collect()\n      ^^ expected expression\n\nerr[parse.expected-token]: expected `}` to close block\n  /tmp/t2.xsh:8:1\n  \n  ^ expected `}` to close block\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 15,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-setdiff-1"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-worker/task-setdiff-1/report.json",
+        "summary": "err[check.display-conversion]: value cannot be displayed by print\n  /tmp/t4.xsh:5:9\n    print $out\n          ^^^^ value cannot be displayed by print\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 17,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-setdiff-1"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-worker/task-setdiff-1/report.json",
+        "summary": "err[parse.expected-expression]: expected expression\n  /tmp/t5.xsh:4:30\n    let out = r |> where { |l| not set.has(s, l) } |> collect()\n                               ^^^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  /tmp/t5.xsh:4:50\n    let out = r |> where { |l| not set.has(s, l) } |> collect()\n                                                   ^^ expected expression\n\nerr[parse.expected-token]: expected `}` to close block\n  /tmp/t5.xsh:7:1\n  \n  ^ expected `}` to close block\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 18,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-setdiff-1"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-worker/task-setdiff-1/report.json",
+        "summary": "err[check.display-conversion]: value cannot be displayed by print\n  /tmp/t6.xsh:5:9\n    print $out\n          ^^^^ value cannot be displayed by print\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 19,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-setdiff-1"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-worker/task-setdiff-1/report.json",
+        "summary": "=== fmt ===\n=== lint ===\nwarn[lint.path-constructor]: prefer p-string interpolation over `Path(...)`\n  setdiff.xsh:2:36\n    let setB = set.from(fs.read_text(Path(argv[1]))?.lines() |> collect())\n                                     ------------- use path string syntax instead\nnote: `Path(...)` remains a cast, but p-strings are the preferred path syntax\nhelp: replace with path string -> fp\"${argv[1]}\"\nwarn[lint.path-constructor]: prefer p-string interpolation over `Path(...)`\n  setdiff.xsh:3:29\n    let result = fs.read_text(Path(argv[0]))?.lines()\n                              ------------- use path string syntax instead\nnote: `Path(...)` remains a cast, but p-strings are the preferred path syntax\nhelp: replace with path string -> fp\"${argv[0]}\"\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 22,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-setdiff-1"
+        }
+      },
+      {
+        "report": "phases/04-eval/workers/eval-manager/task-svcstat/report.json",
+        "summary": "total 936\ndrwxr-xr-x  47 josh  staff    1504 Aug  7 16:03 .\ndrwxr-xr-x   3 josh  staff      96 Aug  7 15:58 ..\n-rw-r--r--@  1 josh  staff      64 Aug  7 15:58 agent.cid\n-rw-r--r--   1 josh  staff       0 Aug  7 15:58 container.stderr\n-rw-r--r--   1 josh  staff  155120 Aug  7 16:03 container.stdout\n-rw-r--r--@  1 josh  staff      64 Aug  7 16:03 evaluator.cid\n-rw-r--r--   1 josh  staff       0 Aug  7 16:03 evaluator.stderr\n-rw-r--r--   1 josh  staff       0 Aug  7 16:03 evaluator.stdout\n-rw-r--r--@  1 josh  staff       0 Aug  7 15:58 pi.stderr\n-rw-r--r--   1 josh  staff    3210 Aug  7 16:03 report.json\n-rw-r--r--@  1 josh  staff     927 Aug  7 16:03 review.md\n-rw-r--r--@  1 josh  staff    2067 Aug  7 16:03 run.json\n-rw-r--r--@  1 josh  staff  157154 Aug  7 16:03 session.jsonl.bz2\n-rw-r--r--@  1 josh  staff    1566 Aug  7 16:03 svcstat.xsh\n-rw-r--r--@  1 josh  staff       0 Aug  7 16:03 task-svcstat-candidate-1.stderr\n-rw-r--r--@  1 josh  staff      28 Aug  7 16:03 task-svcstat-candidate-1.stdout\n-rw-r--r--@  1 josh  staff       0 Aug  7 16:03 task-svcstat-candidate-2.stderr\n-rw-r--r--@  1 josh  staff       9 Aug  7 16:03 task-svcstat-candidate-2.stdout\n-rw-r--r--@  1 josh  staff       0 Aug  7 16:03 task-svcstat-candidate-3.stderr\n-rw-r--r--@  1 josh  staff      40 Aug  7 16:03 task-svcstat-candidate-3.stdout\n-rw-r--r--@  1 josh  staff       0 Aug  7 16:03 task-svcstat-candidate-4.stderr\n-rw-r--r--@  1 josh  staff      17 Aug  7 16:03 task-svcstat-candidate-4.stdout\n-rw-r--r--@  1 josh  staff       0 Aug  7 16:03 task-svcstat-candidate-5.stderr\n-rw-r--r--@  1 josh  staff      42 Aug  7 16:03 task-svcstat-candidate-5.stdout\n-rw-r--r--@  1 josh  staff       0 Aug  7 16:03 task-svcstat-candidate-6.stderr\n-rw-r--r--@  1 josh  staff      23 Aug  7 16:03 task-svcstat-candidate-6.stdout\n-rw-r--r--@  1 josh  staff       0 Aug  7 16:03 task-svcstat-candidate-7.stderr\n-rw-r--r--@  1 josh  staff       0 Aug  7 16:03 task-svcstat-candidate-7.stdout\n-rw-r--r--@  1 josh  staff     234 Aug  7 16:03 task-svcstat-candidate-8.stderr\n-rw-r--r--@  1 josh  staff       0 Aug  7 16:03 task-svcstat-candidate-8.stdout\n-rw-r--r--@  1 josh  staff       0 Aug  7 16:03 task-svcstat-oracle-1.stderr\n-rw-r--r--@  1 josh  staff      28 Aug  7 16:03 task-svcstat-oracle-1.stdout\n-rw-r--r--@  1 josh  staff       0 Aug  7 16:03 task-svcstat-oracle-2.stderr\n-rw-r--r--@  1 josh  staff       9 Aug  7 16:03 task-svcstat-oracle-2.stdout\n-rw-r--r--@  1 josh  staff       0 Aug  7 16:03 task-svcstat-oracle-3.stderr\n-rw-r--r--@  1 josh  staff      40 Aug  7 16:03 task-svcstat-oracle-3.stdout\n-rw-r--r--@  1 josh  staff       0 Aug  7 16:03 task-svcstat-oracle-4.stderr\n-rw-r--r--@  1 josh  staff      17 Aug  7 16:03 task-svcstat-oracle-4.stdout\n-rw-r--r--@  1 josh  staff       0 Aug  7 16:03 task-svcstat-oracle-5.stderr\n-rw-r--r--@  1 josh  staff      42 Aug  7 16:03 task-svcstat-oracle-5.stdout\n-rw-r--r--@  1 josh  staff       0 Aug  7 16:03 task-svcstat-oracle-6.stderr\n-rw-r--r--@  1 josh  staff      23 Aug  7 16:03 task-svcstat-oracle-6.stdout\n-rw-r--r--@  1 josh  staff       0 Aug  7 16:03 task-svcstat-oracle-7.stderr\n-rw-r--r--@  1 josh  staff       0 Aug  7 16:03 task-svcstat-oracle-7.stdout\n-rw-r--r--@  1 josh  staff       0 Aug  7 16:03 task-svcstat-oracle-8.stderr\n-rw-r--r--@  1 josh  staff       0 Aug  7 16:03 task-svcstat-oracle-8.stdout\ndrwxr-xr-x   7 josh  staff     224 Aug  7 16:03 work\n---\n      82 session.jsonl.bz2\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 3,
+        "worker": {
+          "role": "eval-manager",
+          "worker_id": "task-svcstat"
+        }
+      },
+      {
+        "report": "phases/04-eval/workers/eval-manager/task-svcstat/report.json",
+        "summary": "(no output)\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 16,
+        "worker": {
+          "role": "eval-manager",
+          "worker_id": "task-svcstat"
+        }
+      },
+      {
+        "report": "phases/04-eval/workers/eval-manager/task-svcstat/report.json",
+        "summary": "87c87,92\n< produce the nonzero exit. This build has no generic `Error(...)` constructor;\n---\n> produce the nonzero exit. Postfix `?` is valid only in a Result-returning\n> context: a procedure that must abandon-and-propagate a validation failure has\n> to return `Result[T, Error]` (or `Result[T]`), not a plain value type; a bare\n> `?` inside a procedure whose return type is not a Result is rejected even when\n> that procedure declares the `error` effect. This build has no generic\n> `Error(...)` constructor;\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 18,
+        "worker": {
+          "role": "eval-manager",
+          "worker_id": "task-svcstat"
+        }
+      },
+      {
+        "report": "phases/04-eval/workers/eval-worker/task-svcstat-1/report.json",
+        "summary": "err[check.effect-violation]: `?` requires the `error` effect\n  /tmp/probe.xsh:2:15\n    let files = fs.files(p\"/work/logs\")?\n                ^^^^^^^^^^^^^^^^^^^^^^^^ `?` requires the `error` effect\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 12,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-svcstat-1"
+        }
+      }
+    ],
+    "workers": [
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-revrank"
+        },
+        "path": "phases/01-eval/workers/eval-manager/task-revrank/report.json",
+        "result": "pass",
+        "tool_errors": 1,
+        "usage": {
+          "assistant_turns": 14,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.005478912,
+          "cache_read_tokens": 304384,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.010091502,
+          "input_cost_usd": 0.0022731300000000004,
+          "input_tokens": 25257,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00233946,
+          "output_tokens": 12997,
+          "provider_total_tokens": 342638,
+          "reasoning_tokens": 8410,
+          "thinking_blocks": 13,
+          "tool_calls": 24,
+          "tool_errors": 1,
+          "tool_results": 24,
+          "total_bucket_tokens": 342638,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-revrank-1"
+        },
+        "path": "phases/01-eval/workers/eval-worker/task-revrank-1/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 61,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.024041088,
+          "cache_read_tokens": 1335616,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.036817128,
+          "input_cost_usd": 0.00798498,
+          "input_tokens": 88722,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.004791060000000001,
+          "output_tokens": 26617,
+          "provider_total_tokens": 1450955,
+          "reasoning_tokens": 16287,
+          "thinking_blocks": 50,
+          "tool_calls": 74,
+          "tool_errors": 0,
+          "tool_results": 74,
+          "total_bucket_tokens": 1450955,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-safepath"
+        },
+        "path": "phases/02-eval/workers/eval-manager/task-safepath/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 16,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.0061666559999999995,
+          "cache_read_tokens": 342592,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.015035436,
+          "input_cost_usd": 0.006498359999999999,
+          "input_tokens": 72204,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00237042,
+          "output_tokens": 13169,
+          "provider_total_tokens": 427965,
+          "reasoning_tokens": 6448,
+          "thinking_blocks": 16,
+          "tool_calls": 25,
+          "tool_errors": 0,
+          "tool_results": 25,
+          "total_bucket_tokens": 427965,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-safepath-1"
+        },
+        "path": "phases/02-eval/workers/eval-worker/task-safepath-1/report.json",
+        "result": "pass",
+        "tool_errors": 4,
+        "usage": {
+          "assistant_turns": 40,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.0094176,
+          "cache_read_tokens": 523200,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.01612611,
+          "input_cost_usd": 0.00455931,
+          "input_tokens": 50659,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0021491999999999995,
+          "output_tokens": 11940,
+          "provider_total_tokens": 585799,
+          "reasoning_tokens": 6763,
+          "thinking_blocks": 31,
+          "tool_calls": 46,
+          "tool_errors": 4,
+          "tool_results": 46,
+          "total_bucket_tokens": 585799,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-setdiff"
+        },
+        "path": "phases/03-eval/workers/eval-manager/task-setdiff/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 12,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.004005504,
+          "cache_read_tokens": 222528,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.011410614000000005,
+          "input_cost_usd": 0.005931269999999999,
+          "input_tokens": 65903,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00147384,
+          "output_tokens": 8188,
+          "provider_total_tokens": 296619,
+          "reasoning_tokens": 3958,
+          "thinking_blocks": 9,
+          "tool_calls": 18,
+          "tool_errors": 0,
+          "tool_results": 18,
+          "total_bucket_tokens": 296619,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-setdiff-1"
+        },
+        "path": "phases/03-eval/workers/eval-worker/task-setdiff-1/report.json",
+        "result": "pass",
+        "tool_errors": 6,
+        "usage": {
+          "assistant_turns": 35,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.007424639999999998,
+          "cache_read_tokens": 412480,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.01180107,
+          "input_cost_usd": 0.0028529099999999997,
+          "input_tokens": 31699,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0015235199999999996,
+          "output_tokens": 8464,
+          "provider_total_tokens": 452643,
+          "reasoning_tokens": 3491,
+          "thinking_blocks": 27,
+          "tool_calls": 41,
+          "tool_errors": 6,
+          "tool_results": 41,
+          "total_bucket_tokens": 452643,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-svcstat"
+        },
+        "path": "phases/04-eval/workers/eval-manager/task-svcstat/report.json",
+        "result": "pass",
+        "tool_errors": 3,
+        "usage": {
+          "assistant_turns": 19,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.012561408,
+          "cache_read_tokens": 697856,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.019376927999999995,
+          "input_cost_usd": 0.00435186,
+          "input_tokens": 48354,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0024636600000000003,
+          "output_tokens": 13687,
+          "provider_total_tokens": 759897,
+          "reasoning_tokens": 8364,
+          "thinking_blocks": 16,
+          "tool_calls": 28,
+          "tool_errors": 3,
+          "tool_results": 28,
+          "total_bucket_tokens": 759897,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-svcstat-1"
+        },
+        "path": "phases/04-eval/workers/eval-worker/task-svcstat-1/report.json",
+        "result": "pass",
+        "tool_errors": 1,
+        "usage": {
+          "assistant_turns": 36,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.01222272,
+          "cache_read_tokens": 679040,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.02046276,
+          "input_cost_usd": 0.005424480000000001,
+          "input_tokens": 60272,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0028155600000000004,
+          "output_tokens": 15642,
+          "provider_total_tokens": 754954,
+          "reasoning_tokens": 10973,
+          "thinking_blocks": 28,
+          "tool_calls": 42,
+          "tool_errors": 1,
+          "tool_results": 42,
+          "total_bucket_tokens": 754954,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "a248267612439dfcfa203fba583ac3e95d37f70c"
+  },
+  "findings": [
+    {
+      "id": "01-eval",
+      "kind": "phase",
+      "result": "fail"
+    }
+  ],
+  "identity": {
+    "mode": "organization",
+    "run_id": "run-1786142295779"
+  },
+  "kind": "run",
+  "result": "fail",
+  "schema_version": 1,
+  "state": "completed"
+}

@@ -487,6 +487,21 @@ positional-only API guidance candidate, but it is single-eval evidence. Keep
 the approved handbook unchanged until `task-dupcheck` and a second
 defaulted-parameter eval confirm the guidance generalizes.
 
+## Explicit CTO disposition — run-1786142295779
+
+| Candidate SHA-256 | Disposition |
+| --- | --- |
+| `af2b35ff916e42a95757f43811b072d77a1e78a387dfcf80cf254d5d6d8bb8a7` | deferred pending cross-eval replay; not promoted |
+| `0b92e385ad13cccb41b04d798a77836ab62e0d716577de62866d25248ad04c71` | deferred pending cross-eval replay; not promoted |
+| `cdd6a29864eb15c8c7d07fee83def54a2b9d85e2d68f640f74d24ce01a49de4c` | deferred pending cross-eval replay; not promoted |
+
+The `task-safepath`, `task-setdiff`, and `task-svcstat` managers each staged a
+single-eval handbook candidate: list slicing for stack-like folds, `!` as the
+only Boolean negation form, and the Result-returning context required by
+postfix `?`. Defer all three until their named replays and independent nearby
+evals confirm that the guidance generalizes; keep the approved handbook
+unchanged.
+
 ## Explicit CTO disposition — run-1786140236250
 
 | Candidate SHA-256 | Disposition |
