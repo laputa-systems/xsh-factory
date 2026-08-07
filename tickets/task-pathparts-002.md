@@ -4,6 +4,16 @@
 
 Open.
 
+## CTO decision — 2026-08-07
+
+- Decision: Deferred; do not approve or dispatch in this recovery cycle.
+- Evidence: The observation is reproducible and identifies a real lint-versus-
+  restriction contract conflict, but the proposed product change needs its
+  own focused implementation and replay rather than being bundled with the
+  retained `task-jsonfilter-001` delivery.
+- Admission: Keep `Open.`. Revisit after the typed-`Path` restriction and
+  `xsht lint` contract have a named repair and an isolated acceptance plan.
+
 ## Change target
 
 - `product`
