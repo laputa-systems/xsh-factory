@@ -1,3 +1,37 @@
+# Controller-assigned engineer ticket
+
+This is an immutable controller assignment for one implementation worker.
+The controller, not the worker, selected the ticket, snapshot, worktree, and
+branch.
+
+## Assignment authority
+
+- Ticket ID: `task-histogram-003`
+- Ticket snapshot: `/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786128115649/phases/01-ticket/tickets/task-histogram-003.md`
+- Ticket snapshot SHA-256: `4b45600a79f538afa61c0f9f0a69a619e409fadba1f9597ad67c04eebfd2d013`
+- Dedicated XSH worktree: `/Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786128115649/task-histogram-003`
+- Branch: `factory/task-histogram-003/1786128117659`
+- XSH base commit: `1477f472d5b4d57db3584357116ef97c32358ab6`
+- engineer report: `/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786128115649/phases/01-ticket/workers/engineer/task-histogram-003/REPORT.md`
+- Factory root: `/Users/josh/d/laputa-systems/xsh-factory`
+- Run evidence root: `/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786128115649/phases/01-ticket`
+
+You are an implementation worker, not a ticket selector. Implement only the
+ticket identified above and inlined below. Do not search for open tickets,
+choose another ticket, or broaden this assignment. Do not create or modify a
+ticket assignment. If the ticket ID, worktree, branch, or snapshot is missing
+or conflicts with the runner's `FACTORY_TICKET_ID` or `FACTORY_WORKDIR`, stop
+and report the assignment problem; do not guess.
+
+The snapshot path is retained for provenance. The inlined snapshot below is
+the controller's authoritative task input, so no ticket-discovery read is
+required. Relative links in that snapshot resolve from the factory root above,
+not from the XSH product worktree; use exact paths under that root if linked
+evidence needs to be consulted.
+
+## Ticket snapshot
+
+<!-- CONTROLLER_TICKET_SNAPSHOT_BEGIN -->
 # Ticket task-histogram-003
 
 ## Status
@@ -18,18 +52,6 @@ Approved.
   and `runs/run-1786126514242/phases/01-eval/workers/eval-manager/task-histogram/REPORT.md`.
 - Dispatch constraint: admit no more than this one ticket until the remaining
   histogram observations receive their named cross-eval replays.
-
-## CTO decision — implementation run-1786128115649
-
-- Decision: Implementation supported by linked replay; keep the ticket
-  `Approved.` pending product-branch merge/reconciliation.
-- Evidence: Engineer commit `857154dfe505f0d01053c1b5311f44422070eb34`,
-  engineer report under `runs/run-1786128115649/phases/01-ticket/`, and the
-  linked `task-histogram` replay manager report under
-  `runs/run-1786128115649/phases/02-reeval-task-histogram-003/`; all nine
-  evaluator cases passed and the native fold-effect regression test passed.
-- Merge disposition: The implementation branch is retained for CTO review;
-  no product branch merge is performed in this closeout.
 
 ## CTO decision — clean-slate cycle 2026-08-07
 
@@ -204,3 +226,68 @@ Post-merge acceptance by the `task-histogram` eval-manager on a future cycle's
 lineage at the XSH commit that merges this change, verifying the fold-with-
 print script produces a readable check error and the list-then-print solution
 still passes all nine cases.
+
+<!-- CONTROLLER_TICKET_SNAPSHOT_END -->
+
+## Factory context required before coding
+
+The factory documents below are outside the XSH worktree. Before coding, use
+the `read` tool on each exact absolute path. This is required so the session
+JSONL proves that the worker consumed the current factory guidance:
+
+- North star: `/Users/josh/d/laputa-systems/xsh-factory/NORTH-STAR.md`
+- Shared handbook: `/Users/josh/d/laputa-systems/xsh-factory/runtime/handbook.md`
+
+Then use the `read` tool on the product worktree's exact guidance files:
+
+- Product agent guide: `/Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786128115649/task-histogram-003/AGENTS.md`
+- XSH rationale: `/Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786128115649/task-histogram-003/docs/CHAPTER-01-why-xsh.md`
+
+## Implementation contract
+
+Work only in `/Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786128115649/task-histogram-003` on branch `factory/task-histogram-003/1786128117659`. Do not edit XSH main, the
+factory main tree, or the ticket diagnosis. Make the smallest general XSH
+language, tooling, test, or canonical-documentation change supported by the
+ticket. Run the narrowest relevant checks, commit the product change on this
+branch, and leave the worktree clean.
+
+The controller has staged a fail-closed `not-ready` report at
+`/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786128115649/phases/01-ticket/workers/engineer/task-histogram-003/REPORT.md`. Complete that file in place; do not spend turns
+reconstructing its headings. Keep `## Result` as `not-ready` until the
+acceptance checks, commit, and clean-worktree validation are complete.
+
+Write `/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786128115649/phases/01-ticket/workers/engineer/task-histogram-003/REPORT.md` with these exact headings:
+
+```markdown
+## Result
+
+ready-for-review
+
+## Branch
+
+<branch name>
+
+## Commit
+
+<commit hash>
+
+## Files changed
+
+<short list>
+
+## Tests
+
+<commands and results>
+
+## North-star impact
+
+<how this improves XSH or agent use>
+
+## Remaining risks
+
+<known limitations, or None.>
+```
+
+Change `## Result` to `ready-for-review` only when the branch is committed, the worktree is
+clean, and the relevant checks passed. Do not merge the branch or update the
+ticket status; the deterministic controller records it for CTO review.

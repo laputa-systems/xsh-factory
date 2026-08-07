@@ -2137,6 +2137,14 @@ proc test_organization_reuses_existing_branch_without_duplicate_dispatch() [fs, 
   )?
 }
 
+proc test_organization_starts_independent_eval_before_primary_wait() [fs, error] {
+  let organization = fs.read_text(fp"${fs.cwd()?}/factory/controllers/organization.xsh")?
+  let before_primary_wait = organization.split("primary_ok = wait_child(primary_handle)?").get(0, "")
+  test.contains(before_primary_wait, "10-independent-eval-started")?
+  test.contains(before_primary_wait, "let independent_eval_handle = spawn_child")?
+  test.contains(before_primary_wait, "independent_eval_handles = independent_eval_handles.push")?
+}
+
 proc test_ticket_cycle_bounds_concurrent_engineers() [fs, error] {
   let ticket = fs.read_text(fp"${fs.cwd()?}/factory/controllers/ticket.xsh")?
   let director = fs.read_text(fp"${fs.cwd()?}/roles/director.md")?

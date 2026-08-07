@@ -19,18 +19,6 @@ Approved.
 - Dispatch constraint: admit no more than this one ticket until the remaining
   histogram observations receive their named cross-eval replays.
 
-## CTO decision — implementation run-1786128115649
-
-- Decision: Implementation supported by linked replay; keep the ticket
-  `Approved.` pending product-branch merge/reconciliation.
-- Evidence: Engineer commit `857154dfe505f0d01053c1b5311f44422070eb34`,
-  engineer report under `runs/run-1786128115649/phases/01-ticket/`, and the
-  linked `task-histogram` replay manager report under
-  `runs/run-1786128115649/phases/02-reeval-task-histogram-003/`; all nine
-  evaluator cases passed and the native fold-effect regression test passed.
-- Merge disposition: The implementation branch is retained for CTO review;
-  no product branch merge is performed in this closeout.
-
 ## CTO decision — clean-slate cycle 2026-08-07
 
 - Decision: Deferred; do not approve or dispatch.

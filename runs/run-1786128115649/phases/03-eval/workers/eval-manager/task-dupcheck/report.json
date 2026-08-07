@@ -1,0 +1,107 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786128115649/phases/03-eval/workers/eval-manager/task-dupcheck/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_process": "pass",
+    "dispatch_claim": "c19086c68cfded48dfe55f39340d05ad6e924f555f7b9d1dca258315b8076c07",
+    "dispatch_id": "eval-manager-task-dupcheck",
+    "message_sha256": "c19086c68cfded48dfe55f39340d05ad6e924f555f7b9d1dca258315b8076c07",
+    "reporting": "pass",
+    "required_report": "present",
+    "session_limit_watcher": "pass",
+    "system_prompt_sha256": "a5ab31790989af39c06a7fec953a65b5b782b1be43779a76401f77f02f7995f3",
+    "watcher": "pass"
+  },
+  "findings": [],
+  "identity": {
+    "role": "eval-manager",
+    "worker_id": "task-dupcheck"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "provider_telemetry": {
+    "event_turns": 15,
+    "events_path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786128115649/phases/03-eval/workers/eval-manager/task-dupcheck/session.jsonl.events.jsonl",
+    "output_tokens_per_second": 0,
+    "present": true,
+    "provider_errors": [],
+    "response_elapsed_ms": 0,
+    "retry_count": 0,
+    "retry_delay_ms": 0,
+    "retry_errors": [],
+    "retry_failures": 0,
+    "retry_successes": 0
+  },
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786128115649/phases/03-eval/workers/eval-manager/task-dupcheck/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 14,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 405064
+  },
+  "tool_errors": [],
+  "tools": [
+    {
+      "count": 8,
+      "name": "bash"
+    },
+    {
+      "count": 1,
+      "name": "edit"
+    },
+    {
+      "count": 1,
+      "name": "grep"
+    },
+    {
+      "count": 1,
+      "name": "ls"
+    },
+    {
+      "count": 12,
+      "name": "read"
+    },
+    {
+      "count": 2,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 15,
+    "budget_usd": 0.15,
+    "cache_read_cost_usd": 0.006239231999999999,
+    "cache_read_tokens": 346624,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.011748222,
+    "input_cost_usd": 0.0033005700000000005,
+    "input_tokens": 36673,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.00220842,
+    "output_tokens": 12269,
+    "provider_total_tokens": 395566,
+    "reasoning_tokens": 6405,
+    "thinking_blocks": 12,
+    "tool_calls": 25,
+    "tool_errors": 0,
+    "tool_results": 25,
+    "total_bucket_tokens": 395566,
+    "user_messages": 1
+  }
+}

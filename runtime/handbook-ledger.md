@@ -475,3 +475,25 @@ The focused `task-histogram` replay passed 9/9 and supplied useful arithmetic
 and record-literal guidance, but it is single-eval evidence. Keep the approved
 handbook unchanged until the named histogram replay and a second
 record/division-heavy eval confirm reduced discovery friction.
+
+## Explicit CTO disposition — run-1786128115649
+
+| Candidate SHA-256 | Disposition |
+| --- | --- |
+| `b8850d2021ac99f587cdd368ab9b40132d73b52b79f35ab5647cd02e6162db75` | deferred pending cross-eval replay; not promoted |
+
+The first `task-dupcheck` trial passed all eight cases and supplied a useful
+positional-only API guidance candidate, but it is single-eval evidence. Keep
+the approved handbook unchanged until `task-dupcheck` and a second
+defaulted-parameter eval confirm the guidance generalizes.
+
+## Explicit CTO disposition — run-1786128115649
+
+| Candidate SHA-256 | Disposition |
+| --- | --- |
+| `b8850d2021ac99f587cdd368ab9b40132d73b52b79f35ab5647cd02e6162db75` | deferred pending cross-eval replay; not promoted |
+
+The first `task-dupcheck` trial passed all eight cases and supplied a useful
+positional-only API guidance candidate, but it is single-eval evidence. Keep
+the approved handbook unchanged until `task-dupcheck` and a second
+defaulted-parameter eval confirm the guidance generalizes.

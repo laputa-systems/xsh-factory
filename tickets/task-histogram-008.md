@@ -4,6 +4,18 @@
 
 Open.
 
+## CTO review
+
+- Decision: Deferred; do not approve or dispatch.
+- Basis: The record-literal observation is useful and reproducible in the
+  focused `task-histogram` replay, but it is single-eval evidence. Its own
+  acceptance gate requires a replay with reduced discovery friction and a
+  second record-using eval before paid implementation. Preserve it as Open
+  while the independent `task-grep` signal runs alongside the approved
+  `task-histogram-003` implementation.
+- Evidence: `runs/run-1786126514242/phases/01-eval/workers/eval-manager/task-histogram/REPORT.md`
+  and `runs/run-1786126514242/phases/01-eval/workers/eval-worker/task-histogram-1/run.json`.
+
 ## Change target
 
 - `product`

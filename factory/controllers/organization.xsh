@@ -560,44 +560,6 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     "organization",
     primary_mode,
   )?
-  var primary_ok = false
-  if reuse_existing_branch {
-    primary_ok = run_reuse_phase(
-      primary_phase,
-      factory_dir,
-      xsh_repo,
-      selected_ticket,
-      selected_open_branch,
-      xsh_commit.trim(),
-    )?
-  } else {
-    let primary_handle = spawn_child(
-      primary_controller,
-      primary_request,
-      primary_phase,
-      factory_dir,
-      xsh_repo,
-      run_dir,
-      xsh_commit.trim(),
-      run_agent,
-      auth_file,
-      pi_command,
-      docker,
-      target,
-      platform,
-      [
-        f"FACTORY_MODE=${primary_mode}",
-        f"FACTORY_EVAL_ID=${selected_eval}",
-        "FACTORY_REEVAL_TICKET=not-reevaluation",
-        "FACTORY_REEVAL_WORKTREE=not-reevaluation",
-        "FACTORY_SKIP_TICKET_RECONCILE=false",
-        "FACTORY_RETAIN_WORKTREE=true",
-      ],
-      fp"${run_dir}/primary.stdout",
-      fp"${run_dir}/primary.stderr",
-    )?
-    primary_ok = wait_child(primary_handle)?
-  }
 
   if selected_ticket != "" {
     runtime.emit_event(
@@ -635,6 +597,45 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
       fp"${run_dir}/independent-eval.stderr",
     )?
     independent_eval_handles = independent_eval_handles.push(independent_eval_handle)
+  }
+
+  var primary_ok = false
+  if reuse_existing_branch {
+    primary_ok = run_reuse_phase(
+      primary_phase,
+      factory_dir,
+      xsh_repo,
+      selected_ticket,
+      selected_open_branch,
+      xsh_commit.trim(),
+    )?
+  } else {
+    let primary_handle = spawn_child(
+      primary_controller,
+      primary_request,
+      primary_phase,
+      factory_dir,
+      xsh_repo,
+      run_dir,
+      xsh_commit.trim(),
+      run_agent,
+      auth_file,
+      pi_command,
+      docker,
+      target,
+      platform,
+      [
+        f"FACTORY_MODE=${primary_mode}",
+        f"FACTORY_EVAL_ID=${selected_eval}",
+        "FACTORY_REEVAL_TICKET=not-reevaluation",
+        "FACTORY_REEVAL_WORKTREE=not-reevaluation",
+        "FACTORY_SKIP_TICKET_RECONCILE=false",
+        "FACTORY_RETAIN_WORKTREE=true",
+      ],
+      fp"${run_dir}/primary.stdout",
+      fp"${run_dir}/primary.stderr",
+    )?
+    primary_ok = wait_child(primary_handle)?
   }
 
   let primary_report_ok = phase_run_pass(primary_phase, "report.json")?

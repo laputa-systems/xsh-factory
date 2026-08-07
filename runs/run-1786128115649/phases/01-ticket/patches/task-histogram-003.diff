@@ -1,0 +1,184 @@
+diff --git a/docs/SPEC.md b/docs/SPEC.md
+index 30648cd..16473cd 100644
+--- a/docs/SPEC.md
++++ b/docs/SPEC.md
+@@ -2772,7 +2772,9 @@ one-expression and multi-statement stage blocks. `fold`/`reduce` additionally
+ accept a two-parameter block `{ |acc, item| ... }` whose first parameter is the
+ accumulated value (typed by the initial value) and whose second is the stream
+ item; the block's tail must produce the accumulator's type, and the stage
+-returns that accumulated value.
++returns that accumulated value. Fold and reduce blocks are pure reductions and
++must not print; use a following `each { |item| print $item }` stage for output.
++`xsht check` reports this constraint as `check.fold-effect`.
+
+ A tail proc call with `?` unwraps the `Ok` value and propagates errors: if
+ any item fails, the entire stage short-circuits with that error. Without
+diff --git a/docs/STREAMS.md b/docs/STREAMS.md
+index 9f1c6ba..e860197 100644
+--- a/docs/STREAMS.md
++++ b/docs/STREAMS.md
+@@ -68,7 +68,10 @@ eager vec handlers and the lazy sinks.
+   `fold(init)`/`reduce(init)` use an explicit accumulator block that binds the
+   accumulator (typed by the initial value) first and the stream item second:
+   `|> fold(0) { |acc, item| acc + item }`. It is a sequential user combine with
+-  no merge function and returns that accumulator.
++  no merge function and returns that accumulator. Fold/reduce blocks are pure
++  reductions: output belongs in a following `each { |item| print $item }`
++  stage. `xsht check` reports this constraint directly when a block contains
++  `print` or `eprint`.
+ - **Explicit materialization** (`collect()`): drain to a `List[T]`, equivalent
+   to the automatic collection that happens when a non-terminal pipeline reaches
+   an expression boundary.
+diff --git a/src/sema/check.rs b/src/sema/check.rs
+index c5a442b..af8af63 100644
+--- a/src/sema/check.rs
++++ b/src/sema/check.rs
+@@ -47,7 +47,7 @@ use self::args::{
+ };
+ use self::command::{
+     command_arg_can_be_path_like_arena, command_bool_flag_name_arena,
+-    command_stmt_asserts_success_arena, command_ty_auto_propagates,
++    command_is_print_arena, command_stmt_asserts_success_arena, command_ty_auto_propagates,
+ };
+ pub use self::compact::{
+     CompactBodyProbeOutput, CompactDeclOutput, CompactFunctionSig, CompactTypeDefInfo,
+@@ -258,6 +258,7 @@ pub struct Checker {
+     current_effects: Option<Vec<Effect>>,
+     last_status_available: bool,
+     stream_item_types: Vec<Type>,
++    in_pure_fold: bool,
+     loop_depth: usize,
+     block_depth: usize,
+     retry_attempt_depth: usize,
+@@ -395,6 +396,7 @@ impl Checker {
+             current_effects: None,
+             last_status_available: false,
+             stream_item_types: Vec::new(),
++            in_pure_fold: false,
+             loop_depth: 0,
+             block_depth: 0,
+             retry_attempt_depth: 0,
+diff --git a/src/sema/check/command.rs b/src/sema/check/command.rs
+index 70626e9..e87fe20 100644
+--- a/src/sema/check/command.rs
++++ b/src/sema/check/command.rs
+@@ -19,6 +19,19 @@ fn btree_map<K: Into<Name>, V>(entries: Vec<(K, V)>) -> BTreeMap<Name, V> {
+         .collect()
+ }
+
++pub(super) fn command_is_print_arena(
++    arena: &ArenaProgram,
++    command_id: CommandStmtId,
++) -> bool {
++    matches!(
++        arena.arena.command_stmt(command_id).command,
++        ArenaCommand::Core {
++            name: CoreCommand::Print | CoreCommand::Eprint,
++            ..
++        }
++    )
++}
++
+ pub(super) fn command_ty_auto_propagates(ty: &Type) -> bool {
+     ty.is_result_unit()
+ }
+@@ -164,6 +177,21 @@ impl Checker {
+     ) {
+         let stmt = arena.arena.command_stmt(id);
+         let span = arena.arena.span(stmt.span);
++        if self.in_pure_fold
++            && matches!(
++                stmt.command,
++                ArenaCommand::Core {
++                    name: CoreCommand::Print | CoreCommand::Eprint,
++                    ..
++                }
++            )
++        {
++            self.error(
++                span,
++                "fold/reduce blocks must be pure reductions; emit output in a separate `each { |item| print $item }` stage",
++                "check.fold-effect",
++            );
++        }
+         if self.in_pure {
+             self.error(
+                 span,
+diff --git a/src/sema/check/stream.rs b/src/sema/check/stream.rs
+index 9ee5f6d..357cb84 100644
+--- a/src/sema/check/stream.rs
++++ b/src/sema/check/stream.rs
+@@ -1,6 +1,6 @@
+ use super::{
+     Binding, Checker, Name, call_arg_expr_id_arena, call_arg_span_arena,
+-    command_stmt_asserts_success_arena, command_ty_auto_propagates,
++    command_is_print_arena, command_stmt_asserts_success_arena, command_ty_auto_propagates,
+ };
+ use crate::sema::types::Type;
+ use crate::syntax::arena::{
+@@ -498,14 +498,18 @@ impl Checker {
+             );
+             return Type::Unknown;
+         };
+-        self.check_stream_block_params_arena(
++        let previous_pure_fold = self.in_pure_fold;
++        self.in_pure_fold = true;
++        let result = self.check_stream_block_params_arena(
+             arena,
+             source,
+             block,
+             &[acc_ty.clone(), item_ty.clone()],
+             2,
+             item_ty,
+-        )
++        );
++        self.in_pure_fold = previous_pure_fold;
++        result
+     }
+
+     fn check_stream_block_params_arena(
+@@ -611,6 +615,13 @@ impl Checker {
+                 else_block,
+             } => self.check_stream_tail_if_arena(arena, source, branches, else_block),
+             crate::syntax::arena::ArenaStmtKind::Command(command_id) => {
++                if self.in_pure_fold && command_is_print_arena(arena, command_id) {
++                    self.error(
++                        stmt.span,
++                        "fold/reduce blocks must be pure reductions; emit output in a separate `each { |item| print $item }` stage",
++                        "check.fold-effect",
++                    );
++                }
+                 if self.in_pure {
+                     self.error(
+                         stmt.span,
+diff --git a/tests/sema.rs b/tests/sema.rs
+index c590b09..02351ed 100644
+--- a/tests/sema.rs
++++ b/tests/sema.rs
+@@ -666,6 +666,26 @@ let counted = ["a", "b", "a"] |> fold(map.empty()) { |acc, it| acc.set(it, acc.g
+     assert!(has_code(&map_two, "check.stream-block-params"));
+ }
+
++#[test]
++fn checker_rejects_fold_output_with_actionable_diagnostic() {
++    let messages = check_messages(
++        r#"
++let total = [1, 2, 3] |> fold(0) { |acc, item|
++  let next = acc + item
++  print $next
++  next
++}
++"#,
++    );
++    assert!(
++        messages.iter().any(|message| {
++            message.contains("fold/reduce blocks must be pure reductions")
++                && message.contains("each")
++        }),
++        "expected actionable fold diagnostic, got {messages:?}"
++    );
++}
++
+ #[test]
+ fn checker_handles_user_stream_producers() {
+     let ok = check(

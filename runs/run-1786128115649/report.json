@@ -1,0 +1,376 @@
+{
+  "artifacts": [
+    {
+      "kind": "phase-reports",
+      "path": "phases/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 210,
+      "budget_failures": 0,
+      "cost_usd": 0.187125536,
+      "tool_errors": 12,
+      "total_bucket_tokens": 9004086.0,
+      "unknown_costs": 0,
+      "workers": 6
+    },
+    "mode": "organization",
+    "outcomes": {
+      "cycle": "pass",
+      "evaluator": "pass",
+      "infrastructure": "pass",
+      "product": "pass"
+    },
+    "phases": [
+      {
+        "id": "01-ticket",
+        "path": "phases/01-ticket/report.json",
+        "result": "pass",
+        "valid": true
+      },
+      {
+        "id": "02-reeval-task-histogram-003",
+        "path": "phases/02-reeval-task-histogram-003/report.json",
+        "result": "pass",
+        "valid": true
+      },
+      {
+        "id": "03-eval",
+        "path": "phases/03-eval/report.json",
+        "result": "pass",
+        "valid": true
+      }
+    ],
+    "tool_errors": [
+      {
+        "report": "phases/01-ticket/workers/engineer/task-histogram-003/report.json",
+        "summary": "ENOENT: no such file or directory, access '/Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786128115649/src/runtime/eval.rs'",
+        "tool": "read",
+        "turn": 3,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-histogram-003"
+        }
+      },
+      {
+        "report": "phases/01-ticket/workers/engineer/task-histogram-003/report.json",
+        "summary": "Path not found: /Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786128115649/task-histogram-003/task-histogram-003",
+        "tool": "grep",
+        "turn": 5,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-histogram-003"
+        }
+      },
+      {
+        "report": "phases/01-ticket/workers/engineer/task-histogram-003/report.json",
+        "summary": "ENOENT: no such file or directory, access '/Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786128115649/task-histogram-003/task-histogram-003'",
+        "tool": "read",
+        "turn": 6,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-histogram-003"
+        }
+      },
+      {
+        "report": "phases/01-ticket/workers/engineer/task-histogram-003/report.json",
+        "summary": "Validation failed for tool \"edit\":\n  - edits: must have required properties edits\n\nReceived arguments:\n{\n  \"path\": \"/Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786128115649/task-histogram-003/docs/STREAMS.md\",\n  \"offset\": 60,\n  \"limit\": 85\n}",
+        "tool": "edit",
+        "turn": 23,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-histogram-003"
+        }
+      },
+      {
+        "report": "phases/01-ticket/workers/engineer/task-histogram-003/report.json",
+        "summary": "Could not find the exact text in /Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786128115649/task-histogram-003/docs/SPEC.md. The old text must match exactly including all whitespace and newlines.",
+        "tool": "edit",
+        "turn": 30,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-histogram-003"
+        }
+      },
+      {
+        "report": "phases/01-ticket/workers/engineer/task-histogram-003/report.json",
+        "summary": "error: unexpected argument 'sema::checker_handles_fold_accumulator_plus_item_blocks' found\n\nUsage: cargo test [OPTIONS] [TESTNAME] [-- [ARGS]...]\n\nFor more information, try '--help'.\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 33,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-histogram-003"
+        }
+      },
+      {
+        "report": "phases/01-ticket/workers/engineer/task-histogram-003/report.json",
+        "summary": "    Blocking waiting for file lock on package cache\n    Blocking waiting for file lock on package cache\n    Blocking waiting for file lock on package cache\n   Compiling xsh v0.0.1 (/Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786128115649/task-histogram-003)\nerror[E0425]: cannot find function `command_is_print_arena` in this scope\n   --> src/sema/check/stream.rs:618:41\n    |\n618 |                 if self.in_pure_fold && command_is_print_arena(arena, command_id) {\n    |                                         ^^^^^^^^^^^^^^^^^^^^^^ not found in this scope\n\nFor more information about this error, try `rustc --explain E0425`.\nerror: could not compile `xsh` (lib) due to 1 previous error\n\n\nCommand exited with code 101",
+        "tool": "bash",
+        "turn": 44,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-histogram-003"
+        }
+      },
+      {
+        "report": "phases/01-ticket/workers/engineer/task-histogram-003/report.json",
+        "summary": "    Blocking waiting for file lock on package cache\n    Blocking waiting for file lock on package cache\n    Blocking waiting for file lock on package cache\n    Blocking waiting for file lock on build directory\n   Compiling xsh v0.0.1 (/Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786128115649/task-histogram-003)\nerror[E0425]: cannot find function `command_is_print_arena` in this scope\n   --> src/sema/check/stream.rs:618:41\n    |\n618 |                 if self.in_pure_fold && command_is_print_arena(arena, command_id) {\n    |                                         ^^^^^^^^^^^^^^^^^^^^^^ not found in this scope\n\nFor more information about this error, try `rustc --explain E0425`.\nerror: could not compile `xsh` (lib) due to 1 previous error\n\n\nCommand exited with code 101",
+        "tool": "bash",
+        "turn": 44,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-histogram-003"
+        }
+      },
+      {
+        "report": "phases/01-ticket/workers/engineer/task-histogram-003/report.json",
+        "summary": "    Blocking waiting for file lock on package cache\n    Blocking waiting for file lock on package cache\n    Blocking waiting for file lock on package cache\n   Compiling xsh v0.0.1 (/Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786128115649/task-histogram-003)\nerror[E0432]: unresolved import `super::command_is_print_arena`\n --> src/sema/check/stream.rs:3:5\n  |\n3 |     command_is_print_arena, command_stmt_asserts_success_arena, command_ty_auto_propagates,\n  |     ^^^^^^^^^^^^^^^^^^^^^^ no `command_is_print_arena` in `sema::check`\n\nFor more information about this error, try `rustc --explain E0432`.\nerror: could not compile `xsh` (lib) due to 1 previous error\n\n\nCommand exited with code 101",
+        "tool": "bash",
+        "turn": 47,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-histogram-003"
+        }
+      },
+      {
+        "report": "phases/01-ticket/workers/engineer/task-histogram-003/report.json",
+        "summary": "    Blocking waiting for file lock on package cache\n    Blocking waiting for file lock on package cache\n    Blocking waiting for file lock on package cache\n    Blocking waiting for file lock on build directory\n   Compiling xsh v0.0.1 (/Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786128115649/task-histogram-003)\nerror[E0432]: unresolved import `super::command_is_print_arena`\n --> src/sema/check/stream.rs:3:5\n  |\n3 |     command_is_print_arena, command_stmt_asserts_success_arena, command_ty_auto_propagates,\n  |     ^^^^^^^^^^^^^^^^^^^^^^ no `command_is_print_arena` in `sema::check`\n\nFor more information about this error, try `rustc --explain E0432`.\nerror: could not compile `xsh` (lib) due to 1 previous error\n\n\nCommand exited with code 101",
+        "tool": "bash",
+        "turn": 47,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-histogram-003"
+        }
+      },
+      {
+        "report": "phases/02-reeval-task-histogram-003/workers/eval-worker/task-histogram-1/report.json",
+        "summary": "[+5] -> err[parse.expected-token]: expected `=>` in match arm\n  /tmp/t.xsh:5:14\n      Result.Ok(raw) => { print \"OK:\" $raw }\n               ^ expected `=>` in match arm\n\nerr[parse.expected-terminator]: expected statement terminator\n  /tmp/t.xsh:5:20\n      Result.Ok(raw) => { print \"OK:\" $raw }\n                     ^^ expected statement terminator\n\nerr[parse.expected-pattern]: expected pattern\n  /tmp/t.xsh:5:20\n      Result.Ok(raw) => { print \"OK:\" $raw }\n                     ^^ expected pattern\n\nerr[parse.expected-terminator]: expected statement terminator\n  /tmp/t.xsh:6:19\n      Result.Err(e) => { print \"ERR\" }\n                    ^^ expected statement terminator\n\nerr[parse.expected-expression]: expected expression\n  /tmp/t.xsh:6:19\n      Result.Err(e) => { print \"ERR\" }\n                    ^^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  /tmp/t.xsh:8:21\n    return Result.Ok(())\n                      ^ expected expression\n\nerr[parse.expected-terminator]: expected statement terminator\n  /tmp/t.xsh:8:22\n    return Result.Ok(())\n                       ^ expected statement terminator\n\nerr[parse.expected-expression]: expected expression\n  /tmp/t.xsh:8:22\n    return Result.Ok(())\n                       ^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  /tmp/t.xsh:9:1\n  }\n  ^ expected expression\n[-5] -> err[parse.expected-token]: expected `=>` in match arm\n  /tmp/t.xsh:5:14\n      Result.Ok(raw) => { print \"OK:\" $raw }\n               ^ expected `=>` in match arm\n\nerr[parse.expected-terminator]: expected statement terminator\n  /tmp/t.xsh:5:20\n      Result.Ok(raw) => { print \"OK:\" $raw }\n                     ^^ expected statement terminator\n\nerr[parse.expected-pattern]: expected pattern\n  /tmp/t.xsh:5:20\n      Result.Ok(raw) => { print \"OK:\" $raw }\n                     ^^ expected pattern\n\nerr[parse.expected-terminator]: expected statement terminator\n  /tmp/t.xsh:6:19\n      Result.Err(e) => { print \"ERR\" }\n                    ^^ expected statement terminator\n\nerr[parse.expected-expression]: expected expression\n  /tmp/t.xsh:6:19\n      Result.Err(e) => { print \"ERR\" }\n                    ^^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  /tmp/t.xsh:8:21\n    return Result.Ok(())\n                      ^ expected expression\n\nerr[parse.expected-terminator]: expected statement terminator\n  /tmp/t.xsh:8:22\n    return Result.Ok(())\n                       ^ expected statement terminator\n\nerr[parse.expected-expression]: expected expression\n  /tmp/t.xsh:8:22\n    return Result.Ok(())\n                       ^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  /tmp/t.xsh:9:1\n  }\n  ^ expected expression\n[007] -> err[parse.expected-token]: expected `=>` in match arm\n  /tmp/t.xsh:5:14\n      Result.Ok(raw) => { print \"OK:\" $raw }\n               ^ expected `=>` in match arm\n\nerr[parse.expected-terminator]: expected statement terminator\n  /tmp/t.xsh:5:20\n      Result.Ok(raw) => { print \"OK:\" $raw }\n                     ^^ expected statement terminator\n\nerr[parse.expected-pattern]: expected pattern\n  /tmp/t.xsh:5:20\n      Result.Ok(raw) => { print \"OK:\" $raw }\n                     ^^ expected pattern\n\nerr[parse.expected-terminator]: expected statement terminator\n  /tmp/t.xsh:6:19\n      Result.Err(e) => { print \"ERR\" }\n                    ^^ expected statement terminator\n\nerr[parse.expected-expression]: expected expression\n  /tmp/t.xsh:6:19\n      Result.Err(e) => { print \"ERR\" }\n                    ^^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  /tmp/t.xsh:8:21\n    return Result.Ok(())\n                      ^ expected expression\n\nerr[parse.expected-terminator]: expected statement terminator\n  /tmp/t.xsh:8:22\n    return Result.Ok(())\n                       ^ expected statement terminator\n\nerr[parse.expected-expression]: expected expression\n  /tmp/t.xsh:8:22\n    return Result.Ok(())\n                       ^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  /tmp/t.xsh:9:1\n  }\n  ^ expected expression\n[1_000] -> err[parse.expected-token]: expected `=>` in match arm\n  /tmp/t.xsh:5:14\n      Result.Ok(raw) => { print \"OK:\" $raw }\n               ^ expected `=>` in match arm\n\nerr[parse.expected-terminator]: expected statement terminator\n  /tmp/t.xsh:5:20\n      Result.Ok(raw) => { print \"OK:\" $raw }\n                     ^^ expected statement terminator\n\nerr[parse.expected-pattern]: expected pattern\n  /tmp/t.xsh:5:20\n      Result.Ok(raw) => { print \"OK:\" $raw }\n                     ^^ expected pattern\n\nerr[parse.expected-terminator]: expected statement terminator\n  /tmp/t.xsh:6:19\n      Result.Err(e) => { print \"ERR\" }\n                    ^^ expected statement terminator\n\nerr[parse.expected-expression]: expected expression\n  /tmp/t.xsh:6:19\n      Result.Err(e) => { print \"ERR\" }\n                    ^^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  /tmp/t.xsh:8:21\n    return Result.Ok(())\n                      ^ expected expression\n\nerr[parse.expected-terminator]: expected statement terminator\n  /tmp/t.xsh:8:22\n    return Result.Ok(())\n                       ^ expected statement terminator\n\nerr[parse.expected-expression]: expected expression\n  /tmp/t.xsh:8:22\n    return Result.Ok(())\n                       ^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  /tmp/t.xsh:9:1\n  }\n  ^ expected expression\n[ 5] -> err[parse.expected-token]: expected `=>` in match arm\n  /tmp/t.xsh:5:14\n      Result.Ok(raw) => { print \"OK:\" $raw }\n               ^ expected `=>` in match arm\n\nerr[parse.expected-terminator]: expected statement terminator\n  /tmp/t.xsh:5:20\n      Result.Ok(raw) => { print \"OK:\" $raw }\n                     ^^ expected statement terminator\n\nerr[parse.expected-pattern]: expected pattern\n  /tmp/t.xsh:5:20\n      Result.Ok(raw) => { print \"OK:\" $raw }\n                     ^^ expected pattern\n\nerr[parse.expected-terminator]: expected statement terminator\n  /tmp/t.xsh:6:19\n      Result.Err(e) => { print \"ERR\" }\n                    ^^ expected statement terminator\n\nerr[parse.expected-expression]: expected expression\n  /tmp/t.xsh:6:19\n      Result.Err(e) => { print \"ERR\" }\n                    ^^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  /tmp/t.xsh:8:21\n    return Result.Ok(())\n                      ^ expected expression\n\nerr[parse.expected-terminator]: expected statement terminator\n  /tmp/t.xsh:8:22\n    return Result.Ok(())\n                       ^ expected statement terminator\n\nerr[parse.expected-expression]: expected expression\n  /tmp/t.xsh:8:22\n    return Result.Ok(())\n                       ^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  /tmp/t.xsh:9:1\n  }\n  ^ expected expression\n[abc] -> err[parse.expected-token]: expected `=>` in match arm\n  /tmp/t.xsh:5:14\n      Result.Ok(raw) => { print \"OK:\" $raw }\n               ^ expected `=>` in match arm\n\nerr[parse.expected-terminator]: expected statement terminator\n  /tmp/t.xsh:5:20\n      Result.Ok(raw) => { print \"OK:\" $raw }\n                     ^^ expected statement terminator\n\nerr[parse.expected-pattern]: expected pattern\n  /tmp/t.xsh:5:20\n      Result.Ok(raw) => { print \"OK:\" $raw }\n                     ^^ expected pattern\n\nerr[parse.expected-terminator]: expected statement terminator\n  /tmp/t.xsh:6:19\n      Result.Err(e) => { print \"ERR\" }\n                    ^^ expected statement terminator\n\nerr[parse.expected-expression]: expected expression\n  /tmp/t.xsh:6:19\n      Result.Err(e) => { print \"ERR\" }\n                    ^^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  /tmp/t.xsh:8:21\n    return Result.Ok(())\n                      ^ expected expression\n\nerr[parse.expected-terminator]: expected statement terminator\n  /tmp/t.xsh:8:22\n    return Result.Ok(())\n                       ^ expected statement terminator\n\nerr[parse.expected-expression]: expected expression\n  /tmp/t.xsh:8:22\n    return Result.Ok(())\n                       ^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  /tmp/t.xsh:9:1\n  }\n  ^ expected expression\n[0] -> err[parse.expected-token]: expected `=>` in match arm\n  /tmp/t.xsh:5:14\n      Result.Ok(raw) => { print \"OK:\" $raw }\n               ^ expected `=>` in match arm\n\nerr[parse.expected-terminator]: expected statement terminator\n  /tmp/t.xsh:5:20\n      Result.Ok(raw) => { print \"OK:\" $raw }\n                     ^^ expected statement terminator\n\nerr[parse.expected-pattern]: expected pattern\n  /tmp/t.xsh:5:20\n      Result.Ok(raw) => { print \"OK:\" $raw }\n                     ^^ expected pattern\n\nerr[parse.expected-terminator]: expected statement terminator\n  /tmp/t.xsh:6:19\n      Result.Err(e) => { print \"ERR\" }\n                    ^^ expected statement terminator\n\nerr[parse.expected-expression]: expected expression\n  /tmp/t.xsh:6:19\n      Result.Err(e) => { print \"ERR\" }\n                    ^^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  /tmp/t.xsh:8:21\n    return Result.Ok(())\n                      ^ expected expression\n\nerr[parse.expected-terminator]: expected statement terminator\n  /tmp/t.xsh:8:22\n    return Result.Ok(())\n                       ^ expected statement terminator\n\nerr[parse.expected-expression]: expected expression\n  /tmp/t.xsh:8:22\n    return Result.Ok(())\n                       ^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  /tmp/t.xsh:9:1\n  }\n  ^ expected expression\n[12] -> err[parse.expected-token]: expected `=>` in match arm\n  /tmp/t.xsh:5:14\n      Result.Ok(raw) => { print \"OK:\" $raw }\n               ^ expected `=>` in match arm\n\nerr[parse.expected-terminator]: expected statement terminator\n  /tmp/t.xsh:5:20\n      Result.Ok(raw) => { print \"OK:\" $raw }\n                     ^^ expected statement terminator\n\nerr[parse.expected-pattern]: expected pattern\n  /tmp/t.xsh:5:20\n      Result.Ok(raw) => { print \"OK:\" $raw }\n                     ^^ expected pattern\n\nerr[parse.expected-terminator]: expected statement terminator\n  /tmp/t.xsh:6:19\n      Result.Err(e) => { print \"ERR\" }\n                    ^^ expected statement terminator\n\nerr[parse.expected-expression]: expected expression\n  /tmp/t.xsh:6:19\n      Result.Err(e) => { print \"ERR\" }\n                    ^^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  /tmp/t.xsh:8:21\n    return Result.Ok(())\n                      ^ expected expression\n\nerr[parse.expected-terminator]: expected statement terminator\n  /tmp/t.xsh:8:22\n    return Result.Ok(())\n                       ^ expected statement terminator\n\nerr[parse.expected-expression]: expected expression\n  /tmp/t.xsh:8:22\n    return Result.Ok(())\n                       ^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  /tmp/t.xsh:9:1\n  }\n  ^ expected expression\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 13,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-histogram-1"
+        }
+      },
+      {
+        "report": "phases/02-reeval-task-histogram-003/workers/eval-worker/task-histogram-1/report.json",
+        "summary": "CHECK OK\nLINT OK\nFMT OK\nls: tasks.md: No such file or directory\n-rw-r--r--    1 root     root           965 Aug  7 19:02 histogram.xsh\n-rw-r--r--    1 root     root          1514 Aug  7 19:03 review.md\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 79,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-histogram-1"
+        }
+      }
+    ],
+    "workers": [
+      {
+        "identity": {
+          "role": "director",
+          "worker_id": "director"
+        },
+        "path": "phases/01-ticket/workers/director/director/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 13,
+          "budget_usd": 0.06,
+          "cache_read_cost_usd": 0.004082688,
+          "cache_read_tokens": 226816,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.007766388,
+          "input_cost_usd": 0.0027603,
+          "input_tokens": 30670,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0009234,
+          "output_tokens": 5130,
+          "provider_total_tokens": 262616,
+          "reasoning_tokens": 1543,
+          "thinking_blocks": 12,
+          "tool_calls": 19,
+          "tool_errors": 0,
+          "tool_results": 19,
+          "total_bucket_tokens": 262616,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "engineer",
+          "worker_id": "task-histogram-003"
+        },
+        "path": "phases/01-ticket/workers/engineer/task-histogram-003/report.json",
+        "result": "pass",
+        "tool_errors": 10,
+        "usage": {
+          "assistant_turns": 56,
+          "budget_usd": 0.35,
+          "cache_read_cost_usd": 0.047702610000000006,
+          "cache_read_tokens": 4770261,
+          "cache_write_cost_usd": 0.013376749999999993,
+          "cache_write_tokens": 107014,
+          "cost_usd": 0.07227596000000001,
+          "input_cost_usd": 0.000016800000000000012,
+          "input_tokens": 168,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.011179800000000004,
+          "output_tokens": 18633,
+          "provider_total_tokens": 4896076,
+          "reasoning_tokens": 9615,
+          "thinking_blocks": 18,
+          "tool_calls": 101,
+          "tool_errors": 10,
+          "tool_results": 101,
+          "total_bucket_tokens": 4896076,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-histogram"
+        },
+        "path": "phases/02-reeval-task-histogram-003/workers/eval-manager/task-histogram/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 22,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.01387008,
+          "cache_read_tokens": 770560,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.0218943,
+          "input_cost_usd": 0.005282820000000001,
+          "input_tokens": 58698,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0027413999999999997,
+          "output_tokens": 15230,
+          "provider_total_tokens": 844488,
+          "reasoning_tokens": 9500,
+          "thinking_blocks": 19,
+          "tool_calls": 33,
+          "tool_errors": 0,
+          "tool_results": 33,
+          "total_bucket_tokens": 844488,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-histogram-1"
+        },
+        "path": "phases/02-reeval-task-histogram-003/workers/eval-worker/task-histogram-1/report.json",
+        "result": "pass",
+        "tool_errors": 2,
+        "usage": {
+          "assistant_turns": 81,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.03672460799999999,
+          "cache_read_tokens": 2040256,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.064170378,
+          "input_cost_usd": 0.02178548999999999,
+          "input_tokens": 242061,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00566028,
+          "output_tokens": 31446,
+          "provider_total_tokens": 2313763,
+          "reasoning_tokens": 23160,
+          "thinking_blocks": 71,
+          "tool_calls": 81,
+          "tool_errors": 2,
+          "tool_results": 81,
+          "total_bucket_tokens": 2313763,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-dupcheck"
+        },
+        "path": "phases/03-eval/workers/eval-manager/task-dupcheck/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 15,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.006239231999999999,
+          "cache_read_tokens": 346624,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.011748222,
+          "input_cost_usd": 0.0033005700000000005,
+          "input_tokens": 36673,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00220842,
+          "output_tokens": 12269,
+          "provider_total_tokens": 395566,
+          "reasoning_tokens": 6405,
+          "thinking_blocks": 12,
+          "tool_calls": 25,
+          "tool_errors": 0,
+          "tool_results": 25,
+          "total_bucket_tokens": 395566,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-dupcheck-1"
+        },
+        "path": "phases/03-eval/workers/eval-worker/task-dupcheck-1/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 23,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.004422528,
+          "cache_read_tokens": 245696,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.009270287999999998,
+          "input_cost_usd": 0.00341082,
+          "input_tokens": 37898,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0014369399999999998,
+          "output_tokens": 7983,
+          "provider_total_tokens": 291577,
+          "reasoning_tokens": 4203,
+          "thinking_blocks": 19,
+          "tool_calls": 25,
+          "tool_errors": 0,
+          "tool_results": 25,
+          "total_bucket_tokens": 291577,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "1477f472d5b4d57db3584357116ef97c32358ab6"
+  },
+  "findings": [],
+  "identity": {
+    "mode": "organization",
+    "run_id": "run-1786128115649"
+  },
+  "kind": "run",
+  "result": "pass",
+  "schema_version": 1,
+  "state": "completed"
+}
