@@ -1115,6 +1115,7 @@ Draft.
     pretty: true,
   )?
   test.eq(runtime.untried_approved_evals(root)?, ["task-a"])?
+  test.eq(runtime.next_untried_approved_evals(root, 2)?, ["task-a"])?
   test.eq(runtime.next_untried_approved_eval(root)?, "task-a")?
 }
 
@@ -2242,6 +2243,17 @@ proc test_organization_starts_independent_eval_before_primary_wait() [fs, error]
   test.contains(before_primary_wait, "10-independent-eval-started")?
   test.contains(before_primary_wait, "let independent_eval_handle = spawn_child")?
   test.contains(before_primary_wait, "independent_eval_handles = independent_eval_handles.push")?
+}
+
+proc test_organization_supports_two_discovery_evals() [fs, error] {
+  let organization = fs.read_text(fp"${fs.cwd()?}/factory/controllers/organization.xsh")?
+  let launcher = fs.read_text(fp"${fs.cwd()?}/run.xsh")?
+  test.contains(organization, "secondary_eval")?
+  test.contains(organization, "independent_eval_requested")?
+  test.contains(organization, "02-eval")?
+  test.contains(organization, "independent_eval_id")?
+  test.contains(launcher, "next_untried_approved_evals(factory_dir, eval_values.len())")?
+  test.contains(launcher, "ticketless organization discovery requires one or two active evals")?
 }
 
 proc test_organization_delivery_is_a_success_gate() [fs, error] {

@@ -207,45 +207,59 @@ proc preflight(
       eprint "organization request must select an eval"
       return false
     }
+    if mode == "organization" and candidate_tickets.len() == 0 and (eval_values.len() < 1 or eval_values.len() > 2) {
+      eprint "ticketless organization discovery requires one or two active evals"
+      return false
+    }
+    if mode == "organization" and candidate_tickets.len() > 0 and eval_values.len() != 1 {
+      eprint "ticket organization cycles require exactly one independent eval"
+      return false
+    }
 
-    let eval_path = fp"${factory_dir}/evals/${eval_id}/EVAL.md"
-    let eval_exists = fs.exists(eval_path)?
-    let eval_disabled = eval_exists and control.eval_is_disabled(eval_path.read_text()?)
     if mode == "organization" and ! typed_request.measured_reuse_value(request_text)? {
-      let next_untried = runtime.next_untried_approved_eval(factory_dir)?
-      if next_untried != "" and eval_id != next_untried {
-        eprint f"organization request must select next untried approved eval ${next_untried}; selected ${eval_id}"
+      let next_untried = if candidate_tickets.len() == 0 {
+        runtime.next_untried_approved_evals(factory_dir, eval_values.len())?
+      } else {
+        runtime.next_untried_approved_evals(factory_dir, 1)?
+      }
+      if next_untried.len() > 0 and eval_values != next_untried {
+        eprint f"organization request must select the next untried approved evals ${next_untried.join(", ")}; selected ${eval_values.join(", ")}"
         return false
       }
     }
 
-    if ! control.valid_eval_id(eval_id) or ! eval_exists or eval_disabled {
-      eprint f"cycle request selected unsupported or missing eval: ${eval_id}"
-      return false
-    }
+    for requested_eval_id in eval_values {
+      let eval_path = fp"${factory_dir}/evals/${requested_eval_id}/EVAL.md"
+      let eval_exists = fs.exists(eval_path)?
+      let eval_disabled = eval_exists and control.eval_is_disabled(eval_path.read_text()?)
+      if ! control.valid_eval_id(requested_eval_id) or ! eval_exists or eval_disabled {
+        eprint f"cycle request selected unsupported or missing eval: ${requested_eval_id}"
+        return false
+      }
 
-    let evaluator_file = fp"${factory_dir}/evals/${eval_id}/evaluator.xsh"
-    if ! fs.exists(evaluator_file)? {
-      eprint f"eval ${eval_id} is missing its package-owned evaluator.xsh"
-      return false
-    }
+      let evaluator_file = fp"${factory_dir}/evals/${requested_eval_id}/evaluator.xsh"
+      if ! fs.exists(evaluator_file)? {
+        eprint f"eval ${requested_eval_id} is missing its package-owned evaluator.xsh"
+        return false
+      }
 
-    let evaluator_source = evaluator_file.read_text()?
-    if ! control.eval_evaluator_package_owned(evaluator_source) {
-      eprint f"eval ${eval_id} package evaluator delegates to a legacy/shared dispatcher"
-      return false
-    }
+      let evaluator_source = evaluator_file.read_text()?
+      if ! control.eval_evaluator_package_owned(evaluator_source) {
+        eprint f"eval ${requested_eval_id} package evaluator delegates to a legacy/shared dispatcher"
+        return false
+      }
 
-    let evaluator_check = process.run(
-      process.command_argv(
-        process.which("xsht")?,
-        ["xsht", "check", evaluator_file.display()],
-        cwd: factory_dir,
-      ),
-    )?
-    if ! evaluator_check.ok {
-      eprint f"eval ${eval_id} package evaluator failed xsht check"
-      return false
+      let evaluator_check = process.run(
+        process.command_argv(
+          process.which("xsht")?,
+          ["xsht", "check", evaluator_file.display()],
+          cwd: factory_dir,
+        ),
+      )?
+      if ! evaluator_check.ok {
+        eprint f"eval ${requested_eval_id} package evaluator failed xsht check"
+        return false
+      }
     }
   }
 

@@ -487,6 +487,28 @@ positional-only API guidance candidate, but it is single-eval evidence. Keep
 the approved handbook unchanged until `task-dupcheck` and a second
 defaulted-parameter eval confirm the guidance generalizes.
 
+## Explicit CTO disposition — run-1786131191668
+
+| Candidate SHA-256 | Disposition |
+| --- | --- |
+| `2c9a519882a9c0dff1c84e45788d5ed7bd4dbf92f01292047880511a75c92aac` | deferred pending cross-eval replay; not promoted |
+
+The `task-ecount` manager's function-return and `List.get` guidance is useful
+but has only one eval's evidence. Keep the approved handbook unchanged until
+the named replay against the candidate and an independent filesystem or
+composition eval confirm that it generalizes.
+
+## Explicit CTO disposition — run-1786133266290
+
+| Candidate SHA-256 | Disposition |
+| --- | --- |
+| `5e85b8d4324282bdc301608747b7d27d067933578ed59d6226ebdd4675556d1a` | deferred pending cross-eval replay; not promoted |
+
+The paired `task-findexec` discovery produced useful general filesystem
+permission and hidden-entry guidance, but it remains single-eval evidence.
+Keep the approved handbook unchanged until the named `task-findexec` replay and
+an independent filesystem-tree eval confirm the guidance.
+
 ## Explicit CTO disposition — run-1786128115649
 
 | Candidate SHA-256 | Disposition |

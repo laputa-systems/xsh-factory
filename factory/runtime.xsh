@@ -933,9 +933,27 @@ export proc untried_approved_evals(factory_dir: Path) [fs, error] -> Result[List
 }
 
 ## Returns the deterministic next approved eval requiring its first trial.
-export proc next_untried_approved_eval(factory_dir: Path) [fs, error] -> Result[Str] {
+## Returns up to `limit` deterministic approved evals requiring their first trial.
+export proc next_untried_approved_evals(factory_dir: Path, limit: Int) [fs, error] -> Result[List[Str]] {
   let untried = untried_approved_evals(factory_dir)?
-  return if untried.len() == 0 { "" } else { untried[0] }
+  if limit <= 0 {
+    return []
+  }
+
+  var selected: List[Str] = []
+  for eval_id in untried {
+    selected = selected.push(eval_id)
+    if selected.len() >= limit {
+      break
+    }
+  }
+  return selected
+}
+
+## Returns the deterministic next approved eval requiring its first trial.
+export proc next_untried_approved_eval(factory_dir: Path) [fs, error] -> Result[Str] {
+  let next = next_untried_approved_evals(factory_dir, 1)?
+  return if next.len() == 0 { "" } else { next[0] }
 }
 
 ## Selects the first explicitly approved tickets for an organization cycle.

@@ -1,0 +1,122 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786133266290/phases/02-eval/workers/eval-manager/task-findexec/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_process": "pass",
+    "dispatch_claim": "d80d17e227f061290d01dec204c9c0446f3f3419e9aba74740e8eacc20ad4541",
+    "dispatch_id": "eval-manager-task-findexec",
+    "message_sha256": "d80d17e227f061290d01dec204c9c0446f3f3419e9aba74740e8eacc20ad4541",
+    "reporting": "pass",
+    "required_report": "present",
+    "session_limit_watcher": "pass",
+    "system_prompt_sha256": "a5ab31790989af39c06a7fec953a65b5b782b1be43779a76401f77f02f7995f3",
+    "watcher": "pass"
+  },
+  "findings": [
+    {
+      "count": 2,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "role": "eval-manager",
+    "worker_id": "task-findexec"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "provider_telemetry": {
+    "event_turns": 12,
+    "events_path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786133266290/phases/02-eval/workers/eval-manager/task-findexec/session.jsonl.events.jsonl",
+    "output_tokens_per_second": 0,
+    "present": true,
+    "provider_errors": [],
+    "response_elapsed_ms": 0,
+    "retry_count": 0,
+    "retry_delay_ms": 0,
+    "retry_errors": [],
+    "retry_failures": 0,
+    "retry_successes": 0
+  },
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786133266290/phases/02-eval/workers/eval-manager/task-findexec/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 11,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 344714
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786133266290/phases/02-eval/workers/eval-manager/task-findexec/session.jsonl.bz2",
+      "summary": "      42 session.jsonl.bz2\n---events---\n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 3
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786133266290/phases/02-eval/workers/eval-manager/task-findexec/session.jsonl.bz2",
+      "summary": "total 24\ndrwxr-xr-x   3 josh  staff     96 Aug  7 13:07 .\ndrwxr-xr-x  24 josh  staff    768 Aug  7 13:13 ..\n-rw-r--r--   1 josh  staff  10305 Aug  7 13:07 handbook-approved.md\n---approved sha---\n3b56a781606faa1ae0eb811af09d10094080152dae78d9f057cca7de101e126b  handbook-approved.md\n---candidate absent?---\nls: handbook-candidate.md: No such file or directory\n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 6
+    }
+  ],
+  "tools": [
+    {
+      "count": 6,
+      "name": "bash"
+    },
+    {
+      "count": 1,
+      "name": "edit"
+    },
+    {
+      "count": 1,
+      "name": "ls"
+    },
+    {
+      "count": 11,
+      "name": "read"
+    },
+    {
+      "count": 1,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 12,
+    "budget_usd": 0.15,
+    "cache_read_cost_usd": 0.0056413439999999995,
+    "cache_read_tokens": 313408,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.011132154,
+    "input_cost_usd": 0.004160249999999999,
+    "input_tokens": 46225,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.00133056,
+    "output_tokens": 7392,
+    "provider_total_tokens": 367025,
+    "reasoning_tokens": 3451,
+    "thinking_blocks": 10,
+    "tool_calls": 20,
+    "tool_errors": 2,
+    "tool_results": 20,
+    "total_bucket_tokens": 367025,
+    "user_messages": 1
+  }
+}

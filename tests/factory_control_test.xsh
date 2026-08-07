@@ -906,6 +906,7 @@ proc test_standard_cycle_uses_diverse_active_eval() [fs, error] {
   let organization = fs.read_text(fp"${fs.cwd()?}/factory/controllers/organization.xsh")?
   let runtime_source = fs.read_text(fp"${fs.cwd()?}/factory/runtime.xsh")?
   let cto_runner = fs.read_text(fp"${fs.cwd()?}/factory/tools/cto.xsh")?
+  let throughput = fs.read_text(fp"${fs.cwd()?}/THROUGHPUT.md")?
   test.contains(
     request,
     """## Active evals
@@ -975,6 +976,9 @@ proc test_standard_cycle_uses_diverse_active_eval() [fs, error] {
   test.ok("admit at most one ticket" not in organization)?
   test.contains(runtime_source, "passing engineer report")?
   test.ok("git branch provenance" not in runtime_source)?
+  test.contains(throughput, "## Recommendations")?
+  test.contains(throughput, "two independent discovery evals")?
+  test.contains(throughput, "Tier ticket admission by risk")?
 }
 
 proc test_agent_completion_is_report_bound() [error] {

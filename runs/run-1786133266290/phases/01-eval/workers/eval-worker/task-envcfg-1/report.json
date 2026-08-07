@@ -1,0 +1,128 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786133266290/phases/01-eval/workers/eval-worker/task-envcfg-1/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_state": "pass",
+    "agent_wall_ms": 261636,
+    "artifact": {
+      "name": "envcfg.xsh",
+      "state": "present"
+    },
+    "budget_state": "pass",
+    "classification": "pass",
+    "evaluator_manifest": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786133266290/phases/01-eval/workers/eval-worker/task-envcfg-1/run.json",
+    "evaluator_state": "pass",
+    "reporting_state": "pass",
+    "result": "pass",
+    "review": {
+      "state": "present"
+    }
+  },
+  "findings": [
+    {
+      "count": 3,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "eval_id": "task-envcfg",
+    "role": "eval-worker",
+    "run_id": "01-eval",
+    "worker_id": "task-envcfg-1"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "provider_telemetry": {
+    "event_turns": 25,
+    "events_path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786133266290/phases/01-eval/workers/eval-worker/task-envcfg-1/session.jsonl.events.jsonl",
+    "output_tokens_per_second": 0,
+    "present": true,
+    "provider_errors": [],
+    "response_elapsed_ms": 0,
+    "retry_count": 0,
+    "retry_delay_ms": 0,
+    "retry_errors": [],
+    "retry_failures": 0,
+    "retry_successes": 0
+  },
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786133266290/phases/01-eval/workers/eval-worker/task-envcfg-1/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 24,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 260353
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786133266290/phases/01-eval/workers/eval-worker/task-envcfg-1/session.jsonl.bz2",
+      "summary": "err[parse.expected-token]: expected `=>` in match arm\n  p4.xsh:5:9\n        ok: v => { print \"OK\" $arg \"->\" $v }\n          ^ expected `=>` in match arm\n\nerr[parse.expected-expression]: expected expression\n  p4.xsh:5:9\n        ok: v => { print \"OK\" $arg \"->\" $v }\n          ^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  p4.xsh:8:3\n    }\n    ^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  p4.xsh:9:1\n  }\n  ^ expected expression\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 8
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786133266290/phases/01-eval/workers/eval-worker/task-envcfg-1/session.jsonl.bz2",
+      "summary": "=== defaults (absent) ===\nrc=0\nhost=localhost\nport=8080\ndebug=false\n=== all set ===\nrc=0\nhost=node-a\nport=9001\ndebug=true\n=== present empty host/debug, valid port ===\nrc=0\nhost=\nport=8080\ndebug=\n=== bad port abc, file must not exist ===\nruntime traceback\nexecutable: /usr/local/bin/xsh\noperation: result.propagate\nerror: env-int: environment value is not an integer\ncall path:\n  1. proc main at envcfg.xsh:1:1-1:1\nrc=3\nls: /tmp/bad.cfg: No such file or directory\n=== bad port empty, file must not exist ===\nruntime traceback\nexecutable: /usr/local/bin/xsh\noperation: result.propagate\nerror: env-int: environment value is not an integer\ncall path:\n  1. proc main at envcfg.xsh:1:1-1:1\nrc=3\nls: /tmp/bad2.cfg: No such file or directory\n=== bad port 12x ===\nruntime traceback\nexecutable: /usr/local/bin/xsh\noperation: result.propagate\nerror: env-int: environment value is not an integer\ncall path:\n  1. proc main at envcfg.xsh:1:1-1:1\nrc=3\nls: /tmp/bad3.cfg: No such file or directory\n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 19
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786133266290/phases/01-eval/workers/eval-worker/task-envcfg-1/session.jsonl.bz2",
+      "summary": "Validation failed for tool \"write\":\n  - path: must have required properties path\n\nReceived arguments:\n{\n  \"context\": \"/work/review.md\",\n  \"content\": \"# Task Review\\n\\nKeep both section headings. Replace `None.` with concise, evidence-based\\nfindings when the session exposed a reusable language proposal or xsht\\nfriction. Do not invent an issue; leave `None.` when the section has no\\nfinding.\\n\\n## XSH language proposals\\n\\nThe lack of a generic error constructor makes deliberate validation failure\\nawkward when the host value is a raw string. To reject a malformed `CFG_PORT`\\nI had to keep the raw string for output (to preserve leading zeros like\\n`08080`, matching the oracle) yet still produce a nonzero exit, which was only\\npossible by invoking `env.int(...)?` as a hidden failure trigger. A first-class\\n`Error(msg)`/`fail` primitive, or a way for `?` to accept a rejected value\\nwithout a typed conversion, would let validation and output use the same value.\\n\\n## xsht friction\\n\\n- `xsht api` could not address the `Path` constructor by any selector I tried\\n  (`api:path`, `constructor:Path`, `Path constructor`); I had to verify `Path(str)`\\n  and `fp\\\"...\\\"` by trial and error.\\n- `xsht fmt` silently rewrote a plain `+` string concatenation into a\\n  triple-quoted multiline literal; semantically identical but non-obvious, and\\n  it made the intended output harder to read in the source.\\n\"\n}",
+      "tool": "write",
+      "turn": 22
+    }
+  ],
+  "tools": [
+    {
+      "count": 26,
+      "name": "bash"
+    },
+    {
+      "count": 3,
+      "name": "read"
+    },
+    {
+      "count": 3,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 25,
+    "budget_usd": 0.5,
+    "cache_read_cost_usd": 0.006885504,
+    "cache_read_tokens": 382528,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.011313774,
+    "input_cost_usd": 0.00243819,
+    "input_tokens": 27091,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.0019900799999999995,
+    "output_tokens": 11056,
+    "provider_total_tokens": 420675,
+    "reasoning_tokens": 6517,
+    "thinking_blocks": 19,
+    "tool_calls": 32,
+    "tool_errors": 3,
+    "tool_results": 32,
+    "total_bucket_tokens": 420675,
+    "user_messages": 1
+  }
+}
