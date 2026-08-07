@@ -1,0 +1,113 @@
+diff --git a/crates/xsht/src/lint.rs b/crates/xsht/src/lint.rs
+index 6f9d746..9a1c13e 100644
+--- a/crates/xsht/src/lint.rs
++++ b/crates/xsht/src/lint.rs
+@@ -70,6 +70,7 @@ pub struct Linter<'a> {
+     function_effects: FxHashMap<String, Option<Vec<Effect>>>,
+     tag_variants: FxHashSet<String>,
+     type_declarations: FxHashMap<String, Span>,
++    record_type_names: FxHashSet<String>,
+     used_type_names: FxHashSet<String>,
+     assigned_names: FxHashSet<Name>,
+ }
+@@ -137,6 +138,7 @@ impl<'a> Linter<'a> {
+             function_effects: options.callable_effects,
+             tag_variants: FxHashSet::default(),
+             type_declarations: FxHashMap::default(),
++            record_type_names: FxHashSet::default(),
+             used_type_names: FxHashSet::default(),
+             assigned_names: FxHashSet::default(),
+         };
+@@ -176,6 +178,9 @@ impl<'a> Linter<'a> {
+                         self.type_declarations
+                             .insert(def.name.to_string(), stmt.span);
+                     }
++                    if let ArenaTypeDefBody::RecordSchema(_) = &def.body {
++                        self.record_type_names.insert(def.name.to_string());
++                    }
+                     if let ArenaTypeDefBody::TagUnion(variants) = &def.body {
+                         self.lint_single_line_tag_union(
+                             stmt.span,
+@@ -1787,6 +1792,9 @@ impl<'a> Linter<'a> {
+         {
+             return;
+         }
++        if self.annotation_is_record_type(ty) {
++            return;
++        }
+         let initializer_span = self.arena.expr(initializer).span;
+         let replacement = match self.source.get(initializer_span.range()) {
+             Some(source) => format!("{source}\n"),
+@@ -1817,6 +1825,18 @@ impl<'a> Linter<'a> {
+         self.diagnostics.push(diagnostic);
+     }
+ 
++    fn annotation_is_record_type(&self, annotation: Option<TypeExprId>) -> bool {
++        let Some(annotation) = annotation else {
++            return false;
++        };
++        match type_expr_kind(self.arena, annotation) {
++            ArenaTypeExprKind::Named(name) => self
++                .record_type_names
++                .contains(name.as_str().as_str()),
++            _ => false,
++        }
++    }
++
+     fn tail_return_binding_autofix_safe(
+         &self,
+         annotation: Option<TypeExprId>,
+diff --git a/crates/xsht/tests/lint.rs b/crates/xsht/tests/lint.rs
+index 4108d2f..db90db8 100644
+--- a/crates/xsht/tests/lint.rs
++++ b/crates/xsht/tests/lint.rs
+@@ -540,6 +540,34 @@ pure values(items: List[Str]) -> List[Str] {
+     );
+ }
+ 
++#[test]
++fn linter_does_not_suggest_unparseable_tail_return_for_typed_records() {
++    let source = "\
++type Item = {name: Str, active: Bool, count: Int}
++
++proc convert(value: Str) -> Item {
++  let item: Item = {name: value, active: true, count: 1}
++  return item
++}
++
++proc convert_all(values: List[Str]) -> List[Item] {
++  return values |> map { |value|
++    let item: Item = {name: value, active: true, count: 1}
++    item
++  } |> collect()
++}
++";
++    let parsed = parse_lint_source(source);
++    assert!(parsed.diagnostics.is_empty(), "{:?}", parsed.diagnostics);
++    let checked = Checker::check_arena(&parsed.arena, source);
++    assert!(checked.diagnostics.is_empty(), "{:?}", checked.diagnostics);
++
++    let diagnostics = lint_and_assert_fmt_stable(&parsed.arena, source, LintOptions::default());
++    assert!(!diagnostics.iter().any(|diagnostic| {
++        diagnostic.code.as_deref() == Some("lint.redundant-tail-return-binding")
++    }));
++}
++
+ #[test]
+ fn linter_autofixes_single_newline_triple_string() {
+     let source = "\
+diff --git a/docs/SPEC.md b/docs/SPEC.md
+index 16473cd..e66d6a5 100644
+--- a/docs/SPEC.md
++++ b/docs/SPEC.md
+@@ -996,6 +996,10 @@ is immediately returned, and autofixes it to the initializer as the final tail
+ expression when doing so would not remove intervening comments. Annotated
+ bindings are autofixed only when checked types show the initializer already has
+ the annotated type, so the edit does not remove a binding-level conversion.
++Record-schema annotations are not suggested for removal: a record literal may
++rely on the binding annotation for its field types, and the corresponding
++postfix `: Type` tail expression is not valid XSH syntax. This applies inside
++ordinary function bodies and record-producing block/map helpers.
+ This also covers typed empty-list temporaries such as
+ `let empty: List[T] = []; return empty` when the function tail type provides
+ the needed context. `lint.redundant-ok-tail` flags final `return Ok(value)` in

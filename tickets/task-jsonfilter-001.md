@@ -2,7 +2,7 @@
 
 ## Status
 
-Approved.
+Merged.
 
 ## CTO decision — 2026-08-07
 
@@ -27,10 +27,10 @@ None.
 
 ## Merge record
 
-- Implementation branch: `{{IMPLEMENTATION_BRANCH}}`
-- Implementation commit: `{{IMPLEMENTATION_COMMIT}}`
-- Detected at XSH commit: `857154dfe505f0d01053c1b5311f44422070eb34`
-- Implementation run: `{{IMPLEMENTATION_RUN}}`
+- Implementation branch: `factory/task-jsonfilter-001/1786138323873`
+- Implementation commit: `a248267612439dfcfa203fba583ac3e95d37f70c`
+- Detected at XSH commit: `a248267612439dfcfa203fba583ac3e95d37f70c`
+- Implementation run: `/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786138321778/phases/01-ticket`
 
 ## Source eval and manager
 

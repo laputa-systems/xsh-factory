@@ -1,0 +1,72 @@
+{
+  "classification": "pass",
+  "correctness": {
+    "all_exact": true,
+    "cases": [
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 11135897,
+        "exact": true,
+        "name": "public",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 11480815
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 13585620,
+        "exact": true,
+        "name": "hidden_nested",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 13329160
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 12337153,
+        "exact": true,
+        "name": "hidden_dotname",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 13259284
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 12219862,
+        "exact": true,
+        "name": "hidden_no_suffix",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 13604744
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 13379952,
+        "exact": true,
+        "name": "hidden_empty",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 13229284
+      },
+      {
+        "candidate_exit": 3,
+        "candidate_wall_ns": 12993949,
+        "exact": true,
+        "name": "hidden_missing",
+        "oracle_exit": 1,
+        "oracle_wall_ns": 11325981
+      }
+    ],
+    "passed": true
+  },
+  "eval_id": "task-renamex",
+  "image_id": "sha256:794948f909cc0928706bcc91b6c5e3efcd4cd4b3ab23c780bedefb12b50d0556",
+  "platform": "linux/arm64",
+  "protocol": {
+    "artifact_present": true,
+    "review_ok": true
+  },
+  "restrictions": {
+    "passed": true
+  },
+  "result": "pass",
+  "timings": {
+    "passed": true
+  },
+  "trial_id": "1"
+}

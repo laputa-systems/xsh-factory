@@ -1,0 +1,112 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786140236250/phases/03-eval/workers/eval-manager/task-renamex/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_process": "pass",
+    "dispatch_claim": "e25e51bef1a5c3049c9f62ae72f84dc8d36cb281cfd6a640b24aa6e0036b9d1c",
+    "dispatch_id": "eval-manager-task-renamex",
+    "message_sha256": "e25e51bef1a5c3049c9f62ae72f84dc8d36cb281cfd6a640b24aa6e0036b9d1c",
+    "reporting": "pass",
+    "required_report": "present",
+    "session_limit_watcher": "pass",
+    "system_prompt_sha256": "a5ab31790989af39c06a7fec953a65b5b782b1be43779a76401f77f02f7995f3",
+    "watcher": "pass"
+  },
+  "findings": [
+    {
+      "count": 1,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "role": "eval-manager",
+    "worker_id": "task-renamex"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "provider_telemetry": {
+    "event_turns": 12,
+    "events_path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786140236250/phases/03-eval/workers/eval-manager/task-renamex/session.jsonl.events.jsonl",
+    "output_tokens_per_second": 0,
+    "present": true,
+    "provider_errors": [],
+    "response_elapsed_ms": 0,
+    "retry_count": 0,
+    "retry_delay_ms": 0,
+    "retry_errors": [],
+    "retry_failures": 0,
+    "retry_successes": 0
+  },
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786140236250/phases/03-eval/workers/eval-manager/task-renamex/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 11,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 88868
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786140236250/phases/03-eval/workers/eval-manager/task-renamex/session.jsonl.bz2",
+      "summary": "Traceback (most recent call last):\n  File \"<string>\", line 16, in <module>\n    print(i,'T', (m.get('content') or '')[:120].replace(chr(10),' '))\n                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAttributeError: 'list' object has no attribute 'replace'\n0 T \n1 T \n2 T \n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 4
+    }
+  ],
+  "tools": [
+    {
+      "count": 7,
+      "name": "bash"
+    },
+    {
+      "count": 2,
+      "name": "ls"
+    },
+    {
+      "count": 11,
+      "name": "read"
+    },
+    {
+      "count": 1,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 12,
+    "budget_usd": 0.15,
+    "cache_read_cost_usd": 0.003466368,
+    "cache_read_tokens": 192576,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.0071349479999999995,
+    "input_cost_usd": 0.0024177599999999997,
+    "input_tokens": 26864,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.00125082,
+    "output_tokens": 6949,
+    "provider_total_tokens": 226389,
+    "reasoning_tokens": 2569,
+    "thinking_blocks": 9,
+    "tool_calls": 21,
+    "tool_errors": 1,
+    "tool_results": 21,
+    "total_bucket_tokens": 226389,
+    "user_messages": 1
+  }
+}
