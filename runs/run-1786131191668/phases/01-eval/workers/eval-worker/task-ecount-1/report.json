@@ -1,0 +1,192 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786131191668/phases/01-eval/workers/eval-worker/task-ecount-1/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_state": "pass",
+    "agent_wall_ms": 658895,
+    "artifact": {
+      "name": "ecount.xsh",
+      "state": "present"
+    },
+    "budget_state": "pass",
+    "classification": "pass",
+    "evaluator_manifest": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786131191668/phases/01-eval/workers/eval-worker/task-ecount-1/run.json",
+    "evaluator_state": "pass",
+    "reporting_state": "pass",
+    "result": "pass",
+    "review": {
+      "state": "present"
+    }
+  },
+  "findings": [
+    {
+      "count": 13,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "eval_id": "task-ecount",
+    "role": "eval-worker",
+    "run_id": "01-eval",
+    "worker_id": "task-ecount-1"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "provider_telemetry": {
+    "event_turns": 64,
+    "events_path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786131191668/phases/01-eval/workers/eval-worker/task-ecount-1/session.jsonl.events.jsonl",
+    "output_tokens_per_second": 0,
+    "present": true,
+    "provider_errors": [],
+    "response_elapsed_ms": 0,
+    "retry_count": 0,
+    "retry_delay_ms": 0,
+    "retry_errors": [],
+    "retry_failures": 0,
+    "retry_successes": 0
+  },
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786131191668/phases/01-eval/workers/eval-worker/task-ecount-1/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 63,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 657581
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786131191668/phases/01-eval/workers/eval-worker/task-ecount-1/session.jsonl.bz2",
+      "summary": "err[check.type-mismatch]: type mismatch\n  probe_test.xsh:2:19\n    let root = Path(argv.get(0))\n                    ^^^^^^^^^^^ expected Str, found Result[Str, Error]\n\nerr[check.effect-violation]: `?` requires the `error` effect\n  probe_test.xsh:3:15\n    let files = fs.files(root)?\n                ^^^^^^^^^^^^^^^ `?` requires the `error` effect\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 7
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786131191668/phases/01-eval/workers/eval-worker/task-ecount-1/session.jsonl.bz2",
+      "summary": "purpose: Wraps text to a requested width.\n====INT====\n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 15
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786131191668/phases/01-eval/workers/eval-worker/task-ecount-1/session.jsonl.bz2",
+      "summary": "err[parse.expected-expression]: expected expression\n  ecount.xsh:7:16\n    let spaces = stream.range(0, need) |> map { |_| \" \" } |> collect() |> List.join(\"\")\n                 ^^^^^^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  ecount.xsh:7:57\n    let spaces = stream.range(0, need) |> map { |_| \" \" } |> collect() |> List.join(\"\")\n                                                          ^^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  ecount.xsh:9:1\n  }\n  ^ expected expression\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 22
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786131191668/phases/01-eval/workers/eval-worker/task-ecount-1/session.jsonl.bz2",
+      "summary": "err[check.unresolved-name]: unresolved name\n  r_test.xsh:2:59\n    let ss = range(0, 3) |> map { |_| \" \" } |> collect() |> List.join(\"\")\n                                                            ^^^^ unresolved name\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 25
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786131191668/phases/01-eval/workers/eval-worker/task-ecount-1/session.jsonl.bz2",
+      "summary": "err[parse.expected-record-field]: expected record field\n  r_test.xsh:2:61\n    let ss = range(0, 3) |> map { |_| \" \" } |> collect() |> { |l| l.join(\"\") }\n                                                              ^ expected record field\n\nerr[parse.expected-token]: expected `}` after record\n  r_test.xsh:2:61\n    let ss = range(0, 3) |> map { |_| \" \" } |> collect() |> { |l| l.join(\"\") }\n                                                              ^ expected `}` after record\n\nerr[parse.unsupported-boolean-operator]: unsupported operator '|': XSH boolean operators are the word forms 'or'\n  r_test.xsh:2:61\n    let ss = range(0, 3) |> map { |_| \" \" } |> collect() |> { |l| l.join(\"\") }\n                                                              ^ use 'or' instead of '|'\n\nerr[parse.expected-terminator]: expected statement terminator\n  r_test.xsh:2:61\n    let ss = range(0, 3) |> map { |_| \" \" } |> collect() |> { |l| l.join(\"\") }\n                                                              ^ expected statement terminator\n\nerr[parse.expected-expression]: expected expression\n  r_test.xsh:2:61\n    let ss = range(0, 3) |> map { |_| \" \" } |> collect() |> { |l| l.join(\"\") }\n                                                              ^ expected expression\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 26
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786131191668/phases/01-eval/workers/eval-worker/task-ecount-1/session.jsonl.bz2",
+      "summary": "err[parse.expected-expression]: expected expression\n  ecount.xsh:11:1\n  }\n  ^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  ecount.xsh:19:1\n  }\n  ^ expected expression\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 28
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786131191668/phases/01-eval/workers/eval-worker/task-ecount-1/session.jsonl.bz2",
+      "summary": "err[parse.expected-expression]: expected expression\n  fn_test.xsh:3:1\n  }\n  ^ expected expression\n---\nerr[parse.expected-expression]: expected expression\n  fn_test2.xsh:3:1\n  }\n  ^ expected expression\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 30
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786131191668/phases/01-eval/workers/eval-worker/task-ecount-1/session.jsonl.bz2",
+      "summary": "err[check.standard-module-shadow]: name `path` shadows the standard module `path`\n  ecount.xsh:13:13\n  pure ext_of(path: Path) -> Str {\n              ^^^^^^^^^^ name `path` shadows the standard module `path`\n\nerr[check.unsupported-api]: `path.display` is not supported; use `path_value.display()`\n  ecount.xsh:14:15\n    let parts = path.display().split(\".\")\n                ^^^^^^^^^^^^^^ `path.display` is not supported; use `path_value.display()`\n\nerr[check.unknown-method]: unknown method `lower` on Result[Str, Error]\n  ecount.xsh:16:5\n      parts.get(parts.len() - 1).lower()\n      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `lower` is not defined for Result[Str, Error]\n\nerr[check.missing-return]: function can fall through without returning its declared type\n  ecount.xsh:13:32\n  pure ext_of(path: Path) -> Str {\n                                 ^ function can fall through without returning its declared type\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 34
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786131191668/phases/01-eval/workers/eval-worker/task-ecount-1/session.jsonl.bz2",
+      "summary": "sh: python3: not found\nerr[check.standard-module-shadow]: name `path` shadows the standard module `path`\n  ecount.xsh:13:13\n  pure ext_of(path: Path) -> Str {\n              ^^^^^^^^^^ name `path` shadows the standard module `path`\n\nerr[check.unsupported-api]: `path.display` is not supported; use `path_value.display()`\n  ecount.xsh:14:15\n    let parts = path.display().split(\".\")\n                ^^^^^^^^^^^^^^ `path.display` is not supported; use `path_value.display()`\n\nerr[check.unknown-method]: unknown method `lower` on Result[Str, Error]\n  ecount.xsh:16:5\n      parts.get(parts.len() - 1).lower()\n      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `lower` is not defined for Result[Str, Error]\n\nerr[check.missing-return]: function can fall through without returning its declared type\n  ecount.xsh:13:32\n  pure ext_of(path: Path) -> Str {\n                                 ^ function can fall through without returning its declared type\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 36
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786131191668/phases/01-eval/workers/eval-worker/task-ecount-1/session.jsonl.bz2",
+      "summary": "err[check.missing-return]: function can fall through without returning its declared type\n  ecount.xsh:13:29\n  pure ext_of(p: Path) -> Str {\n                              ^ function can fall through without returning its declared type\n=== candidate ===\ncat: can't open 'probe/cand.txt': No such file or directory\n=== oracle ===\n      1 script\n     18 pub\n    119 crt\n=== diff ===\ndiff: can't stat 'probe/cand.txt': No such file or directory\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 38
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786131191668/phases/01-eval/workers/eval-worker/task-ecount-1/session.jsonl.bz2",
+      "summary": "err[check.missing-return]: function can fall through without returning its declared type\n  if_test.xsh:1:28\n  pure choose(x: Int) -> Str {\n                             ^ function can fall through without returning its declared type\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 39
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786131191668/phases/01-eval/workers/eval-worker/task-ecount-1/session.jsonl.bz2",
+      "summary": "=== candidate ===\n     1 script\n    18 pub\n   119 crt\n=== diff ===\n--- probe/oracle.txt\n+++ probe/cand.txt\n@@ -1,3 +1,3 @@\n-      1 script\n-     18 pub\n-    119 crt\n+     1 script\n+    18 pub\n+   119 crt\n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 42
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786131191668/phases/01-eval/workers/eval-worker/task-ecount-1/session.jsonl.bz2",
+      "summary": "sh: syntax error: bad for loop variable\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 46
+    }
+  ],
+  "tools": [
+    {
+      "count": 70,
+      "name": "bash"
+    },
+    {
+      "count": 3,
+      "name": "edit"
+    },
+    {
+      "count": 4,
+      "name": "read"
+    },
+    {
+      "count": 3,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 64,
+    "budget_usd": 0.5,
+    "cache_read_cost_usd": 0.025720704,
+    "cache_read_tokens": 1428928,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.044146404,
+    "input_cost_usd": 0.01412874,
+    "input_tokens": 156986,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.00429696,
+    "output_tokens": 23872,
+    "provider_total_tokens": 1609786,
+    "reasoning_tokens": 13278,
+    "thinking_blocks": 53,
+    "tool_calls": 80,
+    "tool_errors": 13,
+    "tool_results": 80,
+    "total_bucket_tokens": 1609786,
+    "user_messages": 1
+  }
+}
