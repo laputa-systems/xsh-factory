@@ -141,6 +141,18 @@ The `dbb77ccc…` candidate (envcfg) repeats the word-form boolean-operator rule
 do-not-shadow-standard-module-name note. Single-run hypothesis; recorded as
 deferred, not promoted.
 
+## Explicit CTO promotion — pre-cycle-3
+
+| Candidate SHA-256 | Disposition |
+| --- | --- |
+| `b152a97a29e98853ca2fe6a9577faa288ea19869ea9bc6a55293fcb619d67330` | promoted |
+
+The `task-bigfiles` manager repeated the block-bearing stream-stage discovery
+friction after the same eval had supplied the accepted command-word spelling in
+the preceding cycle. The candidate is a short, general rule covering named
+flags plus blocks, and its concrete example is validated by both runs. Promote
+it into the approved handbook; no product or evaluator surface changes.
+
 The `36c2f9f1…` candidate adds word-form boolean-operator guidance (`or`/`and`,
 rejecting shell `||`/`&&`). It is valid and reproducible (envcfg trial 2 hit the
 `||` rejection), but it is a single-eval hypothesis and the ledger already treats

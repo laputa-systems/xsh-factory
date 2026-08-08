@@ -148,6 +148,20 @@ its result rather than leaving a bare terminal as the final statement:
 This avoids a runtime type error that can appear after the terminal has already
 produced output.
 
+A block-bearing stream stage uses command-word spelling, not a parenthesized
+call: `|> map { |entry| entry.path }` accepts the block as a command argument,
+while `map({ |entry| entry.path })` is rejected. When a stage combines a named
+flag with a key block, keep the same command-word form, flag before block, with
+no commas or extra parentheses:
+
+    |> sort-by --desc { |e| e.size }
+
+`take(n)` does take a parenthesized Int argument. The `xsht api` signature for
+a block stage (for example `sort-by(--desc: Bool = false, block)`) can read
+like an ordinary call, but for these stages the block is a command argument and
+parenthesized spellings such as `sort-by(--desc, { |e| e.size })` do not parse.
+Prefer the command-word form shown here.
+
 Maps and lists are values. Map.set returns an updated map value, and Map.get
 has a fallback overload:
 
