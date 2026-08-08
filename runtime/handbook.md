@@ -60,6 +60,11 @@ comment marker and causes a parse error, so use `#` for inline notes:
     # CFG_PORT must be a run of decimal digits.
     let digits = port.delete("0123456789")
 
+Boolean conditions use the word forms `and` and `or`; the shell-style `&&`
+and `||` are parse errors and must not be used:
+
+    if s != "" and s.delete("0123456789") == "" {
+
 Values have explicit types. Common types include Str, Int, Bool, Path,
 List[T], Map[T], and Result[T]. Records have named fields, accessed with dot
 syntax:

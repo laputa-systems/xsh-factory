@@ -606,6 +606,18 @@ positional-only API guidance candidate, but it is single-eval evidence. Keep
 the approved handbook unchanged until `task-dupcheck` and a second
 defaulted-parameter eval confirm the guidance generalizes.
 
+## Explicit CTO promotion — run-1786191275308
+
+| Candidate SHA-256 | Disposition |
+| --- | --- |
+| `9822e4305181e651c4a587b64afd487074216fae532c9a678f25a4d2f59fb3f8` | promoted |
+
+The `task-bigfiles` replay reproduced a shell-derived `&&` parse error, and
+the manager confirmed the general rule that XSH boolean conditions use the
+word forms `and`/`or`. This candidate is identical to the approved handbook
+with that concise rule added. Promote it for every subsequent eval; the
+linked replay and independent trial both completed successfully.
+
 ## Explicit CTO disposition — run-1786177505335
 
 | Candidate SHA-256 | Disposition |
