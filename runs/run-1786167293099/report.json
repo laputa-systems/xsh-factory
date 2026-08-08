@@ -1,0 +1,375 @@
+{
+  "artifacts": [
+    {
+      "kind": "phase-reports",
+      "path": "phases/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 136,
+      "budget_failures": 0,
+      "cost_usd": 0.13629878499999998,
+      "tool_errors": 10,
+      "total_bucket_tokens": 5457217.0,
+      "unknown_costs": 0,
+      "workers": 6
+    },
+    "mode": "organization",
+    "outcomes": {
+      "cycle": "fail",
+      "evaluator": "fail",
+      "infrastructure": "pass",
+      "product": "fail"
+    },
+    "phases": [
+      {
+        "id": "01-ticket",
+        "path": "phases/01-ticket/report.json",
+        "result": "pass",
+        "valid": true
+      },
+      {
+        "id": "02-reeval-task-pathparts-002",
+        "path": "phases/02-reeval-task-pathparts-002/report.json",
+        "result": "fail",
+        "valid": true
+      },
+      {
+        "id": "03-eval",
+        "path": "phases/03-eval/report.json",
+        "result": "pass",
+        "valid": true
+      }
+    ],
+    "throughput": {
+      "admitted_tickets": 1,
+      "delivered_tickets": 0,
+      "delivery_conversion": 0.0,
+      "fresh_engineer_rows": 1,
+      "handbook_quarantines": 0,
+      "overlap_linked_replays": false,
+      "overlap_retained_fresh": false,
+      "reeval_dispatched": 1,
+      "reeval_passed": 0,
+      "retained_fast_paths": 0,
+      "retained_rows": 0
+    },
+    "tool_errors": [
+      {
+        "report": "phases/01-ticket/workers/engineer/task-pathparts-002/report.json",
+        "summary": "ENOENT: no such file or directory, access '/Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786167293099/task-pathparts-002/src/lint.rs'",
+        "tool": "read",
+        "turn": 4,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-pathparts-002"
+        }
+      },
+      {
+        "report": "phases/01-ticket/workers/engineer/task-pathparts-002/report.json",
+        "summary": "Validation failed for tool \"edit\":\n  - edits: must have required properties edits\n\nReceived arguments:\n{\n  \"path\": \"/Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786167293099/task-pathparts-002/docs/XSHT.md\",\n  \"content\": \"# XSHT Tooling Architecture\\n\\nXSH tooling treats quality recommendations as guidance rather than hidden\\nlanguage restrictions. In particular, `lint.path-constructor` recommends\\npath-string syntax for `Path(str)` while allowing the documented direct cast to\\nremain a valid typed-`Path` boundary. The recommendation is non-fatal so a\\ncontract that names `Path(...)` can satisfy both lint and its own restriction.\\n\\n`xsht` is the tooling frontend for XSH source files. It owns checks, linting,\\nformatting, source annotation, structural search, refactoring, API queries,\\nnative tests, and coverage reports. Script execution remains in `xsh`; `xsht`\\nmay parse, check, and evaluate only when a tooling command explicitly requires\\nit.\\n\"\n}",
+        "tool": "edit",
+        "turn": 15,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-pathparts-002"
+        }
+      },
+      {
+        "report": "phases/01-ticket/workers/engineer/task-pathparts-002/report.json",
+        "summary": "    Blocking waiting for file lock on package cache\n    Blocking waiting for file lock on package cache\n    Blocking waiting for file lock on package cache\n    Blocking waiting for file lock on build directory\n   Compiling xsh v0.0.1 (/Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786167293099/task-pathparts-002)\n   Compiling proc-macro2 v1.0.106\n   Compiling quote v1.0.46\n   Compiling syn v2.0.118\n   Compiling xsht v0.0.1 (/Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786167293099/task-pathparts-002/crates/xsht)\n    Finished `test` profile [unoptimized] target(s) in 55.29s\n     Running tests/integration.rs (target/debug/deps/integration-4d74d0805adc1abb)\n\nrunning 1 test\n   Compiling xshi v0.0.1 (/Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786167293099/task-pathparts-002/crates/xshi)\n    Finished `dev` profile [unoptimized] target(s) in 3.12s\ntest runtime::coverage::xsht_lint_accepts_documented_path_constructor_warning ... FAILED\n\nfailures:\n\n---- runtime::coverage::xsht_lint_accepts_documented_path_constructor_warning stdout ----\n\nthread 'runtime::coverage::xsht_lint_accepts_documented_path_constructor_warning' (14516513) panicked at tests/runtime/common.rs:551:5:\nassertion `left == right` failed: stdout:\n\nstderr:\nerr[check.standard-module-shadow]: name `path` shadows the standard module `path`\n  /var/folders/tb/mq41rvt94470b3lwmq67s0zc0000gn/T/xsh-lint-path-constructor-advisory-88076.xsh:1:1\n  let path = Path(args[0])\n  ^^^^^^^^^^^^^^^^^^^^^^^^ name `path` shadows the standard module `path`\n\n  left: Some(2)\n right: Some(0)\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\n\nfailures:\n    runtime::coverage::xsht_lint_accepts_documented_path_constructor_warning\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 491 filtered out; finished in 3.31s\n\nerror: test failed, to rerun pass `--test integration`\nerror: 1 target failed:\n    `--test integration`\n\n\nCommand exited with code 101",
+        "tool": "bash",
+        "turn": 17,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-pathparts-002"
+        }
+      },
+      {
+        "report": "phases/01-ticket/workers/engineer/task-pathparts-002/report.json",
+        "summary": "    Blocking waiting for file lock on package cache\n    Blocking waiting for file lock on package cache\n    Blocking waiting for file lock on package cache\n    Finished `test` profile [unoptimized] target(s) in 0.30s\n     Running tests/integration.rs (target/debug/deps/integration-4d74d0805adc1abb)\n\nrunning 49 tests\ntest runtime::coverage::reassigning_let_is_check_error ... ok\ntest runtime::coverage::xsh_rejects_reveal_type ... ok\ntest runtime::coverage::mutable_string_accumulator_uses_string_addition_in_loop ... ok\ntest runtime::coverage::xsh_refuses_checker_errors_before_execution ... ok\ntest runtime::coverage::runtime_unknown_method_names_receiver_and_candidates ... ok\ntest runtime::coverage::ir_coverage_scans_multiline_top_level_regions_once ... ok\n    Finished `dev` profile [unoptimized] target(s) in 0.24s\ntest runtime::coverage::xsht_ast_prints_parser_debug_output ... ok\ntest runtime::coverage::xsht_check_annotate_locals_rewrites_local_shapes ... ok\ntest runtime::coverage::xsht_check_annotate_does_not_write_on_strict_diagnostics ... ok\ntest runtime::coverage::xsht_check_annotate_rewrites_safe_annotations ... ok\ntest runtime::coverage::xsht_check_annotate_skips_unsafe_or_unhelpful_types ... ok\ntest runtime::coverage::xsht_check_rejects_undefined_utility_commands ... ok\ntest runtime::coverage::xsht_check_ignores_xshi_config_aliases ... ok\ntest runtime::coverage::xsht_check_annotate_rewrites_only_requested_script ... ok\ntest runtime::coverage::xsht_check_reveals_type_without_failing ... ok\ntest runtime::coverage::xsht_check_defaults_to_current_directory_and_respects_excludes ... ok\ntest runtime::coverage::xsht_check_annotate_uses_exact_configured_classes ... ok\ntest runtime::coverage::xsht_check_accepts_directories_and_reports_failures ... ok\ntest runtime::coverage::xsht_check_uses_shared_pipeline ... ok\ntest runtime::coverage::xsht_fmt_writes_canonical_source ... ok\ntest runtime::coverage::xsht_fmt_check_reports_unformatted_files ... ok\ntest runtime::coverage::xsht_fmt_check_accepts_stable_examples ... ok\ntest runtime::coverage::xsht_fmt_check_reports_discovered_files_in_stable_order ... ok\ntest runtime::coverage::xsht_lint_accepts_documented_path_constructor_warning ... ok\ntest runtime::coverage::xsht_lint_accepts_current_syntax_and_ignores_strings_and_comments ... ok\ntest runtime::coverage::xsht_check_strict_fails_on_strict_warnings_only ... ok\ntest runtime::coverage::xsht_lint_reports_check_errors_with_spans ... ok\ntest runtime::coverage::xsht_lint_mixed_parse_and_lint_failures_exit_with_parse_status ... ok\ntest runtime::coverage::xsht_test_api_requires_coverage_report ... ok\ntest runtime::coverage::xsht_lint_reports_discovered_files_in_stable_order ... ok\ntest runtime::coverage::xsht_lint_reports_imported_check_errors_once ... ok\ntest runtime::coverage::xsht_lint_reports_warnings_with_spans ... ok\ntest runtime::coverage::xsht_lint_uses_nested_config_for_discovered_files ... ok\ntest runtime::coverage::xsht_test_cov_json_includes_nested_xsh_processes ... ok\ntest runtime::coverage::xsht_test_discovers_tests_from_current_directory ... ok\ntest runtime::coverage::xsht_test_captures_process_output_by_default ... ok\ntest runtime::coverage::xsht_test_cov_json_counts_example_runs_as_examples ... ok\ntest runtime::coverage::xsht_test_succeeds_when_current_directory_has_no_tests_dir ... ok\ntest runtime::coverage::xsht_test_reports_failures_and_can_keep_temp_roots ... ok\ntest runtime::coverage::xsht_test_uses_current_directory_as_default_module_path ... ok\ntest runtime::coverage::xsht_test_uses_cwd_config_for_excludes_and_module_path ... ok\ntest runtime::coverage::runnable_xsh_corpus_is_formatted_and_lints_without_warnings ... FAILED\ntest runtime::coverage::xsht_test_cov_list_does_not_execute_tests ... ok\ntest runtime::coverage::xsht_test_runs_catalog_examples_only_when_requested ... ok\ntest runtime::coverage::xsht_test_lists_and_filters_native_tests ... ok\ntest runtime::coverage::xsht_test_cov_exact_prints_coverage_sections ... ok\ntest runtime::coverage::xsht_test_cov_json_out_writes_structured_report ... ok\ntest runtime::coverage::xsht_test_cov_api_opt_in_prints_api_sections ... ok\ntest runtime::coverage::xsh_native_tests ... ok\n\nfailures:\n\n---- runtime::coverage::runnable_xsh_corpus_is_formatted_and_lints_without_warnings stdout ----\n\nthread 'runtime::coverage::runnable_xsh_corpus_is_formatted_and_lints_without_warnings' (14522431) panicked at tests/runtime/common.rs:541:5:\nstatus=Some(1)\nstdout:\ntests/xsh/stdlib/streams.xsh: needs formatting\n\nstderr:\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\n\nfailures:\n    runtime::coverage::runnable_xsh_corpus_is_formatted_and_lints_without_warnings\n\ntest result: FAILED. 48 passed; 1 failed; 0 ignored; 0 measured; 443 filtered out; finished in 31.80s\n\nerror: test failed, to rerun pass `--test integration`\nerror: 1 target failed:\n    `--test integration`\n\n\nCommand exited with code 101",
+        "tool": "bash",
+        "turn": 24,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-pathparts-002"
+        }
+      },
+      {
+        "report": "phases/01-ticket/workers/engineer/task-pathparts-002/report.json",
+        "summary": "    Finished `test` profile [unoptimized] target(s) in 0.20s\n     Running tests/integration.rs (target/debug/deps/integration-4d74d0805adc1abb)\n\nrunning 1 test\n    Finished `dev` profile [unoptimized] target(s) in 0.19s\ntest runtime::coverage::runnable_xsh_corpus_is_formatted_and_lints_without_warnings ... FAILED\n\nfailures:\n\n---- runtime::coverage::runnable_xsh_corpus_is_formatted_and_lints_without_warnings stdout ----\n\nthread 'runtime::coverage::runnable_xsh_corpus_is_formatted_and_lints_without_warnings' (14527335) panicked at tests/runtime/common.rs:541:5:\nstatus=Some(1)\nstdout:\ntests/xsh/stdlib/streams.xsh: needs formatting\n\nstderr:\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\n\nfailures:\n    runtime::coverage::runnable_xsh_corpus_is_formatted_and_lints_without_warnings\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 491 filtered out; finished in 0.66s\n\nerror: test failed, to rerun pass `--test integration`\nerror: 1 target failed:\n    `--test integration`\n\n\nCommand exited with code 101",
+        "tool": "bash",
+        "turn": 26,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-pathparts-002"
+        }
+      },
+      {
+        "report": "phases/02-reeval-task-pathparts-002/workers/eval-manager/task-pathparts/report.json",
+        "summary": "      52 /Users/josh/d/laputa-systems/xsh-factory/runs/run-1786167293099/phases/02-reeval-task-pathparts-002/workers/eval-worker/task-pathparts-1/session.jsonl.bz2\n---events---\nwc: /Users/josh/d/laputa-systems/xsh-factory/runs/run-1786167293099/phases/02-reeval-task-pathparts-002/workers/eval-worker/task-pathparts-1/session.jsonl.events.jsonl: open: No such file or directory\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 3,
+        "worker": {
+          "role": "eval-manager",
+          "worker_id": "task-pathparts"
+        }
+      },
+      {
+        "report": "phases/02-reeval-task-pathparts-002/workers/eval-worker/task-pathparts-1/report.json",
+        "summary": "err[check.standard-module-shadow]: name `path` shadows the standard module `path`\n  pathparts.xsh:2:5\n      let path = fp\"${argv[0]}\"\n      ^^^^^^^^^^^^^^^^^^^^^^^^^ name `path` shadows the standard module `path`\n\nerr[check.unknown-module-api]: unknown module API\n  pathparts.xsh:3:15\n      let dir = path.dirname().display()\n                ^^^^^^^^^^^^^^ unknown module API\n\nerr[check.unknown-module-api]: unknown module API\n  pathparts.xsh:4:16\n      let name = path.basename()\n                 ^^^^^^^^^^^^^^^ unknown module API\n\nerr[check.unknown-module-api]: unknown module API\n  pathparts.xsh:5:15\n      let ext = path.ext_or(\"none\")\n                ^^^^^^^^^^^^^^^^^^^ unknown module API\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 8,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-pathparts-1"
+        }
+      },
+      {
+        "report": "phases/02-reeval-task-pathparts-002/workers/eval-worker/task-pathparts-1/report.json",
+        "summary": "warn[lint.unused-local]: unused local variable `dir`\n  pathparts.xsh:3:3\n    let dir = p.dirname().display()\n    ------------------------------- binding is never read\nwarn[lint.unused-local]: unused local variable `name`\n  pathparts.xsh:4:3\n    let name = p.basename()\n    ----------------------- binding is never read\nwarn[lint.unused-local]: unused local variable `ext`\n  pathparts.xsh:5:3\n    let ext = p.ext_or(\"none\")\n    -------------------------- binding is never read\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 13,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-pathparts-1"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-manager/task-bigfiles/report.json",
+        "summary": "total 712\ndrwxr-xr-x  51 josh  staff    1632 Aug  7 22:38 .\ndrwxr-xr-x   3 josh  staff      96 Aug  7 22:34 ..\n-rw-r--r--@  1 josh  staff      64 Aug  7 22:34 agent.cid\n-rw-r--r--@  1 josh  staff     650 Aug  7 22:38 bigfiles.xsh\n-rw-r--r--   1 josh  staff       0 Aug  7 22:34 container.stderr\n-rw-r--r--   1 josh  staff  130388 Aug  7 22:37 container.stdout\n-rw-r--r--@  1 josh  staff      64 Aug  7 22:37 evaluator.cid\n-rw-r--r--   1 josh  staff       0 Aug  7 22:37 evaluator.stderr\n-rw-r--r--   1 josh  staff       0 Aug  7 22:37 evaluator.stdout\n-rw-r--r--@  1 josh  staff       0 Aug  7 22:34 pi.stderr\n-rw-r--r--   1 josh  staff    4710 Aug  7 22:38 report.json\n-rw-r--r--@  1 josh  staff    1666 Aug  7 22:38 review.md\n-rw-r--r--@  1 josh  staff    2262 Aug  7 22:38 run.json\n-rw-r--r--@  1 josh  staff  131979 Aug  7 22:37 session.jsonl.bz2\n-rw-r--r--@  1 josh  staff       0 Aug  7 22:37 task-bigfiles-candidate-1.stderr\n-rw-r--r--@  1 josh  staff     140 Aug  7 22:37 task-bigfiles-candidate-1.stdout\n-rw-r--r--@  1 josh  staff       0 Aug  7 22:37 task-bigfiles-candidate-2.stderr\n-rw-r--r--@  1 josh  staff     125 Aug  7 22:37 task-bigfiles-candidate-2.stdout\n-rw-r--r--@  1 josh  staff       0 Aug  7 22:37 task-bigfiles-candidate-3.stderr\n-rw-r--r--@  1 josh  staff      56 Aug  7 22:37 task-bigfiles-candidate-3.stdout\n-rw-r--r--@  1 josh  staff       0 Aug  7 22:37 task-bigfiles-candidate-4.stderr\n-rw-r--r--@  1 josh  staff      32 Aug  7 22:37 task-bigfiles-candidate-4.stdout\n-rw-r--r--@  1 josh  staff       0 Aug  7 22:37 task-bigfiles-candidate-5.stderr\n-rw-r--r--@  1 josh  staff     114 Aug  7 22:37 task-bigfiles-candidate-5.stdout\n-rw-r--r--@  1 josh  staff       0 Aug  7 22:37 task-bigfiles-candidate-6.stderr\n-rw-r--r--@  1 josh  staff      97 Aug  7 22:37 task-bigfiles-candidate-6.stdout\n-rw-r--r--@  1 josh  staff       0 Aug  7 22:37 task-bigfiles-candidate-7.stderr\n-rw-r--r--@  1 josh  staff      79 Aug  7 22:37 task-bigfiles-candidate-7.stdout\n-rw-r--r--@  1 josh  staff       0 Aug  7 22:37 task-bigfiles-candidate-8.stderr\n-rw-r--r--@  1 josh  staff       0 Aug  7 22:37 task-bigfiles-candidate-8.stdout\n-rw-r--r--@  1 josh  staff     191 Aug  7 22:37 task-bigfiles-candidate-9.stderr\n-rw-r--r--@  1 josh  staff       0 Aug  7 22:37 task-bigfiles-candidate-9.stdout\n-rw-r--r--@  1 josh  staff       0 Aug  7 22:37 task-bigfiles-oracle-1.stderr\n-rw-r--r--@  1 josh  staff     140 Aug  7 22:37 task-bigfiles-oracle-1.stdout\n-rw-r--r--@  1 josh  staff       0 Aug  7 22:37 task-bigfiles-oracle-2.stderr\n-rw-r--r--@  1 josh  staff     125 Aug  7 22:37 task-bigfiles-oracle-2.stdout\n-rw-r--r--@  1 josh  staff       0 Aug  7 22:37 task-bigfiles-oracle-3.stderr\n-rw-r--r--@  1 josh  staff      56 Aug  7 22:37 task-bigfiles-oracle-3.stdout\n-rw-r--r--@  1 josh  staff       0 Aug  7 22:37 task-bigfiles-oracle-4.stderr\n-rw-r--r--@  1 josh  staff      32 Aug  7 22:37 task-bigfiles-oracle-4.stdout\n-rw-r--r--@  1 josh  staff       0 Aug  7 22:37 task-bigfiles-oracle-5.stderr\n-rw-r--r--@  1 josh  staff     114 Aug  7 22:37 task-bigfiles-oracle-5.stdout\n-rw-r--r--@  1 josh  staff       0 Aug  7 22:37 task-bigfiles-oracle-6.stderr\n-rw-r--r--@  1 josh  staff      97 Aug  7 22:37 task-bigfiles-oracle-6.stdout\n-rw-r--r--@  1 josh  staff       0 Aug  7 22:37 task-bigfiles-oracle-7.stderr\n-rw-r--r--@  1 josh  staff      79 Aug  7 22:37 task-bigfiles-oracle-7.stdout\n-rw-r--r--@  1 josh  staff       0 Aug  7 22:37 task-bigfiles-oracle-8.stderr\n-rw-r--r--@  1 josh  staff       0 Aug  7 22:37 task-bigfiles-oracle-8.stdout\n-rw-r--r--@  1 josh  staff      27 Aug  7 22:38 task-bigfiles-oracle-9.stderr\n-rw-r--r--@  1 josh  staff       0 Aug  7 22:38 task-bigfiles-oracle-9.stdout\ndrwxr-xr-x   7 josh  staff     224 Aug  7 22:36 work\n---\n     101 session.jsonl.bz2\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 3,
+        "worker": {
+          "role": "eval-manager",
+          "worker_id": "task-bigfiles"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-worker/task-bigfiles-1/report.json",
+        "summary": "Validation failed for tool \"edit\":\n  - edits.0.oldText: must have required properties oldText\n\nReceived arguments:\n{\n  \"edits\": [\n    {\n      \"newText\": \"## XSH language proposals\\n\\n- `fs.files`/`fs.walk` rely on positional args only (named args unsupported), and `stat` defaults to true while `hidden` defaults to false. To enable hidden files you must pass all preceding positional values; passing `stat=false` silently yields all-zero sizes with no diagnostic, which is easy to trip.\\n- Boolean operators are only word form (`or`), not `||`; the parser reports a generic `expected-token` cascade rather than clearly pointing at the operator.\\n- Int has no `.str()` conversion; presenting an Int requires a display string (`f\\\"${v}\\\"`), which is discoverable but not obvious.\\n- Match arm patterns require parenthesized `Ok(v)` / `Err(_)`; bare `Ok v` is a parse error.\\n\\n## xsht friction\\n\\n- `xsht api` contracts are terse (`accepted radix and syntax are explicit`) and don't state that `Str.parse_int` also accepts `+5`, surrounding whitespace, and `-3`, forcing manual digit-only validation for a \\\"decimal integer\\\" contract. The `delete(\\\"0123456789\\\")` trick works but is undocumented as a validation idiom.\\n- `print` rejects bare field access (`e.name`) and requires `$e.name`, and interpolation of an array index (`$a[0]`) is rejected as \\\"cannot convert to one command word\\\" — both surfaced only via check errors.\\n- Sizes are only populated when `stat` is true (which is the default), but a stray explicit `stat=false` produces all-zero sizes silently; no check catches this.\\n\\n## Tasks and limitations\\n\\nNone.\"\n    }\n  ],\n  \"path\": \"/work/review.md\"\n}",
+        "tool": "edit",
+        "turn": 41,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-bigfiles-1"
+        }
+      }
+    ],
+    "workers": [
+      {
+        "identity": {
+          "role": "director",
+          "worker_id": "director"
+        },
+        "path": "phases/01-ticket/workers/director/director/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 11,
+          "budget_usd": 0.06,
+          "cache_read_cost_usd": 0.0025989119999999997,
+          "cache_read_tokens": 144384,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.005619402,
+          "input_cost_usd": 0.00208791,
+          "input_tokens": 23199,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00093258,
+          "output_tokens": 5181,
+          "provider_total_tokens": 172764,
+          "reasoning_tokens": 2104,
+          "thinking_blocks": 10,
+          "tool_calls": 20,
+          "tool_errors": 0,
+          "tool_results": 20,
+          "total_bucket_tokens": 172764,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "engineer",
+          "worker_id": "task-pathparts-002"
+        },
+        "path": "phases/01-ticket/workers/engineer/task-pathparts-002/report.json",
+        "result": "pass",
+        "tool_errors": 5,
+        "usage": {
+          "assistant_turns": 31,
+          "budget_usd": 0.35,
+          "cache_read_cost_usd": 0.027362990000000004,
+          "cache_read_tokens": 2736299,
+          "cache_write_cost_usd": 0.027566375000000004,
+          "cache_write_tokens": 220531,
+          "cost_usd": 0.063282865,
+          "input_cost_usd": 9.3e-6,
+          "input_tokens": 93,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0083442,
+          "output_tokens": 13907,
+          "provider_total_tokens": 2970830,
+          "reasoning_tokens": 8057,
+          "thinking_blocks": 16,
+          "tool_calls": 61,
+          "tool_errors": 5,
+          "tool_results": 61,
+          "total_bucket_tokens": 2970830,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-pathparts"
+        },
+        "path": "phases/02-reeval-task-pathparts-002/workers/eval-manager/task-pathparts/report.json",
+        "result": "pass",
+        "tool_errors": 1,
+        "usage": {
+          "assistant_turns": 15,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.010326527999999998,
+          "cache_read_tokens": 573696,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.022974408,
+          "input_cost_usd": 0.007106399999999999,
+          "input_tokens": 78960,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.005541479999999999,
+          "output_tokens": 30786,
+          "provider_total_tokens": 683442,
+          "reasoning_tokens": 22897,
+          "thinking_blocks": 15,
+          "tool_calls": 26,
+          "tool_errors": 1,
+          "tool_results": 26,
+          "total_bucket_tokens": 683442,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-pathparts-1"
+        },
+        "path": "phases/02-reeval-task-pathparts-002/workers/eval-worker/task-pathparts-1/report.json",
+        "result": "pass",
+        "tool_errors": 2,
+        "usage": {
+          "assistant_turns": 21,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.004004352,
+          "cache_read_tokens": 222464,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.007154532,
+          "input_cost_usd": 0.0019357199999999995,
+          "input_tokens": 21508,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00121446,
+          "output_tokens": 6747,
+          "provider_total_tokens": 250719,
+          "reasoning_tokens": 3692,
+          "thinking_blocks": 14,
+          "tool_calls": 27,
+          "tool_errors": 2,
+          "tool_results": 27,
+          "total_bucket_tokens": 250719,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-bigfiles"
+        },
+        "path": "phases/03-eval/workers/eval-manager/task-bigfiles/report.json",
+        "result": "pass",
+        "tool_errors": 1,
+        "usage": {
+          "assistant_turns": 14,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.01048896,
+          "cache_read_tokens": 582720,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.01997739,
+          "input_cost_usd": 0.00705663,
+          "input_tokens": 78407,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0024318,
+          "output_tokens": 13510,
+          "provider_total_tokens": 674637,
+          "reasoning_tokens": 7776,
+          "thinking_blocks": 13,
+          "tool_calls": 23,
+          "tool_errors": 1,
+          "tool_results": 23,
+          "total_bucket_tokens": 674637,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-bigfiles-1"
+        },
+        "path": "phases/03-eval/workers/eval-worker/task-bigfiles-1/report.json",
+        "result": "pass",
+        "tool_errors": 1,
+        "usage": {
+          "assistant_turns": 44,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.011812608000000002,
+          "cache_read_tokens": 656256,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.017290187999999998,
+          "input_cost_usd": 0.00326484,
+          "input_tokens": 36276,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00221274,
+          "output_tokens": 12293,
+          "provider_total_tokens": 704825,
+          "reasoning_tokens": 5998,
+          "thinking_blocks": 31,
+          "tool_calls": 53,
+          "tool_errors": 1,
+          "tool_results": 53,
+          "total_bucket_tokens": 704825,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "9bbc473af32e20e7bb3fa9b967a51acd89eb5200"
+  },
+  "findings": [
+    {
+      "id": "02-reeval-task-pathparts-002",
+      "kind": "phase",
+      "result": "fail"
+    }
+  ],
+  "identity": {
+    "mode": "organization",
+    "run_id": "run-1786167293099"
+  },
+  "kind": "run",
+  "result": "fail",
+  "schema_version": 1,
+  "state": "completed"
+}

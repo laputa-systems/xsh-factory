@@ -1,0 +1,120 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786167293099/phases/03-eval/workers/eval-worker/task-bigfiles-1/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_state": "pass",
+    "agent_wall_ms": 182104,
+    "artifact": {
+      "name": "bigfiles.xsh",
+      "state": "present"
+    },
+    "budget_state": "pass",
+    "classification": "pass",
+    "evaluator_manifest": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786167293099/phases/03-eval/workers/eval-worker/task-bigfiles-1/run.json",
+    "evaluator_state": "pass",
+    "reporting_state": "pass",
+    "result": "pass",
+    "review": {
+      "state": "present"
+    }
+  },
+  "findings": [
+    {
+      "count": 1,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "eval_id": "task-bigfiles",
+    "role": "eval-worker",
+    "run_id": "03-eval",
+    "worker_id": "task-bigfiles-1"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "provider_telemetry": {
+    "event_turns": 44,
+    "events_path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786167293099/phases/03-eval/workers/eval-worker/task-bigfiles-1/session.jsonl.events.jsonl",
+    "output_tokens_per_second": 0,
+    "present": true,
+    "provider_errors": [],
+    "response_elapsed_ms": 0,
+    "retry_count": 0,
+    "retry_delay_ms": 0,
+    "retry_errors": [],
+    "retry_failures": 0,
+    "retry_successes": 0
+  },
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786167293099/phases/03-eval/workers/eval-worker/task-bigfiles-1/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 43,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 180770
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786167293099/phases/03-eval/workers/eval-worker/task-bigfiles-1/session.jsonl.bz2",
+      "summary": "Validation failed for tool \"edit\":\n  - edits.0.oldText: must have required properties oldText\n\nReceived arguments:\n{\n  \"edits\": [\n    {\n      \"newText\": \"## XSH language proposals\\n\\n- `fs.files`/`fs.walk` rely on positional args only (named args unsupported), and `stat` defaults to true while `hidden` defaults to false. To enable hidden files you must pass all preceding positional values; passing `stat=false` silently yields all-zero sizes with no diagnostic, which is easy to trip.\\n- Boolean operators are only word form (`or`), not `||`; the parser reports a generic `expected-token` cascade rather than clearly pointing at the operator.\\n- Int has no `.str()` conversion; presenting an Int requires a display string (`f\\\"${v}\\\"`), which is discoverable but not obvious.\\n- Match arm patterns require parenthesized `Ok(v)` / `Err(_)`; bare `Ok v` is a parse error.\\n\\n## xsht friction\\n\\n- `xsht api` contracts are terse (`accepted radix and syntax are explicit`) and don't state that `Str.parse_int` also accepts `+5`, surrounding whitespace, and `-3`, forcing manual digit-only validation for a \\\"decimal integer\\\" contract. The `delete(\\\"0123456789\\\")` trick works but is undocumented as a validation idiom.\\n- `print` rejects bare field access (`e.name`) and requires `$e.name`, and interpolation of an array index (`$a[0]`) is rejected as \\\"cannot convert to one command word\\\" — both surfaced only via check errors.\\n- Sizes are only populated when `stat` is true (which is the default), but a stray explicit `stat=false` produces all-zero sizes silently; no check catches this.\\n\\n## Tasks and limitations\\n\\nNone.\"\n    }\n  ],\n  \"path\": \"/work/review.md\"\n}",
+      "tool": "edit",
+      "turn": 41
+    }
+  ],
+  "tools": [
+    {
+      "count": 44,
+      "name": "bash"
+    },
+    {
+      "count": 4,
+      "name": "edit"
+    },
+    {
+      "count": 3,
+      "name": "read"
+    },
+    {
+      "count": 2,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 44,
+    "budget_usd": 0.5,
+    "cache_read_cost_usd": 0.011812608000000002,
+    "cache_read_tokens": 656256,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.017290187999999998,
+    "input_cost_usd": 0.00326484,
+    "input_tokens": 36276,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.00221274,
+    "output_tokens": 12293,
+    "provider_total_tokens": 704825,
+    "reasoning_tokens": 5998,
+    "thinking_blocks": 31,
+    "tool_calls": 53,
+    "tool_errors": 1,
+    "tool_results": 53,
+    "total_bucket_tokens": 704825,
+    "user_messages": 1
+  }
+}

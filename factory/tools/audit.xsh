@@ -196,6 +196,7 @@ proc manifest_evidence(manifest_path: Path) [fs, error] -> Result[Any] {
   let correctness = json.get(raw, ["correctness"], null)
   let restrictions = json.get(raw, ["restrictions"], null)
   let timings = json.get(raw, ["timings"], null)
+  let result = text(json.get(raw, ["result"], "invalid"), "invalid")
   let protocol_ok = boolean(json.get(protocol, ["artifact_present"], false)) and boolean(
     json.get(protocol, ["review_ok"], false),
   )
@@ -203,19 +204,28 @@ proc manifest_evidence(manifest_path: Path) [fs, error] -> Result[Any] {
   # Package-owned evaluators use either `passed`, `all_exact`, or the concise
   # `exact` field. Treat all three as the same correctness contract so a valid
   # manifest cannot be rejected merely because its evaluator uses `exact`.
-  let correctness_value = json.get(
-    correctness,
-    ["passed"],
-    json.get(correctness, ["all_exact"], json.get(correctness, ["exact"], false)),
-  )
-  let correctness_ok = boolean(correctness_value)
+  let correctness_passed = json.get(correctness, ["passed"], null)
+  let correctness_all_exact = json.get(correctness, ["all_exact"], null)
+  let correctness_exact = json.get(correctness, ["exact"], null)
+  # Some package evaluators expose a per-case boolean map rather than an
+  # aggregate field. Their terminal `result` is the aggregate contract; do
+  # not mistake the absent `passed` key for a failed trial.
+  let correctness_ok = match correctness_passed {
+    b is Bool => b,
+    _ => match correctness_all_exact {
+      b is Bool => b,
+      _ => match correctness_exact {
+        b is Bool => b,
+        _ => result == "pass"
+      }
+    }
+  }
   let restrictions_ok = boolean(json.get(restrictions, ["passed"], false))
   let timing_present = json.get(timings, ["passed"], null)
   let timing_ok = match timing_present {
     b is Bool => b,
     _ => true,
   }
-  let result = text(json.get(raw, ["result"], "invalid"), "invalid")
   return {
     valid: true,
     eval_id: text(json.get(raw, ["eval_id"], "unknown")),

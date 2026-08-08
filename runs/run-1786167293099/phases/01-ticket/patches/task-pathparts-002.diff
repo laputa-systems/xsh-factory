@@ -1,0 +1,115 @@
+diff --git a/crates/xsht/src/cli/lint.rs b/crates/xsht/src/cli/lint.rs
+index 743acd2..2dee56c 100644
+--- a/crates/xsht/src/cli/lint.rs
++++ b/crates/xsht/src/cli/lint.rs
+@@ -11,7 +11,7 @@ use std::path::{Path, PathBuf};
+ use std::sync::Mutex;
+ use std::sync::atomic::{AtomicUsize, Ordering};
+ use std::thread;
+-use xsh::diagnostic::{Diagnostic, DiagnosticRenderer, Label};
++use xsh::diagnostic::{Diagnostic, DiagnosticRenderer, Label, Severity};
+ use xsh::frontend::check::CheckOptions;
+ use xsh::frontend::load::{parse_load_check_bytes, parse_load_check_text};
+ use xsh::frontend::source::SourceMap;
+@@ -416,7 +416,7 @@ fn lint_one_file(
+     LintResult {
+         index,
+         kind: LintResultKind::Diagnostics {
+-            status: 1,
++            status: lint_diagnostics_status(&linted.diagnostics),
+             diagnostics: render_diagnostics_with_keys(
+                 &linted.diagnostics,
+                 &checked_program.sources,
+@@ -476,7 +476,11 @@ fn lint_one_file_with_fixes(
+             };
+         }
+         let mut stderr = String::new();
+-        let status = if checked.diagnostics.is_empty() { 1 } else { 2 };
++        let status = if checked.diagnostics.is_empty() {
++            lint_diagnostics_status(&linted.diagnostics)
++        } else {
++            2
++        };
+         if !checked.diagnostics.is_empty() {
+             stderr.push_str(&checked_program.render_check_diagnostics());
+             stderr.push('\n');
+@@ -662,6 +666,17 @@ fn collect_fix_spans_by_code(
+     non_overlapping
+ }
+ 
++fn lint_diagnostics_status(diagnostics: &[Diagnostic]) -> u8 {
++    if diagnostics.iter().all(|diagnostic| {
++        diagnostic.severity == Severity::Warning
++            && diagnostic.code.as_deref() == Some("lint.path-constructor")
++    }) {
++        0
++    } else {
++        1
++    }
++}
++
+ fn check_diagnostic_signature(diagnostic: &Diagnostic) -> String {
+     format!(
+         "{:?}:{}:{}",
+diff --git a/docs/SPEC.md b/docs/SPEC.md
+index a0c688e..18c5a43 100644
+--- a/docs/SPEC.md
++++ b/docs/SPEC.md
+@@ -680,8 +680,10 @@ match process.run(command) {
+ Standard constructors:
+ 
+ - `p"literal"` and `fp"${value}"` produce `Path` values from UTF-8 source text.
+-- `Path(str) -> Path` remains a direct cast from text, but p-strings are the
+-  preferred spelling.
++- `Path(str) -> Path` remains a direct cast from text for values that are
++  already known to be valid path text. `xsht lint` may recommend path-string
++  syntax for this spelling, but the recommendation is advisory because the
++  direct cast is a documented typed-`Path` boundary.
+ - `Path.parse_bytes(bytes) -> Result[Path]`.
+ 
+ Path values expose file-reading methods through the standard method surface:
+diff --git a/docs/XSHT.md b/docs/XSHT.md
+index e4b3cea..9fc7379 100644
+--- a/docs/XSHT.md
++++ b/docs/XSHT.md
+@@ -1,5 +1,11 @@
+ # XSHT Tooling Architecture
+ 
++XSH tooling treats quality recommendations as guidance rather than hidden
++language restrictions. In particular, `lint.path-constructor` recommends
++path-string syntax for `Path(str)` while allowing the documented direct cast to
++remain a valid typed-`Path` boundary. The recommendation is non-fatal so a
++contract that names `Path(...)` can satisfy both lint and its own restriction.
++
+ `xsht` is the tooling frontend for XSH source files. It owns checks, linting,
+ formatting, source annotation, structural search, refactoring, API queries,
+ native tests, and coverage reports. Script execution remains in `xsh`; `xsht`
+diff --git a/tests/runtime/coverage.rs b/tests/runtime/coverage.rs
+index e545823..00560d5 100644
+--- a/tests/runtime/coverage.rs
++++ b/tests/runtime/coverage.rs
+@@ -712,6 +712,24 @@ fn xsht_fmt_check_reports_discovered_files_in_stable_order() {
+     let _ = std::fs::remove_dir_all(dir);
+ }
+ 
++#[test]
++fn xsht_lint_accepts_documented_path_constructor_warning() {
++    let path = temp_xsh_path("lint-path-constructor-advisory");
++    std::fs::write(&path, "let root = Path(args[0])\nprint $root\n")
++        .expect("write temp script");
++
++    let output = Command::new(env!("CARGO_BIN_EXE_xsht"))
++        .args(["lint", path.to_str().unwrap()])
++        .output()
++        .expect("run xsht");
++
++    assert_exit(&output, 0);
++    assert_eq!(stdout_text(&output), "");
++    assert_stderr_contains(&output, "warn[lint.path-constructor]");
++
++    std::fs::remove_file(path).expect("remove temp script");
++}
++
+ #[test]
+ fn xsht_lint_reports_warnings_with_spans() {
+     let path = temp_xsh_path("lint-warnings");

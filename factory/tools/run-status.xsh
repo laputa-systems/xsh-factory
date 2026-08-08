@@ -134,17 +134,19 @@ proc active_processes(run_dir: Path) [fs, process, error] -> Result[List[Any]] {
   let processes = process.list()?.collect()
   for entry in fs.files(run_dir, gitignore: false, hidden: true) {
     continue when ! entry.name.ends_with(".pids")
-    let pid_text = entry.path.read_text()?.trim()
-    match pid_text.parse_int() {
-      Ok(pid) => {
-        if processes |> any .pid == pid {
-          rows = rows.push({
-            label: relative_path(run_dir, entry.path).replace(".pids", ""),
-            pid: pid,
-          })
+    let label = relative_path(run_dir, entry.path).replace(".pids", "")
+    for pid_line in entry.path.read_text()?.lines() {
+      match pid_line.trim().parse_int() {
+        Ok(pid) => {
+          if processes |> any .pid == pid {
+            rows = rows.push({
+              label: label,
+              pid: pid,
+            })
+          }
         }
+        Err(_) => {}
       }
-      Err(_) => {}
     }
   }
   rows |> sort-by .label

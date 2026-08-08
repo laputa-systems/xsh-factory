@@ -1612,6 +1612,27 @@ proc test_audit_accepts_concise_exact_manifest(ctx: TestContext) [fs, process, e
   test.eq(json.get(json.read(fp"${root}/report.json")?, ["result"], ""), "pass")?
 }
 
+proc test_audit_accepts_per_case_correctness_manifest(ctx: TestContext) [fs, process, error] {
+  let root = test.temp_dir(ctx, name: "audit-case-map-manifest")?
+  let factory = fs.cwd()?
+  write_eval_phase_fixture(root, factory)?
+  fs.write(
+    fp"${root}/workers/eval-worker/task-tags-1/run.json",
+    """{"eval_id":"task-tags","trial_id":"1","result":"pass","protocol":{"artifact_present":true,"review_ok":true},"correctness":{"public":true,"hidden":true},"restrictions":{"passed":true},"timings":{"passed":true}}
+""",
+  )?
+  let status = process.run(
+    process.command_argv(
+      process.which("xsh")?,
+      ["xsh", fp"${factory}/factory/tools/audit.xsh", "--", root.display(), "eval"],
+      cwd: factory,
+      env: {FACTORY_DIR: factory.display(), XSH_MODULE_PATH: factory.display(), FACTORY_XSH_COMMIT: "fixture"},
+    ),
+  )?
+  test.ok(status.ok, "audit must accept a per-case correctness manifest")?
+  test.eq(json.get(json.read(fp"${root}/report.json")?, ["result"], ""), "pass")?
+}
+
 proc test_audit_compiles_one_phase_report(ctx: TestContext) [fs, process, error] {
   let root = test.temp_dir(ctx, name: "audit-phase")?
   let factory = fs.cwd()?
@@ -3069,7 +3090,7 @@ proc test_run_status_inspects_live_and_completed_evidence(ctx: TestContext) [fs,
   let controller_pid = process.current_pid()?
   let child = spawn process.command_argv("sh", ["sh", "-c", "sleep 10"])?
   fs.write(fp"${run_dir}/processes/controller.pids", f"${controller_pid}\n")?
-  fs.write(fp"${run_dir}/processes/phase-worker.pids", f"${child.pid}\n")?
+  fs.write(fp"${run_dir}/processes/phase-worker.pids", f"${controller_pid}\n${child.pid}\n")?
   let output = fp"${root}/status.txt"
   let error_output = fp"${root}/status.err"
   let xsh = process.which("xsh")?
@@ -3094,8 +3115,9 @@ proc test_run_status_inspects_live_and_completed_evidence(ctx: TestContext) [fs,
   test.contains(report, "RUN run-1 STATE completed RESULT pass")?
   test.contains(report, "QUEUE open=4; approved=1; engineers=1; discovery_evals=1")?
   test.contains(report, "LAST 95-cycle-validated validated organization")?
-  test.contains(report, "ACTIVE 2")?
+  test.contains(report, "ACTIVE 3")?
   test.contains(report, f"processes/controller pid=${controller_pid}")?
+  test.contains(report, f"processes/phase-worker pid=${controller_pid}")?
   test.contains(report, f"processes/phase-worker pid=${child.pid}")?
   test.contains(report, "01-ticket completed pass")?
   test.contains(report, "engineer/task-a pass turns=7 cost=0.040000 errors=1")?
