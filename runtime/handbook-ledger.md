@@ -7,6 +7,21 @@ A candidate hash listed as `promoted` has been incorporated into the rolling
 must remain visible as unresolved work in the CTO briefing; controllers must
 not silently discard it.
 
+## Explicit CTO disposition — run-1786159268557
+
+| Candidate SHA-256 | Disposition |
+| --- | --- |
+| `06e99e51385679048ca8e2f97d51982b811cfe467bea8b0309857ffeee986c98` | rejected as task-specific; not promoted |
+| `5506fe3c871f71fc5c7e70f8e2bdcade087eac6cbef9c66755e4f81647ee9127` | deferred pending matched conditional-heavy replay; not promoted |
+
+The first candidate describes `map.empty()` discovery from the `Map` API index.
+That behavior is already delivered by the linked product change and belongs in
+the API registry/docs, not as a duplicate handbook recipe. The second candidate
+repeats the word-form Boolean and prefix-`!` syntax rule, with useful argv/path
+examples, but the evidence remains one replay. Defer it until a matched
+conditional-heavy eval consumes the candidate and confirms reduced discovery
+friction; keep the approved handbook unchanged.
+
 ## Explicit CTO disposition — run-1786148605115
 
 | Candidate SHA-256 | Disposition |
