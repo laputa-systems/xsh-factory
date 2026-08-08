@@ -1,0 +1,89 @@
+diff --git a/crates/xsh-registry/src/signature/docs.rs b/crates/xsh-registry/src/signature/docs.rs
+index 5b4c7c8..62b41fc 100644
+--- a/crates/xsh-registry/src/signature/docs.rs
++++ b/crates/xsh-registry/src/signature/docs.rs
+@@ -1579,12 +1579,12 @@ fn method_doc(receiver: &str, method: &str) -> Option<DocRow> {
+             &["text", "parsing", "decimal", "numeric"],
+         )),
+         ("Str", "parse_uint") => Some((
+-            "Parses text as a non-negative decimal integer.",
++            "Parses text as a non-negative decimal integer, trimming surrounding whitespace.",
+             "Signs, radix prefixes, malformed text, and out-of-range values return an error.",
+             &["text", "parsing", "decimal", "numeric", "unsigned"],
+         )),
+         ("Str", "parse_uint_positive") => Some((
+-            "Parses text as a positive decimal integer.",
++            "Parses text as a positive decimal integer, trimming surrounding whitespace.",
+             "Only decimal digits representing a value greater than zero are accepted; zero, signs, malformed, and out-of-range text return an error.",
+             &["text", "parsing", "decimal", "numeric", "positive"],
+         )),
+diff --git a/docs/SPEC.md b/docs/SPEC.md
+index 7b12db1..0a2d467 100644
+--- a/docs/SPEC.md
++++ b/docs/SPEC.md
+@@ -2261,11 +2261,12 @@ adapter `text.lines()` is available in pipelines.
+ - `.parse_int_decimal() -> Result[Int]`, accepting only nonempty decimal
+   digits without leading zeros (except `0`); whitespace, signs, radix
+   prefixes, separators, and out-of-range values return an error.
+-- `.parse_uint() -> Result[Int]`, accepting only non-negative decimal digits;
+-  signs, radix prefixes, malformed, and out-of-range text return an error.
+-- `.parse_uint_positive() -> Result[Int]`, accepting only positive decimal
+-  digits; zero, signs, radix prefixes, malformed, and out-of-range text return
+-  an error.
++- `.parse_uint() -> Result[Int]`, trimming surrounding whitespace and accepting
++  only non-negative decimal digits; signs, radix prefixes, malformed, and
++  out-of-range text return an error.
++- `.parse_uint_positive() -> Result[Int]`, trimming surrounding whitespace and
++  accepting only positive decimal digits; zero, signs, radix prefixes,
++  malformed, and out-of-range text return an error.
+ 
+ Byte-indexed `Str` methods are intended for ASCII-oriented scanners. They count
+ UTF-8 bytes, not Unicode scalar values. `.byte_slice()` rejects negative offsets
+diff --git a/src/modules/text.rs b/src/modules/text.rs
+index 4bd721f..fad22ef 100644
+--- a/src/modules/text.rs
++++ b/src/modules/text.rs
+@@ -180,7 +180,8 @@ pub(crate) fn parse_int_decimal_text(text: &str, span: Span) -> Result<i64, Runt
+ }
+ 
+ pub(crate) fn parse_uint_positive_text(text: &str, span: Span) -> Result<i64, RuntimeError> {
+-    if text.is_empty() || !text.bytes().all(|byte| byte.is_ascii_digit()) {
++    let trimmed = text.trim();
++    if trimmed.is_empty() || !trimmed.bytes().all(|byte| byte.is_ascii_digit()) {
+         return Err(
+             RuntimeError::new(
+                 "parse-uint-positive",
+@@ -189,7 +190,7 @@ pub(crate) fn parse_uint_positive_text(text: &str, span: Span) -> Result<i64, Ru
+             .with_span(span),
+         );
+     }
+-    let value = text.parse::<i64>().map_err(|_| {
++    let value = trimmed.parse::<i64>().map_err(|_| {
+         RuntimeError::new(
+             "parse-uint-positive",
+             format!("invalid positive integer `{text}`"),
+@@ -304,7 +305,11 @@ mod tests {
+                 parse_uint_positive_text("42", test_span()).expect("positive uint"),
+                 42
+             );
+-            for input in ["0", "+5", "-1", " 5 ", "0x10", "05", ""] {
++            assert_eq!(
++                parse_uint_positive_text(" 5 ", test_span()).expect("positive uint"),
++                5
++            );
++            for input in ["0", "+5", "-1", "0x10", "", "9223372036854775808"] {
+                 assert_eq!(
+                     parse_uint_positive_text(input, test_span())
+                         .expect_err("invalid positive uint")
+diff --git a/tests/xsh/stdlib/methods.xsh b/tests/xsh/stdlib/methods.xsh
+index 3c3e313..01bf1c5 100644
+--- a/tests/xsh/stdlib/methods.xsh
++++ b/tests/xsh/stdlib/methods.xsh
+@@ -94,6 +94,7 @@ beta""".find("z"),
+   test.error_kind("+42".parse_uint(), "parse-uint")?
+   test.error_kind("-1".parse_uint(), "parse-uint")?
+   test.eq("42".parse_uint_positive()?, 42)?
++  test.eq(" 42 ".parse_uint_positive()?, 42)?
+   test.error_kind("0".parse_uint_positive(), "parse-uint-positive")?
+   test.error_kind("+42".parse_uint_positive(), "parse-uint-positive")?
+   test.error_kind("-1".parse_uint_positive(), "parse-uint-positive")?

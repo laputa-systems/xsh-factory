@@ -50,7 +50,9 @@ escape each fail a distinct gate.
 
 ## Task
 
-Create `histogram.xsh`. It accepts a file path and a positive integer width:
+Create `histogram.xsh`. It accepts a file path and a positive integer width;
+the evaluator includes one surrounding-whitespace width to verify the shared
+typed parser normalization contract:
 
     histogram.xsh FILE WIDTH
 
@@ -115,6 +117,8 @@ and hidden cases:
 - `public`: values `0 1 2 3 4`, `WIDTH=2` — bins `0:2, 1:2, 2:1`;
 - `hidden_width`: the same values, `WIDTH=3` — bins `0:3, 1:2` (punishes a
   hard-coded binning for width 2);
+- `hidden_padded_width`: the public values with `WIDTH=" 5 "` — surrounding
+  whitespace must be normalized before positive-width validation;
 - `hidden_many`: a larger dataset (`5 9 10 15 19 20 25 29 30`, `WIDTH=10`)
   spanning four bins;
 - `hidden_sparse`: values far apart (`0 1000 100000`, `WIDTH=10`) with empty
@@ -139,7 +143,7 @@ rejection.
 
 ## Metrics
 
-Record correctness for all nine cases (including the two failure controls),
+Record correctness for all ten cases (including the two failure controls),
 restriction compliance, worker turns, thinking blocks and reasoning tokens,
 token buckets, provider cost, tool calls and errors, session wall span,
 candidate/oracle timing per case, and protocol completion. This eval has no

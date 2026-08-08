@@ -1,6 +1,7 @@
 Create one file named `histogram.xsh` in the task working directory.
 
-The program accepts a file path and a positive integer width:
+The program accepts a file path and a positive integer width. Surrounding
+whitespace in the width is accepted by the typed parser contract:
 
     histogram.xsh FILE WIDTH
 

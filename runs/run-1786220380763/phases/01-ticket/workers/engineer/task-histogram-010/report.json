@@ -1,0 +1,139 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786220380763/phases/01-ticket/workers/engineer/task-histogram-010/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_process": "pass",
+    "dispatch_claim": "e29580eeee981e937f5e76d64764162e9befe4486fa91a753d12054f8e2c3c6c",
+    "dispatch_id": "engineer-task-histogram-010",
+    "factory_source": "unchanged",
+    "message_sha256": "e29580eeee981e937f5e76d64764162e9befe4486fa91a753d12054f8e2c3c6c",
+    "reporting": "pass",
+    "required_report": "present",
+    "session_limit_watcher": "pass",
+    "system_prompt_sha256": "ecc8835d632066a0a401be64bdc2acccf83f2a112ec06d394e08b82713fdaae3",
+    "watcher": "pass"
+  },
+  "findings": [
+    {
+      "count": 4,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "role": "engineer",
+    "worker_id": "task-histogram-010"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/openai/gpt-5.6-luna"
+  ],
+  "provider_telemetry": {
+    "event_turns": 32,
+    "events_path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786220380763/phases/01-ticket/workers/engineer/task-histogram-010/session.jsonl.events.jsonl",
+    "output_tokens_per_second": 0,
+    "present": true,
+    "provider_errors": [],
+    "response_elapsed_ms": 0,
+    "retry_count": 0,
+    "retry_delay_ms": 0,
+    "retry_errors": [],
+    "retry_failures": 0,
+    "retry_successes": 0
+  },
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786220380763/phases/01-ticket/workers/engineer/task-histogram-010/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 31,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 226377
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786220380763/phases/01-ticket/workers/engineer/task-histogram-010/session.jsonl.bz2",
+      "summary": "   Compiling libc v0.2.186\n   Compiling cfg-if v1.0.4\n   Compiling crossbeam-utils v0.8.21\n   Compiling pin-project-lite v0.2.17\n   Compiling bitflags v2.13.0\n   Compiling find-msvc-tools v0.1.9\n   Compiling shlex v2.0.1\n   Compiling rustix v1.1.4\n   Compiling parking v2.2.1\n   Compiling futures-core v0.3.32\n   Compiling futures-io v0.3.32\n   Compiling unicode-ident v1.0.24\n   Compiling fastrand v2.4.1\n   Compiling value-bag v1.13.1\n   Compiling once_cell v1.21.4\n   Compiling fs_extra v1.3.0\n   Compiling dunce v1.0.5\n   Compiling proc-macro2 v1.0.106\n   Compiling quote v1.0.46\n   Compiling futures-lite v2.6.1\n   Compiling log v0.4.33\n   Compiling io-lifetimes v3.0.1\n   Compiling io-lifetimes v2.0.4\n   Compiling io-extras v0.19.0\n   Compiling cap-primitives v4.0.2\n   Compiling aws-lc-rs v1.17.0\n   Compiling atomic-waker v1.1.2\n   Compiling concurrent-queue v2.5.0\n   Compiling zeroize v1.9.0\n   Compiling slab v0.4.12\n   Compiling typenum v1.20.1\n   Compiling event-listener v5.4.1\n   Compiling cap-std v4.0.2\n   Compiling jobserver v0.1.34\n   Compiling errno v0.3.14\n   Compiling ipnet v2.12.0\n   Compiling ambient-authority v0.0.2\n   Compiling memchr v2.8.1\n   Compiling cc v1.2.66\n   Compiling maybe-owned v0.3.4\n   Compiling itoa v1.0.18\n   Compiling autocfg v1.5.1\n   Compiling event-listener-strategy v0.5.4\n   Compiling syn v2.0.118\n   Compiling rustls-pki-types v1.15.0\n   Compiling foldhash v0.2.0\n   Compiling crc32fast v1.5.0\n   Compiling bytes v1.11.1\n   Compiling async-task v4.7.1\n   Compiling async-io v2.6.0\n   Compiling hashbrown v0.17.1\n   Compiling const-oid v0.10.2\n   Compiling untrusted v0.9.0\n   Compiling core-foundation-sys v0.8.7\n   Compiling simd-adler32 v0.3.9\n   Compiling hybrid-array v0.4.12\n   Compiling rustls v0.23.41\n   Compiling http v1.5.0\n   Compiling getrandom v0.4.2\n   Compiling adler2 v2.0.1\n   Compiling cmake v0.1.58\n   Compiling miniz_oxide v0.8.9\n   Compiling crypto-common v0.2.2\n   Compiling block-buffer v0.12.0\n   Compiling async-executor v1.14.0\n   Compiling aho-corasick v1.1.4\n   Compiling async-channel v2.5.0\n   Compiling piper v0.2.5\n   Compiling aws-lc-sys v0.41.0\n   Compiling tracing-core v0.1.36\n   Compiling httparse v1.10.1\n   Compiling regex-syntax v0.8.11\n   Compiling subtle v2.6.1\n   Compiling digest v0.11.3\n   Compiling zlib-rs v0.6.3\n   Compiling equivalent v1.0.2\n   Compiling tracing v0.1.44\n   Compiling blocking v1.6.2\n   Compiling fs-set-times v0.20.3\n   Compiling polling v3.11.0\n   Compiling indexmap v2.14.0\n   Compiling http-body v1.1.0\n   Compiling security-framework-sys v2.17.0\n   Compiling core-foundation v0.10.1\n   Compiling async-lock v3.4.2\n   Compiling cpufeatures v0.3.0\n   Compiling compression-core v0.4.32\n   Compiling zmij v1.0.21\n   Compiling regex-automata v0.4.14\n   Compiling futures-sink v0.3.33\n   Compiling try-lock v0.2.5\n   Compiling thiserror v2.0.18\n   Compiling smallvec v1.15.2\n   Compiling event-listener v2.5.3\n   Compiling option-ext v0.2.0\n   Compiling fnv v1.0.7\n   Compiling async-channel v1.9.0\n   Compiling dirs-sys v0.5.0\n   Compiling thiserror-impl v2.0.18\n   Compiling h2-futures v0.4.15 (https://github.com/joshuarli/h2-futures-lite?rev=732e8770cc6bbf998c573844f62e0afaccec3192#732e8770)\n   Compiling pin-project-internal v1.1.13\n   Compiling want v0.3.1\n   Compiling async-global-executor v2.4.1\n   Compiling security-framework v3.7.0\n   Compiling libmimalloc-sys v0.1.49\n   Compiling crossbeam-epoch v0.9.18\n   Compiling kv-log-macro v1.0.7\n   Compiling futures-channel v0.3.32\n   Compiling miniserde v0.1.45\n   Compiling same-file v1.0.6\n   Compiling pin-utils v0.1.0\n   Compiling xsh-registry v0.0.1 (/Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786220380763/task-histogram-010/crates/xsh-registry)\n   Compiling cap-fs-ext v4.0.2\n   Compiling pin-project v1.1.13\n   Compiling async-std v1.13.2\n   Compiling walkdir v2.5.0\n   Compiling crossbeam-deque v0.8.6\n   Compiling directories v6.0.0\n   Compiling mini-internal v0.1.45\n   Compiling bstr v1.12.1\n   Compiling cap-net-ext v4.0.2\n   Compiling sha2 v0.11.0\n   Compiling globset v0.4.18\n   Compiling uuid v1.23.3\n   Compiling http-body-util v0.1.4\n   Compiling flate2 v1.1.9\n   Compiling hyper v1.11.0 (https://github.com/joshuarli/hyper-futures-lite?rev=c99b20ce178251a962289977fdfa2474e2564f8e#c99b20ce)\n   Compiling rustls-pemfile v2.2.0\n   Compiling filetime v0.2.29\n   Compiling crossbeam-channel v0.5.15\n   Compiling compression-codecs v0.4.38\n   Compiling libbz2-rs-sys v0.2.5\n   Compiling rustc-hash v2.1.3\n   Compiling async-compression v0.4.42\n   Compiling xsh v0.0.1 (/Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786220380763/task-histogram-010)\n   Compiling async-tar v0.6.1 (https://github.com/dignifiedquire/async-tar.git?rev=109365969684b9cfdbe2696d5185b4ebcfb29b4c#10936596)\n   Compiling cap-tempfile v4.0.2\n   Compiling ignore v0.4.25\n   Compiling lzma-rust2 v0.16.5\n   Compiling astral_async_zip v0.0.20\n   Compiling bzip2 v0.6.1\n   Compiling cap-directories v4.0.2\n   Compiling sha1 v0.11.0\n   Compiling tempfile v3.27.0\n   Compiling md-5 v0.11.0\n   Compiling diffy v0.5.0\n   Compiling regex-lite v0.1.9\n   Compiling jiff v0.2.31\n   Compiling data-encoding v2.11.0\n   Compiling mimalloc v0.1.52\n   Compiling rustls-webpki v0.103.13\n   Compiling futures-rustls v0.26.0\n   Compiling rustls-platform-verifier v0.7.0\n   Compiling xsh-net v0.0.1 (/Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786220380763/task-histogram-010/crates/xsh-net)\n   Compiling xsht v0.0.1 (/Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786220380763/task-histogram-010/crates/xsht)\n    Finished `test` profile [unoptimized] target(s) in 51.72s\n     Running unittests src/lib.rs (target/debug/deps/xsh-cfa25d249df363e0)\n\nrunning 1 test\ntest modules::text::tests::text_helpers_cover_script_methods ... FAILED\n\nfailures:\n\n---- modules::text::tests::text_helpers_cover_script_methods stdout ----\n\nthread 'modules::text::tests::text_helpers_cover_script_methods' (17192809) panicked at src/modules/text.rs:315:26:\ninvalid positive uint: 5\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\n\nfailures:\n    modules::text::tests::text_helpers_cover_script_methods\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 167 filtered out; finished in 0.00s\n\nerror: test failed, to rerun pass `-p xsh --lib`\n\n\nCommand exited with code 101",
+      "tool": "bash",
+      "turn": 8
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786220380763/phases/01-ticket/workers/engineer/task-histogram-010/session.jsonl.bz2",
+      "summary": "No changes made to /Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786220380763/task-histogram-010/src/modules/text.rs. The replacement produced identical content. This might indicate an issue with special characters or the text not existing as expected.",
+      "tool": "edit",
+      "turn": 9
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786220380763/phases/01-ticket/workers/engineer/task-histogram-010/session.jsonl.bz2",
+      "summary": "    Blocking waiting for file lock on package cache\n    Blocking waiting for file lock on package cache\n    Blocking waiting for file lock on package cache\n    Finished `test` profile [unoptimized] target(s) in 0.45s\n     Running unittests src/lib.rs (target/debug/deps/xsh-cfa25d249df363e0)\n\nrunning 1 test\ntest modules::text::tests::text_helpers_cover_script_methods ... FAILED\n\nfailures:\n\n---- modules::text::tests::text_helpers_cover_script_methods stdout ----\n\nthread 'modules::text::tests::text_helpers_cover_script_methods' (17193456) panicked at src/modules/text.rs:315:26:\ninvalid positive uint: 5\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\n\nfailures:\n    modules::text::tests::text_helpers_cover_script_methods\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 167 filtered out; finished in 0.00s\n\nerror: test failed, to rerun pass `-p xsh --lib`\n\n\nCommand exited with code 101",
+      "tool": "bash",
+      "turn": 11
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786220380763/phases/01-ticket/workers/engineer/task-histogram-010/session.jsonl.bz2",
+      "summary": "    Blocking waiting for file lock on package cache\n    Blocking waiting for file lock on package cache\n    Blocking waiting for file lock on package cache\n    Blocking waiting for file lock on build directory\n   Compiling xsh v0.0.1 (/Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786220380763/task-histogram-010)\n    Finished `test` profile [unoptimized] target(s) in 4.68s\n     Running tests/integration.rs (target/debug/deps/integration-4d74d0805adc1abb)\n\nrunning 1 test\n   Compiling xsh v0.0.1 (/Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786220380763/task-histogram-010)\n   Compiling xsht v0.0.1 (/Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786220380763/task-histogram-010/crates/xsht)\n   Compiling xshi v0.0.1 (/Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786220380763/task-histogram-010/crates/xshi)\n    Finished `dev` profile [unoptimized] target(s) in 17.06s\ntest runtime::coverage::runnable_xsh_corpus_is_formatted_and_lints_without_warnings ... FAILED\n\nfailures:\n\n---- runtime::coverage::runnable_xsh_corpus_is_formatted_and_lints_without_warnings stdout ----\n\nthread 'runtime::coverage::runnable_xsh_corpus_is_formatted_and_lints_without_warnings' (17194834) panicked at tests/runtime/common.rs:541:5:\nstatus=Some(2)\nstdout:\ntests/xsh/stdlib/streams.xsh: needs formatting\n\nstderr:\nerr[check.unresolved-name]: unresolved name\n  /Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786220380763/task-histogram-010/core/tests/test-ifdown.xsh:11:30\n      pre-down echo \"pre-down:$IFACE:$LOGICAL:$ADDRFAM:$METHOD\" >> ${hook_log.display()}\n                               ^^^^^ unresolved name\n\nerr[check.unresolved-name]: unresolved name\n  /Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786220380763/task-histogram-010/core/tests/test-ifdown.xsh:11:37\n      pre-down echo \"pre-down:$IFACE:$LOGICAL:$ADDRFAM:$METHOD\" >> ${hook_log.display()}\n                                      ^^^^^^^ unresolved name\n\nerr[check.unresolved-name]: unresolved name\n  /Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786220380763/task-histogram-010/core/tests/test-ifdown.xsh:11:46\n      pre-down echo \"pre-down:$IFACE:$LOGICAL:$ADDRFAM:$METHOD\" >> ${hook_log.display()}\n                                               ^^^^^^^ unresolved name\n\nerr[check.unresolved-name]: unresolved name\n  /Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786220380763/task-histogram-010/core/tests/test-ifdown.xsh:11:55\n      pre-down echo \"pre-down:$IFACE:$LOGICAL:$ADDRFAM:$METHOD\" >> ${hook_log.display()}\n                                                        ^^^^^^ unresolved name\n\nerr[check.unresolved-name]: unresolved name\n  /Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786220380763/task-histogram-010/core/tests/test-ifdown.xsh:12:22\n      down echo \"down:$IFACE:$IF_ADDRESS\" >> ${hook_log.display()}\n                       ^^^^^ unresolved name\n\nerr[check.unresolved-name]: unresolved name\n  /Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786220380763/task-histogram-010/core/tests/test-ifdown.xsh:12:29\n      down echo \"down:$IFACE:$IF_ADDRESS\" >> ${hook_log.display()}\n                              ^^^^^^^^^^ unresolved name\n\nerr[check.unresolved-name]: unresolved name\n  /Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786220380763/task-histogram-010/core/tests/test-ifdown.xsh:13:32\n      post-down echo \"post-down:$PHASE\" >> ${hook_log.display()}\n                                 ^^^^^ unresolved name\nerr[check.unresolved-name]: unresolved name\n  /Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786220380763/task-histogram-010/core/tests/test-ifup.xsh:11:23\n      pre-up echo \"pre:$IFACE:$LOGICAL:$ADDRFAM:$METHOD\" >> ${hook_log.display()}\n                        ^^^^^ unresolved name\n\nerr[check.unresolved-name]: unresolved name\n  /Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786220380763/task-histogram-010/core/tests/test-ifup.xsh:11:30\n      pre-up echo \"pre:$IFACE:$LOGICAL:$ADDRFAM:$METHOD\" >> ${hook_log.display()}\n                               ^^^^^^^ unresolved name\n\nerr[check.unresolved-name]: unresolved name\n  /Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786220380763/task-histogram-010/core/tests/test-ifup.xsh:11:39\n      pre-up echo \"pre:$IFACE:$LOGICAL:$ADDRFAM:$METHOD\" >> ${hook_log.display()}\n                                        ^^^^^^^ unresolved name\n\nerr[check.unresolved-name]: unresolved name\n  /Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786220380763/task-histogram-010/core/tests/test-ifup.xsh:11:48\n      pre-up echo \"pre:$IFACE:$LOGICAL:$ADDRFAM:$METHOD\" >> ${hook_log.display()}\n                                                 ^^^^^^ unresolved name\n\nerr[check.unresolved-name]: unresolved name\n  /Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786220380763/task-histogram-010/core/tests/test-ifup.xsh:12:18\n      up echo \"up:$IFACE:$IF_ADDRESS:$IF_GATEWAY\" >> ${hook_log.display()}\n                   ^^^^^ unresolved name\n\nerr[check.unresolved-name]: unresolved name\n  /Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786220380763/task-histogram-010/core/tests/test-ifup.xsh:12:25\n      up echo \"up:$IFACE:$IF_ADDRESS:$IF_GATEWAY\" >> ${hook_log.display()}\n                          ^^^^^^^^^^ unresolved name\n\nerr[check.unresolved-name]: unresolved name\n  /Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786220380763/task-histogram-010/core/tests/test-ifup.xsh:12:37\n      up echo \"up:$IFACE:$IF_ADDRESS:$IF_GATEWAY\" >> ${hook_log.display()}\n                                      ^^^^^^^^^^ unresolved name\n\nerr[check.unresolved-name]: unresolved name\n  /Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786220380763/task-histogram-010/core/tests/test-ifup.xsh:13:25\n      post-up echo \"post:$PHASE\" >> ${hook_log.display()}\n                          ^^^^^ unresolved name\nerr[check.unresolved-name]: unresolved name\n  /Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786220380763/task-histogram-010/tests/xsh/stdlib/fs.xsh:53:8\n  print $entry.size\n         ^^^^^ unresolved name\n\nerr[check.unresolved-name]: unresolved name\n  /Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786220380763/task-histogram-010/tests/xsh/stdlib/fs.xsh:417:8\n  print $entry.size\n         ^^^^^ unresolved name\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\n\nfailures:\n    runtime::coverage::runnable_xsh_corpus_is_formatted_and_lints_without_warnings\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 496 filtered out; finished in 17.75s\n\nerror: test failed, to rerun pass `--test integration`\n\n\nCommand exited with code 101",
+      "tool": "bash",
+      "turn": 11
+    }
+  ],
+  "tools": [
+    {
+      "count": 31,
+      "name": "bash"
+    },
+    {
+      "count": 9,
+      "name": "edit"
+    },
+    {
+      "count": 1,
+      "name": "find"
+    },
+    {
+      "count": 8,
+      "name": "grep"
+    },
+    {
+      "count": 19,
+      "name": "read"
+    },
+    {
+      "count": 1,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 32,
+    "budget_usd": 0.35,
+    "cache_read_cost_usd": 0.01044947,
+    "cache_read_tokens": 1044947,
+    "cache_write_cost_usd": 0.010835375000000005,
+    "cache_write_tokens": 86683,
+    "cost_usd": 0.027452245,
+    "input_cost_usd": 9.6e-6,
+    "input_tokens": 96,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.0061578,
+    "output_tokens": 10263,
+    "provider_total_tokens": 1141989,
+    "reasoning_tokens": 4513,
+    "thinking_blocks": 10,
+    "tool_calls": 69,
+    "tool_errors": 4,
+    "tool_results": 69,
+    "total_bucket_tokens": 1141989,
+    "user_messages": 1
+  }
+}

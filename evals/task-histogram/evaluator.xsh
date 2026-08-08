@@ -97,7 +97,7 @@ proc main() [fs, process, env, time, error, io] {
     oracle,
     r"""#!/bin/sh
 set -o pipefail
-file="$1"; width="$2"
+file="$1"; width=$(printf '%s' "$2" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
 case "$width" in ''|*[!0-9]*) exit 1;; esac
 [ "$width" -gt 0 ] 2>/dev/null || exit 1
 awk -v w="$width" '
@@ -128,6 +128,17 @@ awk -v w="$width" '
       {
         name: "hidden_width",
         width: "3",
+        data: """0
+1
+2
+3
+4
+""",
+        expect_fail: false,
+      },
+      {
+        name: "hidden_padded_width",
+        width: " 5 ",
         data: """0
 1
 2

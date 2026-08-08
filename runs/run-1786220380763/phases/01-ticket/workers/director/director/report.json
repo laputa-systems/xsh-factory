@@ -1,0 +1,115 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786220380763/phases/01-ticket/workers/director/director/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_process": "pass",
+    "dispatch_claim": "77191451648703cdfe9047ed4a6288e79b1dbc6191d5cf66dfa23521bdd850a2",
+    "dispatch_id": "director-director",
+    "factory_source": "unchanged",
+    "message_sha256": "77191451648703cdfe9047ed4a6288e79b1dbc6191d5cf66dfa23521bdd850a2",
+    "reporting": "pass",
+    "required_report": "present",
+    "session_limit_watcher": "pass",
+    "system_prompt_sha256": "46eeebe9c5ded596c3cdebfa5355ef5f528ba4592c7e5adc216b11527e4f69b4",
+    "watcher": "pass"
+  },
+  "findings": [
+    {
+      "count": 2,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "role": "director",
+    "worker_id": "director"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "provider_telemetry": {
+    "event_turns": 11,
+    "events_path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786220380763/phases/01-ticket/workers/director/director/session.jsonl.events.jsonl",
+    "output_tokens_per_second": 0,
+    "present": true,
+    "provider_errors": [],
+    "response_elapsed_ms": 0,
+    "retry_count": 0,
+    "retry_delay_ms": 0,
+    "retry_errors": [],
+    "retry_failures": 0,
+    "retry_successes": 0
+  },
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786220380763/phases/01-ticket/workers/director/director/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 10,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 121272
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786220380763/phases/01-ticket/workers/director/director/session.jsonl.bz2",
+      "summary": "=== patches dir ===\ntotal 0\ndrwxr-xr-x   2 josh  staff   64 Aug  8 13:19 .\ndrwxr-xr-x  26 josh  staff  832 Aug  8 13:23 ..\n=== patch content ===\n--- patches/*.diff\nhead: patches/*.diff: No such file or directory\n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 6
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786220380763/phases/01-ticket/workers/director/director/session.jsonl.bz2",
+      "summary": "=== events (tail) ===\n{\"attempt\":1,\"caused_by\":\"controller\",\"detail\":\"approved ticket dispatch\",\"event_id\":\"00-cycle-started\",\"kind\":\"event\",\"run_id\":\"/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786220380763/phases/01-ticket\",\"schema_version\":1,\"state\":\"started\",\"subject\":\"ticket-implementation\"}\n{\"attempt\":1,\"caused_by\":\"admission\",\"detail\":\"worktree /Users/josh/d/laputa-systems/xsh-factory/../.xsh-factory-worktrees/run-1786220380763/task-histogram-010 on factory/task-histogram-010/1786220391269\",\"event_id\":\"10-ticket-task-histogram-010-admitted\",\"kind\":\"event\",\"run_id\":\"/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786220380763/phases/01-ticket\",\"schema_version\":1,\"state\":\"admitted\",\"subject\":\"task-histogram-010\"}\n{\"attempt\":1,\"caused_by\":\"controller\",\"detail\":\"controller-dispatching engineers; director will reconcile\",\"event_id\":\"20-director-started\",\"kind\":\"event\",\"run_id\":\"/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786220380763/phases/01-ticket\",\"schema_version\":1,\"state\":\"started\",\"subject\":\"director\"}\n{\"attempt\":1,\"caused_by\":\"controller\",\"detail\":\"controller-dispatching engineer worker\",\"event_id\":\"20-ticket-task-histogram-010-started\",\"kind\":\"event\",\"run_id\":\"/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786220380763/phases/01-ticket\",\"schema_version\":1,\"state\":\"started\",\"subject\":\"task-histogram-010\"}\n=== ticket-implementation state file ===\nstarted\n\n=== phase report outcomes ===\nTraceback (most recent call last):\n  File \"<string>\", line 1, in <module>\n    import json,sys; d=json.load(sys.stdin); print(json.dumps(d['outcomes'],indent=2)); print('required_outputs', d['required_outputs'])\n                                                              ~^^^^^^^^^^^^\nKeyError: 'outcomes'\n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 7
+    }
+  ],
+  "tools": [
+    {
+      "count": 11,
+      "name": "bash"
+    },
+    {
+      "count": 11,
+      "name": "read"
+    },
+    {
+      "count": 1,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 11,
+    "budget_usd": 0.06,
+    "cache_read_cost_usd": 0.003926016,
+    "cache_read_tokens": 218112,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.008013366000000001,
+    "input_cost_usd": 0.0030143699999999997,
+    "input_tokens": 33493,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.00107298,
+    "output_tokens": 5961,
+    "provider_total_tokens": 257566,
+    "reasoning_tokens": 2337,
+    "thinking_blocks": 10,
+    "tool_calls": 23,
+    "tool_errors": 2,
+    "tool_results": 23,
+    "total_bucket_tokens": 257566,
+    "user_messages": 1
+  }
+}

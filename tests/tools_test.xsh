@@ -2853,8 +2853,11 @@ proc test_task_histogram_restriction_accepts_typed_unsigned_parse() [fs, error] 
   let contract = fs.read_text(fp"${fs.cwd()?}/evals/task-histogram/EVAL.md")?
   test.contains(evaluator, "let typed_integer_parse = \"parse_int\" in source or \"parse_uint\" in source")?
   test.contains(evaluator, "typed_integer_parse and \"sort-by\" in source")?
+  test.contains(evaluator, "hidden_padded_width")?
+  test.contains(evaluator, "sed 's/^[[:space:]]*//;s/[[:space:]]*$//'")?
   test.contains(contract, "`parse_int` or\n`parse_uint`")?
   test.contains(contract, "strict unsigned")?
+  test.contains(contract, "surrounding-whitespace width")?
 }
 
 proc test_task_trim_restriction_accepts_typed_path_io() [fs, error] {
