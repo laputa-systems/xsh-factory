@@ -1,0 +1,96 @@
+{
+  "classification": "pass",
+  "correctness": {
+    "all_exact": true,
+    "cases": [
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 13960409,
+        "exact": true,
+        "name": "public",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 16754432
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 13232830,
+        "exact": true,
+        "name": "hidden_width",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 28398897
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 30257510,
+        "exact": true,
+        "name": "hidden_many",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 18012133
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 16081311,
+        "exact": true,
+        "name": "hidden_sparse",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 13410454
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 14908611,
+        "exact": true,
+        "name": "hidden_single",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 11987046
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 13350496,
+        "exact": true,
+        "name": "hidden_ties",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 4927385
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 18295380,
+        "exact": true,
+        "name": "hidden_empty",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 12861541
+      },
+      {
+        "candidate_exit": 1,
+        "candidate_wall_ns": 19868204,
+        "exact": true,
+        "name": "hidden_bad_width",
+        "oracle_exit": 1,
+        "oracle_wall_ns": 17708385
+      },
+      {
+        "candidate_exit": 1,
+        "candidate_wall_ns": 12391419,
+        "exact": true,
+        "name": "hidden_bad_value",
+        "oracle_exit": 2,
+        "oracle_wall_ns": 13633869
+      }
+    ],
+    "passed": true
+  },
+  "eval_id": "task-histogram",
+  "image_id": "sha256:95a74e4d24440732b27eafcc8627d42a596f55332119cb3ff8a0613176a72846",
+  "platform": "linux/arm64",
+  "protocol": {
+    "artifact_present": true,
+    "review_ok": true
+  },
+  "restrictions": {
+    "passed": true
+  },
+  "result": "pass",
+  "timings": {
+    "passed": true
+  },
+  "trial_id": "1"
+}

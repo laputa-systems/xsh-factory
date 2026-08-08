@@ -28,6 +28,9 @@ For a candidate-linked replay, accept delivery only when the worker actually
 exercised the ticket's acceptance criteria. If it used a workaround or did not
 exercise the proposed surface, say so explicitly; the controller will retain
 the branch for a directed replay.
+Record the decision with the exact sentence `Candidate acceptance: pass.` or
+`Candidate acceptance: fail.` so the controller can distinguish an explicit
+delivery decision from surrounding analysis.
 
 The controller-supplied `RUN_DIR/lineage/handbook-approved.md` path is
 authoritative and absolute. If you verify its hash, use that exact path (or the

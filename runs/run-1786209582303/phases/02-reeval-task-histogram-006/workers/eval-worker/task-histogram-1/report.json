@@ -1,0 +1,132 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786209582303/phases/02-reeval-task-histogram-006/workers/eval-worker/task-histogram-1/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_state": "pass",
+    "agent_wall_ms": 888565,
+    "artifact": {
+      "name": "histogram.xsh",
+      "state": "present"
+    },
+    "budget_state": "pass",
+    "classification": "pass",
+    "evaluator_manifest": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786209582303/phases/02-reeval-task-histogram-006/workers/eval-worker/task-histogram-1/run.json",
+    "evaluator_state": "pass",
+    "reporting_state": "pass",
+    "result": "pass",
+    "review": {
+      "state": "present"
+    }
+  },
+  "findings": [
+    {
+      "count": 3,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "eval_id": "task-histogram",
+    "role": "eval-worker",
+    "run_id": "02-reeval-task-histogram-006",
+    "worker_id": "task-histogram-1"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "provider_telemetry": {
+    "event_turns": 36,
+    "events_path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786209582303/phases/02-reeval-task-histogram-006/workers/eval-worker/task-histogram-1/session.jsonl.events.jsonl",
+    "output_tokens_per_second": 0,
+    "present": true,
+    "provider_errors": [],
+    "response_elapsed_ms": 0,
+    "retry_count": 0,
+    "retry_delay_ms": 0,
+    "retry_errors": [],
+    "retry_failures": 0,
+    "retry_successes": 0
+  },
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786209582303/phases/02-reeval-task-histogram-006/workers/eval-worker/task-histogram-1/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 35,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 886467
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786209582303/phases/02-reeval-task-histogram-006/workers/eval-worker/task-histogram-1/session.jsonl.bz2",
+      "summary": "err[compact.main-missing-spread]: proc main must use the spread form `(...argv: List[Str])` to receive script arguments; a fixed parameter of this type cannot bind script arguments in the compact runtime\n  probe.xsh:1:1\n  proc main(argv: List[Str]) [error, fs] {\n  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ proc main must use the spread form `(...argv: List[Str])` to receive script arguments; a fixed parameter of this type cannot bind script arguments in the compact runtime\n=== run ===\nerr[compact.main-missing-spread]: proc main must use the spread form `(...argv: List[Str])` to receive script arguments; a fixed parameter of this type cannot bind script arguments in the compact runtime\n  probe.xsh:1:1\n  proc main(argv: List[Str]) [error, fs] {\n  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ proc main must use the spread form `(...argv: List[Str])` to receive script arguments; a fixed parameter of this type cannot bind script arguments in the compact runtime\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 12
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786209582303/phases/02-reeval-task-histogram-006/workers/eval-worker/task-histogram-1/session.jsonl.bz2",
+      "summary": "err[parse.unknown-stream-stage]: unknown stream stage `filter`; use `where` for filtering\n  probe2.xsh:7:8\n      |> filter { |t| t != \"\" }\n         ^^^^^^ unknown stream stage `filter`; use `where` for filtering\n\nerr[parse.expected-terminator]: expected statement terminator\n  probe2.xsh:13:12\n        v // width\n             ^^^^^ expected statement terminator\n=== run ===\nerr[parse.unknown-stream-stage]: unknown stream stage `filter`; use `where` for filtering\n  probe2.xsh:7:8\n      |> filter { |t| t != \"\" }\n         ^^^^^^ unknown stream stage `filter`; use `where` for filtering\n\nerr[parse.expected-terminator]: expected statement terminator\n  probe2.xsh:13:12\n        v // width\n             ^^^^^ expected statement terminator\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 16
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786209582303/phases/02-reeval-task-histogram-006/workers/eval-worker/task-histogram-1/session.jsonl.bz2",
+      "summary": "=== run ===\ncount 6\nerr[runtime.error]: join expected List[Str]\n  probe2.xsh:16:15\n    print \"vals\"$vals.join(\", \")\n                ^^^^^^^^^^^^^^^^\nruntime traceback\nexecutable: /usr/local/bin/xsh\noperation: runtime.error\nerror: type-error: join expected List[Str]\n\n\nCommand exited with code 3",
+      "tool": "bash",
+      "turn": 20
+    }
+  ],
+  "tools": [
+    {
+      "count": 33,
+      "name": "bash"
+    },
+    {
+      "count": 1,
+      "name": "edit"
+    },
+    {
+      "count": 5,
+      "name": "read"
+    },
+    {
+      "count": 7,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 36,
+    "budget_usd": 0.5,
+    "cache_read_cost_usd": 0.007828992,
+    "cache_read_tokens": 434944,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.026061282000000005,
+    "input_cost_usd": 0.01601757,
+    "input_tokens": 177973,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.0022147200000000003,
+    "output_tokens": 12304,
+    "provider_total_tokens": 625221,
+    "reasoning_tokens": 7052,
+    "thinking_blocks": 27,
+    "tool_calls": 46,
+    "tool_errors": 3,
+    "tool_results": 46,
+    "total_bucket_tokens": 625221,
+    "user_messages": 1
+  }
+}

@@ -2,7 +2,20 @@
 
 ## Status
 
-Open.
+Approved.
+
+## CTO review — cycle 25 close
+
+- Decision: Approved for controlled implementation in the next organization cycle.
+- Basis: The original `task-histogram` evidence is a strong, narrowly scoped
+  reproducible `parse_uint` ergonomics observation with explicit non-goals and
+  acceptance criteria. Cycle 25 supplied fresh numeric-validation evidence in
+  `runs/run-1786209582303/phases/02-reeval-task-histogram-006/`, including the
+  worker's documented `parse_int`/digit-validation path. The engineer must
+  implement only additive `Str.parse_uint()` behavior; the linked replay and
+  required numeric cross-eval remain hard delivery gates.
+- Scope guard: do not change `parse_int`, postfix `?`, error semantics, or
+  introduce a generic `Error` constructor.
 
 ## CTO decision — clean-slate cycle 2026-08-07
 

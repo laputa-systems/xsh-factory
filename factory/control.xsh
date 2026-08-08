@@ -1101,12 +1101,15 @@ export pure reeval_manager_acceptance_gate(report: Str) -> Bool {
     "decision: needs-replay",
   ) or lower.contains("but needs-replay") or lower.contains("decision: **reject**") or lower.contains("decision: reject") or lower.contains(
     "candidate acceptance: fail",
-  ) or lower.contains("acceptance was not exercised") or lower.contains("not supported")
+  ) or lower.contains("acceptance was not exercised") or lower.contains("not supported") or lower.contains(
+    "not accepted",
+  ) or lower.contains("candidate re-evaluation rejected")
   let explicit_acceptance = lower.contains("candidate acceptance: pass") or lower.contains(
     "decision: **accept**",
   ) or lower.contains("decision: accept") or lower.contains("candidate acceptance exercised")
     or lower.contains("candidate acceptance surface exercised")
     or lower.contains("actually exercised the candidate surface")
+    or (lower.contains("candidate re-evaluation") and lower.contains("accepted"))
     or lower.contains("accepted for merge")
     or lower.contains("accept-for-merge")
     or lower.contains("decision in conference: retain/accept") or lower.contains(

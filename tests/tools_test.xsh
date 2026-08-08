@@ -2664,6 +2664,8 @@ proc test_eval_manager_assignment_proves_exact_handbook_read() [fs, error] {
   test.contains(assignment, "controller-owned metadata, not manager evidence")?
   test.contains(assignment, "Do not read it or any path beneath")?
   test.contains(assignment, "portable patch")?
+  test.contains(assignment, "Candidate acceptance: pass.")?
+  test.contains(assignment, "Candidate acceptance: fail.")?
 }
 
 proc test_organization_delivery_is_a_success_gate() [fs, error] {

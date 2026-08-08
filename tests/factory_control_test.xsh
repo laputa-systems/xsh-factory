@@ -582,9 +582,11 @@ fixture
   test.ok(control.reeval_manager_acceptance_gate("Candidate acceptance: pass; no replay required."))?
   test.ok(control.reeval_manager_acceptance_gate("Candidate acceptance surface exercised; the linked candidate passed."))?
   test.ok(control.reeval_manager_acceptance_gate("The worker actually exercised the candidate surface and it was accepted for merge."))?
+  test.ok(control.reeval_manager_acceptance_gate("Candidate re-evaluation of task-histogram-006 accepted; all acceptance criteria passed."))?
   test.ok(control.reeval_manager_acceptance_gate("Accept-for-merge decision recorded after the candidate surface was exercised."))?
   test.ok(control.reeval_manager_acceptance_gate("Controller decision in conference: retain/accept the candidate branch."))?
   test.ok(! control.reeval_manager_acceptance_gate("Result pass, but needs-replay: acceptance was not exercised."))?
+  test.ok(! control.reeval_manager_acceptance_gate("Candidate re-evaluation was not accepted; needs-replay."))?
   test.ok(control.reeval_manager_acceptance_gate("""## Post-merge decisions
 
 None. The reconciler reported accept/reject/needs-replay as possible decisions.
