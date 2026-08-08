@@ -328,6 +328,7 @@ The paid validation sequence exposed and repaired real boundary failures:
 | `run-1786227317528` | retained `task-histogram-006`; no independent eval | correctness/restriction/protocol pass | active manager review survived the old idle bound, but both narrative reports remained `not-ready`; no delivery | tightened report-first manager and retry instructions; validation pending |
 | `run-1786230433596` | ticketless; two Open tickets, zero Approved rows; two discovery evals | both phases failed before Pi at local XSH build | zero workers, zero turns, `$0.00`; explicit image tag had been overwritten by the failed prior Docker build | repaired/validated explicit qualified-image selection; created a fresh platform-matched image |
 | `run-1786230602946` | ticketless; two Open tickets, zero Approved rows; `task-bigfiles` and `task-colsum` discovery overlap | both nine-case evals passed correctness/restrictions/protocol; both managers passed | four workers, 97 turns, `$0.052743888`; no delivery because no eligible ticket; one provider 503 retry succeeded | validated the image/build repair; cleared a non-semantic handbook snapshot with a native-tested narrow equivalence gate |
+| `run-1786231856321` | ticketless; two Open tickets, zero Approved rows; same two discovery evals | both evaluator trials passed; `task-colsum` manager passed; `task-bigfiles` manager and bounded retry left `not-ready` | five workers, 94 turns, `$0.062499888`; no delivery; infrastructure/overall fail | removed the role/assignment evidence-order conflict; native tests protect the report-first contract; validation pending |
 
 Run 4 is an important negative result. It proves that the 120-second idle
 repair fixed a false-positive inactivity diagnosis, but it did not yet prove
@@ -439,6 +440,29 @@ ticket, so the three-cycle fresh-delivery qualification has not started.
 Retained delivery from Run 7 is historical throughput evidence, not a fresh
 eligible-cycle pass. The next productive cycle requires CTO-approved,
 branchless product supply before the one-commit gate can be measured.
+
+Run 11 (`run-1786231856321`) revalidated the image path and both evaluator
+trials, but exposed a separate manager-closeout regression. The primary
+`task-bigfiles` worker passed its nine cases, restrictions, and protocol. Its
+manager read the five admission files, then read worker evidence before
+drafting and idled into the 120-second inactivity watcher. The bounded retry
+read the phase packet and worker evidence but terminated with an error, leaving
+both report skeletons at `not-ready`. The independent `task-colsum` manager
+did produce a complete report and its phase passed. Root outcomes were
+`product=pass`, `evaluator=pass`, `infrastructure=fail`, `cycle=fail`, with five
+workers, 94 assistant turns, `$0.062499888`, no budget failures, and no unknown
+costs. This was not provider latency and did not involve product delivery.
+
+The root cause was a real contract contradiction: `roles/eval-manager.md`
+said to read phase, worker, evaluator, and manager evidence first, while
+`templates/EVAL-MANAGER-ASSIGNMENT.md` required the next tool call after its
+admission reads to write the staged report. Run 11 followed the former path.
+The repair makes the order singular across the role, assignment, and retry:
+exactly five admission reads, immediate complete staged-report write/edit, then
+worker and evaluator evidence refinement. `tests/tools_test.xsh` now asserts
+the three prompt surfaces. The native suite remains 144/144. Because the paid
+request already failed, the repair is not relaunched under the same request;
+the next explicit cycle is the validation boundary.
 
 ## Qualification and closeout
 

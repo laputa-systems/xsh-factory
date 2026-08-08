@@ -79,16 +79,22 @@ the merge fields in the same ticket. Treat it as a post-merge acceptance
 assignment, never as new engineer work. Record the decision and evidence in
 `## Post-merge decisions`.
 
-Use this bounded evidence order: read the current phase `report.json`, then
-each executor worker `report.json`, evaluator `run.json`, and the manager
-session report first. The controller pre-stages a fail-closed `REPORT.md`;
-open it immediately and fill it as evidence is classified. Consult raw
-session JSONL only to explain a specific discrepancy. The structured
-`tool_errors` arrays must account for every failed Pi tool result in the
-current worker and manager sessions, including invalid `xsht api` discovery
-queries. Do not scan historical runs or re-research Pi unless a current path,
-hash, or result conflicts. Limit each observation to one targeted
-reproduction, then classify it and finish the report checklist.
+Use this bounded evidence order, which is also the report-first throughput
+contract. First read exactly the five admission files named by the assignment:
+the supplied handbook snapshot, `NORTH-STAR.md`, `roles/pi-session-briefing.md`,
+the eval `EVAL.md`, and the current phase `report.json`. Do not read a worker
+report, evaluator manifest, manager skeleton, artifact, or raw session before
+the first draft. After those five tool results, the very next tool call MUST be
+one `write` or `edit` that replaces the staged `REPORT.md` with a complete
+concise report, using `unknown` or `None.` where the remaining structured
+evidence is not yet read. Only after that first draft may you read each
+executor worker `report.json`, evaluator `run.json`, and the manager report to
+refine the draft. Consult raw session JSONL only to explain a specific
+discrepancy. The structured `tool_errors` arrays must account for every failed
+Pi tool result in the current worker and manager sessions, including invalid
+`xsht api` discovery queries. Do not scan historical runs or re-research Pi
+unless a current path, hash, or result conflicts. Limit each observation to one
+targeted reproduction, then classify it and finish the report checklist.
 This keeps the manager focused on durable handbook or product decisions rather
 than repeating controller work.
 

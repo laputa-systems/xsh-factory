@@ -1,0 +1,282 @@
+{
+  "artifacts": [
+    {
+      "kind": "phase-reports",
+      "path": "phases/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 94,
+      "budget_failures": 0,
+      "cost_usd": 0.062499888,
+      "tool_errors": 4,
+      "total_bucket_tokens": 1465330.0,
+      "unknown_costs": 0,
+      "workers": 5
+    },
+    "mode": "organization",
+    "outcomes": {
+      "cycle": "fail",
+      "evaluator": "pass",
+      "infrastructure": "fail",
+      "product": "pass"
+    },
+    "phases": [
+      {
+        "id": "01-eval",
+        "path": "phases/01-eval/report.json",
+        "result": "fail",
+        "valid": true
+      },
+      {
+        "id": "02-eval",
+        "path": "phases/02-eval/report.json",
+        "result": "pass",
+        "valid": true
+      }
+    ],
+    "throughput": {
+      "admitted_tickets": 0,
+      "delivered_tickets": 0,
+      "delivery_conversion": 0.0,
+      "delivery_target_met": true,
+      "fresh_delivered_tickets": 0,
+      "fresh_engineer_rows": 0,
+      "fresh_engineer_target": 0,
+      "handbook_quarantines": 0,
+      "overlap_linked_replays": false,
+      "overlap_retained_fresh": false,
+      "reeval_dispatched": 0,
+      "reeval_passed": 0,
+      "retained_delivered_tickets": 0,
+      "retained_fast_paths": 0,
+      "retained_rows": 0
+    },
+    "tool_errors": [
+      {
+        "report": "phases/01-eval/workers/eval-worker/task-bigfiles-1/report.json",
+        "summary": "sh: syntax error: unexpected \"(\"\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 6,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-bigfiles-1"
+        }
+      },
+      {
+        "report": "phases/01-eval/workers/eval-worker/task-bigfiles-1/report.json",
+        "summary": "err[check.unresolved-proc-command]: unresolved proc command\n  bigfiles.xsh:7:7\n        abort 2\n        ^^^^^^^ unresolved proc command\n===FMT===\nerr[check.unresolved-proc-command]: unresolved proc command\n  bigfiles.xsh:7:7\n        abort 2\n        ^^^^^^^ unresolved proc command\n===LINT===\nerr[check.unresolved-proc-command]: unresolved proc command\n  bigfiles.xsh:7:7\n        abort 2\n        ^^^^^^^ unresolved proc command\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 15,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-bigfiles-1"
+        }
+      },
+      {
+        "report": "phases/01-eval/workers/eval-worker/task-bigfiles-1/report.json",
+        "summary": "err[check.display-conversion]: value cannot be displayed in fmt string\n  /tmp/p.xsh:5:15\n    print f\"a=${a} b=${b} c=${c}\"\n                ^ value cannot be displayed in fmt string\n\nerr[check.display-conversion]: value cannot be displayed in fmt string\n  /tmp/p.xsh:5:22\n    print f\"a=${a} b=${b} c=${c}\"\n                       ^ value cannot be displayed in fmt string\n\nerr[check.display-conversion]: value cannot be displayed in fmt string\n  /tmp/p.xsh:5:29\n    print f\"a=${a} b=${b} c=${c}\"\n                              ^ value cannot be displayed in fmt string\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 25,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-bigfiles-1"
+        }
+      },
+      {
+        "report": "phases/02-eval/workers/eval-manager/task-colsum/report.json",
+        "summary": "Could not find the exact text in /Users/josh/d/laputa-systems/xsh-factory/runs/run-1786231856321/phases/02-eval/workers/eval-manager/task-colsum/REPORT.md. The old text must match exactly including all whitespace and newlines.",
+        "tool": "edit",
+        "turn": 6,
+        "worker": {
+          "role": "eval-manager",
+          "worker_id": "task-colsum"
+        }
+      }
+    ],
+    "workers": [
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-bigfiles-retry-1"
+        },
+        "path": "phases/01-eval/workers/eval-manager/task-bigfiles-retry-1/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 3,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0,
+          "cache_read_tokens": 0,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.0022293,
+          "input_cost_usd": 0.00210852,
+          "input_tokens": 23428,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00012078,
+          "output_tokens": 671,
+          "provider_total_tokens": 24099,
+          "reasoning_tokens": 132,
+          "thinking_blocks": 3,
+          "tool_calls": 8,
+          "tool_errors": 0,
+          "tool_results": 8,
+          "total_bucket_tokens": 24099,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-bigfiles"
+        },
+        "path": "phases/01-eval/workers/eval-manager/task-bigfiles/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 2,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.000110592,
+          "cache_read_tokens": 6144,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.001753812,
+          "input_cost_usd": 0.00146088,
+          "input_tokens": 16232,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00018234,
+          "output_tokens": 1013,
+          "provider_total_tokens": 23389,
+          "reasoning_tokens": 445,
+          "thinking_blocks": 2,
+          "tool_calls": 8,
+          "tool_errors": 0,
+          "tool_results": 8,
+          "total_bucket_tokens": 23389,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-bigfiles-1"
+        },
+        "path": "phases/01-eval/workers/eval-worker/task-bigfiles-1/report.json",
+        "result": "pass",
+        "tool_errors": 3,
+        "usage": {
+          "assistant_turns": 33,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.007742592,
+          "cache_read_tokens": 430144,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.011700521999999998,
+          "input_cost_usd": 0.0022648499999999997,
+          "input_tokens": 25165,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00169308,
+          "output_tokens": 9406,
+          "provider_total_tokens": 464715,
+          "reasoning_tokens": 5517,
+          "thinking_blocks": 25,
+          "tool_calls": 38,
+          "tool_errors": 3,
+          "tool_results": 38,
+          "total_bucket_tokens": 464715,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-colsum"
+        },
+        "path": "phases/02-eval/workers/eval-manager/task-colsum/report.json",
+        "result": "pass",
+        "tool_errors": 1,
+        "usage": {
+          "assistant_turns": 8,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.0008064000000000001,
+          "cache_read_tokens": 44800,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.01062693,
+          "input_cost_usd": 0.00908973,
+          "input_tokens": 100997,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0007308,
+          "output_tokens": 4060,
+          "provider_total_tokens": 149857,
+          "reasoning_tokens": 1215,
+          "thinking_blocks": 7,
+          "tool_calls": 12,
+          "tool_errors": 1,
+          "tool_results": 12,
+          "total_bucket_tokens": 149857,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-colsum-1"
+        },
+        "path": "phases/02-eval/workers/eval-worker/task-colsum-1/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 48,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.009345024000000002,
+          "cache_read_tokens": 519168,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.036189324,
+          "input_cost_usd": 0.024294060000000003,
+          "input_tokens": 269934,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0025502400000000005,
+          "output_tokens": 14168,
+          "provider_total_tokens": 803270,
+          "reasoning_tokens": 7741,
+          "thinking_blocks": 34,
+          "tool_calls": 60,
+          "tool_errors": 0,
+          "tool_results": 60,
+          "total_bucket_tokens": 803270,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "aef5ddb3396ab78783dd76516d5fdcc25a17df29"
+  },
+  "findings": [
+    {
+      "detail": "",
+      "id": "01-eval",
+      "kind": "phase",
+      "result": "fail"
+    }
+  ],
+  "identity": {
+    "mode": "organization",
+    "run_id": "run-1786231856321"
+  },
+  "kind": "run",
+  "result": "fail",
+  "schema_version": 1,
+  "state": "completed"
+}

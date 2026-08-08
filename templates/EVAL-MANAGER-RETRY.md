@@ -4,10 +4,12 @@ This is the final bounded retry for the eval-manager report. The prior attempt
 did not produce a contract-complete narrative. Recover the existing evidence;
 do not rerun the executor, broaden discovery, or inspect historical runs.
 
-First read the current structured phase report and the staged report below.
-Your next tool call after those two reads MUST use `write` or `edit` to replace
-every skeleton placeholder in the staged report. Finish the report before any
-optional investigation, raw session read, or artifact probe. A valid closeout
+First read only the current structured phase report and the staged report below.
+Do not read the original worker report, evaluator manifest, artifact, or raw
+session before drafting. Your next tool call after those two reads MUST use
+`write` or `edit` to replace every skeleton placeholder in the staged report.
+Finish the report before any optional investigation, raw session read, or
+artifact probe. A valid closeout
 has `## Result` set to `pass` or `fail`, all required headings populated, no
 `not-ready` result, and no `Fill from` or `Fill every` placeholder text.
 

@@ -2774,6 +2774,8 @@ proc test_engineer_guidance_is_run_scoped() [fs, error] {
 
 proc test_eval_manager_assignment_proves_exact_handbook_read() [fs, error] {
   let assignment = fs.read_text(fp"${fs.cwd()?}/templates/EVAL-MANAGER-ASSIGNMENT.md")?
+  let role = fs.read_text(fp"${fs.cwd()?}/roles/eval-manager.md")?
+  let retry_template = fs.read_text(fp"${fs.cwd()?}/templates/EVAL-MANAGER-RETRY.md")?
   test.contains(assignment, "Use the `read` tool, not `bash`, `cat`, or `grep`")?
   test.contains(assignment, "{{RUN_DIR}}/lineage/handbook-approved.md")?
   test.contains(assignment, "controller-owned metadata, not manager evidence")?
@@ -2782,11 +2784,17 @@ proc test_eval_manager_assignment_proves_exact_handbook_read() [fs, error] {
   test.contains(assignment, "Candidate acceptance: pass.")?
   test.contains(assignment, "Candidate acceptance: fail.")?
   test.contains(assignment, "your next tool call MUST")?
-  test.contains(assignment, "before reading raw session JSONL")?
+  test.contains(assignment, "the complete first-read set")?
+  test.contains(assignment, "Do not read any\nworker report")?
+  test.contains(assignment, "After that\nfirst draft")?
   test.contains(assignment, "Keep evidence ownership separate")?
   test.contains(assignment, "do not require the evaluator sandbox to duplicate")?
   test.contains(assignment, "exact artifact/review paths")?
   test.contains(assignment, "Do not guess an `artifacts/`")?
+  test.contains(role, "report-first throughput\ncontract")?
+  test.contains(role, "the very next tool call MUST be")?
+  test.contains(role, "Do not read a worker\nreport")?
+  test.contains(retry_template, "Do not read the original worker report")?
 }
 
 proc test_organization_delivery_is_a_success_gate() [fs, error] {

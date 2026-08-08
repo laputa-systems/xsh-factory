@@ -12,7 +12,8 @@ Before any other investigation, make an exact `read` tool call for
 call as part of the manager admission contract.
 
 Read `{{FACTORY_DIR}}/NORTH-STAR.md`, `{{FACTORY_DIR}}/roles/pi-session-briefing.md`,
-`{{EVAL_DIR}}/EVAL.md`, and `{{RUN_DIR}}/report.json` first.
+`{{EVAL_DIR}}/EVAL.md`, and `{{RUN_DIR}}/report.json` first. These four files
+plus the exact handbook snapshot are the complete first-read set.
 Use the exact absolute path `{{RUN_DIR}}/lineage/handbook-approved.md` as the
 handbook snapshot under review; do not substitute a different handbook path or
 construct a relative path from the worker directory. If hashing it, hash that
@@ -72,13 +73,16 @@ or phase packet, and require the replay to cover the distinct behavior that
 would fail without the proposed change.
 
 The controller has completed exactly `{{TRIAL_COUNT}}` fresh trial(s). Preserve
-separate evidence under `{{RUN_DIR}}/workers/eval-worker/` and inspect each
-worker `report.json`, evaluator `run.json`, and the exact artifact/review paths
-named by that manifest, plus quantitative results. Do not guess an `artifacts/`
-subdirectory or probe alternate filenames; if a manifest path is absent, record
-the discrepancy once and proceed with the structured evidence. Consult raw session JSONL only when
-a structured discrepancy requires proof; an exhaustive session read is not part
-of manager closeout. The
+separate evidence under `{{RUN_DIR}}/workers/eval-worker/`. Do not read any
+worker report, evaluator `run.json`, artifact, review, manager skeleton, or raw
+session until the required first draft below has been written. After that
+first draft, inspect each worker `report.json`, evaluator `run.json`, and the
+exact artifact/review paths named by that manifest, plus quantitative results.
+Do not guess an `artifacts/` subdirectory or probe alternate filenames; if a
+manifest path is absent, record the discrepancy once and proceed with the
+structured evidence. Consult raw session JSONL only when a structured
+discrepancy requires proof; an exhaustive session read is not part of manager
+closeout. The
 controller has staged the required report skeleton at
 `{{RUN_DIR}}/workers/eval-manager/{{EVAL_ID}}/REPORT.md`; edit it in place
 instead of reconstructing the headings. Your `## Tool-error findings` section
@@ -104,16 +108,16 @@ do not claim validation that did not occur.
 
 Begin the narrative output before final analysis: the controller has created
 `{{RUN_DIR}}/workers/eval-manager/{{EVAL_ID}}/REPORT.md` with a fail-closed
-`not-ready` result. After the required reads above, your next tool call MUST
-use `write` or `edit` on that exact report path. Replace every skeleton
-placeholder, populate every required heading, and include the exact candidate
-acceptance token before reading raw session JSONL, candidate artifacts, or
-performing optional investigation. Use `unknown` or `None.` for unavailable
-structured fields. Then re-read the report and only afterward make one
-targeted reproduction if a ticket-relevant contradiction remains. If an API
-question remains unresolved after two exact probes, classify the friction and
-proceed. Do not paste the full report into the final response; state the path
-and result only.
+`not-ready` result. The required first-read set is exactly the five files
+listed above. After those five results, your next tool call MUST use `write` or
+`edit` on that exact report path; do not read anything else first. Replace
+every skeleton placeholder, populate every required heading, include the exact
+candidate acceptance token, and use `unknown` or `None.` for structured fields
+that you have not yet read. Then re-read and refine the report from the worker
+reports and manifests. Only afterward make one targeted reproduction if a
+ticket-relevant contradiction remains. If an API question remains unresolved
+after two exact probes, classify the friction and proceed. Do not paste the
+full report into the final response; state the path and result only.
 
 Compare the requested trials. Classify each meaningful observation as
 correctness, restriction, timing, worker friction, reusable handbook
