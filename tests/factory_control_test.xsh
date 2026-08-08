@@ -354,6 +354,14 @@ proc test_role_defaults_are_coded_and_capped() [env, error] {
   }
 }
 
+proc test_explicit_toolchain_image_skips_stale_default_rebuild() {
+  test.ok(! control.toolchain_build_required(false, true, false, true))?
+  test.ok(! control.toolchain_build_required(false, false, true, true))?
+  test.ok(control.toolchain_build_required(false, false, true, false))?
+  test.ok(control.toolchain_build_required(false, false, false, true))?
+  test.ok(control.toolchain_build_required(true, true, true, true))?
+}
+
 proc test_north_star_contains_rationale_without_factory_symlink() [fs, error] {
   let root = fs.cwd()?
   let north_star = fs.read_text(fp"${root}/NORTH-STAR.md")?

@@ -466,6 +466,27 @@ export pure eval_overlay_build_args(
   )
 }
 
+## An operator-supplied, platform-matched toolchain image is already a
+## qualified build input. Do not rebuild the repository's default image merely
+## because the local cache stamp is absent or stale; a forced rebuild remains
+## authoritative.
+export pure toolchain_build_required(
+  force_rebuild: Bool,
+  cache_hit: Bool,
+  explicit_image: Bool,
+  image_present: Bool,
+) -> Bool {
+  if force_rebuild {
+    return true
+  }
+
+  if cache_hit {
+    return false
+  }
+
+  return ! explicit_image or ! image_present
+}
+
 ## Accepts a local Docker toolchain only when its keyed image and stamp agree.
 export pure toolchain_cache_valid(
   force_rebuild: Bool,

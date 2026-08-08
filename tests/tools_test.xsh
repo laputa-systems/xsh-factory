@@ -2873,6 +2873,15 @@ proc test_eval_gate_diagnostics_are_persisted() [fs, error] {
   test.contains(retry_template, "optional investigation")?
 }
 
+proc test_eval_controller_honors_explicit_toolchain_image() [fs, error] {
+  let evaluator = fs.read_text(fp"${fs.cwd()?}/factory/controllers/eval.xsh")?
+  let control = fs.read_text(fp"${fs.cwd()?}/factory/control.xsh")?
+  test.contains(evaluator, "configured_toolchain_image")?
+  test.contains(evaluator, "explicit_toolchain_image")?
+  test.contains(evaluator, "toolchain_build_required")?
+  test.contains(control, "qualified build input")?
+}
+
 proc test_process_run_status_contract_is_executable(ctx: TestContext) [fs, process, error] {
   let root = test.temp_dir(ctx, name: "process-run-status-contract")?
   let fixture = fp"${root}/fixture.xsh"

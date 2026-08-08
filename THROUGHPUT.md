@@ -375,6 +375,21 @@ approved handbook. Promotion is deliberately based on the product diagnostic
 being exercised and the merged replay passing, not on a manager suggestion
 alone.
 
+Run 8 (`run-1786230105277`) exercised the ticketless queue-pressure path. With
+two Open tickets and zero Approved rows, the controller correctly requested
+two discovery evals (`task-bigfiles` and `task-colsum`) and zero engineers.
+Both eval controllers then rebuilt the default toolchain despite the explicit
+qualified image override, and both failed before Pi because the default image
+lacked `linux/random.h` and `libunwind`. Cost was `$0.00` and no model worker
+started. This is an infrastructure failure, not an evaluator result and not
+a fresh-throughput miss.
+
+The deterministic repair is `control.toolchain_build_required`: a present,
+platform-matched explicit image suppresses a stale cache-driven default
+rebuild, while a missing image or explicit force flag still requires a build.
+The repair is covered by 143 native tests and must be validated by the next
+ticketless discovery request before further paid qualification.
+
 The current queue contains one deferred Open ticket (`task-histogram-005`) and
 two retained Approved branches (`task-histogram-006` and
 `task-histogram-007`). After Run 5, `task-histogram-006` is Open pending its

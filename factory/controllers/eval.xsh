@@ -352,7 +352,13 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   let toolchain_makefile_sha = hash.sha256(fp"${xsh_repo}/Makefile")?.hex()
   let host_arch = run.text "uname" "-m" ?
   let toolchain_key = f"${toolchain_dockerfile_sha}:${toolchain_makefile_sha}:${target}:${host_arch.trim()}"
-  let toolchain_image = env.get_or("XSH_TEST_IMAGE", "xsh-test")?
+  let configured_toolchain_image = env.get_or("XSH_TEST_IMAGE", "")?
+  let explicit_toolchain_image = configured_toolchain_image != ""
+  let toolchain_image = if explicit_toolchain_image {
+    configured_toolchain_image
+  } else {
+    "xsh-test"
+  }
   let force_toolchain_rebuild = env.get_or("FACTORY_FORCE_XSH_TOOLCHAIN_REBUILD", "false")? == "true"
   let force_image_rebuild = env.get_or("FACTORY_FORCE_IMAGE_REBUILD", "false")? == "true"
   let force_shared_image_rebuild = force_toolchain_rebuild or force_image_rebuild
@@ -427,7 +433,16 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     toolchain_key,
     toolchain_present,
   )
-  let toolchain_build_flag = if toolchain_cache_hit { "0" } else { "1" }
+  let toolchain_build_flag = if control.toolchain_build_required(
+    force_toolchain_rebuild,
+    toolchain_cache_hit,
+    explicit_toolchain_image,
+    toolchain_present,
+  ) {
+    "1"
+  } else {
+    "0"
+  }
   let build_started = time.now()
   # `dist-Linux-docker` sets CARGO_TARGET_DIR to `<repo>/target`, so Cargo
   # writes the cross-built binaries under `target/<target>/dist`.
