@@ -117,6 +117,14 @@ proc preflight(
     }
   }
 
+  let queue_counts = if mode == "organization" {
+    runtime.organization_ticket_counts(factory_dir, xsh_repo)?
+  } else {
+    [0, control.max_concurrent_engineers()]
+  }
+  let approved_count = queue_counts.get(1, 0)
+  let engineer_target = control.engineer_target(approved_count)
+  let discovery_target = if engineer_target > 0 { 1 } else { control.max_concurrent_discovery_evals() }
   let requested_tickets = typed_request.ticket_values(request_text)?
   let eval_contracts = fs.files(fp"${factory_dir}/evals", gitignore: false, hidden: true)?
     |> where .name == "EVAL.md"
@@ -129,7 +137,7 @@ proc preflight(
   let candidate_tickets = if requested_tickets.len() > 0 {
     requested_tickets
   } else if mode == "organization" and typed_request.ticket_policy_value(request_text)? != "none" {
-    runtime.first_approved_tickets(factory_dir, control.max_concurrent_engineers())?
+    runtime.first_approved_tickets(factory_dir, engineer_target)?
   } else {
     []
   }
@@ -201,7 +209,17 @@ proc preflight(
   }
 
   if mode == "eval" or mode == "organization" or mode == "eval-design" {
-    let eval_values = typed_request.eval_values(request_text)?
+    let requested_eval_values = typed_request.eval_values(request_text)?
+    let adaptive_eval_limit = if candidate_tickets.len() > 0 {
+      1
+    } else {
+      discovery_target
+    }
+    let eval_values = if mode == "organization" and requested_eval_values.len() == 0 {
+      runtime.next_untried_approved_evals(factory_dir, adaptive_eval_limit)?
+    } else {
+      requested_eval_values
+    }
     let eval_id = if eval_values.len() > 0 { eval_values[0] } else { "" }
     if mode == "organization" and eval_id == "" {
       eprint "organization request must select an eval"

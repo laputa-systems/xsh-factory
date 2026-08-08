@@ -2,7 +2,22 @@
 
 ## Status
 
-Open.
+Approved.
+
+## CTO decision — throughput cycle 2026-08-07
+
+- Decision: Approved for one bounded implementation and linked-replay cycle.
+- Basis: The prior delivery cycle is closed with durable evidence, satisfying
+  the ticket's explicit deferral condition. The linked `task-safepath` replay
+  already reproduced the deterministic `full_ir_function_blocker` compiler
+  defect, and the acceptance criteria are scoped to an existing stream/fold
+  composition with a focused regression test.
+- Scope: Fix or clearly diagnose the existing indexed-IR lowering defect; no
+  new stream surface or task-contract change.
+- Evidence: `runs/run-1786144485305/phases/02-reeval-task-safepath-001/workers/eval-manager/task-safepath/REPORT.md`
+  and the closed delivery evidence in `runs/run-1786159268557/report.json`.
+- Admission: One engineer row is required; linked `task-safepath` replay and
+  independent `task-histogram` evaluation are the delivery gates.
 
 ## CTO review — 2026-08-07
 

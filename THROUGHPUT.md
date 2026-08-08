@@ -9,13 +9,14 @@ not more concurrent work for its own sake.
 
 - The checked-in portfolio is at the coded limit of 30 eval contracts: 24 are
   `Approved.` and 6 are `Draft.`.
-- The current queue has six reviewed Open product tickets, but each is deferred
+- The current queue has seven reviewed Open product tickets, but each is deferred
   until a named eval replay or cross-eval confirmation.
 - Recent eval work can finish without producing a product ticket; the latest
   `task-ecount` cycle produced a handbook candidate that needs replay before
   promotion.
 - The short-term target is two approved, evidence-backed tickets available for
-  implementation and at least one engineer commit every one or two cycles.
+  implementation and at least one engineer commit in every cycle that has a
+  ready ticket.
 
 ## Recommendations
 
@@ -74,8 +75,15 @@ The current throughput package is implemented and covered by native tests:
   conversion, fast-path use, handbook quarantines, and overlap indicators into
   the existing run `report.json`; no second throughput artifact or schema is
   introduced.
+- `run.xsh` and `factory/controllers/organization.xsh` apply queue pressure
+  deterministically: the approved ready queue selects up to two engineer rows
+  and one independent eval; an empty ready queue expands discovery to the four
+  eval ceiling. Open tickets are reported as pressure but are never promoted
+  without CTO approval.
 
 The coded bounds remain unchanged: at most two engineer rows, one retained
 branch per batch, one linked replay per passing row, and the aggregate budget
-remain hard gates. The next cycle validates these changes against the approved
-`task-render-001` implementation and its independent `task-dupcheck` eval.
+remain hard gates. Queue pressure is evaluated after each CTO inventory: a
+ready ticket keeps one independent eval beside product work; an empty ready
+queue expands to discovery. The next cycle validates these changes against the
+approved `task-safepath-002` implementation and its linked replay.

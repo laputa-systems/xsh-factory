@@ -1029,6 +1029,25 @@ export proc cto_ticket_inventory(factory_dir: Path, xsh_repo: Path) [fs, process
   return tickets
 }
 
+## Counts the Open and approved product-ticket queues for adaptive allocation.
+## The returned list is `[open_tickets, approved_tickets]`; approval remains a
+## CTO-owned state transition.
+export proc organization_ticket_counts(factory_dir: Path, xsh_repo: Path) [fs, process, error] -> Result[List[Int]] {
+  let inventory = cto_ticket_inventory(factory_dir, xsh_repo)?
+  var open_tickets = 0
+  var approved_tickets = 0
+  for ticket in inventory {
+    if ticket.status == "Open." {
+      open_tickets += 1
+    }
+    if (ticket.status == "Approved." or ticket.status == "Accepted.") and ticket.change_target == "product" {
+      approved_tickets += 1
+    }
+  }
+
+  return [open_tickets, approved_tickets]
+}
+
 ## Returns Open tickets that have no durable CTO review marker.
 export pure cto_unreviewed_open_tickets(tickets: List[Any]) -> List[Str] {
   [ticket.id for ticket in tickets if ticket.status == "Open." and ! ticket.cto_review]

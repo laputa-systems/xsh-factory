@@ -8,19 +8,17 @@ top level.
 
 ## Objective
 
-Run one bounded organization cycle. Before invoking `run.xsh`, the CTO
-reviewed every remaining `Open.` ticket and approved `task-render-001` in its
-checked-in record. The linked replay and independent corroborating eval remain
-the delivery gates. The controller must not infer work from prose.
+Run one bounded organization cycle. The controller applies the queue-pressure
+policy after deterministic CTO inventory: it dispatches up to two already
+approved product tickets when the ready queue supports them, keeps one
+independent eval alongside product work, and runs up to four discovery evals
+when no approved ticket is ready. It never promotes an `Open.` ticket.
 
 ## Bottleneck review
 
-The current assembly-line bottleneck is approval -> reviewable engineer
-commit -> linked replay. The Map-construction observation in `task-render-001`
-has a passing source trial and corroborating `task-dupcheck` evidence. This
-cycle targets one reviewable API-reference implementation commit, one passing
-independent corroboration, and one passing linked replay with delivery into
-XSH `HEAD`.
+The current assembly-line bottleneck is approval -> reviewable engineer commit
+-> linked replay. Product delivery is the hard goal whenever an approved ticket
+is available; discovery expands only when the ready queue is empty.
 
 ## Mode
 
@@ -29,12 +27,12 @@ XSH `HEAD`.
 ## Eval admission
 
 - Allow measured eval reuse: `yes`
-- `task-dupcheck` is selected deliberately as the named map-building
-  corroboration for the approved `task-render-001` ticket.
+- The controller selects the next untried approved evals according to queue
+  pressure.
 
 ## Active evals
 
-- `task-dupcheck`
+- Auto.
 
 ## Trial plan
 
@@ -48,14 +46,14 @@ XSH `HEAD`.
 
 ## Approved tickets
 
-- `task-render-001`
+- Auto.
 
 ## Ticket policy
 
 - Review all open tickets before selection: `yes`
-- Select the first two approved tickets after review: one approved ticket is
-  admitted in this narrow validation cycle.
-- Admission invariant: `task-render-001` was approved before invoking `run.xsh`.
+- Select the first two approved tickets after review when available.
+- Admission invariant: every selected ticket was already `Approved.` before
+  invoking `run.xsh`; `Open.` tickets are never promoted by the controller.
 - Quality gate: do not dispatch a ticket whose proposed API addition lacks the
   `## API-surface justification` section and CTO approval.
 
@@ -67,8 +65,9 @@ invocation with a role-specific setting.
 
 ## Required outputs
 
-- one fresh engineer implementation row for `task-render-001`;
-- one independent `task-dupcheck` eval and one linked `task-render` replay;
+- one engineer implementation row for every selected approved ticket;
+- one independent eval alongside product work, or the adaptive discovery batch
+  when no approved ticket is ready;
 - structured worker reports and raw Pi sessions;
 - a run-level `report.json` covering every worker;
 - a `## North-star impact` section in each narrative role report;

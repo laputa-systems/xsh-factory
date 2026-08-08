@@ -257,6 +257,17 @@ export pure max_concurrent_discovery_evals() -> Int {
   return 4
 }
 
+## Allocates engineer rows from the approved ready queue, capped by the
+## controller's hard concurrency bound. Open tickets are never promoted here.
+export pure engineer_target(approved_count: Int) -> Int {
+  let bounded = if approved_count < 0 { 0 } else { approved_count }
+  return if bounded > max_concurrent_engineers() {
+    max_concurrent_engineers()
+  } else {
+    bounded
+  }
+}
+
 ## Clamps an operator-supplied budget to the role's hard ceiling.
 export pure clamp_budget(role: Str, configured: Str) -> Result[Str] {
   let ceiling_text = default_budget(role)

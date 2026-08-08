@@ -910,14 +910,11 @@ proc test_standard_cycle_uses_diverse_active_eval(ctx: TestContext) [fs, error] 
   let runtime_source = fs.read_text(fp"${fs.cwd()?}/factory/runtime.xsh")?
   let cto_runner = fs.read_text(fp"${fs.cwd()?}/factory/tools/cto.xsh")?
   let throughput = fs.read_text(fp"${fs.cwd()?}/THROUGHPUT.md")?
-  test.contains(
-    request,
-    """## Active evals
-
-- `task-dupcheck`""",
-  )?
+  test.contains(request, "queue-pressure")?
+  test.contains(request, "- Auto.")?
   test.contains(request, "Allow measured eval reuse")?
-  test.contains(request, "- `task-render-001`")?
+  test.eq(control.engineer_target(8), 2)?
+  test.eq(control.engineer_target(0), 0)?
   test.contains(fs.read_text(fp"${fs.cwd()?}/factory/tools/eval-trends.xsh")?, "median_turns")?
   test.contains(request, "## Bottleneck review")?
   test.ok("`task-tags`" not in request)?
@@ -949,7 +946,7 @@ proc test_standard_cycle_uses_diverse_active_eval(ctx: TestContext) [fs, error] 
   test.contains(improvement, "## Throughput requirement")?
   test.contains(productivity, "## Assembly-line bottleneck")?
   test.contains(request, "No `cycle-*.md` files are kept")?
-  test.contains(request, "Admission invariant: `task-render-001` was approved before invoking `run.xsh`")?
+  test.contains(request, "Admission invariant: every selected ticket was already `Approved.`")?
   let admission_fixture = test.temp_dir(ctx, name: "standard-cycle-admission")?
   let ticket = fs.read_text(fp"${fs.cwd()?}/tickets/task-render-001.md")?
   fs.write(
@@ -975,6 +972,8 @@ proc test_standard_cycle_uses_diverse_active_eval(ctx: TestContext) [fs, error] 
   test.contains(launcher, "unresolved_handbook_candidates")?
   test.contains(launcher, "factory/tools/cto.xsh")?
   test.contains(organization, "first_approved_tickets")?
+  test.contains(organization, "max_concurrent_discovery_evals()")?
+  test.contains(runtime_source, "organization_ticket_counts")?
   test.contains(fs.read_text(fp"${fs.cwd()?}/run.xsh")?, "next_untried_approved_eval")?
   test.contains(organization, "cto_unreviewed_open_tickets")?
   test.contains(organization, "write_cto_inventory")?

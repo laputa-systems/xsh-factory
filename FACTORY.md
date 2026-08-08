@@ -33,6 +33,13 @@ agent, employee, or Pi role. The director never searches for work and an
 engineer never chooses a ticket. There is one process launcher,
 `factory/entrypoints/run-agent.xsh`, and one top-level dispatcher, `run.xsh`.
 
+Organization admission applies queue pressure deterministically after CTO
+inventory: approved product tickets are the ready queue, so the controller
+dispatches up to the two-engineer bound and keeps one independent eval beside
+product work; with no approved row it expands discovery to the coded eval
+bound. Open tickets inform inventory pressure but are never promoted by the
+controller.
+
 ## Engineering rules
 
 - Simplicity is a hard requirement. Prefer one owner, one state transition,

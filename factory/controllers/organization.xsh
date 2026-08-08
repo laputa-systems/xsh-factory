@@ -307,13 +307,17 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   fs.write(active_run, run_dir.display() + "\n")?
   defer fs.remove(active_run, missing_ok: true)?
   let _ = runtime.reconcile_tickets(factory_dir, xsh_repo, xsh_commit.trim())?
+  let queue_counts = runtime.organization_ticket_counts(factory_dir, xsh_repo)?
+  let approved_count = queue_counts.get(1, 0)
+  let engineer_target = control.engineer_target(approved_count)
+  let discovery_target = if engineer_target > 0 { 1 } else { control.max_concurrent_discovery_evals() }
   let ticket_policy = typed_request.ticket_policy_value(request_text)?
   let selected_tickets = if requested_tickets.len() > 0 {
     requested_tickets
   } else if ticket_policy == "none" {
     []
   } else {
-    runtime.first_approved_tickets(factory_dir, control.max_concurrent_engineers())?
+    runtime.first_approved_tickets(factory_dir, engineer_target)?
   }
   let selected_ticket = if selected_tickets.len() > 0 { selected_tickets[0] } else { "" }
   if selected_ticket != "" and ! control.valid_ticket_id(selected_ticket) {
@@ -393,7 +397,13 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     }
   }
 
-  let request_evals = typed_request.eval_values(request_text)?
+  let requested_evals = typed_request.eval_values(request_text)?
+  let adaptive_eval_limit = if selected_tickets.len() > 0 { 1 } else { discovery_target }
+  let request_evals = if requested_evals.len() == 0 {
+    runtime.next_untried_approved_evals(factory_dir, adaptive_eval_limit)?
+  } else {
+    requested_evals
+  }
   if request_evals.len() < 1 or request_evals.len() > control.max_concurrent_discovery_evals() {
     eprint f"organization cycles require one eval, or at most ${control.max_concurrent_discovery_evals()} discovery evals"
     abort(2)
@@ -541,6 +551,16 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     1,
     "controller",
     "bounded organization cycle with concurrent discovery and independent eval overlap",
+  )?
+  runtime.emit_event(
+    event_template,
+    run_dir,
+    "05-adaptive-queue-selected",
+    "organization-queue",
+    "started",
+    1,
+    "controller",
+    f"open=${queue_counts.get(0, 0)}; approved=${queue_counts.get(1, 0)}; engineers=${engineer_target}; discovery_evals=${request_evals.len()}",
   )?
 
   var ticket_value = "None."
