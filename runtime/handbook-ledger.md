@@ -143,6 +143,21 @@ candidate snapshots are represented by the same hash and need no second entry.
 Future candidates require a new explicit CTO disposition and must not be
 auto-promoted merely because a lineage file exists.
 
+## Explicit CTO disposition — run-1786216593690
+
+| Candidate SHA-256 | Disposition |
+| --- | --- |
+| `4a90f7087c31b23293e6816822dc98fd24392f64dec48316df9e939f9ead7b8e` | deferred pending a second record-using eval; not promoted |
+| `742ae34cc8051ba5555c9715843834cdb7878efce1ece1caf38596636b779a51` | deferred pending cross-eval standard-module-shadow replay; not promoted |
+
+The fresh record-diagnostic implementation supplied a useful reserved-field
+lesson, and the retained histogram replay supplied a useful standard-module
+shadowing lesson. Both are general-looking and remain preserved in their run
+lineages, but each has only one direct trial and its own manager requested a
+replay before changing the shared handbook. Keep the approved handbook stable
+until a later record-using and path/environment eval consume the candidate
+guidance with no regression.
+
 ## Explicit CTO disposition — run-1786202908216
 
 | Candidate SHA-256 | Disposition |
