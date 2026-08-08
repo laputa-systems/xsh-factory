@@ -1,0 +1,132 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786201137236/phases/02-reeval-task-dupcheck-002/workers/eval-worker/task-dupcheck-1/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_state": "pass",
+    "agent_wall_ms": 219152,
+    "artifact": {
+      "name": "dupcheck.xsh",
+      "state": "present"
+    },
+    "budget_state": "pass",
+    "classification": "pass",
+    "evaluator_manifest": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786201137236/phases/02-reeval-task-dupcheck-002/workers/eval-worker/task-dupcheck-1/run.json",
+    "evaluator_state": "pass",
+    "reporting_state": "pass",
+    "result": "pass",
+    "review": {
+      "state": "present"
+    }
+  },
+  "findings": [
+    {
+      "count": 3,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "eval_id": "task-dupcheck",
+    "role": "eval-worker",
+    "run_id": "02-reeval-task-dupcheck-002",
+    "worker_id": "task-dupcheck-1"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "provider_telemetry": {
+    "event_turns": 37,
+    "events_path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786201137236/phases/02-reeval-task-dupcheck-002/workers/eval-worker/task-dupcheck-1/session.jsonl.events.jsonl",
+    "output_tokens_per_second": 0,
+    "present": true,
+    "provider_errors": [],
+    "response_elapsed_ms": 0,
+    "retry_count": 0,
+    "retry_delay_ms": 0,
+    "retry_errors": [],
+    "retry_failures": 0,
+    "retry_successes": 0
+  },
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786201137236/phases/02-reeval-task-dupcheck-002/workers/eval-worker/task-dupcheck-1/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 36,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 217713
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786201137236/phases/02-reeval-task-dupcheck-002/workers/eval-worker/task-dupcheck-1/session.jsonl.bz2",
+      "summary": "query: api:hash.sha256\nstatus: exact\n\napi: module.hash.sha256\nkind: module-function\npurpose: Calculates a digest from bytes or a file path.\ncontract: Hash bytes at the content boundary; format the digest only for storage, display, or comparison.\neffects: none\nsignature: hash.sha256(data: Bytes) -> Digest\nsignature: hash.sha256(path: Path) -> Result[Digest, Error]\ntags: hash, sha256, digest, bytes\n---\nxsht api: invalid API query 'api:method.Digest.hex'; expected NAME.MEMBER\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 5
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786201137236/phases/02-reeval-task-dupcheck-002/workers/eval-worker/task-dupcheck-1/session.jsonl.bz2",
+      "summary": "xsht api: invalid API query 'api:method.Path.read_bytes'; expected NAME.MEMBER\n===\nxsht api: invalid API query 'api:method.Path.sha256'; expected NAME.MEMBER\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 11
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786201137236/phases/02-reeval-task-dupcheck-002/workers/eval-worker/task-dupcheck-1/session.jsonl.bz2",
+      "summary": "err[parse.expected-expression]: `$name` is command-word syntax; in expression context, use `name` directly\n  dupcheck.xsh:15:18\n        let line = $r.digest + \"  \" + $r.path\n                   ^^ use `r` here, not `$r`\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 25
+    }
+  ],
+  "tools": [
+    {
+      "count": 38,
+      "name": "bash"
+    },
+    {
+      "count": 3,
+      "name": "edit"
+    },
+    {
+      "count": 3,
+      "name": "read"
+    },
+    {
+      "count": 4,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 37,
+    "budget_usd": 0.5,
+    "cache_read_cost_usd": 0.008532864,
+    "cache_read_tokens": 474048,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.015753114,
+    "input_cost_usd": 0.0057914099999999994,
+    "input_tokens": 64349,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.0014288399999999998,
+    "output_tokens": 7938,
+    "provider_total_tokens": 546335,
+    "reasoning_tokens": 3311,
+    "thinking_blocks": 26,
+    "tool_calls": 48,
+    "tool_errors": 3,
+    "tool_results": 48,
+    "total_bucket_tokens": 546335,
+    "user_messages": 1
+  }
+}

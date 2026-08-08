@@ -3215,8 +3215,11 @@ proc test_run_status_inspects_live_and_completed_evidence(ctx: TestContext) [fs,
   )?
   let controller_pid = process.current_pid()?
   let child = spawn process.command_argv("sh", ["sh", "-c", "sleep 10"])?
+  let zombie = spawn process.command_argv("sh", ["sh", "-c", "exit 0"])?
+  let _zombie_ready = process.wait_ready([zombie])?
   fs.write(fp"${run_dir}/processes/controller.pids", f"${controller_pid}\n")?
   fs.write(fp"${run_dir}/processes/phase-worker.pids", f"${controller_pid}\n${child.pid}\n")?
+  fs.write(fp"${run_dir}/processes/zombie.pids", f"${zombie.pid}\n")?
   let output = fp"${root}/status.txt"
   let error_output = fp"${root}/status.err"
   let xsh = process.which("xsh")?
@@ -3245,6 +3248,9 @@ proc test_run_status_inspects_live_and_completed_evidence(ctx: TestContext) [fs,
   test.contains(report, f"processes/controller pid=${controller_pid}")?
   test.contains(report, f"processes/phase-worker pid=${controller_pid}")?
   test.contains(report, f"processes/phase-worker pid=${child.pid}")?
+  test.ok(! report.contains(f"processes/zombie pid=${zombie.pid}"), "run-status must exclude zombie process entries")?
+  test.contains(report, "status=")?
+  test.contains(report, "age=")?
   test.contains(report, "01-ticket completed pass")?
   test.contains(report, "engineer/task-a pass turns=7 cost=0.040000 errors=1")?
 

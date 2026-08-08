@@ -2,7 +2,7 @@
 
 ## Status
 
-Approved.
+Merged.
 
 ## CTO review — cycle-12 queue
 
@@ -32,10 +32,10 @@ None.
 
 ## Merge record
 
-- Implementation branch: `{{IMPLEMENTATION_BRANCH}}`
-- Implementation commit: `{{IMPLEMENTATION_COMMIT}}`
-- Detected at XSH commit: `fdeee37e911f820865dc617a14d61ec8e111c603`
-- Implementation run: `{{IMPLEMENTATION_RUN}}`
+- Implementation branch: `factory/task-bigfiles-004/1786191276307`
+- Implementation commit: `608ab11bcf25cb0f69df4cb352fa40b27c1be2b3`
+- Detected at XSH commit: `608ab11bcf25cb0f69df4cb352fa40b27c1be2b3`
+- Implementation run: `/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786191275308/phases/01-ticket`
 
 ## Source eval and manager
 

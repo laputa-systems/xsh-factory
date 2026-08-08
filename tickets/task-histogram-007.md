@@ -2,7 +2,19 @@
 
 ## Status
 
-Open.
+Approved.
+
+## CTO decision — cycle-22 queue
+
+- Decision: Approved for implementation in cycle 23.
+- Basis: the independent `task-histogram` worker reproduced the same
+  `//`/`div` discovery and diagnostic gap in
+  `runs/run-1786201137236/phases/03-eval/workers/eval-worker/task-histogram-1/`;
+  the evaluator still passed all supplied cases. The change is diagnostic-only,
+  has a bounded scope, and its API-surface justification explicitly rejects a
+  new operator.
+- Scope: add a readable check-time diagnostic for `//`/`div` that points to
+  integer `/`; do not change division semantics.
 
 ## CTO decision — clean-slate cycle 2026-08-07
 

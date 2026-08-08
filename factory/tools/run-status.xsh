@@ -148,10 +148,14 @@ proc active_processes(run_dir: Path) [fs, process, error] -> Result[List[Any]] {
     for pid_line in entry.path.read_text()?.lines() {
       match pid_line.trim().parse_int() {
         Ok(pid) => {
-          if processes |> any .pid == pid {
+          for observed in processes {
+            continue when observed.pid != pid or observed.status == "zombie"
             rows = rows.push({
               label: label,
               pid: pid,
+              status: observed.status,
+              runtime_seconds: observed.runtime_seconds,
+              command: observed.command,
             })
           }
         }
@@ -239,7 +243,7 @@ proc main(...argv: List[Str]) [fs, process, env, error, io] {
   print f"BUDGET cost=${text(json.get(budget, ["observed_usd"], "not reported"))} breach=${text(json.get(budget, ["breach"], false))} stop=${text(json.get(budget, ["stop"], false))} postmortem=${text(json.get(budget, ["postmortem"], false))}"
   print f"ACTIVE ${active.len()}"
   for item in active {
-    print f"  ${text(json.get(item, ["label"], "unknown"))} pid=${text(json.get(item, ["pid"], "unknown"))}"
+    print f"  ${text(json.get(item, ["label"], "unknown"))} pid=${text(json.get(item, ["pid"], "unknown"))} status=${text(json.get(item, ["status"], "unknown"))} age=${text(json.get(item, ["runtime_seconds"], "unknown"))}s command=${text(json.get(item, ["command"], "unknown"))}"
   }
   print "PHASES"
   for phase in phases {

@@ -606,6 +606,18 @@ positional-only API guidance candidate, but it is single-eval evidence. Keep
 the approved handbook unchanged until `task-dupcheck` and a second
 defaulted-parameter eval confirm the guidance generalizes.
 
+## Explicit CTO disposition — run-1786201137236
+
+| Candidate SHA-256 | Disposition |
+| --- | --- |
+| `5ab5fbac79f94c03c033dfd17ff983ba282d6a60551daa26ca1961006b3aabd2` | deferred pending linked replay and a second defaulted-parameter eval; not promoted |
+
+The engineer staged a concise positional-only default-argument rule while
+implementing `task-dupcheck-002`. It is useful evidence, but the independent
+histogram trial ran before this candidate was merged, so the handbook remains
+unchanged until the next replay exercises the candidate and a second eval
+confirms that the rule generalizes.
+
 ## Explicit CTO disposition — run-1786195596255
 
 | Candidate SHA-256 | Disposition |
