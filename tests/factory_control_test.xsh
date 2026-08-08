@@ -899,7 +899,7 @@ proc test_role_report_skeletons_are_fail_closed() [fs, error] {
   test.contains(runner, "ENGINEER-REPORT.md")?
 }
 
-proc test_standard_cycle_uses_diverse_active_eval() [fs, error] {
+proc test_standard_cycle_uses_diverse_active_eval(ctx: TestContext) [fs, error] {
   let request = fs.read_text(fp"${fs.cwd()?}/templates/ORGANIZATION-REQUEST.md")?
   let improvement = fs.read_text(fp"${fs.cwd()?}/templates/CTO-IMPROVEMENT.md")?
   let productivity = fs.read_text(fp"${fs.cwd()?}/templates/CTO-PRODUCTIVITY-REPORT.md")?
@@ -950,7 +950,13 @@ proc test_standard_cycle_uses_diverse_active_eval() [fs, error] {
   test.contains(productivity, "## Assembly-line bottleneck")?
   test.contains(request, "No `cycle-*.md` files are kept")?
   test.contains(request, "Admission invariant: `task-render-001` was approved before invoking `run.xsh`")?
-  test.ok(runtime.accepted_ticket(fp"${fs.cwd()?}/tickets/task-render-001.md")?)?
+  let admission_fixture = test.temp_dir(ctx, name: "standard-cycle-admission")?
+  let ticket = fs.read_text(fp"${fs.cwd()?}/tickets/task-render-001.md")?
+  fs.write(
+    fp"${admission_fixture}/task-render-001.md",
+    control.replace_ticket_status(ticket, "Approved."),
+  )?
+  test.ok(runtime.accepted_ticket(fp"${admission_fixture}/task-render-001.md")?)?
   let cycle_template = fs.read_text(fp"${fs.cwd()?}/templates/cycle-request.md")?
   test.contains(cycle_template, "Require at least one engineer implementation commit")?
   test.contains(cycle_template, "Approve eligible Open tickets before controller invocation")?

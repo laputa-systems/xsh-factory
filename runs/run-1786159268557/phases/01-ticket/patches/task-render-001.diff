@@ -1,0 +1,226 @@
+diff --git a/crates/xsh-registry/src/signature/docs.rs b/crates/xsh-registry/src/signature/docs.rs
+index f6f3772..d86bee4 100644
+--- a/crates/xsh-registry/src/signature/docs.rs
++++ b/crates/xsh-registry/src/signature/docs.rs
+@@ -9,6 +9,15 @@ pub fn method_api_id(receiver: MethodReceiver, method: &str) -> String {
+     format!("method.{}.{}", receiver_name(receiver), method)
+ }
+ 
++/// Returns module functions that construct or initialize values of a type.
++/// These associations enrich API discovery only; runtime dispatch is unchanged.
++pub fn associated_module_functions(receiver: MethodReceiver) -> &'static [(&'static str, &'static str)] {
++    match receiver {
++        MethodReceiver::Map => &[("map", "empty")],
++        _ => &[],
++    }
++}
++
+ pub fn receiver_name(receiver: MethodReceiver) -> &'static str {
+     match receiver {
+         MethodReceiver::PathConstructor => "Path",
+@@ -885,9 +894,9 @@ fn function_doc(module: &str, function: &str) -> Option<DocRow> {
+             &["linux", "shutdown", "privileged", "host-global"],
+         )),
+         ("map", "empty") => Some((
+-            "Creates an empty string-keyed map.",
+-            "The new map owns its entries and has no inherited process or module state.",
+-            &["map", "collection"],
++            "Creates an empty string-keyed Map with `map.empty()`; grow it with Map methods.",
++            "The new map owns its entries and has no inherited process or module state. `{}` is an empty Record unless a Map type is expected.",
++            &["map", "collection", "constructor"],
+         )),
+         ("mime", "lookup_ext") => Some((
+             "Looks up a MIME type by file extension.",
+diff --git a/crates/xsh-registry/src/signature/mod.rs b/crates/xsh-registry/src/signature/mod.rs
+index 6c1970d..24994c7 100644
+--- a/crates/xsh-registry/src/signature/mod.rs
++++ b/crates/xsh-registry/src/signature/mod.rs
+@@ -29,7 +29,9 @@ mod modules;
+ mod streams;
+ 
+ pub(in crate::signature) use builders::command_callable;
+-pub use docs::{method_api_id, module_api_id, receiver_name};
++pub use docs::{
++    associated_module_functions, method_api_id, module_api_id, receiver_name,
++};
+ pub(in crate::signature) use methods::value_methods;
+ pub(in crate::signature) use modules::build_api_spec;
+ pub use modules::record_docs;
+diff --git a/crates/xsht/src/api.rs b/crates/xsht/src/api.rs
+index 9a96057..1073c68 100644
+--- a/crates/xsht/src/api.rs
++++ b/crates/xsht/src/api.rs
+@@ -6,7 +6,9 @@ use xsh::api::{MethodReceiver, MethodReturn, ModuleFnSig};
+ use xsh::frontend::check::Type;
+ use xsh::frontend::check::record_schemas;
+ use xsh_registry::reference::language_references;
+-use xsh_registry::signature::{method_api_id, module_api_id, receiver_name, record_docs};
++use xsh_registry::signature::{
++    associated_module_functions, method_api_id, module_api_id, receiver_name, record_docs,
++};
+ 
+ #[derive(Clone, Copy, Debug, Eq, PartialEq)]
+ pub enum ApiFormat {
+@@ -91,6 +93,7 @@ struct ApiModuleTree {
+ struct ApiMethodReceiverTree {
+     name: String,
+     methods: Vec<ApiCallableTree>,
++    references: Vec<String>,
+ }
+ 
+ #[derive(Clone, Debug, Eq, PartialEq)]
+@@ -210,10 +213,23 @@ fn summary(options: &ApiOptions) -> Result<ApiOutput, ApiError> {
+                     overloads: method.overloads.len(),
+                 })
+                 .collect(),
++            references: associated_module_functions(receiver)
++                .iter()
++                .map(|(module, function)| format!("module.{module}.{function}"))
++                .collect(),
+         })
+         .collect::<Vec<_>>();
+     method_receivers_tree.sort_by(|left, right| left.name.cmp(&right.name));
+     for receiver in &mut method_receivers_tree {
++        receiver.methods.extend(
++            receiver
++                .references
++                .iter()
++                .map(|reference| ApiCallableTree {
++                    name: format!("constructor -> {reference}"),
++                    overloads: 1,
++                }),
++        );
+         receiver
+             .methods
+             .sort_by(|left, right| left.name.cmp(&right.name));
+@@ -447,7 +463,8 @@ fn select(catalog: &[ApiItem], selector: &Selector) -> Vec<ApiItem> {
+         Selector::MethodReceiver(receiver) => catalog
+             .iter()
+             .filter(|item| {
+-                item.kind == "method" && item.id.starts_with(&format!("method.{receiver}."))
++                (item.kind == "method" || item.kind == "constructor-reference")
++                    && item.id.starts_with(&format!("method.{receiver}."))
+             })
+             .cloned()
+             .collect(),
+@@ -479,9 +496,11 @@ fn default_details(selector: &Selector, matches: &[ApiItem]) -> ApiDetails {
+         Selector::Module(_) if matches.len() == 1 && matches[0].kind == "module-function" => {
+             ApiDetails::Full
+         }
+-        Selector::Module(_) | Selector::MethodReceiver(_) | Selector::Search(_) => {
+-            ApiDetails::Basic
++        Selector::Module(_) | Selector::Search(_) => ApiDetails::Basic,
++        Selector::MethodReceiver(_) if matches.iter().any(|item| item.kind == "constructor-reference") => {
++            ApiDetails::Full
+         }
++        Selector::MethodReceiver(_) => ApiDetails::Basic,
+         Selector::Language(_) => ApiDetails::Full,
+         Selector::Api(_, _) | Selector::Method(_, _) | Selector::Record(_) => ApiDetails::Full,
+     }
+@@ -591,6 +610,29 @@ fn catalog() -> Vec<ApiItem> {
+                 ));
+             }
+         }
++        for (module, function) in associated_module_functions(receiver) {
++            let module_id = module_api_id(module, function);
++            if let Some(docs) = spec.docs(&module_id) {
++                let mut item = item_from_docs(
++                    format!("method.{}.constructor", receiver_name(receiver)),
++                    "constructor-reference",
++                    docs,
++                    spec.module_overloads(module, function)
++                        .into_iter()
++                        .flatten()
++                        .map(|overload| module_signature(module, function, overload))
++                        .collect(),
++                    spec.module_overloads(module, function)
++                        .map(module_function_effects)
++                        .unwrap_or_else(|| vec!["none".to_string()]),
++                );
++                item.contract = format!(
++                    "{} This constructor is indexed from the Map type so type-first discovery finds it.",
++                    item.contract
++                );
++                items.push(item);
++            }
++        }
+     }
+     items.extend(record_items());
+     items.extend(language_items());
+@@ -850,6 +892,7 @@ documented items: {}\n\
+             .iter()
+             .map(|receiver| (&receiver.name, &receiver.methods)),
+     );
++    append_receiver_references(&mut output, &summary.method_receivers_tree);
+     append_leaf_tree(&mut output, "records", &summary.records);
+     let language_groups = summary
+         .language_groups
+@@ -916,6 +959,19 @@ fn append_callable_tree<'a>(
+     }
+ }
+ 
++fn append_receiver_references(output: &mut String, receivers: &[ApiMethodReceiverTree]) {
++    for receiver in receivers {
++        if receiver.references.is_empty() {
++            continue;
++        }
++        output.push_str("  ");
++        output.push_str(&receiver.name);
++        output.push_str(" constructors: ");
++        output.push_str(&receiver.references.join(", "));
++        output.push('\n');
++    }
++}
++
+ fn append_leaf_tree(output: &mut String, title: &str, items: &[String]) {
+     output.push('\n');
+     output.push_str(title);
+@@ -982,6 +1038,13 @@ fn push_summary_methods_json(output: &mut String, receivers: &[ApiMethodReceiver
+         push_json_string(output, &receiver.name);
+         output.push_str(",\"methods\":[");
+         push_callable_tree_json(output, &receiver.methods);
++        output.push_str("],\"references\":[");
++        for (reference_index, reference) in receiver.references.iter().enumerate() {
++            if reference_index > 0 {
++                output.push(',');
++            }
++            push_json_string(output, reference);
++        }
+         output.push_str("]}");
+     }
+     output.push(']');
+diff --git a/crates/xsht/tests/api.rs b/crates/xsht/tests/api.rs
+index ed01230..b1fb92a 100644
+--- a/crates/xsht/tests/api.rs
++++ b/crates/xsht/tests/api.rs
+@@ -535,6 +535,30 @@ fn api_method_receiver_query_lists_every_method_of_a_type() {
+     assert_eq!(String::from_utf8(output.stderr).unwrap(), "");
+ }
+ 
++#[test]
++fn api_map_receiver_query_discloses_its_constructor() {
++    let output = xsht(&["api", "method:Map"]);
++
++    assert!(output.status.success());
++    let stdout = String::from_utf8(output.stdout).expect("utf8 stdout");
++    assert!(stdout.contains("api: method.Map.constructor\n"), "{stdout}");
++    assert!(stdout.contains("map.empty()"), "{stdout}");
++    assert!(stdout.contains("`{}` is an empty Record"), "{stdout}");
++    assert_eq!(String::from_utf8(output.stderr).unwrap(), "");
++}
++
++#[test]
++fn api_map_summary_discloses_its_constructor() {
++    let output = xsht(&["api", "summary"]);
++
++    assert!(output.status.success());
++    let stdout = String::from_utf8(output.stdout).expect("utf8 stdout");
++    let map = stdout.find("── Map (").expect("Map receiver in summary");
++    let tail = &stdout[map..];
++    assert!(tail.contains("module.map.empty"), "{stdout}");
++    assert_eq!(String::from_utf8(output.stderr).unwrap(), "");
++}
++
+ #[test]
+ fn api_method_receiver_query_keeps_exact_member_lookup() {
+     let output = xsht(&["api", "method:Str.lower"]);

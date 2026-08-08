@@ -1,0 +1,109 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786159268557/phases/03-eval/workers/eval-manager/task-dupcheck/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_process": "pass",
+    "dispatch_claim": "845c6e6912fe418213c3461f29f39f9f5eb9197f03b9d1b4a517da8849687b4b",
+    "dispatch_id": "eval-manager-task-dupcheck",
+    "factory_source": "unchanged",
+    "message_sha256": "845c6e6912fe418213c3461f29f39f9f5eb9197f03b9d1b4a517da8849687b4b",
+    "reporting": "pass",
+    "required_report": "present",
+    "session_limit_watcher": "pass",
+    "system_prompt_sha256": "a5ab31790989af39c06a7fec953a65b5b782b1be43779a76401f77f02f7995f3",
+    "watcher": "pass"
+  },
+  "findings": [
+    {
+      "count": 1,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "role": "eval-manager",
+    "worker_id": "task-dupcheck"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "provider_telemetry": {
+    "event_turns": 6,
+    "events_path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786159268557/phases/03-eval/workers/eval-manager/task-dupcheck/session.jsonl.events.jsonl",
+    "output_tokens_per_second": 0,
+    "present": true,
+    "provider_errors": [],
+    "response_elapsed_ms": 0,
+    "retry_count": 0,
+    "retry_delay_ms": 0,
+    "retry_errors": [],
+    "retry_failures": 0,
+    "retry_successes": 0
+  },
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786159268557/phases/03-eval/workers/eval-manager/task-dupcheck/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 5,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 163097
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786159268557/phases/03-eval/workers/eval-manager/task-dupcheck/session.jsonl.bz2",
+      "summary": "      62 runs/run-1786159268557/phases/03-eval/workers/eval-worker/task-dupcheck-1/session.jsonl.bz2\n      62 total\n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 3
+    }
+  ],
+  "tools": [
+    {
+      "count": 2,
+      "name": "bash"
+    },
+    {
+      "count": 9,
+      "name": "read"
+    },
+    {
+      "count": 1,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 6,
+    "budget_usd": 0.15,
+    "cache_read_cost_usd": 0.001479168,
+    "cache_read_tokens": 82176,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.005167008000000001,
+    "input_cost_usd": 0.0023120999999999997,
+    "input_tokens": 25690,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.00137574,
+    "output_tokens": 7643,
+    "provider_total_tokens": 115509,
+    "reasoning_tokens": 4741,
+    "thinking_blocks": 6,
+    "tool_calls": 12,
+    "tool_errors": 1,
+    "tool_results": 12,
+    "total_bucket_tokens": 115509,
+    "user_messages": 1
+  }
+}

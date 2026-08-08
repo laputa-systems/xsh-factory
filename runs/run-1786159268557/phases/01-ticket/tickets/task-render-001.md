@@ -2,7 +2,7 @@
 
 ## Status
 
-Merged.
+Approved.
 
 ## CTO decision — throughput validation cycle 2026-08-07
 
@@ -41,10 +41,10 @@ None.
 
 ## Merge record
 
-- Implementation branch: `factory/task-render-001/1786159269627`
-- Implementation commit: `461fe36bfd0d1ca5670777e2ea1531f902e88558`
-- Detected at XSH commit: `461fe36bfd0d1ca5670777e2ea1531f902e88558`
-- Implementation run: `/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786159268557/phases/01-ticket`
+- Implementation branch: `{{IMPLEMENTATION_BRANCH}}`
+- Implementation commit: `{{IMPLEMENTATION_COMMIT}}`
+- Detected at XSH commit: `{{DETECTED_XSH_COMMIT}}`
+- Implementation run: `{{IMPLEMENTATION_RUN}}`
 
 ## Source eval and manager
 
@@ -67,7 +67,7 @@ summary, not under the `Map` type.
 
 ## Evidence
 
-Session: `/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786141413750/phases/03-eval/workers/eval-worker/task-render-1/session.jsonl`
+Session: `/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786141413750/phases/03-eval/workers/eval-worker/task-render-1/session.jsonl.bz2`
 
 The worker probed five construction forms before locating `map.empty()`:
 
