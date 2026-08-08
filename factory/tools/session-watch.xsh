@@ -60,6 +60,12 @@ proc parse_nonnegative(value: Str) [error] -> Result[Int] {
   parsed
 }
 
+# fs metadata exposes modification time in epoch seconds; time.now() is epoch
+# milliseconds. Keep the comparison in one unit.
+pure modified_epoch_ms(modified_seconds: Int) -> Int {
+  modified_seconds * 1000
+}
+
 proc main(...argv: List[Str]) [fs, process, time, error, io] {
   if argv.len() < 12 {
     eprint "usage: session-watch.xsh --session PATH --pid PID --max-turns N --max-seconds N --marker PATH --role ROLE [--max-idle-seconds N]"
@@ -107,7 +113,7 @@ proc main(...argv: List[Str]) [fs, process, time, error, io] {
 
     if max_idle_seconds > 0 {
       let last_activity = if fs.exists(session)? {
-        fs.metadata(session)?.modified
+        modified_epoch_ms(fs.metadata(session)?.modified)
       } else {
         started
       }

@@ -1,0 +1,128 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786225653459/phases/02-reeval-task-histogram-005/workers/eval-worker/task-histogram-1/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_state": "pass",
+    "agent_wall_ms": 288636,
+    "artifact": {
+      "name": "histogram.xsh",
+      "state": "present"
+    },
+    "budget_state": "pass",
+    "classification": "evaluator_failed",
+    "evaluator_manifest": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786225653459/phases/02-reeval-task-histogram-005/workers/eval-worker/task-histogram-1/run.json",
+    "evaluator_state": "fail",
+    "reporting_state": "pass",
+    "result": "fail",
+    "review": {
+      "state": "present"
+    }
+  },
+  "findings": [
+    {
+      "count": 3,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "eval_id": "task-histogram",
+    "role": "eval-worker",
+    "run_id": "02-reeval-task-histogram-005",
+    "worker_id": "task-histogram-1"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "provider_telemetry": {
+    "event_turns": 36,
+    "events_path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786225653459/phases/02-reeval-task-histogram-005/workers/eval-worker/task-histogram-1/session.jsonl.events.jsonl",
+    "output_tokens_per_second": 0,
+    "present": true,
+    "provider_errors": [],
+    "response_elapsed_ms": 0,
+    "retry_count": 0,
+    "retry_delay_ms": 0,
+    "retry_errors": [],
+    "retry_failures": 0,
+    "retry_successes": 0
+  },
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786225653459/phases/02-reeval-task-histogram-005/workers/eval-worker/task-histogram-1/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 35,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 285527
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786225653459/phases/02-reeval-task-histogram-005/workers/eval-worker/task-histogram-1/session.jsonl.bz2",
+      "summary": "query: search:print\nstatus: matches\n\napi: language.cli.xsht-api\nkind: language\npurpose: Queries the standalone XSH language and API reference.\n\napi: language.cli.xsht-ast\nkind: language\npurpose: Prints the parsed XSH syntax tree for a script.\n\napi: language.core.print\nkind: language\npurpose: Prints values to standard output.\n\napi: language.stream.table-print\nkind: language\npurpose: Renders stream records as a terminal table.\n\napi: method.Bytes.strings\nkind: method\npurpose: Extracts printable strings from bytes.\n=====\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 11
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786225653459/phases/02-reeval-task-histogram-005/workers/eval-worker/task-histogram-1/session.jsonl.bz2",
+      "summary": "xsht api: invalid API query 'language.core.print'; expected KIND:VALUE\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 12
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786225653459/phases/02-reeval-task-histogram-005/workers/eval-worker/task-histogram-1/session.jsonl.bz2",
+      "summary": "xsht api: invalid API query 'language.core.abort'; expected KIND:VALUE\n======\nxsht api: invalid API query 'language.core.print'; expected KIND:VALUE\n=====\nxsht api: invalid API query 'language.effect.error'; expected KIND:VALUE\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 13
+    }
+  ],
+  "tools": [
+    {
+      "count": 37,
+      "name": "bash"
+    },
+    {
+      "count": 2,
+      "name": "read"
+    },
+    {
+      "count": 1,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 36,
+    "budget_usd": 0.5,
+    "cache_read_cost_usd": 0.013087872,
+    "cache_read_tokens": 727104,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.018759672,
+    "input_cost_usd": 0.00328302,
+    "input_tokens": 36478,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.0023887799999999996,
+    "output_tokens": 13271,
+    "provider_total_tokens": 776853,
+    "reasoning_tokens": 7781,
+    "thinking_blocks": 31,
+    "tool_calls": 40,
+    "tool_errors": 3,
+    "tool_results": 40,
+    "total_bucket_tokens": 776853,
+    "user_messages": 1
+  }
+}

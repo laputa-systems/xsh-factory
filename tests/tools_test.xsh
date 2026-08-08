@@ -2669,6 +2669,7 @@ proc test_organization_batches_retained_and_fresh_tickets() [fs, error] {
   test.contains(fs.read_text(fp"${fs.cwd()?}/factory/control.xsh")?, "retained_replay_manager_wall_seconds")?
   test.contains(fs.read_text(fp"${fs.cwd()?}/factory/controllers/eval.xsh")?, "MAX_IDLE_SECONDS")?
   test.contains(fs.read_text(fp"${fs.cwd()?}/factory/tools/session-watch.xsh")?, "max-idle-seconds")?
+  test.contains(fs.read_text(fp"${fs.cwd()?}/factory/tools/session-watch.xsh")?, "modified_epoch_ms")?
   let audit = fs.read_text(fp"${fs.cwd()?}/factory/tools/audit.xsh")?
   test.contains(audit, "organization_throughput")?
   test.contains(audit, "overlap_linked_replays")?
@@ -2710,8 +2711,51 @@ proc test_organization_supports_two_discovery_evals() [fs, error] {
 
 proc test_ticket_cycles_create_independent_eval_phase_boundary() [fs, error] {
   let organization = fs.read_text(fp"${fs.cwd()?}/factory/controllers/organization.xsh")?
-  test.contains(organization, "if selected_ticket != \"\" {")?
+  test.contains(organization, "if selected_ticket != \"\" and independent_eval_requested {")?
   test.contains(organization, r"""fs.mkdir(fp"${phases_dir}/03-eval")?""")?
+}
+
+proc test_session_watch_idle_uses_epoch_milliseconds(ctx: TestContext) [fs, process, time, error] {
+  let root = test.temp_dir(ctx, name: "session-watch-idle")?
+  let session = fp"${root}/session.jsonl"
+  let marker = fp"${root}/SESSION-LIMIT"
+  fs.write(session, "{}\n")?
+  let xsh = process.which("xsh")?
+  let factory = fs.cwd()?
+  let sleeper = spawn process.command_argv("sleep", ["sleep", "3"])?
+  let started = time.now()
+  let status = process.run(
+    process.command_argv(
+      xsh,
+      [
+        xsh.display(),
+        fp"${factory}/factory/tools/session-watch.xsh",
+        "--",
+        "--session",
+        session.display(),
+        "--pid",
+        f"${sleeper.pid}",
+        "--max-turns",
+        "10",
+        "--max-seconds",
+        "5",
+        "--marker",
+        marker.display(),
+        "--role",
+        "eval-manager",
+        "--max-idle-seconds",
+        "1",
+      ],
+      cwd: factory,
+      env: {XSH_MODULE_PATH: factory.display()},
+    ),
+  )?
+  let elapsed = time.now() - started
+  let _ = wait sleeper
+  test.ok(! status.ok)?
+  test.ok(fs.exists(marker)?)?
+  test.contains(fs.read_text(marker)?, "idle limit exceeded")?
+  test.ok(elapsed >= 500, f"watcher fired too early: ${elapsed}ms")?
 }
 
 proc test_engineer_guidance_is_run_scoped() [fs, error] {
