@@ -158,6 +158,19 @@ replay before changing the shared handbook. Keep the approved handbook stable
 until a later record-using and path/environment eval consume the candidate
 guidance with no regression.
 
+## Explicit CTO disposition — run-1786218719345
+
+| Candidate SHA-256 | Disposition |
+| --- | --- |
+| `d970aaac5b7098697485f575ae498876bc119bad1ca19402ca9f3a1ba1858f78` | deferred pending cross-eval integer-division and fold replay; not promoted |
+| `2f3eaa2809739ba2b282a573217fa56ce192456eca918f5fb3fe86e785bef967` | deferred pending cross-eval integer-division replay; not promoted |
+
+The retained and fresh histogram replays independently supplied the same useful
+`/` versus `//` spelling lesson; the retained candidate also records fold
+purity. Preserve both candidate snapshots, but keep the approved handbook
+unchanged until a second arithmetic/composition eval consumes the guidance and
+confirms byte-exact behavior.
+
 ## Explicit CTO disposition — run-1786202908216
 
 | Candidate SHA-256 | Disposition |
