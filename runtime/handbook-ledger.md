@@ -622,6 +622,19 @@ positional-only API guidance candidate, but it is single-eval evidence. Keep
 the approved handbook unchanged until `task-dupcheck` and a second
 defaulted-parameter eval confirm the guidance generalizes.
 
+## Explicit CTO disposition — run-1786209582303 candidates
+
+| Candidate SHA-256 | Disposition |
+| --- | --- |
+| `118552681b0977be0415f2dec3822a48639119974a3a1359e76376c36d64ce60` | deferred pending cross-eval replay; not promoted |
+| `867c5cc21480e28af5f693efb5dc7474826fa65eeb629812d2a8f021d8f78ff2` | deferred pending cross-eval replay; not promoted |
+
+The cycle-25 engineer candidate records the useful `where`/no-`filter` rule,
+and the independent `task-bigfiles` candidate records the single-expression
+branch constraint for `if` expressions. Both are concise and plausible, but
+each remains a single-cycle observation. Preserve the approved handbook until
+the named replay and a second relevant eval confirm generality.
+
 ## Explicit CTO disposition — run-1786201137236
 
 | Candidate SHA-256 | Disposition |
