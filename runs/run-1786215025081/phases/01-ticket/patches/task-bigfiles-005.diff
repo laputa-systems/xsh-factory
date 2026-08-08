@@ -1,0 +1,187 @@
+diff --git a/crates/xsh-registry/src/runtime_op.rs b/crates/xsh-registry/src/runtime_op.rs
+index 308e4c5..2d94c98 100644
+--- a/crates/xsh-registry/src/runtime_op.rs
++++ b/crates/xsh-registry/src/runtime_op.rs
+@@ -367,6 +367,7 @@ pub enum RuntimeOp {
+     TextByteSlice,
+     TextFind,
+     TextParseInt,
++    TextParseIntDecimal,
+     TextParseFloat,
+     #[cfg(feature = "native-tests")]
+     TestOk,
+diff --git a/crates/xsh-registry/src/signature/docs.rs b/crates/xsh-registry/src/signature/docs.rs
+index 343a33a..3a30658 100644
+--- a/crates/xsh-registry/src/signature/docs.rs
++++ b/crates/xsh-registry/src/signature/docs.rs
+@@ -1573,6 +1573,11 @@ fn method_doc(receiver: &str, method: &str) -> Option<DocRow> {
+             "The accepted radix and syntax are explicit; malformed or out-of-range text returns an error.",
+             &["text", "parsing", "numeric"],
+         )),
++        ("Str", "parse_int_decimal") => Some((
++            "Parses text as a strict decimal integer.",
++            "Only nonempty decimal digits without leading zeros (except `0`) are accepted; malformed or out-of-range text returns an error.",
++            &["text", "parsing", "decimal", "numeric"],
++        )),
+         ("Str", "parse_float") => Some((
+             "Parses text as a floating-point value.",
+             "Malformed or non-finite input follows the numeric parser contract and returns an error.",
+diff --git a/crates/xsh-registry/src/signature/methods.rs b/crates/xsh-registry/src/signature/methods.rs
+index 1c7b778..94288c0 100644
+--- a/crates/xsh-registry/src/signature/methods.rs
++++ b/crates/xsh-registry/src/signature/methods.rs
+@@ -777,6 +777,13 @@ pub(in crate::signature) fn value_methods() -> Vec<MethodReceiverSig> {
+                     true,
+                     RuntimeOp::TextParseInt,
+                 ),
++                method(
++                    "parse_int_decimal",
++                    Vec::new(),
++                    MethodReturn::Type(result(Type::Int)),
++                    true,
++                    RuntimeOp::TextParseIntDecimal,
++                ),
+                 method(
+                     "parse_float",
+                     Vec::new(),
+diff --git a/docs/SPEC.md b/docs/SPEC.md
+index 37dbc06..978494c 100644
+--- a/docs/SPEC.md
++++ b/docs/SPEC.md
+@@ -2250,6 +2250,9 @@ adapter `text.lines()` is available in pipelines.
+   `needle` at or after byte index `start`, or `-1` when missing.
+ - `.parse_int() -> Result[Int]`, accepting decimal, `0x` hexadecimal, `0o`
+   octal, `0b` binary, `_` separators, and an optional leading sign.
++- `.parse_int_decimal() -> Result[Int]`, accepting only nonempty decimal
++  digits without leading zeros (except `0`); whitespace, signs, radix
++  prefixes, separators, and out-of-range values return an error.
+ 
+ Byte-indexed `Str` methods are intended for ASCII-oriented scanners. They count
+ UTF-8 bytes, not Unicode scalar values. `.byte_slice()` rejects negative offsets
+diff --git a/src/modules/text.rs b/src/modules/text.rs
+index f3e09c0..2b2377e 100644
+--- a/src/modules/text.rs
++++ b/src/modules/text.rs
+@@ -166,6 +166,19 @@ pub(crate) fn parse_int_text(text: &str, span: Span) -> Result<i64, RuntimeError
+     Ok(if negative { -unsigned } else { unsigned })
+ }
+ 
++pub(crate) fn parse_int_decimal_text(text: &str, span: Span) -> Result<i64, RuntimeError> {
++    let valid_digits = !text.is_empty()
++        && text.bytes().all(|byte| byte.is_ascii_digit())
++        && (text == "0" || !text.starts_with('0'));
++    if !valid_digits {
++        return Err(RuntimeError::new("parse-int", format!("invalid integer `{text}`"))
++            .with_span(span));
++    }
++    text.parse::<i64>().map_err(|_| {
++        RuntimeError::new("parse-int", format!("invalid integer `{text}`")).with_span(span)
++    })
++}
++
+ pub(crate) fn parse_float_text(text: &str, span: Span) -> Result<f64, RuntimeError> {
+     let trimmed = text.trim();
+     let cleaned = trimmed.replace('_', "");
+@@ -240,6 +253,18 @@ mod tests {
+             assert_eq!(lower_text("HeLLo"), "hello");
+             assert_eq!(upper_text("HeLLo"), "HELLO");
+             assert_eq!(parse_int_text("0x2a", test_span()).expect("parse int"), 42);
++            assert_eq!(
++                parse_int_decimal_text("42", test_span()).expect("decimal parse"),
++                42
++            );
++            for input in ["0x10", "+5", " 5 ", "05", ""] {
++                assert_eq!(
++                    parse_int_decimal_text(input, test_span())
++                        .expect_err("invalid decimal int")
++                        .kind,
++                    "parse-int"
++                );
++            }
+             assert_eq!(
+                 parse_int_text("nope", test_span())
+                     .expect_err("invalid int")
+diff --git a/src/runtime/eval.rs b/src/runtime/eval.rs
+index 6443878..7246e5e 100644
+--- a/src/runtime/eval.rs
++++ b/src/runtime/eval.rs
+@@ -2531,6 +2531,7 @@ const LOWERED_METHOD_NAMES: &[&str] = &[
+     "matches",
+     "captures",
+     "parse_int",
++    "parse_int_decimal",
+     "parse_float",
+     "float",
+     "floor",
+diff --git a/src/runtime/eval/lower.rs b/src/runtime/eval/lower.rs
+index 90f6b4a..235b625 100644
+--- a/src/runtime/eval/lower.rs
++++ b/src/runtime/eval/lower.rs
+@@ -12473,8 +12473,10 @@ fn lowered_method_supported_for_type(ty: &Type, name: Name, arg_count: usize) ->
+         },
+         Type::Str => match name.as_str().as_str() {
+             "trim" | "lower" | "upper" | "reverse" | "lines" | "words" | "parse_int"
+-            | "parse_float" | "base64_decode" | "base32_decode" | "count_lines" | "count_words"
+-            | "count_chars" | "count_bytes" | "byte_len" => arg_count == 0,
++            | "parse_int_decimal" | "parse_float" | "base64_decode" | "base32_decode"
++            | "count_lines" | "count_words" | "count_chars" | "count_bytes" | "byte_len" => {
++                arg_count == 0
++            },
+             "fields" | "squeeze" => arg_count <= 1,
+             "split" => arg_count == 1 || arg_count == 2,
+             "wrap" | "delete" | "starts_with" | "ends_with" | "contains" => arg_count == 1,
+@@ -12556,7 +12558,9 @@ fn infer_checked_method_return_type(receiver: &Type, name: Name) -> Option<Type>
+             "base64_decode" | "base32_decode" => {
+                 Some(Type::Result(Box::new(Type::Bytes), Box::new(Type::Error)))
+             }
+-            "parse_int" => Some(Type::Result(Box::new(Type::Int), Box::new(Type::Error))),
++            "parse_int" | "parse_int_decimal" => {
++                Some(Type::Result(Box::new(Type::Int), Box::new(Type::Error)))
++            }
+             "parse_float" => Some(Type::Result(Box::new(Type::Float), Box::new(Type::Error))),
+             "count_lines" | "count_words" | "count_chars" | "count_bytes" | "byte_len"
+             | "byte_at" | "find" => Some(Type::Int),
+@@ -12900,7 +12904,7 @@ fn lowered_result_method_ok_type(name: Name) -> Option<LoweredType> {
+     if name == "strip_prefix" {
+         return Some(LoweredType::Path);
+     }
+-    if name == "parse_int" {
++    if name == "parse_int" || name == "parse_int_decimal" {
+         return Some(LoweredType::Int);
+     }
+     if name == "parse_float" {
+diff --git a/src/runtime/eval/lowered_ops.rs b/src/runtime/eval/lowered_ops.rs
+index 388971e..de1ecd3 100644
+--- a/src/runtime/eval/lowered_ops.rs
++++ b/src/runtime/eval/lowered_ops.rs
+@@ -1255,6 +1255,14 @@ pub(super) fn lowered_str_method_value(
+                 ))))),
+             }
+         }
++        "parse_int_decimal" if args.is_empty() => {
++            match crate::modules::text::parse_int_decimal_text(text_value, span) {
++                Ok(value) => Ok(LoweredValue::ResultOk(Box::new(LoweredValue::Int(value)))),
++                Err(error) => Ok(LoweredValue::ResultErr(Box::new(Value::Error(Box::new(
++                    error,
++                ))))),
++            }
++        }
+         "parse_float" if args.is_empty() => {
+             match crate::modules::text::parse_float_text(text_value, span) {
+                 Ok(value) => Ok(LoweredValue::ResultOk(Box::new(LoweredValue::Float(
+diff --git a/tests/xsh/stdlib/methods.xsh b/tests/xsh/stdlib/methods.xsh
+index 92ea2e4..3228ad7 100644
+--- a/tests/xsh/stdlib/methods.xsh
++++ b/tests/xsh/stdlib/methods.xsh
+@@ -88,6 +88,11 @@ beta""".find("z"),
+   )?
+ 
+   test.eq("42".parse_int()?, 42)?
++  test.eq("42".parse_int_decimal()?, 42)?
++  test.error_kind("0x10".parse_int_decimal(), "parse-int")?
++  test.error_kind("+5".parse_int_decimal(), "parse-int")?
++  test.error_kind(" 5 ".parse_int_decimal(), "parse-int")?
++  test.error_kind("05".parse_int_decimal(), "parse-int")?
+   test.error_kind("nope".parse_int(), "parse-int")?
+   test.eq("hello" + " " + "world", "hello world")?
+   let name = "Alice"

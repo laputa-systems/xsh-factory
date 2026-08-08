@@ -2,7 +2,23 @@
 
 ## Status
 
-Open.
+Approved.
+
+## CTO review — cycle 27 close
+
+- Decision: Approved for controlled implementation in the next organization
+  cycle.
+- Basis: The retained `task-dupcheck-002` replay supplied the required second
+  record-using eval. Its worker constructed and validated record-shaped data
+  with no record-literal or `unused-type` probe chain, while the original
+  `task-histogram` evidence preserves the reserved-field/type-discovery
+  observation. The linked `task-histogram` replay remains a hard gate, and the
+  engineer must keep the change within the diagnostic/lint scope below.
+- Scope guard: do not alter record value semantics or add a new record syntax
+  unless the implementation is necessary for the accepted diagnostic contract;
+  preserve the existing non-reserved record behavior.
+- Evidence: `runs/run-1786215025081/phases/02-reeval-task-dupcheck-002/` and
+  the original focused evidence linked below.
 
 ## CTO review
 

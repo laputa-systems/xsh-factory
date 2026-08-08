@@ -1,0 +1,107 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786215025081/phases/02-reeval-task-bigfiles-005/workers/eval-worker/task-bigfiles-1/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_state": "pass",
+    "agent_wall_ms": 53697,
+    "artifact": {
+      "name": "bigfiles.xsh",
+      "state": "present"
+    },
+    "budget_state": "pass",
+    "classification": "pass",
+    "evaluator_manifest": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786215025081/phases/02-reeval-task-bigfiles-005/workers/eval-worker/task-bigfiles-1/run.json",
+    "evaluator_state": "pass",
+    "reporting_state": "pass",
+    "result": "pass",
+    "review": {
+      "state": "present"
+    }
+  },
+  "findings": [],
+  "identity": {
+    "eval_id": "task-bigfiles",
+    "role": "eval-worker",
+    "run_id": "02-reeval-task-bigfiles-005",
+    "worker_id": "task-bigfiles-1"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "provider_telemetry": {
+    "event_turns": 20,
+    "events_path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786215025081/phases/02-reeval-task-bigfiles-005/workers/eval-worker/task-bigfiles-1/session.jsonl.events.jsonl",
+    "output_tokens_per_second": 0,
+    "present": true,
+    "provider_errors": [],
+    "response_elapsed_ms": 0,
+    "retry_count": 0,
+    "retry_delay_ms": 0,
+    "retry_errors": [],
+    "retry_failures": 0,
+    "retry_successes": 0
+  },
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786215025081/phases/02-reeval-task-bigfiles-005/workers/eval-worker/task-bigfiles-1/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 19,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 52109
+  },
+  "tool_errors": [],
+  "tools": [
+    {
+      "count": 21,
+      "name": "bash"
+    },
+    {
+      "count": 1,
+      "name": "edit"
+    },
+    {
+      "count": 4,
+      "name": "read"
+    },
+    {
+      "count": 1,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 20,
+    "budget_usd": 0.5,
+    "cache_read_cost_usd": 0.003769344,
+    "cache_read_tokens": 209408,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.005872553999999999,
+    "input_cost_usd": 0.0013221899999999996,
+    "input_tokens": 14691,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.00078102,
+    "output_tokens": 4339,
+    "provider_total_tokens": 228438,
+    "reasoning_tokens": 2235,
+    "thinking_blocks": 13,
+    "tool_calls": 27,
+    "tool_errors": 0,
+    "tool_results": 27,
+    "total_bucket_tokens": 228438,
+    "user_messages": 1
+  }
+}

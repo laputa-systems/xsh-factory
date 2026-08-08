@@ -2,7 +2,7 @@
 
 ## Status
 
-Approved.
+Merged.
 
 ## CTO decision — cycle-17 close
 
@@ -42,10 +42,10 @@ None.
 
 ## Merge record
 
-- Implementation branch: `{{IMPLEMENTATION_BRANCH}}`
-- Implementation commit: `{{IMPLEMENTATION_COMMIT}}`
-- Detected at XSH commit: `{{DETECTED_XSH_COMMIT}}`
-- Implementation run: `{{IMPLEMENTATION_RUN}}`
+- Implementation branch: `factory/task-dupcheck-002/1786201139234`
+- Implementation commit: `b9cc3ffc6425b365a172c5a897ed9684db235487`
+- Detected at XSH commit: `5e6f7b0292e0853eb04705f9266218748f1ef7c5`
+- Implementation run: `/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786201137236/phases/01-ticket`
 
 ## Source eval and manager
 

@@ -1,0 +1,109 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786215025081/phases/01-ticket/workers/director/director/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_process": "pass",
+    "dispatch_claim": "24583fabd85781be23ca8233f0241fc6fcdecad0f6ace4458307636eb61ce00a",
+    "dispatch_id": "director-director",
+    "factory_source": "unchanged",
+    "message_sha256": "24583fabd85781be23ca8233f0241fc6fcdecad0f6ace4458307636eb61ce00a",
+    "reporting": "pass",
+    "required_report": "present",
+    "session_limit_watcher": "pass",
+    "system_prompt_sha256": "46eeebe9c5ded596c3cdebfa5355ef5f528ba4592c7e5adc216b11527e4f69b4",
+    "watcher": "pass"
+  },
+  "findings": [
+    {
+      "count": 1,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "role": "director",
+    "worker_id": "director"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "provider_telemetry": {
+    "event_turns": 13,
+    "events_path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786215025081/phases/01-ticket/workers/director/director/session.jsonl.events.jsonl",
+    "output_tokens_per_second": 0,
+    "present": true,
+    "provider_errors": [],
+    "response_elapsed_ms": 0,
+    "retry_count": 0,
+    "retry_delay_ms": 0,
+    "retry_errors": [],
+    "retry_failures": 0,
+    "retry_successes": 0
+  },
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786215025081/phases/01-ticket/workers/director/director/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 12,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 104871
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786215025081/phases/01-ticket/workers/director/director/session.jsonl.bz2",
+      "summary": "=== phase events.jsonl ===\n{\"attempt\":1,\"caused_by\":\"controller\",\"detail\":\"approved ticket dispatch\",\"event_id\":\"00-cycle-started\",\"kind\":\"event\",\"run_id\":\"/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786215025081/phases/01-ticket\",\"schema_version\":1,\"state\":\"started\",\"subject\":\"ticket-implementation\"}\n{\"attempt\":1,\"caused_by\":\"admission\",\"detail\":\"worktree /Users/josh/d/laputa-systems/xsh-factory/../.xsh-factory-worktrees/run-1786215025081/task-bigfiles-005 on factory/task-bigfiles-005/1786215040119\",\"event_id\":\"10-ticket-task-bigfiles-005-admitted\",\"kind\":\"event\",\"run_id\":\"/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786215025081/phases/01-ticket\",\"schema_version\":1,\"state\":\"admitted\",\"subject\":\"task-bigfiles-005\"}\n{\"attempt\":1,\"caused_by\":\"controller\",\"detail\":\"controller-dispatching engineers; director will reconcile\",\"event_id\":\"20-director-started\",\"kind\":\"event\",\"run_id\":\"/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786215025081/phases/01-ticket\",\"schema_version\":1,\"state\":\"started\",\"subject\":\"director\"}\n{\"attempt\":1,\"caused_by\":\"controller\",\"detail\":\"controller-dispatching engineer worker\",\"event_id\":\"20-ticket-task-bigfiles-005-started\",\"kind\":\"event\",\"run_id\":\"/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786215025081/phases/01-ticket\",\"schema_version\":1,\"state\":\"started\",\"subject\":\"task-bigfiles-005\"}\n=== run events ===\n{\"attempt\":1,\"caused_by\":\"controller\",\"detail\":\"bounded organization cycle with concurrent discovery and independent eval overlap\",\"event_id\":\"00-cycle-started\",\"kind\":\"event\",\"run_id\":\"/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786215025081\",\"schema_version\":1,\"state\":\"started\",\"subject\":\"organization\"}\n{\"attempt\":1,\"caused_by\":\"controller\",\"detail\":\"open=2; approved=5; engineers=2; discovery_evals=1\",\"event_id\":\"05-adaptive-queue-selected\",\"kind\":\"event\",\"run_id\":\"/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786215025081\",\"schema_version\":1,\"state\":\"started\",\"subject\":\"organization-queue\"}\n{\"attempt\":1,\"caused_by\":\"organization\",\"detail\":\"ticket-implementation\",\"event_id\":\"10-primary-started\",\"kind\":\"event\",\"run_id\":\"/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786215025081\",\"schema_version\":1,\"state\":\"started\",\"subject\":\"task-bigfiles-005\"}\n{\"attempt\":1,\"caused_by\":\"organization\",\"detail\":\"running the discovery eval in parallel with the primary phase\",\"event_id\":\"10-independent-eval-task-bigfiles-started\",\"kind\":\"event\",\"run_id\":\"/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786215025081\",\"schema_version\":1,\"state\":\"started\",\"subject\":\"task-bigfiles\"}\n{\"attempt\":1,\"caused_by\":\"organization\",\"detail\":\"retained branch fast path started before fresh primary wait\",\"event_id\":\"10-reuse-started\",\"kind\":\"event\",\"run_id\":\"/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786215025081\",\"schema_version\":1,\"state\":\"started\",\"subject\":\"task-dupcheck-002\"}\n=== director WORKER.md ===\n# Worker\n\n- Role: `director`\n- Worker: `director`\n- Parent: `unknown`\n- Mode: `ticket-implementation`\n- Eval: ``\n- Ticket: ``\n- Assignment SHA-256: ``\n- Working directory: `/Users/josh/d/laputa-systems/xsh-factory`\n- North star: `/Users/josh/d/laputa-systems/xsh-factory/NORTH-STAR.md`\n- Approved handbook snapshot: `/Users/josh/d/laputa-systems/xsh-factory/runtime/handbook.md`\n- Handbook candidate: `/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786215025081/phases/01-ticket/lineage/handbook-candidate.md`\n- Provider: `openrouter`\n- Model: `deepseek/deepseek-v4-flash-0731`\n- Thinking: `high`\n- Budget: `0.06`\n- Maximum assistant turns: `24`\n- Maximum wall-clock seconds: `1800`\n- Required narrative report: `/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786215025081/phases/01-ticket/workers/director/director/REPORT.md`\n=== handbook-candidate diff ===\nls: phases/01-ticket/lineage/: No such file or directory\n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 8
+    }
+  ],
+  "tools": [
+    {
+      "count": 6,
+      "name": "bash"
+    },
+    {
+      "count": 14,
+      "name": "read"
+    },
+    {
+      "count": 1,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 13,
+    "budget_usd": 0.06,
+    "cache_read_cost_usd": 0.0037198079999999994,
+    "cache_read_tokens": 206656,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.007588638,
+    "input_cost_usd": 0.0028363499999999996,
+    "input_tokens": 31515,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.00103248,
+    "output_tokens": 5736,
+    "provider_total_tokens": 243907,
+    "reasoning_tokens": 2502,
+    "thinking_blocks": 12,
+    "tool_calls": 21,
+    "tool_errors": 1,
+    "tool_results": 21,
+    "total_bucket_tokens": 243907,
+    "user_messages": 1
+  }
+}
