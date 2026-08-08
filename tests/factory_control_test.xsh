@@ -1022,7 +1022,7 @@ proc test_standard_cycle_uses_diverse_active_eval(ctx: TestContext) [fs, error] 
   test.contains(launcher, "paths.real_within")?
   test.contains(launcher, "cycle request must be a template")?
   test.contains(launcher, "candidate_tickets")?
-  test.contains(launcher, "first_approved_tickets")?
+  test.contains(launcher, "adaptive_approved_tickets")?
   test.contains(launcher, "cto_unreviewed_open_tickets")?
   test.contains(launcher, "unresolved_handbook_candidates")?
   test.contains(launcher, "factory/tools/cto.xsh")?

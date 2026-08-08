@@ -137,7 +137,7 @@ proc preflight(
   let candidate_tickets = if requested_tickets.len() > 0 {
     requested_tickets
   } else if mode == "organization" and typed_request.ticket_policy_value(request_text)? != "none" {
-    runtime.first_approved_tickets(factory_dir, engineer_target)?
+    runtime.adaptive_approved_tickets(factory_dir, xsh_repo, engineer_target)?
   } else {
     []
   }
