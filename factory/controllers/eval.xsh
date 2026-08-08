@@ -863,6 +863,7 @@ wall-ms=${build_elapsed}
       cwd: factory_dir,
     ),
   )?
+  let pre_manager_ticket_snapshot = runtime.ticket_snapshot(factory_dir)?
   let manager_message = fp"${messages_dir}/${eval_id}-manager.md"
   let manager_template = fp"${factory_dir}/templates/EVAL-MANAGER-ASSIGNMENT.md"
   let manager_values = [
@@ -933,7 +934,17 @@ wall-ms=${build_elapsed}
     fp"${run_dir}/manager.stderr",
   )?
   let manager_status = wait manager_handle?
-  let manager_ok = manager_status.ok
+  let ticket_snapshot_unchanged = runtime.ticket_snapshot_unchanged(factory_dir, pre_manager_ticket_snapshot)?
+  if ! ticket_snapshot_unchanged {
+    runtime.emit_structured_event(
+      event_template,
+      run_dir,
+      "81-ticket-state-mutated",
+      "eval-manager",
+      {status: "failed", detail: "manager changed a pre-existing ticket file"},
+    )?
+  }
+  let manager_ok = manager_status.ok and ticket_snapshot_unchanged
 
   var designer_ok = true
   if designer_handle != null {
@@ -1118,7 +1129,7 @@ wall-ms=${build_elapsed}
   let audit_pass = audit_report_ok and audit_result == "pass"
   let required = fs.exists(manager_session)? and trial1_process_ok and trial2_process_ok and fs.exists(trial1_report)? and (trial_count == 1 or fs.exists(
     trial2_report,
-  )?) and candidate_exists and lineage_ok and trial1_report_ok and trial2_report_ok and manager_report_ok and designer_output_ok and audit_pass and worker_handbook_read and manager_evidence_read and manager_handbook_read and designer_handbook_read
+  )?) and candidate_exists and lineage_ok and trial1_report_ok and trial2_report_ok and manager_report_ok and designer_output_ok and audit_pass and worker_handbook_read and manager_evidence_read and manager_handbook_read and designer_handbook_read and ticket_snapshot_unchanged
   json.write(
     fp"${run_dir}/required-outputs.json",
     {
@@ -1130,6 +1141,7 @@ wall-ms=${build_elapsed}
       candidate_handbook: candidate_exists,
       handbook_lineage: lineage_ok,
       manager_report: manager_report_ok,
+      ticket_snapshot_unchanged: ticket_snapshot_unchanged,
       designer_output: designer_output_ok,
       audit: audit_pass,
       worker_handbook_read: worker_handbook_read,

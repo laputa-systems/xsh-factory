@@ -78,6 +78,9 @@ are the dispatch contract.
   report schema, handbook lineage, image identity, budgets, and required reads.
 - Historical eval strength is measured by `factory/tools/eval-trends.xsh` from worker
   reports; its output separates provider health from agent effort.
+- `factory/tools/run-status.xsh` is the deterministic CTO run inspector. It
+  reads reports, lifecycle events, registered process state, queue allocation,
+  worker metrics, and budget markers without mutating the run.
 - Every behavior that can be tested without Pi gets an xsht native test.
   Synthetic sessions, fake commands, and harmless process doubles are the
   default. Do not spend model budget to test deterministic infrastructure.

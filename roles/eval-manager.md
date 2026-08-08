@@ -33,6 +33,13 @@ dispatch. Leave the `## Merge record` placeholders untouched; reconciliation
 fills them after the CTO merges the implementation branch.
 fills them after the CTO merges the implementation branch.
 
+Ticket files are append-only by identity: never overwrite or repurpose an existing
+ticket filename, especially one marked `Merged.` or `Closed.`. If an observation
+recurs, choose the next unused suffix (for example `task-bigfiles-002.md`) and
+preserve the existing ticket and its merge record exactly. The controller verifies
+this boundary after the manager session and fails closed if a pre-existing ticket
+was changed.
+
 Before calling a cycle or worker inefficient, inspect `provider_telemetry` in
 the worker report. Explicit Pi retry events, retry delays, provider errors, and
 elevated response latency are external-health evidence. When telemetry is

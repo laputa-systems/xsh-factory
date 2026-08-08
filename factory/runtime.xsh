@@ -811,6 +811,49 @@ proc budget_breach_section(
   return control.fill_template(template.read_text()?, values)
 }
 
+## Captures the names and content hashes of ticket files before a manager writes
+## its next-cycle observations. New ticket files are allowed; existing identities
+## must retain their exact bytes and lifecycle records.
+export proc ticket_snapshot(factory_dir: Path) [fs, error] -> Result[List[Any]] {
+  let ticket_dir = fp"${factory_dir}/tickets"
+  var snapshot: List[Any] = []
+  if ! fs.exists(ticket_dir)? {
+    return snapshot
+  }
+
+  for entry in fs.files(ticket_dir, gitignore: false, hidden: true)? {
+    continue unless entry.name.ends_with(".md")
+    snapshot = snapshot.push({
+      name: entry.name,
+      sha256: hash.sha256(entry.path)?.hex(),
+    })
+  }
+  snapshot |> sort-by .name
+}
+
+## Verifies that a manager did not overwrite a pre-existing ticket identity.
+export proc ticket_snapshot_unchanged(factory_dir: Path, snapshot: List[Any]) [fs, error] -> Result[Bool] {
+  let ticket_dir = fp"${factory_dir}/tickets"
+  for original in snapshot {
+    let name = match json.get(original, ["name"], "") {
+      value is Str => value,
+      _ => "",
+    }
+    let expected = match json.get(original, ["sha256"], "") {
+      value is Str => value,
+      _ => "",
+    }
+    let ticket_path = fp"${ticket_dir}/${name}"
+    if name == "" or expected == "" or ! fs.exists(ticket_path)? {
+      return false
+    }
+    if hash.sha256(ticket_path)?.hex() != expected {
+      return false
+    }
+  }
+  true
+}
+
 ## Closes an over-budget engineer assignment in its checked-in ticket.
 export proc close_ticket_too_difficult(
   factory_dir: Path,

@@ -126,6 +126,17 @@ XSH_MODULE_PATH=. xsh factory/tools/eval-trends.xsh -- --factory-dir . --format 
 Use `--format json` for machine-readable analysis and `--eval ID` to focus on
 one package. The report separates worker effort from provider retry/error data.
 
+For a compact live or completed-cycle view, use the read-only run inspector:
+
+```sh
+XSH_MODULE_PATH=. xsh factory/tools/run-status.xsh -- --run-dir runs/run-<id>
+XSH_MODULE_PATH=. xsh factory/tools/run-status.xsh -- --run-dir runs/run-<id> --format json
+```
+
+It reads the root and phase reports, latest lifecycle event, adaptive queue
+allocation, active registered processes, worker effort, and budget markers. It
+does not mutate the run or launch processes.
+
 Read `CTO-REPORT.md` first, then follow the report paths it names. The
 structured schema and field meanings are in
 [docs/REPORT-SCHEMA.md](docs/REPORT-SCHEMA.md). Tool failures are entries in

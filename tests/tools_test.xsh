@@ -3024,3 +3024,103 @@ proc test_ticket_worktree_is_outside_factory_checkout() [error] {
     "engineer worktree must use the adjacent product-parent scratch root",
   )?
 }
+
+proc test_run_status_inspects_live_and_completed_evidence(ctx: TestContext) [fs, process, env, error] {
+  let root = test.temp_dir(ctx, name: "run-status")?
+  let factory = fs.cwd()?
+  let run_dir = fp"${root}/run-1"
+  let phase_dir = fp"${run_dir}/phases/01-ticket"
+  let worker_dir = fp"${phase_dir}/workers/engineer/task-a"
+  fs.mkdir(worker_dir)?
+  fs.mkdir(fp"${run_dir}/processes")?
+  json.write(
+    fp"${run_dir}/report.json",
+    {
+      schema_version: 1,
+      kind: "run",
+      state: "completed",
+      result: "pass",
+      data: {cost: {cost_usd: 0.12}},
+    },
+    pretty: true,
+  )?
+  json.write(
+    fp"${phase_dir}/report.json",
+    {schema_version: 1, kind: "phase", state: "completed", result: "pass"},
+    pretty: true,
+  )?
+  json.write(
+    fp"${worker_dir}/report.json",
+    {
+      schema_version: 1,
+      kind: "worker",
+      state: "completed",
+      result: "pass",
+      usage: {assistant_turns: 7, cost_usd: 0.04, tool_errors: 1},
+    },
+    pretty: true,
+  )?
+  fs.write(
+    fp"${run_dir}/events.jsonl",
+    """{"event_id":"05-adaptive-queue-selected","state":"started","subject":"organization-queue","detail":"open=4; approved=1; engineers=1; discovery_evals=1"}
+{"event_id":"95-cycle-validated","state":"validated","subject":"organization","detail":"all required phases passed"}
+""",
+  )?
+  fs.write(fp"${run_dir}/processes/controller.pids", f"${process.current_pid()?}\n")?
+  let output = fp"${root}/status.txt"
+  let error_output = fp"${root}/status.err"
+  let xsh = process.which("xsh")?
+  let status = process.run(
+    process.command_argv(
+      xsh,
+      [
+        xsh.display(),
+        fp"${factory}/factory/tools/run-status.xsh",
+        "--",
+        "--run-dir",
+        run_dir.display(),
+      ],
+      cwd: factory,
+      env: {FACTORY_DIR: factory.display(), XSH_MODULE_PATH: factory.display()},
+      stdout: output,
+      stderr: error_output,
+    ),
+  )?
+  test.ok(status.ok, fs.read_text(error_output)?)?
+  let report = fs.read_text(output)?
+  test.contains(report, "RUN run-1 STATE completed RESULT pass")?
+  test.contains(report, "QUEUE open=4; approved=1; engineers=1; discovery_evals=1")?
+  test.contains(report, "LAST 95-cycle-validated validated organization")?
+  test.contains(report, "ACTIVE 1")?
+  test.contains(report, "01-ticket completed pass")?
+  test.contains(report, "engineer/task-a pass turns=7 cost=0.040000 errors=1")?
+
+  let missing = process.run(
+    process.command_argv(
+      xsh,
+      [
+        xsh.display(),
+        fp"${factory}/factory/tools/run-status.xsh",
+        "--",
+        "--run-dir",
+        fp"${root}/missing".display(),
+      ],
+      cwd: factory,
+      env: {FACTORY_DIR: factory.display(), XSH_MODULE_PATH: factory.display()},
+    ),
+  )?
+  test.ok(! missing.ok, "run-status must fail closed for a missing run")?
+}
+
+proc test_ticket_snapshot_rejects_existing_ticket_mutation(ctx: TestContext) [fs, error] {
+  let root = test.temp_dir(ctx, name: "ticket-snapshot")?
+  let tickets = fp"${root}/tickets"
+  fs.mkdir(tickets)?
+  fs.write(fp"${tickets}/task-a.md", "## Status\nMerged.\n")?
+  let snapshot = runtime.ticket_snapshot(root)?
+  fs.write(fp"${tickets}/task-a.md", "## Status\nOpen.\n")?
+  test.ok(! runtime.ticket_snapshot_unchanged(root, snapshot)?, "existing ticket mutation must fail closed")?
+  fs.write(fp"${tickets}/task-b.md", "## Status\nOpen.\n")?
+  let refreshed = runtime.ticket_snapshot(root)?
+  test.ok(runtime.ticket_snapshot_unchanged(root, refreshed)?, "new ticket identities are allowed")?
+}

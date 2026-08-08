@@ -80,6 +80,10 @@ The current throughput package is implemented and covered by native tests:
   and one independent eval; an empty ready queue expands discovery to the four
   eval ceiling. Open tickets are reported as pressure but are never promoted
   without CTO approval.
+- `factory/tools/run-status.xsh` gives the CTO a single read-only view of live
+  process state, lifecycle progress, adaptive allocation, worker effort, and
+  budget markers. The eval controller also snapshots ticket identities around
+  manager sessions and fails closed if a pre-existing ticket is overwritten.
 
 The coded bounds remain unchanged: at most two engineer rows, one retained
 branch per batch, one linked replay per passing row, and the aggregate budget
