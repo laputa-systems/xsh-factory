@@ -552,6 +552,16 @@ fixture
   test.ok(control.manager_report_gate_ok(manager_report, true, false))?
   test.ok(control.reeval_manager_acceptance_gate("Candidate acceptance: pass; no replay required."))?
   test.ok(! control.reeval_manager_acceptance_gate("Result pass, but needs-replay: acceptance was not exercised."))?
+  test.ok(control.reeval_manager_acceptance_gate("""## Post-merge decisions
+
+None. The reconciler reported accept/reject/needs-replay as possible decisions.
+
+Candidate acceptance was exercised. Decision: **accept**.
+"""))?
+  test.ok(! control.reeval_manager_acceptance_gate("""## Post-merge decisions
+
+Decision: **accept**, but needs-replay before delivery.
+"""))?
   test.eq(
     control.report_section(
   """# Report

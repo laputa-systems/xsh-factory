@@ -1,0 +1,241 @@
+{
+  "artifacts": [
+    {
+      "kind": "phase-reports",
+      "path": "phases/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 64,
+      "budget_failures": 0,
+      "cost_usd": 0.060583877999999994,
+      "tool_errors": 3,
+      "total_bucket_tokens": 1218124.0,
+      "unknown_costs": 0,
+      "workers": 4
+    },
+    "mode": "organization",
+    "outcomes": {
+      "cycle": "fail",
+      "evaluator": "pass",
+      "infrastructure": "fail",
+      "product": "fail"
+    },
+    "phases": [
+      {
+        "id": "01-ticket",
+        "path": "phases/01-ticket/report.json",
+        "result": "pass",
+        "valid": true
+      },
+      {
+        "id": "02-reeval-task-bigfiles-002",
+        "path": "phases/02-reeval-task-bigfiles-002/report.json",
+        "result": "fail",
+        "valid": true
+      },
+      {
+        "id": "03-eval",
+        "path": "phases/03-eval/report.json",
+        "result": "pass",
+        "valid": true
+      }
+    ],
+    "throughput": {
+      "admitted_tickets": 1,
+      "delivered_tickets": 0,
+      "delivery_conversion": 0.0,
+      "fresh_engineer_rows": 0,
+      "handbook_quarantines": 0,
+      "overlap_linked_replays": false,
+      "overlap_retained_fresh": false,
+      "reeval_dispatched": 1,
+      "reeval_passed": 0,
+      "retained_fast_paths": 1,
+      "retained_rows": 1
+    },
+    "tool_errors": [
+      {
+        "report": "phases/02-reeval-task-bigfiles-002/workers/eval-worker/task-bigfiles-1/report.json",
+        "summary": "err[check.display-conversion]: value cannot be displayed by print\n  /tmp/t.xsh:5:9\n    print $w\n          ^^ value cannot be displayed by print\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 4,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-bigfiles-1"
+        }
+      },
+      {
+        "report": "phases/02-reeval-task-bigfiles-002/workers/eval-worker/task-bigfiles-1/report.json",
+        "summary": "err[parse.expected-expression]: expected expression\n  bigfiles.xsh:4:5\n      let s = argv[1]\n      ^^^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  bigfiles.xsh:10:5\n    } else {\n      ^^^^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  bigfiles.xsh:12:3\n    }\n    ^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  bigfiles.xsh:23:1\n  }\n  ^ expected expression\nerr[parse.expected-expression]: expected expression\n  bigfiles.xsh:4:5\n      let s = argv[1]\n      ^^^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  bigfiles.xsh:10:5\n    } else {\n      ^^^^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  bigfiles.xsh:12:3\n    }\n    ^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  bigfiles.xsh:23:1\n  }\n  ^ expected expression\nerr[parse.expected-expression]: expected expression\n  bigfiles.xsh:4:5\n      let s = argv[1]\n      ^^^ expected expression\nerr[parse.expected-expression]: expected expression\n  bigfiles.xsh:10:5\n    } else {\n      ^^^^ expected expression\nerr[parse.expected-expression]: expected expression\n  bigfiles.xsh:12:3\n    }\n    ^ expected expression\nerr[parse.expected-expression]: expected expression\n  bigfiles.xsh:23:1\n  }\n  ^ expected expression\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 13,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-bigfiles-1"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-worker/task-bigfiles-1/report.json",
+        "summary": "Could not find edits[1] in /work/bigfiles.xsh. The oldText must match exactly including all whitespace and newlines.",
+        "tool": "edit",
+        "turn": 16,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-bigfiles-1"
+        }
+      }
+    ],
+    "workers": [
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-bigfiles"
+        },
+        "path": "phases/02-reeval-task-bigfiles-002/workers/eval-manager/task-bigfiles/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 9,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.003691008,
+          "cache_read_tokens": 205056,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.021765618,
+          "input_cost_usd": 0.01586349,
+          "input_tokens": 176261,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00221112,
+          "output_tokens": 12284,
+          "provider_total_tokens": 393601,
+          "reasoning_tokens": 8744,
+          "thinking_blocks": 9,
+          "tool_calls": 15,
+          "tool_errors": 0,
+          "tool_results": 15,
+          "total_bucket_tokens": 393601,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-bigfiles-1"
+        },
+        "path": "phases/02-reeval-task-bigfiles-002/workers/eval-worker/task-bigfiles-1/report.json",
+        "result": "pass",
+        "tool_errors": 2,
+        "usage": {
+          "assistant_turns": 24,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.005480064000000001,
+          "cache_read_tokens": 304448,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.014575014,
+          "input_cost_usd": 0.007413029999999999,
+          "input_tokens": 82367,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00168192,
+          "output_tokens": 9344,
+          "provider_total_tokens": 396159,
+          "reasoning_tokens": 5894,
+          "thinking_blocks": 18,
+          "tool_calls": 28,
+          "tool_errors": 2,
+          "tool_results": 28,
+          "total_bucket_tokens": 396159,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-bigfiles"
+        },
+        "path": "phases/03-eval/workers/eval-manager/task-bigfiles/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 7,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.001531008,
+          "cache_read_tokens": 85056,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.006649848,
+          "input_cost_usd": 0.00383832,
+          "input_tokens": 42648,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0012805199999999998,
+          "output_tokens": 7114,
+          "provider_total_tokens": 134818,
+          "reasoning_tokens": 1386,
+          "thinking_blocks": 5,
+          "tool_calls": 13,
+          "tool_errors": 0,
+          "tool_results": 13,
+          "total_bucket_tokens": 134818,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-bigfiles-1"
+        },
+        "path": "phases/03-eval/workers/eval-worker/task-bigfiles-1/report.json",
+        "result": "pass",
+        "tool_errors": 1,
+        "usage": {
+          "assistant_turns": 24,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.002377728,
+          "cache_read_tokens": 132096,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.017593398,
+          "input_cost_usd": 0.013845330000000005,
+          "input_tokens": 153837,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0013703399999999998,
+          "output_tokens": 7613,
+          "provider_total_tokens": 293546,
+          "reasoning_tokens": 4408,
+          "thinking_blocks": 18,
+          "tool_calls": 26,
+          "tool_errors": 1,
+          "tool_results": 26,
+          "total_bucket_tokens": 293546,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "fdeee37e911f820865dc617a14d61ec8e111c603"
+  },
+  "findings": [
+    {
+      "id": "02-reeval-task-bigfiles-002",
+      "kind": "phase",
+      "result": "fail"
+    }
+  ],
+  "identity": {
+    "mode": "organization",
+    "run_id": "run-1786187466432"
+  },
+  "kind": "run",
+  "result": "fail",
+  "schema_version": 1,
+  "state": "completed"
+}

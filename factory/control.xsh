@@ -1084,7 +1084,15 @@ export pure manager_report_gate_ok(report: Str, worker_tool_errors: Bool, manage
 ## manager explicitly says was not exercised or needs another replay.
 export pure reeval_manager_acceptance_gate(report: Str) -> Bool {
   let lower = report.lower()
-  return ! lower.contains("needs-replay") and ! lower.contains("not supported") and ! lower.contains("not exercised")
+  let explicit_rejection = lower.contains("decision: **needs-replay**") or lower.contains(
+    "decision: needs-replay",
+  ) or lower.contains("but needs-replay") or lower.contains("decision: **reject**") or lower.contains("decision: reject") or lower.contains(
+    "candidate acceptance: fail",
+  ) or lower.contains("acceptance was not exercised") or lower.contains("not supported")
+  let explicit_acceptance = lower.contains("candidate acceptance: pass") or lower.contains(
+    "decision: **accept**",
+  ) or lower.contains("decision: accept") or lower.contains("candidate acceptance exercised")
+  return explicit_acceptance and ! explicit_rejection
 }
 
 ## A Pi process may return nonzero after producing a valid report because of
