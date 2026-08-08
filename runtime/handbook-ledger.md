@@ -6,12 +6,40 @@ A candidate hash listed as `promoted` has been incorporated into the rolling
 must remain visible as unresolved work in the CTO briefing; controllers must
 not silently discard it.
 
+## Explicit CTO disposition — run-1786147170660
+
+| Candidate SHA-256 | Disposition |
+| --- | --- |
+| `c2cd35ece77ee1796da5d0ed709a7cb8f5cd7d4f68b4832d9827cc8cd10b5e9d` | deferred pending evaluator repair and cross-eval replay; not promoted |
+| `94ee16c3dcbf7f448ddeac6b535fa375b9d1b0b1b4957ff222491184b3606adf` | deferred pending cross-eval replay; not promoted |
+
+The task-trim replay supplied file-I/O surface guidance, but its evaluator
+restriction check incorrectly required a literal `fs.` spelling even though
+the candidate used valid `Path.read_bytes()`/`Path.write()` calls. The
+task-uniqcat eval supplied prefix-`!` negation guidance. Both remain
+single-cycle evidence; keep the approved handbook unchanged until the
+restriction contract is repaired and the named cross-eval replays confirm
+generalization.
+
+## Explicit CTO disposition — run-1786146336183
+
+| Candidate SHA-256 | Disposition |
+| --- | --- |
+| `3b56a781606faa1ae0eb811af09d10094080152dae78d9f057cca7de101e126b` | deferred pending cross-eval replay; not promoted |
+| `4c03a8a28a6ebafb239d141f35bb1a9cdbb1a3a24cb8e2370077e3be32d6dd55` | deferred pending cross-eval replay; not promoted |
+
+The task-pathparts replay exposed a known lint/restriction conflict, while
+the independent task-trim eval supplied empty-effect-list guidance. Defer
+both until the relevant replay and an independent nearby eval confirm that
+the guidance generalizes; keep the approved handbook unchanged.
+
 ## Explicit CTO disposition — run-1786144485305
 
 | Candidate SHA-256 | Disposition |
 | --- | --- |
 | `725c9ae3a7e45f7371be2c880ac993f2f5cd97d9c0efd6e3b61ee058016df52b` | deferred pending cross-eval replay; not promoted |
 | `d71b018bb714011fded996e535a5ea2ac3ba630c525ced52ea41c98184f27ec7` | deferred pending cross-eval replay; not promoted |
+| `4c03a8a28a6ebafb239d141f35bb1a9cdbb1a3a24cb8e2370077e3be32d6dd55` | deferred pending cross-eval replay; not promoted |
 
 The safepath replay and independent treecmp eval staged general XSH guidance
 about fold-block stream limitations, quiet deliberate exits, Map construction,

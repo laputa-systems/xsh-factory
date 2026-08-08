@@ -1,0 +1,168 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786146336183/phases/03-eval/workers/eval-worker/task-trim-1/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_state": "pass",
+    "agent_wall_ms": 286911,
+    "artifact": {
+      "name": "trim.xsh",
+      "state": "present"
+    },
+    "budget_state": "pass",
+    "classification": "pass",
+    "evaluator_manifest": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786146336183/phases/03-eval/workers/eval-worker/task-trim-1/run.json",
+    "evaluator_state": "pass",
+    "reporting_state": "pass",
+    "result": "pass",
+    "review": {
+      "state": "present"
+    }
+  },
+  "findings": [
+    {
+      "count": 9,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "eval_id": "task-trim",
+    "role": "eval-worker",
+    "run_id": "03-eval",
+    "worker_id": "task-trim-1"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "provider_telemetry": {
+    "event_turns": 55,
+    "events_path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786146336183/phases/03-eval/workers/eval-worker/task-trim-1/session.jsonl.events.jsonl",
+    "output_tokens_per_second": 0,
+    "present": true,
+    "provider_errors": [],
+    "response_elapsed_ms": 0,
+    "retry_count": 0,
+    "retry_delay_ms": 0,
+    "retry_errors": [],
+    "retry_failures": 0,
+    "retry_successes": 0
+  },
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786146336183/phases/03-eval/workers/eval-worker/task-trim-1/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 54,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 285686
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786146336183/phases/03-eval/workers/eval-worker/task-trim-1/session.jsonl.bz2",
+      "summary": "=== Str trim ===\napi: method.Str.trim\npurpose: Removes surrounding Unicode whitespace.\nsignature: Str.trim() -> Str\n=== Bytes trim ===\napi: method.Bytes.trim\npurpose: Trims the byte boundary.\nsignature: Bytes.trim() -> Bytes\n=== ByteList trim ===\n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 7
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786146336183/phases/03-eval/workers/eval-worker/task-trim-1/session.jsonl.bz2",
+      "summary": "--- starts_with ---\napi: method.Str.starts_with\nsignature: Str.starts_with(prefix: Str) -> Bool\n--- ends_with ---\napi: method.Str.ends_with\nsignature: Str.ends_with(suffix: Str) -> Bool\n--- byte_len ---\napi: method.Str.byte_len\nsignature: Str.byte_len() -> Int\n--- count_bytes ---\napi: method.Str.count_bytes\nsignature: Str.count_bytes() -> Int\n--- slice ---\n--- substrip_whitespace ---\n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 10
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786146336183/phases/03-eval/workers/eval-worker/task-trim-1/session.jsonl.bz2",
+      "summary": "--- Bytes.slice ---\napi: method.Bytes.slice\npurpose: Returns a byte range.\nsignature: Bytes.slice(offset: Int, length: Int = default) -> Bytes\n--- Bytes.byte_at ---\napi: method.Bytes.byte_at\npurpose: Reads one byte at an explicit offset.\nsignature: Bytes.byte_at(index: Int, default: Int = default) -> Int\n--- Bytes.byte_len ---\n--- Bytes.from_text ---\n--- Bytes.to_text ---\n--- Bytes.append ---\n--- Bytes.concat ---\n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 12
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786146336183/phases/03-eval/workers/eval-worker/task-trim-1/session.jsonl.bz2",
+      "summary": "--- List.at ---\n--- List.get ---\napi: method.List.get\nsignature: List.get(index: Int) -> Result[Any, Error]\nsignature: List.get(index: Int, fallback: Any) -> Any\n--- List.index ---\n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 15
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786146336183/phases/03-eval/workers/eval-worker/task-trim-1/session.jsonl.bz2",
+      "summary": "Found 2 occurrences of edits[0] in /work/trim.xsh. Each oldText must be unique. Please provide more context to make it unique.",
+      "tool": "edit",
+      "turn": 18
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786146336183/phases/03-eval/workers/eval-worker/task-trim-1/session.jsonl.bz2",
+      "summary": "=== oracle ===\nhello$\nworld$\n$\nfoo$\nbar^Ibaz$\n$\n$\n=== xsh ===\nhello$\nworld$\n$\nfoo$\nbar^Ibaz$\n$\n=== diff ===\ncmp: EOF on out.txt\n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 29
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786146336183/phases/03-eval/workers/eval-worker/task-trim-1/session.jsonl.bz2",
+      "summary": "=== oracle ===\nxx$\nyy$\n^Mlead^M$\n^Kvt^L$\nM-BM- nbspM-BM- $\n$\nz$\n=== xsh ===\nxx$\nyy$\n^Mlead$\n^Kvt^L$\nM-BM- nbspM-BM- $\n$\nz$\n/tmp/rexp /tmp/rout differ: char 12, line 3\n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 38
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786146336183/phases/03-eval/workers/eval-worker/task-trim-1/session.jsonl.bz2",
+      "summary": "--- Bytes.split ---\n--- Bytes.lines ---\napi: method.Bytes.lines\npurpose: Splits bytes into line-oriented chunks.\ncontract: The operation is byte-oriented and does not require valid UTF-8; each emitted chunk remains Bytes.\nsignature: Bytes.lines() -> Stream[Bytes]\n--- Bytes.replace ---\n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 40
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786146336183/phases/03-eval/workers/eval-worker/task-trim-1/session.jsonl.bz2",
+      "summary": "(no output)\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 41
+    }
+  ],
+  "tools": [
+    {
+      "count": 59,
+      "name": "bash"
+    },
+    {
+      "count": 4,
+      "name": "edit"
+    },
+    {
+      "count": 4,
+      "name": "read"
+    },
+    {
+      "count": 3,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 55,
+    "budget_usd": 0.5,
+    "cache_read_cost_usd": 0.017207424000000002,
+    "cache_read_tokens": 955968,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.024069113999999996,
+    "input_cost_usd": 0.0034992900000000017,
+    "input_tokens": 38881,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.0033624000000000006,
+    "output_tokens": 18680,
+    "provider_total_tokens": 1013529,
+    "reasoning_tokens": 10123,
+    "thinking_blocks": 44,
+    "tool_calls": 70,
+    "tool_errors": 9,
+    "tool_results": 70,
+    "total_bucket_tokens": 1013529,
+    "user_messages": 1
+  }
+}

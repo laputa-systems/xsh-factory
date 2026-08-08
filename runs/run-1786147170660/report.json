@@ -1,0 +1,392 @@
+{
+  "artifacts": [
+    {
+      "kind": "phase-reports",
+      "path": "phases/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 156,
+      "budget_failures": 0,
+      "cost_usd": 0.106377844,
+      "tool_errors": 13,
+      "total_bucket_tokens": 3705950.0,
+      "unknown_costs": 0,
+      "workers": 6
+    },
+    "mode": "organization",
+    "outcomes": {
+      "cycle": "fail",
+      "evaluator": "fail",
+      "infrastructure": "pass",
+      "product": "fail"
+    },
+    "phases": [
+      {
+        "id": "01-ticket",
+        "path": "phases/01-ticket/report.json",
+        "result": "pass",
+        "valid": true
+      },
+      {
+        "id": "02-reeval-task-trim-001",
+        "path": "phases/02-reeval-task-trim-001/report.json",
+        "result": "fail",
+        "valid": true
+      },
+      {
+        "id": "03-eval",
+        "path": "phases/03-eval/report.json",
+        "result": "pass",
+        "valid": true
+      }
+    ],
+    "tool_errors": [
+      {
+        "report": "phases/01-ticket/workers/director/director/report.json",
+        "summary": "===DISPATCH===\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 2,
+        "worker": {
+          "role": "director",
+          "worker_id": "director"
+        }
+      },
+      {
+        "report": "phases/01-ticket/workers/engineer/task-trim-001/report.json",
+        "summary": "Validation failed for tool \"edit\":\n  - edits: must have required properties edits\n\nReceived arguments:\n{\n  \"path\": \"/Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786147170660/task-trim-001/tests/sema.rs\",\n  \"offset\": 1,\n  \"limit\": 12\n}",
+        "tool": "edit",
+        "turn": 9,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-trim-001"
+        }
+      },
+      {
+        "report": "phases/02-reeval-task-trim-001/workers/eval-manager/task-trim/report.json",
+        "summary": "EISDIR: illegal operation on a directory, read",
+        "tool": "read",
+        "turn": 10,
+        "worker": {
+          "role": "eval-manager",
+          "worker_id": "task-trim"
+        }
+      },
+      {
+        "report": "phases/02-reeval-task-trim-001/workers/eval-worker/task-trim-1/report.json",
+        "summary": "err[check.unknown-module-api]: unknown module API\n  /tmp/t.xsh:2:11\n    let b = fs.read_bytes(p\"/tmp/in.txt\")\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ unknown module API\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 8,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-trim-1"
+        }
+      },
+      {
+        "report": "phases/02-reeval-task-trim-001/workers/eval-worker/task-trim-1/report.json",
+        "summary": "err[check.effect-violation]: `?` requires the `error` effect\n  /tmp/t.xsh:2:11\n    let b = p\"/tmp/in.txt\".read_bytes()?\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `?` requires the `error` effect\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 10,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-trim-1"
+        }
+      },
+      {
+        "report": "phases/02-reeval-task-trim-001/workers/eval-worker/task-trim-1/report.json",
+        "summary": "err[parse.expected-ident]: expected binding name\n  /tmp/t2.xsh:2:7\n    let in = fp\"${argv[0]}\"\n        ^^ expected binding name\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 15,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-trim-1"
+        }
+      },
+      {
+        "report": "phases/02-reeval-task-trim-001/workers/eval-worker/task-trim-1/report.json",
+        "summary": "err[compact.main-missing-spread]: proc main must use the spread form `(...argv: List[Str])` to receive script arguments; a fixed parameter of this type cannot bind script arguments in the compact runtime\n  /tmp/t2.xsh:1:1\n  proc main(argv: List[Str]) [fs, error] {\n  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ proc main must use the spread form `(...argv: List[Str])` to receive script arguments; a fixed parameter of this type cannot bind script arguments in the compact runtime\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 16,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-trim-1"
+        }
+      },
+      {
+        "report": "phases/02-reeval-task-trim-001/workers/eval-worker/task-trim-1/report.json",
+        "summary": "err[parse.unsupported-boolean-operator]: unsupported operator '&&': XSH boolean operators are the word forms 'and'\n  trim.xsh:24:19\n    while start < n && is_space_tab(line.byte_at(start, 0)) {\n                    ^^ use 'and' instead of '&&'\n\nerr[parse.unsupported-boolean-operator]: unsupported operator '&&': XSH boolean operators are the word forms 'and'\n  trim.xsh:24:19\n    while start < n && is_space_tab(line.byte_at(start, 0)) {\n                    ^^ use 'and' instead of '&&'\n\nerr[parse.expected-token]: expected `{` to start block\n  trim.xsh:24:19\n    while start < n && is_space_tab(line.byte_at(start, 0)) {\n                    ^ expected `{` to start block\n\nerr[parse.expected-expression]: expected expression\n  trim.xsh:26:3\n    }\n    ^ expected expression\n\nerr[parse.unsupported-boolean-operator]: unsupported operator '&&': XSH boolean operators are the word forms 'and'\n  trim.xsh:28:21\n    while end > start && is_space_tab(line.byte_at(end - 1, 0)) {\n                      ^^ use 'and' instead of '&&'\n\nerr[parse.unsupported-boolean-operator]: unsupported operator '&&': XSH boolean operators are the word forms 'and'\n  trim.xsh:28:21\n    while end > start && is_space_tab(line.byte_at(end - 1, 0)) {\n                      ^^ use 'and' instead of '&&'\n\nerr[parse.expected-token]: expected `{` to start block\n  trim.xsh:28:21\n    while end > start && is_space_tab(line.byte_at(end - 1, 0)) {\n                      ^ expected `{` to start block\n\nerr[parse.expected-expression]: expected expression\n  trim.xsh:30:3\n    }\n    ^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  trim.xsh:32:1\n  }\n  ^ expected expression\n\nerr[parse.expected-terminator]: expected statement terminator\n  trim.xsh:35:16\n    return b == 0x20 || b == 0x09\n                 ^^^ expected statement terminator\n\nerr[parse.expected-command-arg]: expected command argument\n  trim.xsh:35:20\n    return b == 0x20 || b == 0x09\n                     ^ expected command argument\n\nerr[parse.expected-terminator]: expected statement terminator\n  trim.xsh:35:20\n    return b == 0x20 || b == 0x09\n                     ^ expected statement terminator\n\nerr[parse.expected-expression]: expected expression\n  trim.xsh:35:20\n    return b == 0x20 || b == 0x09\n                     ^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  trim.xsh:36:1\n  }\n  ^ expected expression\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 19,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-trim-1"
+        }
+      },
+      {
+        "report": "phases/02-reeval-task-trim-001/workers/eval-worker/task-trim-1/report.json",
+        "summary": "err[parse.expected-expression]: expected expression\n  trim.xsh:32:1\n  }\n  ^ expected expression\n\nerr[parse.expected-terminator]: expected statement terminator\n  trim.xsh:35:16\n    return b == 0x20 or b == 0x09\n                 ^^^ expected statement terminator\n\nerr[parse.expected-terminator]: expected statement terminator\n  trim.xsh:35:29\n    return b == 0x20 or b == 0x09\n                              ^^^ expected statement terminator\n\nerr[parse.expected-expression]: expected expression\n  trim.xsh:36:1\n  }\n  ^ expected expression\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 21,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-trim-1"
+        }
+      },
+      {
+        "report": "phases/02-reeval-task-trim-001/workers/eval-worker/task-trim-1/report.json",
+        "summary": "err[check.standard-module-shadow]: name `bytes` shadows the standard module `bytes`\n  trim.xsh:6:3\n    let bytes = input.read_bytes()?\n    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ name `bytes` shadows the standard module `bytes`\n\nerr[check.unresolved-name]: unresolved name\n  trim.xsh:9:8\n      |> Bytes.lines()\n         ^^^^^ unresolved name\n\nerr[check.effect-violation]: proc `strip_edges` is unrestricted — if it is side-effect-free, declare it with an empty effect list `[]` before calling it from a proc with declared effects\n  trim.xsh:10:21\n      |> map { |line| strip_edges(line) }\n                      ^^^^^^^^^^^^^^^^^ proc `strip_edges` is unrestricted — if it is side-effect-free, declare it with an empty effect list `[]` before calling it from a proc with declared effects\n\nerr[check.unknown-method]: unknown method `to_bytes` on Str\n  trim.xsh:16:16\n    output.write(written.to_bytes())?\n                 ^^^^^^^^^^^^^^^^^^ `to_bytes` is not defined for Str\nnote: available methods include: `count_bytes()`\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 36,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-trim-1"
+        }
+      },
+      {
+        "report": "phases/02-reeval-task-trim-001/workers/eval-worker/task-trim-1/report.json",
+        "summary": "err[runtime.error]: join expected List[Str]\n  trim.xsh:13:17\n    let rebuilt = stripped.join(\"\\n\")\n                  ^^^^^^^^^^^^^^^^^^^\nruntime traceback\nexecutable: /usr/local/bin/xsh\noperation: runtime.error\nerror: type-error: join expected List[Str]\n\n\nCommand exited with code 3",
+        "tool": "bash",
+        "turn": 39,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-trim-1"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-worker/task-uniqcat-1/report.json",
+        "summary": "err[parse.expected-expression]: expected expression\n  /tmp/t3.xsh:9:10\n        if not set.has(seen, ln) {\n           ^^^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  /tmp/t3.xsh:18:1\n  }\n  ^ expected expression\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 8,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-uniqcat-1"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-worker/task-uniqcat-1/report.json",
+        "summary": "err[check.standard-module-shadow]: name `path` shadows the standard module `path`\n  /tmp/t3.xsh:5:5\n      let path = Path(path_str)\n      ^^^^^^^^^^^^^^^^^^^^^^^^^ name `path` shadows the standard module `path`\n\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  /tmp/t3.xsh:16:11\n      print ln\n            ^^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $ln\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 13,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-uniqcat-1"
+        }
+      }
+    ],
+    "workers": [
+      {
+        "identity": {
+          "role": "director",
+          "worker_id": "director"
+        },
+        "path": "phases/01-ticket/workers/director/director/report.json",
+        "result": "pass",
+        "tool_errors": 1,
+        "usage": {
+          "assistant_turns": 13,
+          "budget_usd": 0.06,
+          "cache_read_cost_usd": 0.004032,
+          "cache_read_tokens": 224000,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.008197469999999998,
+          "input_cost_usd": 0.0028293299999999997,
+          "input_tokens": 31437,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00133614,
+          "output_tokens": 7423,
+          "provider_total_tokens": 262860,
+          "reasoning_tokens": 4200,
+          "thinking_blocks": 11,
+          "tool_calls": 23,
+          "tool_errors": 1,
+          "tool_results": 23,
+          "total_bucket_tokens": 262860,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "engineer",
+          "worker_id": "task-trim-001"
+        },
+        "path": "phases/01-ticket/workers/engineer/task-trim-001/report.json",
+        "result": "pass",
+        "tool_errors": 1,
+        "usage": {
+          "assistant_turns": 26,
+          "budget_usd": 0.35,
+          "cache_read_cost_usd": 0.00880077,
+          "cache_read_tokens": 880077,
+          "cache_write_cost_usd": 0.021496749999999995,
+          "cache_write_tokens": 171974,
+          "cost_usd": 0.03448372,
+          "input_cost_usd": 7.799999999999996e-6,
+          "input_tokens": 78,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0041784000000000005,
+          "output_tokens": 6964,
+          "provider_total_tokens": 1059093,
+          "reasoning_tokens": 3120,
+          "thinking_blocks": 11,
+          "tool_calls": 51,
+          "tool_errors": 1,
+          "tool_results": 51,
+          "total_bucket_tokens": 1059093,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-trim"
+        },
+        "path": "phases/02-reeval-task-trim-001/workers/eval-manager/task-trim/report.json",
+        "result": "pass",
+        "tool_errors": 1,
+        "usage": {
+          "assistant_turns": 27,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.0156672,
+          "cache_read_tokens": 870400,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.02592702,
+          "input_cost_usd": 0.005510880000000001,
+          "input_tokens": 61232,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00474894,
+          "output_tokens": 26383,
+          "provider_total_tokens": 958015,
+          "reasoning_tokens": 19083,
+          "thinking_blocks": 23,
+          "tool_calls": 40,
+          "tool_errors": 1,
+          "tool_results": 40,
+          "total_bucket_tokens": 958015,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-trim-1"
+        },
+        "path": "phases/02-reeval-task-trim-001/workers/eval-worker/task-trim-1/report.json",
+        "result": "pass",
+        "tool_errors": 8,
+        "usage": {
+          "assistant_turns": 52,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.015272064000000002,
+          "cache_read_tokens": 848448,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.020675663999999996,
+          "input_cost_usd": 0.0030236399999999997,
+          "input_tokens": 33596,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00237996,
+          "output_tokens": 13222,
+          "provider_total_tokens": 895266,
+          "reasoning_tokens": 6018,
+          "thinking_blocks": 39,
+          "tool_calls": 54,
+          "tool_errors": 8,
+          "tool_results": 54,
+          "total_bucket_tokens": 895266,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-uniqcat"
+        },
+        "path": "phases/03-eval/workers/eval-manager/task-uniqcat/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 11,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.003345408,
+          "cache_read_tokens": 185856,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.009911538,
+          "input_cost_usd": 0.00463473,
+          "input_tokens": 51497,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0019314,
+          "output_tokens": 10730,
+          "provider_total_tokens": 248083,
+          "reasoning_tokens": 4755,
+          "thinking_blocks": 9,
+          "tool_calls": 19,
+          "tool_errors": 0,
+          "tool_results": 19,
+          "total_bucket_tokens": 248083,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-uniqcat-1"
+        },
+        "path": "phases/03-eval/workers/eval-worker/task-uniqcat-1/report.json",
+        "result": "pass",
+        "tool_errors": 2,
+        "usage": {
+          "assistant_turns": 27,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.0046955519999999995,
+          "cache_read_tokens": 260864,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.007182432,
+          "input_cost_usd": 0.00143154,
+          "input_tokens": 15906,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00105534,
+          "output_tokens": 5863,
+          "provider_total_tokens": 282633,
+          "reasoning_tokens": 2705,
+          "thinking_blocks": 23,
+          "tool_calls": 28,
+          "tool_errors": 2,
+          "tool_results": 28,
+          "total_bucket_tokens": 282633,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "630d14261ce5cf0160bf9809e79e2fca12922c70"
+  },
+  "findings": [
+    {
+      "id": "02-reeval-task-trim-001",
+      "kind": "phase",
+      "result": "fail"
+    }
+  ],
+  "identity": {
+    "mode": "organization",
+    "run_id": "run-1786147170660"
+  },
+  "kind": "run",
+  "result": "fail",
+  "schema_version": 1,
+  "state": "completed"
+}

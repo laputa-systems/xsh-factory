@@ -1,0 +1,120 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786147170660/phases/01-ticket/workers/engineer/task-trim-001/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_process": "pass",
+    "dispatch_claim": "a152c2922ac05b7b9e7160241837b6706087df7df18fb33fc8bab5a1648d8963",
+    "dispatch_id": "engineer-task-trim-001",
+    "message_sha256": "a152c2922ac05b7b9e7160241837b6706087df7df18fb33fc8bab5a1648d8963",
+    "reporting": "pass",
+    "required_report": "present",
+    "session_limit_watcher": "pass",
+    "system_prompt_sha256": "deeae292423b30a10826cd18cee373f48510904bb1e919621255acbac1c24347",
+    "watcher": "pass"
+  },
+  "findings": [
+    {
+      "count": 1,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "role": "engineer",
+    "worker_id": "task-trim-001"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/openai/gpt-5.6-luna"
+  ],
+  "provider_telemetry": {
+    "event_turns": 26,
+    "events_path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786147170660/phases/01-ticket/workers/engineer/task-trim-001/session.jsonl.events.jsonl",
+    "output_tokens_per_second": 0,
+    "present": true,
+    "provider_errors": [],
+    "response_elapsed_ms": 0,
+    "retry_count": 0,
+    "retry_delay_ms": 0,
+    "retry_errors": [],
+    "retry_failures": 0,
+    "retry_successes": 0
+  },
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786147170660/phases/01-ticket/workers/engineer/task-trim-001/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 25,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 188616
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786147170660/phases/01-ticket/workers/engineer/task-trim-001/session.jsonl.bz2",
+      "summary": "Validation failed for tool \"edit\":\n  - edits: must have required properties edits\n\nReceived arguments:\n{\n  \"path\": \"/Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786147170660/task-trim-001/tests/sema.rs\",\n  \"offset\": 1,\n  \"limit\": 12\n}",
+      "tool": "edit",
+      "turn": 9
+    }
+  ],
+  "tools": [
+    {
+      "count": 15,
+      "name": "bash"
+    },
+    {
+      "count": 7,
+      "name": "edit"
+    },
+    {
+      "count": 1,
+      "name": "find"
+    },
+    {
+      "count": 13,
+      "name": "grep"
+    },
+    {
+      "count": 14,
+      "name": "read"
+    },
+    {
+      "count": 1,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 26,
+    "budget_usd": 0.35,
+    "cache_read_cost_usd": 0.00880077,
+    "cache_read_tokens": 880077,
+    "cache_write_cost_usd": 0.021496749999999995,
+    "cache_write_tokens": 171974,
+    "cost_usd": 0.03448372,
+    "input_cost_usd": 7.799999999999996e-6,
+    "input_tokens": 78,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.0041784000000000005,
+    "output_tokens": 6964,
+    "provider_total_tokens": 1059093,
+    "reasoning_tokens": 3120,
+    "thinking_blocks": 11,
+    "tool_calls": 51,
+    "tool_errors": 1,
+    "tool_results": 51,
+    "total_bucket_tokens": 1059093,
+    "user_messages": 1
+  }
+}

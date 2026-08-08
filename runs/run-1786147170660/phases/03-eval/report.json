@@ -1,0 +1,273 @@
+{
+  "artifacts": [
+    {
+      "kind": "session-directory",
+      "path": "workers/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 38,
+      "budget_failures": 0,
+      "cost_usd": 0.01709397,
+      "tool_errors": 2,
+      "total_bucket_tokens": 530716.0,
+      "unknown_costs": 0,
+      "workers": 2
+    },
+    "designer": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786147170660/phases/03-eval/workers/eval-designer/proposal-1/REPORT.md",
+      "present": false,
+      "result": "not-requested",
+      "role": "eval-designer",
+      "valid": true
+    },
+    "director": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786147170660/phases/03-eval/workers/director/director/REPORT.md",
+      "present": false,
+      "result": "not-requested",
+      "role": "director",
+      "valid": true
+    },
+    "engineer": [],
+    "handbook_lineage": {
+      "approved": "lineage/handbook-approved.md",
+      "candidate": "lineage/handbook-candidate.md"
+    },
+    "manager": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786147170660/phases/03-eval/workers/eval-manager/task-uniqcat/REPORT.md",
+      "present": true,
+      "result": "pass",
+      "role": "eval-manager",
+      "valid": true
+    },
+    "mode": "eval",
+    "narratives": [
+      {
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786147170660/phases/03-eval/workers/eval-manager/task-uniqcat/REPORT.md",
+        "present": true,
+        "result": "pass",
+        "role": "eval-manager",
+        "valid": true
+      }
+    ],
+    "open_tickets": [
+      {
+        "eval_id": "task-dupcheck",
+        "id": "task-dupcheck-002",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-dupcheck-002.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-004",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-004.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-005",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-005.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-006",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-006.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-007",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-007.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-008",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-008.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-pathparts",
+        "id": "task-pathparts-001",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-pathparts-001.md",
+        "status": "Approved."
+      },
+      {
+        "eval_id": "task-pathparts",
+        "id": "task-pathparts-002",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-pathparts-002.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-render",
+        "id": "task-render-001",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-render-001.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-safepath",
+        "id": "task-safepath-002",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-safepath-002.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-trim",
+        "id": "task-trim-001",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-trim-001.md",
+        "status": "Approved."
+      }
+    ],
+    "outcomes": {
+      "cycle": "pass",
+      "evaluator": "pass",
+      "infrastructure": "pass",
+      "product": "pass"
+    },
+    "required_outputs": {
+      "audit": true,
+      "candidate_handbook": true,
+      "designer_handbook_read": true,
+      "designer_output": true,
+      "handbook_lineage": true,
+      "manager_evidence_read": true,
+      "manager_handbook_read": true,
+      "manager_report": true,
+      "manager_session": true,
+      "required": true,
+      "trial1_process": true,
+      "trial1_report": true,
+      "trial2_process": true,
+      "trial2_report": true,
+      "worker_handbook_read": true
+    },
+    "sessions": [
+      "workers/eval-manager/task-uniqcat/session.jsonl.bz2",
+      "workers/eval-worker/task-uniqcat-1/session.jsonl.bz2"
+    ],
+    "tool_errors": [
+      {
+        "report": "workers/eval-worker/task-uniqcat-1/report.json",
+        "summary": "err[parse.expected-expression]: expected expression\n  /tmp/t3.xsh:9:10\n        if not set.has(seen, ln) {\n           ^^^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  /tmp/t3.xsh:18:1\n  }\n  ^ expected expression\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 8,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-uniqcat-1"
+        }
+      },
+      {
+        "report": "workers/eval-worker/task-uniqcat-1/report.json",
+        "summary": "err[check.standard-module-shadow]: name `path` shadows the standard module `path`\n  /tmp/t3.xsh:5:5\n      let path = Path(path_str)\n      ^^^^^^^^^^^^^^^^^^^^^^^^^ name `path` shadows the standard module `path`\n\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  /tmp/t3.xsh:16:11\n      print ln\n            ^^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $ln\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 13,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-uniqcat-1"
+        }
+      }
+    ],
+    "trials": [
+      {
+        "evidence": {
+          "candidate_sha256": "927c9bb49935d22cfef1df0fd954eb8011420a9b1ec2350d65647accf201bbe9",
+          "classification": "pass",
+          "correctness": "pass",
+          "eval_id": "task-uniqcat",
+          "handbook_sha256": "3b56a781606faa1ae0eb811af09d10094080152dae78d9f057cca7de101e126b",
+          "oracle_sha256": "927c9bb49935d22cfef1df0fd954eb8011420a9b1ec2350d65647accf201bbe9",
+          "passed": true,
+          "protocol": "pass",
+          "restrictions": "pass",
+          "result": "pass",
+          "timing": "pass",
+          "trial_id": "1",
+          "valid": true
+        },
+        "path": "workers/eval-worker/task-uniqcat-1/run.json"
+      }
+    ],
+    "workers": [
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-uniqcat"
+        },
+        "path": "workers/eval-manager/task-uniqcat/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 11,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.003345408,
+          "cache_read_tokens": 185856,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.009911538,
+          "input_cost_usd": 0.00463473,
+          "input_tokens": 51497,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0019314,
+          "output_tokens": 10730,
+          "provider_total_tokens": 248083,
+          "reasoning_tokens": 4755,
+          "thinking_blocks": 9,
+          "tool_calls": 19,
+          "tool_errors": 0,
+          "tool_results": 19,
+          "total_bucket_tokens": 248083,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-uniqcat-1"
+        },
+        "path": "workers/eval-worker/task-uniqcat-1/report.json",
+        "result": "pass",
+        "tool_errors": 2,
+        "usage": {
+          "assistant_turns": 27,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.0046955519999999995,
+          "cache_read_tokens": 260864,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.007182432,
+          "input_cost_usd": 0.00143154,
+          "input_tokens": 15906,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00105534,
+          "output_tokens": 5863,
+          "provider_total_tokens": 282633,
+          "reasoning_tokens": 2705,
+          "thinking_blocks": 23,
+          "tool_calls": 28,
+          "tool_errors": 2,
+          "tool_results": 28,
+          "total_bucket_tokens": 282633,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "630d14261ce5cf0160bf9809e79e2fca12922c70"
+  },
+  "findings": [],
+  "identity": {
+    "eval_id": "task-uniqcat",
+    "mode": "eval",
+    "run_id": "03-eval"
+  },
+  "kind": "phase",
+  "result": "pass",
+  "schema_version": 1,
+  "state": "completed"
+}

@@ -1,0 +1,328 @@
+{
+  "artifacts": [
+    {
+      "kind": "phase-reports",
+      "path": "phases/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 106,
+      "budget_failures": 0,
+      "cost_usd": 0.068340438,
+      "tool_errors": 13,
+      "total_bucket_tokens": 2305170.0,
+      "unknown_costs": 0,
+      "workers": 4
+    },
+    "mode": "organization",
+    "outcomes": {
+      "cycle": "fail",
+      "evaluator": "fail",
+      "infrastructure": "pass",
+      "product": "fail"
+    },
+    "phases": [
+      {
+        "id": "01-ticket",
+        "path": "phases/01-ticket/report.json",
+        "result": "pass",
+        "valid": true
+      },
+      {
+        "id": "02-reeval-task-pathparts-001",
+        "path": "phases/02-reeval-task-pathparts-001/report.json",
+        "result": "fail",
+        "valid": true
+      },
+      {
+        "id": "03-eval",
+        "path": "phases/03-eval/report.json",
+        "result": "pass",
+        "valid": true
+      }
+    ],
+    "tool_errors": [
+      {
+        "report": "phases/02-reeval-task-pathparts-001/workers/eval-manager/task-pathparts/report.json",
+        "summary": "ENOENT: no such file or directory, access '/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786146336183/phases/02-reeval-task-pathparts-001/workers/eval-worker/task-pathparts-1/session.jsonl.events.jsonl'",
+        "tool": "read",
+        "turn": 9,
+        "worker": {
+          "role": "eval-manager",
+          "worker_id": "task-pathparts"
+        }
+      },
+      {
+        "report": "phases/02-reeval-task-pathparts-001/workers/eval-worker/task-pathparts-1/report.json",
+        "summary": "== /srv/app/server.cfg\nerr[check.argv-conversion]: interpolation cannot convert to one command word\n  /tmp/t.xsh:3:16\n    print \"arg=\" $argv[0]\n                 ^^^^^ interpolation cannot convert to one command word\n== app.yaml\nerr[check.argv-conversion]: interpolation cannot convert to one command word\n  /tmp/t.xsh:3:16\n    print \"arg=\" $argv[0]\n                 ^^^^^ interpolation cannot convert to one command word\n== pkg.tar.gz\nerr[check.argv-conversion]: interpolation cannot convert to one command word\n  /tmp/t.xsh:3:16\n    print \"arg=\" $argv[0]\n                 ^^^^^ interpolation cannot convert to one command word\n== .profile\nerr[check.argv-conversion]: interpolation cannot convert to one command word\n  /tmp/t.xsh:3:16\n    print \"arg=\" $argv[0]\n                 ^^^^^ interpolation cannot convert to one command word\n== file\nerr[check.argv-conversion]: interpolation cannot convert to one command word\n  /tmp/t.xsh:3:16\n    print \"arg=\" $argv[0]\n                 ^^^^^ interpolation cannot convert to one command word\n== noext\nerr[check.argv-conversion]: interpolation cannot convert to one command word\n  /tmp/t.xsh:3:16\n    print \"arg=\" $argv[0]\n                 ^^^^^ interpolation cannot convert to one command word\n== foo/\nerr[check.argv-conversion]: interpolation cannot convert to one command word\n  /tmp/t.xsh:3:16\n    print \"arg=\" $argv[0]\n                 ^^^^^ interpolation cannot convert to one command word\n== \nerr[check.argv-conversion]: interpolation cannot convert to one command word\n  /tmp/t.xsh:3:16\n    print \"arg=\" $argv[0]\n                 ^^^^^ interpolation cannot convert to one command word\n== /\nerr[check.argv-conversion]: interpolation cannot convert to one command word\n  /tmp/t.xsh:3:16\n    print \"arg=\" $argv[0]\n                 ^^^^^ interpolation cannot convert to one command word\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 3,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-pathparts-1"
+        }
+      },
+      {
+        "report": "phases/02-reeval-task-pathparts-001/workers/eval-worker/task-pathparts-1/report.json",
+        "summary": "FMT-OK\nproc main(...argv: List[Str]) {\n  let p = Path(argv[0])\n  let ext = if p.ext() == \"\" { \"none\" } else { p.ext() }\n  print f\"dir=${p.parent()}\"\n  print f\"name=${p.name()}\"\n  print f\"ext=${ext}\"\n}\nwarn[lint.path-constructor]: prefer p-string interpolation over `Path(...)`\n  pathparts.xsh:2:11\n    let p = Path(argv[0])\n            ------------- use path string syntax instead\nnote: `Path(...)` remains a cast, but p-strings are the preferred path syntax\nhelp: replace with path string -> fp\"${argv[0]}\"\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 14,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-pathparts-1"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-manager/task-trim/report.json",
+        "summary": "===== REVIEW =====\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 3,
+        "worker": {
+          "role": "eval-manager",
+          "worker_id": "task-trim"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-worker/task-trim-1/report.json",
+        "summary": "=== Str trim ===\napi: method.Str.trim\npurpose: Removes surrounding Unicode whitespace.\nsignature: Str.trim() -> Str\n=== Bytes trim ===\napi: method.Bytes.trim\npurpose: Trims the byte boundary.\nsignature: Bytes.trim() -> Bytes\n=== ByteList trim ===\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 7,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-trim-1"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-worker/task-trim-1/report.json",
+        "summary": "--- starts_with ---\napi: method.Str.starts_with\nsignature: Str.starts_with(prefix: Str) -> Bool\n--- ends_with ---\napi: method.Str.ends_with\nsignature: Str.ends_with(suffix: Str) -> Bool\n--- byte_len ---\napi: method.Str.byte_len\nsignature: Str.byte_len() -> Int\n--- count_bytes ---\napi: method.Str.count_bytes\nsignature: Str.count_bytes() -> Int\n--- slice ---\n--- substrip_whitespace ---\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 10,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-trim-1"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-worker/task-trim-1/report.json",
+        "summary": "--- Bytes.slice ---\napi: method.Bytes.slice\npurpose: Returns a byte range.\nsignature: Bytes.slice(offset: Int, length: Int = default) -> Bytes\n--- Bytes.byte_at ---\napi: method.Bytes.byte_at\npurpose: Reads one byte at an explicit offset.\nsignature: Bytes.byte_at(index: Int, default: Int = default) -> Int\n--- Bytes.byte_len ---\n--- Bytes.from_text ---\n--- Bytes.to_text ---\n--- Bytes.append ---\n--- Bytes.concat ---\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 12,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-trim-1"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-worker/task-trim-1/report.json",
+        "summary": "--- List.at ---\n--- List.get ---\napi: method.List.get\nsignature: List.get(index: Int) -> Result[Any, Error]\nsignature: List.get(index: Int, fallback: Any) -> Any\n--- List.index ---\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 15,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-trim-1"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-worker/task-trim-1/report.json",
+        "summary": "Found 2 occurrences of edits[0] in /work/trim.xsh. Each oldText must be unique. Please provide more context to make it unique.",
+        "tool": "edit",
+        "turn": 18,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-trim-1"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-worker/task-trim-1/report.json",
+        "summary": "=== oracle ===\nhello$\nworld$\n$\nfoo$\nbar^Ibaz$\n$\n$\n=== xsh ===\nhello$\nworld$\n$\nfoo$\nbar^Ibaz$\n$\n=== diff ===\ncmp: EOF on out.txt\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 29,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-trim-1"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-worker/task-trim-1/report.json",
+        "summary": "=== oracle ===\nxx$\nyy$\n^Mlead^M$\n^Kvt^L$\nM-BM- nbspM-BM- $\n$\nz$\n=== xsh ===\nxx$\nyy$\n^Mlead$\n^Kvt^L$\nM-BM- nbspM-BM- $\n$\nz$\n/tmp/rexp /tmp/rout differ: char 12, line 3\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 38,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-trim-1"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-worker/task-trim-1/report.json",
+        "summary": "--- Bytes.split ---\n--- Bytes.lines ---\napi: method.Bytes.lines\npurpose: Splits bytes into line-oriented chunks.\ncontract: The operation is byte-oriented and does not require valid UTF-8; each emitted chunk remains Bytes.\nsignature: Bytes.lines() -> Stream[Bytes]\n--- Bytes.replace ---\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 40,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-trim-1"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-worker/task-trim-1/report.json",
+        "summary": "(no output)\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 41,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-trim-1"
+        }
+      }
+    ],
+    "workers": [
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-pathparts"
+        },
+        "path": "phases/02-reeval-task-pathparts-001/workers/eval-manager/task-pathparts/report.json",
+        "result": "pass",
+        "tool_errors": 1,
+        "usage": {
+          "assistant_turns": 16,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.005928192,
+          "cache_read_tokens": 329344,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.018123732,
+          "input_cost_usd": 0.00989838,
+          "input_tokens": 109982,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0022971599999999995,
+          "output_tokens": 12762,
+          "provider_total_tokens": 452088,
+          "reasoning_tokens": 6774,
+          "thinking_blocks": 13,
+          "tool_calls": 27,
+          "tool_errors": 1,
+          "tool_results": 27,
+          "total_bucket_tokens": 452088,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-pathparts-1"
+        },
+        "path": "phases/02-reeval-task-pathparts-001/workers/eval-worker/task-pathparts-1/report.json",
+        "result": "pass",
+        "tool_errors": 2,
+        "usage": {
+          "assistant_turns": 19,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.0033937920000000005,
+          "cache_read_tokens": 188544,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.006724061999999999,
+          "input_cost_usd": 0.0021361500000000003,
+          "input_tokens": 23735,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00119412,
+          "output_tokens": 6634,
+          "provider_total_tokens": 218913,
+          "reasoning_tokens": 3994,
+          "thinking_blocks": 14,
+          "tool_calls": 20,
+          "tool_errors": 2,
+          "tool_results": 20,
+          "total_bucket_tokens": 218913,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-trim"
+        },
+        "path": "phases/03-eval/workers/eval-manager/task-trim/report.json",
+        "result": "pass",
+        "tool_errors": 1,
+        "usage": {
+          "assistant_turns": 16,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.00965376,
+          "cache_read_tokens": 536320,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.01942353,
+          "input_cost_usd": 0.0054078300000000015,
+          "input_tokens": 60087,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.004361939999999999,
+          "output_tokens": 24233,
+          "provider_total_tokens": 620640,
+          "reasoning_tokens": 17086,
+          "thinking_blocks": 14,
+          "tool_calls": 23,
+          "tool_errors": 1,
+          "tool_results": 23,
+          "total_bucket_tokens": 620640,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-trim-1"
+        },
+        "path": "phases/03-eval/workers/eval-worker/task-trim-1/report.json",
+        "result": "pass",
+        "tool_errors": 9,
+        "usage": {
+          "assistant_turns": 55,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.017207424000000002,
+          "cache_read_tokens": 955968,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.024069113999999996,
+          "input_cost_usd": 0.0034992900000000017,
+          "input_tokens": 38881,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0033624000000000006,
+          "output_tokens": 18680,
+          "provider_total_tokens": 1013529,
+          "reasoning_tokens": 10123,
+          "thinking_blocks": 44,
+          "tool_calls": 70,
+          "tool_errors": 9,
+          "tool_results": 70,
+          "total_bucket_tokens": 1013529,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "630d14261ce5cf0160bf9809e79e2fca12922c70"
+  },
+  "findings": [
+    {
+      "id": "02-reeval-task-pathparts-001",
+      "kind": "phase",
+      "result": "fail"
+    }
+  ],
+  "identity": {
+    "mode": "organization",
+    "run_id": "run-1786146336183"
+  },
+  "kind": "run",
+  "result": "fail",
+  "schema_version": 1,
+  "state": "completed"
+}

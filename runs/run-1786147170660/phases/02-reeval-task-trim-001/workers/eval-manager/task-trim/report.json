@@ -1,0 +1,120 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786147170660/phases/02-reeval-task-trim-001/workers/eval-manager/task-trim/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_process": "pass",
+    "dispatch_claim": "a0b7dc1781bb323f0093adfb8ddb974008361f4d623a0413e8addd9051f8330d",
+    "dispatch_id": "eval-manager-task-trim",
+    "message_sha256": "a0b7dc1781bb323f0093adfb8ddb974008361f4d623a0413e8addd9051f8330d",
+    "reporting": "pass",
+    "required_report": "present",
+    "session_limit_watcher": "pass",
+    "system_prompt_sha256": "a5ab31790989af39c06a7fec953a65b5b782b1be43779a76401f77f02f7995f3",
+    "watcher": "pass"
+  },
+  "findings": [
+    {
+      "count": 1,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "role": "eval-manager",
+    "worker_id": "task-trim"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "provider_telemetry": {
+    "event_turns": 27,
+    "events_path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786147170660/phases/02-reeval-task-trim-001/workers/eval-manager/task-trim/session.jsonl.events.jsonl",
+    "output_tokens_per_second": 0,
+    "present": true,
+    "provider_errors": [],
+    "response_elapsed_ms": 0,
+    "retry_count": 0,
+    "retry_delay_ms": 0,
+    "retry_errors": [],
+    "retry_failures": 0,
+    "retry_successes": 0
+  },
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786147170660/phases/02-reeval-task-trim-001/workers/eval-manager/task-trim/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 26,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 376733
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786147170660/phases/02-reeval-task-trim-001/workers/eval-manager/task-trim/session.jsonl.bz2",
+      "summary": "EISDIR: illegal operation on a directory, read",
+      "tool": "read",
+      "turn": 10
+    }
+  ],
+  "tools": [
+    {
+      "count": 18,
+      "name": "bash"
+    },
+    {
+      "count": 1,
+      "name": "edit"
+    },
+    {
+      "count": 1,
+      "name": "find"
+    },
+    {
+      "count": 2,
+      "name": "ls"
+    },
+    {
+      "count": 17,
+      "name": "read"
+    },
+    {
+      "count": 1,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 27,
+    "budget_usd": 0.15,
+    "cache_read_cost_usd": 0.0156672,
+    "cache_read_tokens": 870400,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.02592702,
+    "input_cost_usd": 0.005510880000000001,
+    "input_tokens": 61232,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.00474894,
+    "output_tokens": 26383,
+    "provider_total_tokens": 958015,
+    "reasoning_tokens": 19083,
+    "thinking_blocks": 23,
+    "tool_calls": 40,
+    "tool_errors": 1,
+    "tool_results": 40,
+    "total_bucket_tokens": 958015,
+    "user_messages": 1
+  }
+}
