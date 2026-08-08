@@ -2655,6 +2655,7 @@ proc test_organization_batches_retained_and_fresh_tickets() [fs, error] {
   test.contains(organization, "reeval_handles: List[ProcessHandle] = []")?
   test.contains(organization, "FACTORY_RETAINED_REPLAY")?
   test.contains(organization, "retained-replay-deferred")?
+  test.contains(organization, "retained replay passed but merge deferred after fresh delivery")?
   test.contains(organization, "effective_reeval_pass")?
   test.contains(organization, "cleanup_allowed")?
   test.contains(fs.read_text(fp"${fs.cwd()?}/factory/controllers/eval.xsh")?, "retained_replay_manager_wall_seconds()")?

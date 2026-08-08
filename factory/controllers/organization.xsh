@@ -985,13 +985,18 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
           implementation_commit: "",
         }
       }
+      # A retained branch can pass its replay and still be too old to merge
+      # cleanly after the fresh commit. Keep that branch for a future
+      # reconciliation, but do not report its expected stale-base conflict as
+      # a fresh delivery failure.
+      let retained_delivery_deferred = retained_replay and ! delivery.merged
       delivery_ok = delivery_ok and (delivery.merged or retained_replay)
       runtime.emit_structured_event(
         event_template,
         run_dir,
         if delivery.merged {
           f"86-ticket-${ticket_id}-delivered"
-        } else if retained_replay_deferred {
+        } else if retained_delivery_deferred {
           f"86-ticket-${ticket_id}-retained-replay-deferred"
         } else {
           f"86-ticket-${ticket_id}-delivery-failed"
@@ -1000,7 +1005,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
         {
           status: if delivery.merged {
             "delivered"
-          } else if retained_replay_deferred {
+          } else if retained_delivery_deferred {
             "retained-validation-deferred"
           } else {
             "delivery-failed"
@@ -1009,8 +1014,12 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
           implementation_commit: delivery.implementation_commit,
           detail: if delivery.merged {
             f"${delivery.implementation_commit} is now reachable from XSH HEAD"
-          } else if retained_replay_deferred {
-            "retained replay deferred within bounded policy; branch retained for review"
+          } else if retained_delivery_deferred {
+            if reeval_pass {
+              "retained replay passed but merge deferred after fresh delivery; branch retained for review"
+            } else {
+              "retained replay deferred within bounded policy; branch retained for review"
+            }
           } else {
             "linked replay failed; branch retained for review"
           },

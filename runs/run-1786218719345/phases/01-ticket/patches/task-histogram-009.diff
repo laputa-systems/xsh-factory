@@ -1,0 +1,245 @@
+diff --git a/crates/xsh-registry/src/runtime_op.rs b/crates/xsh-registry/src/runtime_op.rs
+index 2d94c98..74b09da 100644
+--- a/crates/xsh-registry/src/runtime_op.rs
++++ b/crates/xsh-registry/src/runtime_op.rs
+@@ -368,6 +368,8 @@ pub enum RuntimeOp {
+     TextFind,
+     TextParseInt,
+     TextParseIntDecimal,
++    TextParseUint,
++    TextParseUintPositive,
+     TextParseFloat,
+     #[cfg(feature = "native-tests")]
+     TestOk,
+diff --git a/crates/xsh-registry/src/signature/docs.rs b/crates/xsh-registry/src/signature/docs.rs
+index 3a30658..5b4c7c8 100644
+--- a/crates/xsh-registry/src/signature/docs.rs
++++ b/crates/xsh-registry/src/signature/docs.rs
+@@ -1578,6 +1578,16 @@ fn method_doc(receiver: &str, method: &str) -> Option<DocRow> {
+             "Only nonempty decimal digits without leading zeros (except `0`) are accepted; malformed or out-of-range text returns an error.",
+             &["text", "parsing", "decimal", "numeric"],
+         )),
++        ("Str", "parse_uint") => Some((
++            "Parses text as a non-negative decimal integer.",
++            "Signs, radix prefixes, malformed text, and out-of-range values return an error.",
++            &["text", "parsing", "decimal", "numeric", "unsigned"],
++        )),
++        ("Str", "parse_uint_positive") => Some((
++            "Parses text as a positive decimal integer.",
++            "Only decimal digits representing a value greater than zero are accepted; zero, signs, malformed, and out-of-range text return an error.",
++            &["text", "parsing", "decimal", "numeric", "positive"],
++        )),
+         ("Str", "parse_float") => Some((
+             "Parses text as a floating-point value.",
+             "Malformed or non-finite input follows the numeric parser contract and returns an error.",
+diff --git a/crates/xsh-registry/src/signature/methods.rs b/crates/xsh-registry/src/signature/methods.rs
+index 94288c0..9aab649 100644
+--- a/crates/xsh-registry/src/signature/methods.rs
++++ b/crates/xsh-registry/src/signature/methods.rs
+@@ -784,6 +784,20 @@ pub(in crate::signature) fn value_methods() -> Vec<MethodReceiverSig> {
+                     true,
+                     RuntimeOp::TextParseIntDecimal,
+                 ),
++                method(
++                    "parse_uint",
++                    Vec::new(),
++                    MethodReturn::Type(result(Type::Int)),
++                    true,
++                    RuntimeOp::TextParseUint,
++                ),
++                method(
++                    "parse_uint_positive",
++                    Vec::new(),
++                    MethodReturn::Type(result(Type::Int)),
++                    true,
++                    RuntimeOp::TextParseUintPositive,
++                ),
+                 method(
+                     "parse_float",
+                     Vec::new(),
+diff --git a/docs/SPEC.md b/docs/SPEC.md
+index b975712..7b12db1 100644
+--- a/docs/SPEC.md
++++ b/docs/SPEC.md
+@@ -2261,6 +2261,11 @@ adapter `text.lines()` is available in pipelines.
+ - `.parse_int_decimal() -> Result[Int]`, accepting only nonempty decimal
+   digits without leading zeros (except `0`); whitespace, signs, radix
+   prefixes, separators, and out-of-range values return an error.
++- `.parse_uint() -> Result[Int]`, accepting only non-negative decimal digits;
++  signs, radix prefixes, malformed, and out-of-range text return an error.
++- `.parse_uint_positive() -> Result[Int]`, accepting only positive decimal
++  digits; zero, signs, radix prefixes, malformed, and out-of-range text return
++  an error.
+ 
+ Byte-indexed `Str` methods are intended for ASCII-oriented scanners. They count
+ UTF-8 bytes, not Unicode scalar values. `.byte_slice()` rejects negative offsets
+diff --git a/src/modules/text.rs b/src/modules/text.rs
+index 2b2377e..4bd721f 100644
+--- a/src/modules/text.rs
++++ b/src/modules/text.rs
+@@ -179,6 +179,49 @@ pub(crate) fn parse_int_decimal_text(text: &str, span: Span) -> Result<i64, Runt
+     })
+ }
+ 
++pub(crate) fn parse_uint_positive_text(text: &str, span: Span) -> Result<i64, RuntimeError> {
++    if text.is_empty() || !text.bytes().all(|byte| byte.is_ascii_digit()) {
++        return Err(
++            RuntimeError::new(
++                "parse-uint-positive",
++                format!("invalid positive integer `{text}`"),
++            )
++            .with_span(span),
++        );
++    }
++    let value = text.parse::<i64>().map_err(|_| {
++        RuntimeError::new(
++            "parse-uint-positive",
++            format!("invalid positive integer `{text}`"),
++        )
++        .with_span(span)
++    })?;
++    if value == 0 {
++        return Err(RuntimeError::new(
++            "parse-uint-positive",
++            "expected positive integer",
++        )
++        .with_span(span));
++    }
++    Ok(value)
++}
++
++pub(crate) fn parse_uint_text(text: &str, span: Span) -> Result<i64, RuntimeError> {
++    let trimmed = text.trim();
++    if trimmed.starts_with('+') || trimmed.starts_with('-') {
++        return Err(RuntimeError::new("parse-uint", "expected unsigned integer").with_span(span));
++    }
++    if trimmed.is_empty() || !trimmed.bytes().all(|byte| byte.is_ascii_digit()) {
++        return Err(
++            RuntimeError::new("parse-uint", format!("invalid unsigned integer `{text}`"))
++                .with_span(span),
++        );
++    }
++    trimmed.parse::<i64>().map_err(|_| {
++        RuntimeError::new("parse-uint", format!("invalid unsigned integer `{text}`")).with_span(span)
++    })
++}
++
+ pub(crate) fn parse_float_text(text: &str, span: Span) -> Result<f64, RuntimeError> {
+     let trimmed = text.trim();
+     let cleaned = trimmed.replace('_', "");
+@@ -257,6 +300,18 @@ mod tests {
+                 parse_int_decimal_text("42", test_span()).expect("decimal parse"),
+                 42
+             );
++            assert_eq!(
++                parse_uint_positive_text("42", test_span()).expect("positive uint"),
++                42
++            );
++            for input in ["0", "+5", "-1", " 5 ", "0x10", "05", ""] {
++                assert_eq!(
++                    parse_uint_positive_text(input, test_span())
++                        .expect_err("invalid positive uint")
++                        .kind,
++                    "parse-uint-positive"
++                );
++            }
+             for input in ["0x10", "+5", " 5 ", "05", ""] {
+                 assert_eq!(
+                     parse_int_decimal_text(input, test_span())
+diff --git a/src/runtime/eval.rs b/src/runtime/eval.rs
+index 7246e5e..2fd2534 100644
+--- a/src/runtime/eval.rs
++++ b/src/runtime/eval.rs
+@@ -2532,6 +2532,8 @@ const LOWERED_METHOD_NAMES: &[&str] = &[
+     "captures",
+     "parse_int",
+     "parse_int_decimal",
++    "parse_uint",
++    "parse_uint_positive",
+     "parse_float",
+     "float",
+     "floor",
+diff --git a/src/runtime/eval/lower.rs b/src/runtime/eval/lower.rs
+index 235b625..d5ff9d7 100644
+--- a/src/runtime/eval/lower.rs
++++ b/src/runtime/eval/lower.rs
+@@ -12473,7 +12473,8 @@ fn lowered_method_supported_for_type(ty: &Type, name: Name, arg_count: usize) ->
+         },
+         Type::Str => match name.as_str().as_str() {
+             "trim" | "lower" | "upper" | "reverse" | "lines" | "words" | "parse_int"
+-            | "parse_int_decimal" | "parse_float" | "base64_decode" | "base32_decode"
++            | "parse_int_decimal" | "parse_uint" | "parse_uint_positive" | "parse_float"
++            | "base64_decode" | "base32_decode"
+             | "count_lines" | "count_words" | "count_chars" | "count_bytes" | "byte_len" => {
+                 arg_count == 0
+             },
+@@ -12558,7 +12559,7 @@ fn infer_checked_method_return_type(receiver: &Type, name: Name) -> Option<Type>
+             "base64_decode" | "base32_decode" => {
+                 Some(Type::Result(Box::new(Type::Bytes), Box::new(Type::Error)))
+             }
+-            "parse_int" | "parse_int_decimal" => {
++            "parse_int" | "parse_int_decimal" | "parse_uint" | "parse_uint_positive" => {
+                 Some(Type::Result(Box::new(Type::Int), Box::new(Type::Error)))
+             }
+             "parse_float" => Some(Type::Result(Box::new(Type::Float), Box::new(Type::Error))),
+@@ -12904,7 +12905,11 @@ fn lowered_result_method_ok_type(name: Name) -> Option<LoweredType> {
+     if name == "strip_prefix" {
+         return Some(LoweredType::Path);
+     }
+-    if name == "parse_int" || name == "parse_int_decimal" {
++    if name == "parse_int"
++        || name == "parse_int_decimal"
++        || name == "parse_uint"
++        || name == "parse_uint_positive"
++    {
+         return Some(LoweredType::Int);
+     }
+     if name == "parse_float" {
+diff --git a/src/runtime/eval/lowered_ops.rs b/src/runtime/eval/lowered_ops.rs
+index de1ecd3..1acdde6 100644
+--- a/src/runtime/eval/lowered_ops.rs
++++ b/src/runtime/eval/lowered_ops.rs
+@@ -1263,6 +1263,22 @@ pub(super) fn lowered_str_method_value(
+                 ))))),
+             }
+         }
++        "parse_uint" if args.is_empty() => {
++            match crate::modules::text::parse_uint_text(text_value, span) {
++                Ok(value) => Ok(LoweredValue::ResultOk(Box::new(LoweredValue::Int(value)))),
++                Err(error) => Ok(LoweredValue::ResultErr(Box::new(Value::Error(Box::new(
++                    error,
++                ))))),
++            }
++        }
++        "parse_uint_positive" if args.is_empty() => {
++            match crate::modules::text::parse_uint_positive_text(text_value, span) {
++                Ok(value) => Ok(LoweredValue::ResultOk(Box::new(LoweredValue::Int(value)))),
++                Err(error) => Ok(LoweredValue::ResultErr(Box::new(Value::Error(Box::new(
++                    error,
++                ))))),
++            }
++        }
+         "parse_float" if args.is_empty() => {
+             match crate::modules::text::parse_float_text(text_value, span) {
+                 Ok(value) => Ok(LoweredValue::ResultOk(Box::new(LoweredValue::Float(
+diff --git a/tests/xsh/stdlib/methods.xsh b/tests/xsh/stdlib/methods.xsh
+index 3228ad7..3c3e313 100644
+--- a/tests/xsh/stdlib/methods.xsh
++++ b/tests/xsh/stdlib/methods.xsh
+@@ -89,6 +89,16 @@ beta""".find("z"),
+ 
+   test.eq("42".parse_int()?, 42)?
+   test.eq("42".parse_int_decimal()?, 42)?
++  test.eq("42".parse_uint()?, 42)?
++  test.eq("0".parse_uint()?, 0)?
++  test.error_kind("+42".parse_uint(), "parse-uint")?
++  test.error_kind("-1".parse_uint(), "parse-uint")?
++  test.eq("42".parse_uint_positive()?, 42)?
++  test.error_kind("0".parse_uint_positive(), "parse-uint-positive")?
++  test.error_kind("+42".parse_uint_positive(), "parse-uint-positive")?
++  test.error_kind("-1".parse_uint_positive(), "parse-uint-positive")?
++  test.error_kind("0x2a".parse_uint_positive(), "parse-uint-positive")?
++  test.error_kind("nope".parse_uint_positive(), "parse-uint-positive")?
+   test.error_kind("0x10".parse_int_decimal(), "parse-int")?
+   test.error_kind("+5".parse_int_decimal(), "parse-int")?
+   test.error_kind(" 5 ".parse_int_decimal(), "parse-int")?

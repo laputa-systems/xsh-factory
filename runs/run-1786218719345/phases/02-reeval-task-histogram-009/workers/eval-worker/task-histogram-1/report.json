@@ -1,0 +1,126 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786218719345/phases/02-reeval-task-histogram-009/workers/eval-worker/task-histogram-1/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_state": "pass",
+    "agent_wall_ms": 179738,
+    "artifact": {
+      "name": "histogram.xsh",
+      "state": "present"
+    },
+    "budget_state": "pass",
+    "classification": "pass",
+    "evaluator_manifest": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786218719345/phases/02-reeval-task-histogram-009/workers/eval-worker/task-histogram-1/run.json",
+    "evaluator_state": "pass",
+    "reporting_state": "pass",
+    "result": "pass",
+    "review": {
+      "state": "present"
+    }
+  },
+  "findings": [
+    {
+      "count": 2,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "eval_id": "task-histogram",
+    "role": "eval-worker",
+    "run_id": "02-reeval-task-histogram-009",
+    "worker_id": "task-histogram-1"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "provider_telemetry": {
+    "event_turns": 38,
+    "events_path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786218719345/phases/02-reeval-task-histogram-009/workers/eval-worker/task-histogram-1/session.jsonl.events.jsonl",
+    "output_tokens_per_second": 0,
+    "present": true,
+    "provider_errors": [],
+    "response_elapsed_ms": 0,
+    "retry_count": 0,
+    "retry_delay_ms": 0,
+    "retry_errors": [],
+    "retry_failures": 0,
+    "retry_successes": 0
+  },
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786218719345/phases/02-reeval-task-histogram-009/workers/eval-worker/task-histogram-1/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 37,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 178263
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786218719345/phases/02-reeval-task-histogram-009/workers/eval-worker/task-histogram-1/session.jsonl.bz2",
+      "summary": "total 24\ndrwxr-xr-x    1 root     root           192 Aug  8 20:06 .\ndrwxr-xr-x    1 root     root            32 Aug  8 20:06 ..\n-rw-r--r--    1 root     root          3132 Aug  8 20:06 agents.md\n-rw-r--r--    1 root     root         11620 Aug  8 20:06 handbook.md\n-rw-r--r--    1 root     root           299 Aug  8 20:06 review.md\n-rw-r--r--    1 root     root          1744 Aug  8 20:06 task.md\n---\nls: /usr/share/hist-data.txt: No such file or directory\n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 2
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786218719345/phases/02-reeval-task-histogram-009/workers/eval-worker/task-histogram-1/session.jsonl.bz2",
+      "summary": "err[parse.expected-terminator]: expected statement terminator\n  /tmp/t4.xsh:7:37\n      |> map { |s| s.parse_uint()? // width }\n                                      ^^^^^ expected statement terminator\n==run==\nerr[parse.expected-terminator]: expected statement terminator\n  /tmp/t4.xsh:7:37\n      |> map { |s| s.parse_uint()? // width }\n                                      ^^^^^ expected statement terminator\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 12
+    }
+  ],
+  "tools": [
+    {
+      "count": 35,
+      "name": "bash"
+    },
+    {
+      "count": 1,
+      "name": "edit"
+    },
+    {
+      "count": 4,
+      "name": "read"
+    },
+    {
+      "count": 2,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 38,
+    "budget_usd": 0.5,
+    "cache_read_cost_usd": 0.009636479999999996,
+    "cache_read_tokens": 535360,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.013477229999999996,
+    "input_cost_usd": 0.00210987,
+    "input_tokens": 23443,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.00173088,
+    "output_tokens": 9616,
+    "provider_total_tokens": 568419,
+    "reasoning_tokens": 4508,
+    "thinking_blocks": 28,
+    "tool_calls": 42,
+    "tool_errors": 2,
+    "tool_results": 42,
+    "total_bucket_tokens": 568419,
+    "user_messages": 1
+  }
+}

@@ -2,7 +2,7 @@
 
 ## Status
 
-Merged.
+Approved.
 
 ## CTO review — cycle 28 close
 
@@ -46,10 +46,10 @@ None.
 
 ## Merge record
 
-- Implementation branch: `factory/task-histogram-009/1786218728914`
-- Implementation commit: `e6d3fd96f9fa654c0d1c9f434f83b6984a60c204`
-- Detected at XSH commit: `e6d3fd96f9fa654c0d1c9f434f83b6984a60c204`
-- Implementation run: `/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786218719345/phases/01-ticket`
+- Implementation branch: `{{IMPLEMENTATION_BRANCH}}`
+- Implementation commit: `{{IMPLEMENTATION_COMMIT}}`
+- Detected at XSH commit: `{{DETECTED_XSH_COMMIT}}`
+- Implementation run: `{{IMPLEMENTATION_RUN}}`
 
 ## Source eval and manager
 
@@ -83,7 +83,7 @@ empty stdout, and the worker's own probe reported `width 0` => `exit=133`.
   empty stdout on both sides, but the candidate sides through a signal abort,
   not a typed error). `restrictions.passed = false` (see the separate factory
   note about the evaluator restriction checker only accepting `parse_int`).
-- Session: `/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786212430316/phases/02-reeval-task-histogram-005/workers/eval-worker/task-histogram-1/session.jsonl`,
+- Session: `/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786212430316/phases/02-reeval-task-histogram-005/workers/eval-worker/task-histogram-1/session.jsonl.bz2`,
   tool result turn 22 — `width 0` => `exit=133`, and `width non-int` path also
   ends in a `sh: syntax error: bad substitution` (test-shell noise, not the
   typed path).
