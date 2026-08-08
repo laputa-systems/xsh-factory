@@ -886,6 +886,10 @@ mkdir -p "$worker_dir"
 if [ "${FACTORY_TEST_SKIP_MANAGER_CANDIDATE_COPY:-false}" != "true" ]; then
   cp "$FACTORY_HANDBOOK_FILE" "$FACTORY_RUN_DIR/lineage/handbook-candidate.md"
 fi
+if [ "$FACTORY_ROLE" = "eval-manager" ] && [ "$FACTORY_WORKER_ID" = "task-bigfiles" ] && [ ! -f "$FACTORY_RUN_DIR/retry-fixture.marker" ]; then
+  touch "$FACTORY_RUN_DIR/retry-fixture.marker"
+  exit 1
+fi
 cat > "$worker_dir/REPORT.md" <<EOF
 # Eval manager report
 
@@ -994,6 +998,7 @@ exit 0
   )?
   test.eq(json.get(json.read(fp"${run_dir}/workers/eval-worker/task-bigfiles-1/run.json")?, ["result"], ""), "pass")?
   test.ok(fs.exists(fp"${run_dir}/CTO-REPORT.md")?)?
+  test.contains(fs.read_text(fp"${run_dir}/events.jsonl")?, "81-manager-retry-recovered")?
 }
 
 proc test_organization_controller_completes_primary_and_design_phases(ctx: TestContext) [fs, process, env, error] {
@@ -2688,6 +2693,11 @@ proc test_eval_gate_diagnostics_are_persisted() [fs, error] {
   test.contains(evaluator, "manager_evidence_read")?
   test.contains(evaluator, "designer_handbook_read")?
   test.contains(evaluator, "_post_required_outputs_audit")?
+  test.contains(evaluator, "81-manager-retry-started")?
+  test.contains(evaluator, "retry_assignment")?
+  test.contains(evaluator, r"workers/eval-manager/${retry_worker_id}")?
+  test.contains(evaluator, "REPORT.attempt-1.md")?
+  test.contains(evaluator, "manager-retry-recovered")?
 }
 
 proc test_process_run_status_contract_is_executable(ctx: TestContext) [fs, process, error] {

@@ -2,7 +2,7 @@
 
 ## Status
 
-Approved.
+Merged.
 
 ## CTO decision — cycle-11 adaptive queue
 
@@ -42,10 +42,10 @@ None.
 
 ## Merge record
 
-- Implementation branch: `{{IMPLEMENTATION_BRANCH}}`
-- Implementation commit: `{{IMPLEMENTATION_COMMIT}}`
-- Detected at XSH commit: `95878384b9d6bb66f5631d630dca4d306f95a3a0`
-- Implementation run: `{{IMPLEMENTATION_RUN}}`
+- Implementation branch: `factory/task-bigfiles-002/1786185106648`
+- Implementation commit: `c77b01a3e2fb676cc57cdeddbb7575be7723aa32`
+- Detected at XSH commit: `c77b01a3e2fb676cc57cdeddbb7575be7723aa32`
+- Implementation run: `/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786185105660/phases/01-ticket`
 
 ## Source eval and manager
 

@@ -1,0 +1,31 @@
+{
+  "artifacts": [
+    {
+      "kind": "portable-patch",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786189018376/phases/01-ticket/patches/task-bigfiles-002.diff"
+    }
+  ],
+  "data": {
+    "base_commit": "fdeee37e911f820865dc617a14d61ec8e111c603",
+    "branch": "factory/task-bigfiles-002/1786185106648",
+    "clean": true,
+    "fast_path": true,
+    "fast_path_kind": "deterministic-retained-branch-validation",
+    "implementation_commit": "c77b01a3e2fb676cc57cdeddbb7575be7723aa32",
+    "merge_base": "fdeee37e911f820865dc617a14d61ec8e111c603",
+    "mode": "ticket-reuse",
+    "patch": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786189018376/phases/01-ticket/patches/task-bigfiles-002.diff",
+    "ticket_id": "task-bigfiles-002",
+    "worktree": "/Users/josh/d/laputa-systems/xsh-factory/../.xsh-factory-worktrees/run-1786189018376/task-bigfiles-002"
+  },
+  "findings": [],
+  "identity": {
+    "mode": "ticket-reuse",
+    "run_id": "01-ticket",
+    "ticket_id": "task-bigfiles-002"
+  },
+  "kind": "phase",
+  "result": "pass",
+  "schema_version": 1,
+  "state": "completed"
+}

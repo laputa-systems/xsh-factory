@@ -953,6 +953,84 @@ wall-ms=${build_elapsed}
     fp"${run_dir}/manager.stderr",
   )?
   let manager_status = wait manager_handle?
+  let manager_session = fp"${run_dir}/workers/eval-manager/${eval_id}/session.jsonl"
+  let manager_report = fp"${run_dir}/workers/eval-manager/${eval_id}/REPORT.md"
+  let manager_worker_report = fp"${run_dir}/workers/eval-manager/${eval_id}/report.json"
+  var manager_process_ok = manager_status.ok
+  let initial_manager_narrative = if fs.exists(manager_report)? { fs.read_text(manager_report)? } else { "" }
+  let manager_report_ready = fs.exists(manager_report)? and control.report_section(initial_manager_narrative, "Result") != "not-ready" and control.manager_report_contract_ok(initial_manager_narrative)
+  if ! manager_report_ready {
+    let retry_worker_id = f"${eval_id}-retry-1"
+    let retry_message = fp"${messages_dir}/${retry_worker_id}.md"
+    let retry_stdout = fp"${run_dir}/${retry_worker_id}.stdout"
+    let retry_stderr = fp"${run_dir}/${retry_worker_id}.stderr"
+    runtime.emit_structured_event(
+      event_template,
+      run_dir,
+      "81-manager-retry-started",
+      "eval-manager",
+      {reason: "manager report incomplete", worker_id: retry_worker_id},
+    )?
+    let retry_assignment = manager_message.read_text()?.replace(
+      fp"${run_dir}/workers/eval-manager/${eval_id}".display(),
+      fp"${run_dir}/workers/eval-manager/${retry_worker_id}".display(),
+    )
+    fs.write(retry_message, retry_assignment)?
+    if fs.exists(manager_session)? {
+      fs.copy(manager_session, fp"${run_dir}/workers/eval-manager/${eval_id}/session.attempt-1.jsonl", overwrite: true)?
+    }
+    if fs.exists(manager_report)? {
+      fs.copy(manager_report, fp"${run_dir}/workers/eval-manager/${eval_id}/REPORT.attempt-1.md", overwrite: true)?
+    }
+    if fs.exists(manager_worker_report)? {
+      fs.copy(manager_worker_report, fp"${run_dir}/workers/eval-manager/${eval_id}/report.attempt-1.json", overwrite: true)?
+    }
+    let retry_handle = spawn_agent(
+      factory_dir,
+      run_dir,
+      xsh_path,
+      run_agent,
+      common_assignments,
+      "eval-manager",
+      retry_worker_id,
+      eval_id,
+      fp"${factory_dir}/roles/eval-manager.md",
+      retry_message,
+      retry_stdout,
+      retry_stderr,
+    )?
+    let retry_status = wait retry_handle?
+    manager_process_ok = retry_status.ok
+    let retry_report = fp"${run_dir}/workers/eval-manager/${retry_worker_id}/REPORT.md"
+    let retry_worker_report = fp"${run_dir}/workers/eval-manager/${retry_worker_id}/report.json"
+    let retry_session = fp"${run_dir}/workers/eval-manager/${retry_worker_id}/session.jsonl"
+    let retry_narrative = if fs.exists(retry_report)? { fs.read_text(retry_report)? } else { "" }
+    let retry_ready = fs.exists(retry_report)? and control.report_section(retry_narrative, "Result") != "not-ready" and control.manager_report_contract_ok(retry_narrative)
+    if retry_ready {
+      fs.copy(retry_report, manager_report, overwrite: true)?
+      if fs.exists(retry_worker_report)? {
+        fs.copy(retry_worker_report, manager_worker_report, overwrite: true)?
+      }
+      if fs.exists(retry_session)? {
+        fs.copy(retry_session, manager_session, overwrite: true)?
+      }
+      runtime.emit_structured_event(
+        event_template,
+        run_dir,
+        "81-manager-retry-recovered",
+        "eval-manager",
+        {worker_id: retry_worker_id, report: retry_report.display()},
+      )?
+    } else {
+      runtime.emit_structured_event(
+        event_template,
+        run_dir,
+        "81-manager-retry-failed",
+        "eval-manager",
+        {worker_id: retry_worker_id, report: retry_report.display()},
+      )?
+    }
+  }
   let ticket_snapshot_unchanged = runtime.ticket_snapshot_unchanged(factory_dir, pre_manager_ticket_snapshot)?
   if ! ticket_snapshot_unchanged {
     runtime.emit_structured_event(
@@ -963,7 +1041,7 @@ wall-ms=${build_elapsed}
       {status: "failed", detail: "manager changed a pre-existing ticket file"},
     )?
   }
-  let manager_ok = manager_status.ok and ticket_snapshot_unchanged
+  let manager_ok = manager_process_ok and ticket_snapshot_unchanged
 
   var designer_ok = true
   if designer_handle != null {
@@ -1039,7 +1117,6 @@ wall-ms=${build_elapsed}
       cwd: factory_dir,
     ),
   )?
-  let manager_session = fp"${run_dir}/workers/eval-manager/${eval_id}/session.jsonl"
   let trial1_report = fp"${run_dir}/workers/eval-worker/${eval_id}-1/report.json"
   let trial2_report = fp"${run_dir}/workers/eval-worker/${eval_id}-2/report.json"
   let trial1_handbook = fp"${run_dir}/workers/eval-worker/${eval_id}-1/work/handbook.md"
@@ -1065,9 +1142,7 @@ wall-ms=${build_elapsed}
     trial2_sha == baseline_sha
   }
   let lineage_ok = candidate_exists and approved_snapshot_unchanged and checked_in_handbook_unchanged and trial1_sha == baseline_sha and trial_lineage_ok
-  let manager_report = fp"${run_dir}/workers/eval-manager/${eval_id}/REPORT.md"
   let manager_report_marker = fp"${run_dir}/workers/eval-manager/${eval_id}/REPORT-MISSING"
-  let manager_worker_report = fp"${run_dir}/workers/eval-manager/${eval_id}/report.json"
   var worker_tool_errors = false
   for trial_id in range(1, trial_count + 1) {
     let worker_report = fp"${eval_worker_root}/${eval_id}-${trial_id}/report.json"

@@ -1,0 +1,96 @@
+{
+  "classification": "pass",
+  "correctness": {
+    "all_exact": true,
+    "cases": [
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 11414626,
+        "exact": true,
+        "name": "public",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 11359125
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 11837297,
+        "exact": true,
+        "name": "hidden_default",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 17425484
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 15611881,
+        "exact": true,
+        "name": "hidden_n2",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 14227740
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 14056697,
+        "exact": true,
+        "name": "hidden_single",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 12065592
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 13867820,
+        "exact": true,
+        "name": "hidden_deep",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 12698182
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 12323137,
+        "exact": true,
+        "name": "hidden_spaces",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 12797849
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 12243261,
+        "exact": true,
+        "name": "hidden_utf8",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 15176543
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 11229082,
+        "exact": true,
+        "name": "hidden_empty",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 11411418
+      },
+      {
+        "candidate_exit": 3,
+        "candidate_wall_ns": 15318961,
+        "exact": true,
+        "name": "hidden_bad_n",
+        "oracle_exit": 1,
+        "oracle_wall_ns": 15698757
+      }
+    ],
+    "passed": true
+  },
+  "eval_id": "task-bigfiles",
+  "image_id": "sha256:ccc1f83b75ca52d6d0d9f31957ae669d5b9631460886da02091563336a46f721",
+  "platform": "linux/arm64",
+  "protocol": {
+    "artifact_present": true,
+    "review_ok": true
+  },
+  "restrictions": {
+    "passed": true
+  },
+  "result": "pass",
+  "timings": {
+    "passed": true
+  },
+  "trial_id": "1"
+}

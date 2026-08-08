@@ -1,0 +1,120 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786189018376/phases/03-eval/workers/eval-worker/task-bigfiles-1/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_state": "pass",
+    "agent_wall_ms": 1112246,
+    "artifact": {
+      "name": "bigfiles.xsh",
+      "state": "present"
+    },
+    "budget_state": "pass",
+    "classification": "pass",
+    "evaluator_manifest": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786189018376/phases/03-eval/workers/eval-worker/task-bigfiles-1/run.json",
+    "evaluator_state": "pass",
+    "reporting_state": "pass",
+    "result": "pass",
+    "review": {
+      "state": "present"
+    }
+  },
+  "findings": [
+    {
+      "count": 1,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "eval_id": "task-bigfiles",
+    "role": "eval-worker",
+    "run_id": "03-eval",
+    "worker_id": "task-bigfiles-1"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "provider_telemetry": {
+    "event_turns": 29,
+    "events_path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786189018376/phases/03-eval/workers/eval-worker/task-bigfiles-1/session.jsonl.events.jsonl",
+    "output_tokens_per_second": 0,
+    "present": true,
+    "provider_errors": [],
+    "response_elapsed_ms": 0,
+    "retry_count": 0,
+    "retry_delay_ms": 0,
+    "retry_errors": [],
+    "retry_failures": 0,
+    "retry_successes": 0
+  },
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786189018376/phases/03-eval/workers/eval-worker/task-bigfiles-1/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 28,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 1110909
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786189018376/phases/03-eval/workers/eval-worker/task-bigfiles-1/session.jsonl.bz2",
+      "summary": "query: method:Str.parse_int\nstatus: exact\n\napi: method.Str.parse_int\nkind: method\npurpose: Parses text as an integer.\ncontract: The accepted radix and syntax are explicit; malformed or out-of-range text returns an error.\neffects: none\nsignature: Str.parse_int() -> Result[Int, Error]\ntags: str, parse_int, text, parsing, numeric\n===DISPLAY-STR===\nxsht api: invalid API query 'language.core.display-strings'; expected KIND:VALUE\n===PRINT===\nxsht api: invalid API query 'language.core.print'; expected KIND:VALUE\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 5
+    }
+  ],
+  "tools": [
+    {
+      "count": 26,
+      "name": "bash"
+    },
+    {
+      "count": 2,
+      "name": "edit"
+    },
+    {
+      "count": 5,
+      "name": "read"
+    },
+    {
+      "count": 2,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 29,
+    "budget_usd": 0.5,
+    "cache_read_cost_usd": 0.004156416,
+    "cache_read_tokens": 230912,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.022399055999999997,
+    "input_cost_usd": 0.016539299999999996,
+    "input_tokens": 183770,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.0017033400000000002,
+    "output_tokens": 9463,
+    "provider_total_tokens": 424145,
+    "reasoning_tokens": 5046,
+    "thinking_blocks": 21,
+    "tool_calls": 35,
+    "tool_errors": 1,
+    "tool_results": 35,
+    "total_bucket_tokens": 424145,
+    "user_messages": 1
+  }
+}
