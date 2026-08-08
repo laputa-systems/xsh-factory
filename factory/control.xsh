@@ -201,7 +201,7 @@ export pure default_max_wall_seconds(role: Str) -> Str {
   }
 
   if role == "eval-manager" {
-    return "900"
+    return "1200"
   }
 
   if role == "eval-worker" {

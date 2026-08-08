@@ -1,0 +1,108 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786174072800/phases/01-ticket/workers/director/director/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_process": "pass",
+    "dispatch_claim": "18365c54fc396ad56bb8d7fa439e76cbc5c69ea452626c2cabc6b7298d4d5340",
+    "dispatch_id": "director-director",
+    "factory_source": "unchanged",
+    "message_sha256": "18365c54fc396ad56bb8d7fa439e76cbc5c69ea452626c2cabc6b7298d4d5340",
+    "reporting": "pass",
+    "required_report": "present",
+    "session_limit_watcher": "pass",
+    "system_prompt_sha256": "46eeebe9c5ded596c3cdebfa5355ef5f528ba4592c7e5adc216b11527e4f69b4",
+    "watcher": "pass"
+  },
+  "findings": [],
+  "identity": {
+    "role": "director",
+    "worker_id": "director"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "provider_telemetry": {
+    "event_turns": 10,
+    "events_path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786174072800/phases/01-ticket/workers/director/director/session.jsonl.events.jsonl",
+    "output_tokens_per_second": 0,
+    "present": true,
+    "provider_errors": [
+      "Stream ended without finish_reason"
+    ],
+    "response_elapsed_ms": 0,
+    "retry_count": 1,
+    "retry_delay_ms": 2000,
+    "retry_errors": [
+      "Stream ended without finish_reason"
+    ],
+    "retry_failures": 0,
+    "retry_successes": 1
+  },
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786174072800/phases/01-ticket/workers/director/director/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "error"
+    },
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 8,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 716263
+  },
+  "tool_errors": [],
+  "tools": [
+    {
+      "count": 8,
+      "name": "bash"
+    },
+    {
+      "count": 1,
+      "name": "ls"
+    },
+    {
+      "count": 14,
+      "name": "read"
+    },
+    {
+      "count": 1,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 10,
+    "budget_usd": 0.06,
+    "cache_read_cost_usd": 0.001423872,
+    "cache_read_tokens": 79104,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.011864682,
+    "input_cost_usd": 0.00965781,
+    "input_tokens": 107309,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.0007830000000000001,
+    "output_tokens": 4350,
+    "provider_total_tokens": 190763,
+    "reasoning_tokens": 1216,
+    "thinking_blocks": 9,
+    "tool_calls": 24,
+    "tool_errors": 0,
+    "tool_results": 20,
+    "total_bucket_tokens": 190763,
+    "user_messages": 1
+  }
+}

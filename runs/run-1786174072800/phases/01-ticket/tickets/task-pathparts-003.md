@@ -70,7 +70,7 @@ own documented idiom hard-fails its own quality check.
 
 ## Evidence
 
-- Session `task-pathparts-1/session.jsonl`, turns 13 and 16: running
+- Session `task-pathparts-1/session.jsonl.bz2`, turns 13 and 16: running
   `xsht lint` on `proc main(...argv: List[Str]) { ... print f"dir=$dir"; ... }`
   produced
   `warn[lint.unused-local]: unused local variable dir ... binding is never read`

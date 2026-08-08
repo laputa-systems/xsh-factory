@@ -1,0 +1,116 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786174072800/phases/03-eval/workers/eval-worker/task-pathparts-1/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_state": "pass",
+    "agent_wall_ms": 399246,
+    "artifact": {
+      "name": "pathparts.xsh",
+      "state": "present"
+    },
+    "budget_state": "pass",
+    "classification": "pass",
+    "evaluator_manifest": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786174072800/phases/03-eval/workers/eval-worker/task-pathparts-1/run.json",
+    "evaluator_state": "pass",
+    "reporting_state": "pass",
+    "result": "pass",
+    "review": {
+      "state": "present"
+    }
+  },
+  "findings": [
+    {
+      "count": 1,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "eval_id": "task-pathparts",
+    "role": "eval-worker",
+    "run_id": "03-eval",
+    "worker_id": "task-pathparts-1"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "provider_telemetry": {
+    "event_turns": 16,
+    "events_path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786174072800/phases/03-eval/workers/eval-worker/task-pathparts-1/session.jsonl.events.jsonl",
+    "output_tokens_per_second": 0,
+    "present": true,
+    "provider_errors": [],
+    "response_elapsed_ms": 0,
+    "retry_count": 0,
+    "retry_delay_ms": 0,
+    "retry_errors": [],
+    "retry_failures": 0,
+    "retry_successes": 0
+  },
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786174072800/phases/03-eval/workers/eval-worker/task-pathparts-1/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 15,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 397964
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786174072800/phases/03-eval/workers/eval-worker/task-pathparts-1/session.jsonl.bz2",
+      "summary": "CHECK-OK\nwarn[lint.unused-local]: unused local variable `p`\n  pathparts.xsh:2:3\n    let p = fp\"${argv[0]}\"\n    ---------------------- binding is never read\n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 10
+    }
+  ],
+  "tools": [
+    {
+      "count": 10,
+      "name": "bash"
+    },
+    {
+      "count": 3,
+      "name": "read"
+    },
+    {
+      "count": 4,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 16,
+    "budget_usd": 0.5,
+    "cache_read_cost_usd": 0.002323584,
+    "cache_read_tokens": 129088,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.005142024000000001,
+    "input_cost_usd": 0.0020997,
+    "input_tokens": 23330,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.00071874,
+    "output_tokens": 3993,
+    "provider_total_tokens": 156411,
+    "reasoning_tokens": 1908,
+    "thinking_blocks": 12,
+    "tool_calls": 17,
+    "tool_errors": 1,
+    "tool_results": 17,
+    "total_bucket_tokens": 156411,
+    "user_messages": 1
+  }
+}

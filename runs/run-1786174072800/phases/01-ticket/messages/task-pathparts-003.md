@@ -1,3 +1,37 @@
+# Controller-assigned engineer ticket
+
+This is an immutable controller assignment for one implementation worker.
+The controller, not the worker, selected the ticket, snapshot, worktree, and
+branch.
+
+## Assignment authority
+
+- Ticket ID: `task-pathparts-003`
+- Ticket snapshot: `/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786174072800/phases/01-ticket/tickets/task-pathparts-003.md`
+- Ticket snapshot SHA-256: `ac37a1e61c1f68bdac7e2d5e808fb69298372b7d90f73b808ad6e830510fef14`
+- Dedicated XSH worktree: `/Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786174072800/task-pathparts-003`
+- Branch: `factory/task-pathparts-003/1786174073904`
+- XSH base commit: `e4059a21ae8942fa07a0e8e61bac971ed703237c`
+- engineer report: `/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786174072800/phases/01-ticket/workers/engineer/task-pathparts-003/REPORT.md`
+- Factory root: `/Users/josh/d/laputa-systems/xsh-factory`
+- Run evidence root: `/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786174072800/phases/01-ticket`
+
+You are an implementation worker, not a ticket selector. Implement only the
+ticket identified above and inlined below. Do not search for open tickets,
+choose another ticket, or broaden this assignment. Do not create or modify a
+ticket assignment. If the ticket ID, worktree, branch, or snapshot is missing
+or conflicts with the runner's `FACTORY_TICKET_ID` or `FACTORY_WORKDIR`, stop
+and report the assignment problem; do not guess.
+
+The snapshot path is retained for provenance. The inlined snapshot below is
+the controller's authoritative task input, so no ticket-discovery read is
+required. Relative links in that snapshot resolve from the factory root above,
+not from the XSH product worktree; use exact paths under that root if linked
+evidence needs to be consulted.
+
+## Ticket snapshot
+
+<!-- CONTROLLER_TICKET_SNAPSHOT_BEGIN -->
 # Ticket task-pathparts-003
 
 ## Status
@@ -70,7 +104,7 @@ own documented idiom hard-fails its own quality check.
 
 ## Evidence
 
-- Session `task-pathparts-1/session.jsonl`, turns 13 and 16: running
+- Session `task-pathparts-1/session.jsonl.bz2`, turns 13 and 16: running
   `xsht lint` on `proc main(...argv: List[Str]) { ... print f"dir=$dir"; ... }`
   produced
   `warn[lint.unused-local]: unused local variable dir ... binding is never read`
@@ -149,3 +183,81 @@ can compose the three output lines with display strings and pass
 `xsht check`/`fmt`/`lint` without the `+` workaround, and whether a second
 output-composing eval confirms the same. The linked eval-manager records
 accept/reject.
+
+<!-- CONTROLLER_TICKET_SNAPSHOT_END -->
+
+## Factory context required before coding
+
+The factory documents below are outside the XSH worktree. Before coding, use
+the `read` tool on each exact absolute path. This is required so the session
+JSONL proves that the worker consumed the current factory guidance:
+
+- North star: `/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786174072800/phases/01-ticket/guidance/NORTH-STAR.md`
+- Approved handbook snapshot: `/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786174072800/phases/01-ticket/guidance/handbook.md`
+- Handbook candidate: `/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786174072800/phases/01-ticket/lineage/handbook-candidate.md`
+
+The approved snapshot is a run-scoped copy of the checked-in handbook. Read it
+as an input and never edit it or the checked-in handbook. If this ticket
+produces a reusable lesson, add it to the run-scoped candidate path above; the
+candidate is shared review input and is promoted only after CTO review. If no
+handbook improvement is justified, leave the candidate unchanged.
+
+Then use the `read` tool on the product worktree's exact guidance files:
+
+- Product agent guide: `/Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786174072800/task-pathparts-003/AGENTS.md`
+- XSH rationale: `/Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786174072800/task-pathparts-003/docs/CHAPTER-01-why-xsh.md`
+
+## Implementation contract
+
+Work only in `/Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786174072800/task-pathparts-003` on branch `factory/task-pathparts-003/1786174073904`. Do not edit XSH main, the
+factory checkout, the approved handbook snapshot, or the ticket diagnosis.
+Make the smallest general XSH language, tooling, test, or
+canonical-documentation change supported by the ticket. Run the narrowest
+relevant checks, commit the product change on this branch, and leave the
+worktree clean.
+
+For ordinary product tickets, use `xsht lint --fix` for linting, then rerun the
+relevant checks. If this ticket specifically targets lint, parsing, or
+diagnostics, preserve the behavior under test and follow its explicit
+acceptance procedure instead of auto-fixing away the evidence.
+
+The controller has staged a fail-closed `not-ready` report at
+`/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786174072800/phases/01-ticket/workers/engineer/task-pathparts-003/REPORT.md`. Complete that file in place; do not spend turns
+reconstructing its headings. Keep `## Result` as `not-ready` until the
+acceptance checks, commit, and clean-worktree validation are complete.
+
+Write `/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786174072800/phases/01-ticket/workers/engineer/task-pathparts-003/REPORT.md` with these exact headings:
+
+```markdown
+## Result
+
+ready-for-review
+
+## Branch
+
+<branch name>
+
+## Commit
+
+<commit hash>
+
+## Files changed
+
+<short list>
+
+## Tests
+
+<commands and results>
+
+## North-star impact
+
+<how this improves XSH or agent use>
+
+## Remaining risks
+
+<known limitations, or None.>
+```
+
+Change `## Result` to `ready-for-review` only when the branch is committed, the worktree is
+clean, and the relevant checks passed. Do not merge the branch or update the
+ticket status; the deterministic controller records it for CTO review.

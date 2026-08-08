@@ -307,7 +307,7 @@ proc test_role_defaults_are_coded_and_capped() [env, error] {
   test.eq(control.default_max_turns("engineer"), "220")?
   test.eq(control.default_max_wall_seconds("director"), "1800")?
   test.eq(control.default_max_wall_seconds("eval-designer"), "720")?
-  test.eq(control.default_max_wall_seconds("eval-manager"), "900")?
+  test.eq(control.default_max_wall_seconds("eval-manager"), "1200")?
   test.eq(control.default_max_wall_seconds("eval-worker"), "1800")?
   test.eq(control.default_max_wall_seconds("engineer"), "1800")?
   env FACTORY_ENGINEER_BUDGET_USD="2" {
@@ -890,6 +890,7 @@ proc test_role_report_skeletons_are_fail_closed() [fs, error] {
   let assignment = fs.read_text(fp"${fs.cwd()?}/templates/EVAL-MANAGER-ASSIGNMENT.md")?
   test.contains(assignment, "exact absolute path")?
   test.contains(assignment, "construct a relative path")?
+  test.contains(assignment, "Consult raw session JSONL only when")?
   test.contains(manager, "## Next replay")?
   test.contains(director, "## Required-output status")?
   test.contains(engineer, "## Commit")?

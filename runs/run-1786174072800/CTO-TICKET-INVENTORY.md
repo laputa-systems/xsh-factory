@@ -1,7 +1,7 @@
 # CTO ticket inventory
 
-- Open tickets: 8
-- Approved tickets: 0
+- Open tickets: 6
+- Approved tickets: 2
 - Ticket rows: 47
 
 | Ticket | Status | Change target | Linked eval | CTO review marker | Open branch |
@@ -33,7 +33,7 @@
 | `task-histogram-001` | `Closed.` | `product` | `task-histogram` | present | `none` |
 | `task-histogram-002` | `Merged.` | `product` | `task-histogram` | missing | `none` |
 | `task-histogram-003` | `Merged.` | `product` | `task-histogram` | present | `none` |
-| `task-histogram-004` | `Open.` | `product` | `task-histogram` | present | `none` |
+| `task-histogram-004` | `Approved.` | `product` | `task-histogram` | present | `none` |
 | `task-histogram-005` | `Open.` | `product` | `task-histogram` | present | `none` |
 | `task-histogram-006` | `Open.` | `product` | `task-histogram` | present | `none` |
 | `task-histogram-007` | `Open.` | `product` | `task-histogram` | present | `none` |
@@ -41,7 +41,7 @@
 | `task-jsonfilter-001` | `Merged.` | `product` | `task-jsonfilter` | missing | `none` |
 | `task-pathparts-001` | `Merged.` | `product` | `task-pathparts` | missing | `none` |
 | `task-pathparts-002` | `Merged.` | `product` | `task-pathparts` | present | `none` |
-| `task-pathparts-003` | `Open.` | `product` | `task-pathparts` | present | `none` |
+| `task-pathparts-003` | `Approved.` | `product` | `task-pathparts` | present | `factory/task-pathparts-003/1786174073904` |
 | `task-render-001` | `Merged.` | `product` | `task-render` | present | `none` |
 | `task-safepath-001` | `Merged.` | `product` | `task-safepath` | present | `none` |
 | `task-safepath-002` | `Merged.` | `product` | `task-safepath` | present | `none` |

@@ -606,6 +606,18 @@ positional-only API guidance candidate, but it is single-eval evidence. Keep
 the approved handbook unchanged until `task-dupcheck` and a second
 defaulted-parameter eval confirm the guidance generalizes.
 
+## Explicit CTO disposition — run-1786174072800
+
+| Candidate SHA-256 | Disposition |
+| --- | --- |
+| `0fa33e12d3c0245d6b2c7fd11d1d601843ef179f40329a60c3d0d12efe888e67` | deferred pending linked replay completion and cross-eval confirmation; not promoted |
+
+The `task-pathparts-003` engineer supplied a concise display-string shorthand
+lesson, and the independent task-pathparts manager accepted the trial. The
+linked replay manager timed out before completing its report, so the candidate
+remains unpromoted until the retained branch is replayed successfully and a
+nearby output-composing eval confirms the guidance.
+
 ## Explicit CTO disposition — run-1786170696452
 
 | Candidate SHA-256 | Disposition |

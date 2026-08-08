@@ -2,7 +2,20 @@
 
 ## Status
 
-Open.
+Approved.
+
+## CTO decision — recovery cycle after run-1786174072800
+
+- Decision: Approved for one fresh engineer row alongside the retained
+  `task-pathparts-003` implementation branch.
+- Basis: Open-ticket pressure is high and the helper-effect observation is the
+  oldest focused `task-histogram` product signal. The next linked replay is the
+  required fresh focused helper check; its manager must verify the helper form,
+  the nine-case oracle, and whether the observation generalizes before any
+  handbook promotion.
+- Scope: Relax only the existing `?` checker context for an `[error]` helper
+  returning a plain value, with focused regression coverage and no new error
+  syntax or runtime behavior.
 
 ## CTO decision — clean-slate cycle 2026-08-07
 
