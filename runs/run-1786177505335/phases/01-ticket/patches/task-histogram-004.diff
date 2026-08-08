@@ -1,0 +1,148 @@
+diff --git a/docs/SPEC.md b/docs/SPEC.md
+index d007e31..d2cabbb 100644
+--- a/docs/SPEC.md
++++ b/docs/SPEC.md
+@@ -974,7 +974,10 @@ specific effects when a proc does not need stdin/stdout.
+   `process` effect.
+ - The `?` propagation operator requires the `error` effect, except inside retry
+   attempt blocks where it fails the current attempt instead of propagating from
+-  the enclosing proc.
++  the enclosing proc. A proc that declares `error` may use `?` regardless of
++  whether its return type is `Result`; a propagated failure exits that proc and
++  becomes the caller-visible failure, while a successful value keeps the
++  declared return type.
+ - Unrestricted procs (no annotation) may call anything — no restriction.
+ - Diagnostic code: `check.effect-violation`.
+ 
+diff --git a/src/runtime/eval/lowered_ops.rs b/src/runtime/eval/lowered_ops.rs
+index 080bc94..388971e 100644
+--- a/src/runtime/eval/lowered_ops.rs
++++ b/src/runtime/eval/lowered_ops.rs
+@@ -643,6 +643,9 @@ pub(super) fn lowered_return_value(
+     span: Span,
+ ) -> Result<LoweredValue, RuntimeError> {
+     match (kind, value) {
++        (LoweredReturnKind::Plain(_), LoweredValue::ResultErr(error)) => {
++            Err(super::runtime_error_from_value(*error, span))
++        }
+         (LoweredReturnKind::Plain(kind), value) if lowered_value_matches(kind, &value) => Ok(value),
+         (LoweredReturnKind::Result(kind), LoweredValue::ResultOk(value))
+             if lowered_value_matches(kind, &value) =>
+diff --git a/src/sema/check/types.rs b/src/sema/check/types.rs
+index d11f0c6..2d604a5 100644
+--- a/src/sema/check/types.rs
++++ b/src/sema/check/types.rs
+@@ -38,9 +38,13 @@ impl Checker {
+             return Type::Unknown;
+         };
+         let allowed = self
+-            .current_return
++            .current_effects
+             .as_ref()
+-            .is_none_or(|return_ty| return_ty.is_result())
++            .is_some_and(|effects| effects.contains(&Effect::Error))
++            || self
++                .current_return
++                .as_ref()
++                .is_none_or(|return_ty| return_ty.is_result())
+             || self.current_yield.is_some();
+         if !allowed {
+             self.error(
+diff --git a/tests/sema.rs b/tests/sema.rs
+index 55b7279..32529df 100644
+--- a/tests/sema.rs
++++ b/tests/sema.rs
+@@ -4,6 +4,23 @@ use xsh::frontend::check::{AnnotationFactKind, CheckOptions, Checker};
+ use xsh::frontend::source::SourceId;
+ use xsh::frontend::syntax::parser::Parser;
+ 
++#[test]
++fn checker_accepts_error_propagation_in_value_returning_proc() {
++    let output = check(
++        r#"
++proc parse_uint(s: Str, min: Int) [error] -> Int {
++  let value = s.parse_int()?
++  if value < min {
++    return min
++  }
++  return value
++}
++"#,
++    );
++
++    assert_no_codes(&output, &["check.try-context", "check.effect-violation"]);
++}
++
+ #[test]
+ fn checker_accepts_result_unit_proc_expression_calls() {
+     let output = check(
+diff --git a/tests/xsh/implicit-result-return.xsh b/tests/xsh/implicit-result-return.xsh
+index 5cc06b3..0191e93 100644
+--- a/tests/xsh/implicit-result-return.xsh
++++ b/tests/xsh/implicit-result-return.xsh
+@@ -36,6 +36,65 @@ proc middle(value: Int) [error] -> Result[Int] {
+   leaf(value)?
+ }
+ 
++proc parse_uint(s: Str, min: Int) [error] -> Int {
++  let value = s.parse_int()?
++  if value < min {
++    return min
++  }
++
++  return value
++}
++
++proc test_value_returning_error_helper(ctx: TestContext) [fs, error] {
++  let output = test.run_script(
++    ctx,
++    """
++proc parse_uint(s: Str, min: Int) [error] -> Int {
++  let value = s.parse_int()?
++  if value < min {
++    return min
++  }
++  return value
++}
++
++print parse_uint("42", 10)
++""",
++    [],
++    {},
++    b"",
++    "parse-uint.xsh",
++  )?
++
++  test.ok(output.success, output.stderr)?
++  test.eq(
++    output.stdout,
++    """42
++""",
++  )?
++
++  let invalid = test.run_script(
++    ctx,
++    """
++proc parse_uint(s: Str, min: Int) [error] -> Int {
++  let value = s.parse_int()?
++  if value < min {
++    return min
++  }
++  return value
++}
++
++print parse_uint("not-a-number", 10)
++""",
++    [],
++    {},
++    b"",
++    "parse-uint-invalid.xsh",
++  )?
++
++  test.ok(invalid.status != 0, invalid.stderr)?
++  test.contains(invalid.stderr, "parse-int: invalid integer")?
++}
++
+ proc test_implicit_result_return_in_par_map() [error] {
+   let values = [1, 2]
+     |> par-map --jobs=2 { |_|

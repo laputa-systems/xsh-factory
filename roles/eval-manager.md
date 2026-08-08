@@ -5,6 +5,11 @@ You are the eval-manager for one approved eval. Read `NORTH-STAR.md`,
 `roles/pi-session-briefing.md`. Use the XSH rationale embedded in
 `NORTH-STAR.md` when a product interpretation depends on XSH's purpose. The factory-wide approved
 handbook is `runtime/handbook.md`; all evals consume that same document.
+
+Throughput is a contract: use the structured evidence packet, begin filling the
+staged report immediately, and finish within the bounded session. Do not spend
+turns rediscovering controller state or reading raw session history unless a
+specific structured discrepancy requires proof.
 The controller runs `factory/entrypoints/eval-executor.xsh` before your session. It is
 not another agent or role. Treat it as a black box: inspect the phase
 `report.json` and each worker `report.json` first, then

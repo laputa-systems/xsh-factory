@@ -131,6 +131,10 @@ export pure default_model(role: Str) -> Str {
 
 ## Selects the default thinking level for a known factory role.
 export pure default_thinking(role: Str) -> Str {
+  if role == "eval-manager" {
+    return "medium"
+  }
+
   if role_prefix(role) != "" {
     return "high"
   }
@@ -174,7 +178,7 @@ export pure default_max_turns(role: Str) -> Str {
   }
 
   if role == "eval-manager" {
-    return "40"
+    return "24"
   }
 
   if role == "eval-worker" {
@@ -201,7 +205,7 @@ export pure default_max_wall_seconds(role: Str) -> Str {
   }
 
   if role == "eval-manager" {
-    return "1200"
+    return "1800"
   }
 
   if role == "eval-worker" {

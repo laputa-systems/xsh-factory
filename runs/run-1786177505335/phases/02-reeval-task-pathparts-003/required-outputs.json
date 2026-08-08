@@ -1,0 +1,18 @@
+{
+  "audit": false,
+  "candidate_handbook": false,
+  "designer_handbook_read": true,
+  "designer_output": true,
+  "handbook_lineage": false,
+  "manager_evidence_read": true,
+  "manager_handbook_read": true,
+  "manager_report": true,
+  "manager_session": true,
+  "required": false,
+  "ticket_snapshot_unchanged": true,
+  "trial1_process": true,
+  "trial1_report": true,
+  "trial2_process": true,
+  "trial2_report": true,
+  "worker_handbook_read": true
+}

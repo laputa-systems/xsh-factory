@@ -1,5 +1,9 @@
 # Eval-manager assignment: `{{EVAL_ID}}`
 
+Throughput bound: use the structured evidence packet and complete the staged
+report promptly. Do not spend a turn rediscovering controller state or reading
+raw session history unless a specific structured discrepancy requires proof.
+
 Use the `read` tool, not `bash`, `cat`, or `grep`, for the required reads below.
 Before any other investigation, make an exact `read` tool call for
 `{{RUN_DIR}}/lineage/handbook-approved.md`; the controller proves this exact

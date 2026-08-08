@@ -1,0 +1,456 @@
+{
+  "artifacts": [
+    {
+      "kind": "phase-reports",
+      "path": "phases/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 178,
+      "budget_failures": 0,
+      "cost_usd": 0.18712354900000003,
+      "tool_errors": 10,
+      "total_bucket_tokens": 6738215.0,
+      "unknown_costs": 0,
+      "workers": 8
+    },
+    "mode": "organization",
+    "outcomes": {
+      "cycle": "fail",
+      "evaluator": "pass",
+      "infrastructure": "fail",
+      "product": "pass"
+    },
+    "phases": [
+      {
+        "id": "01-reuse-task-pathparts-003",
+        "path": "phases/01-reuse-task-pathparts-003/report.json",
+        "result": "pass",
+        "valid": true
+      },
+      {
+        "id": "01-ticket",
+        "path": "phases/01-ticket/report.json",
+        "result": "pass",
+        "valid": true
+      },
+      {
+        "id": "02-reeval-task-histogram-004",
+        "path": "phases/02-reeval-task-histogram-004/report.json",
+        "result": "fail",
+        "valid": true
+      },
+      {
+        "id": "02-reeval-task-pathparts-003",
+        "path": "phases/02-reeval-task-pathparts-003/report.json",
+        "result": "fail",
+        "valid": true
+      },
+      {
+        "id": "03-eval",
+        "path": "phases/03-eval/report.json",
+        "result": "pass",
+        "valid": true
+      }
+    ],
+    "throughput": {
+      "admitted_tickets": 2,
+      "delivered_tickets": 0,
+      "delivery_conversion": 0.0,
+      "fresh_engineer_rows": 1,
+      "handbook_quarantines": 0,
+      "overlap_linked_replays": true,
+      "overlap_retained_fresh": true,
+      "reeval_dispatched": 2,
+      "reeval_passed": 0,
+      "retained_fast_paths": 1,
+      "retained_rows": 1
+    },
+    "tool_errors": [
+      {
+        "report": "phases/01-ticket/workers/engineer/task-histogram-004/report.json",
+        "summary": "Validation failed for tool \"edit\":\n  - edits: must have required properties edits\n\nReceived arguments:\n{\n  \"path\": \"/Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786177505335/task-histogram-004/tests/xsh/implicit-result-return.xsh\",\n  \"content\": \"type StringListResult = Result[List[Str]]\\n\\nerror ReturnError = Failure(message: Str) : InvalidData\\n\\nproc build() [error] -> Result[List[Str]] {\\n  let built = [\\\"ok\\\"]\\n  built\\n}\\n\\nproc fail_explicitly() [error] -> Result[List[Str]] {\\n  return Err(ReturnError.Failure(\\\"explicit failure\\\"))\\n}\\n\\nproc fail_leaf() [error] -> Result[Int] {\\n  return Err(ReturnError.Failure(\\\"propagated failure\\\"))\\n}\\n\\nproc fail_through_question() [error] -> Result[Int] {\\n  fail_leaf()?\\n}\\n\\nproc implicit_unit() [error] {\\n  test.eq(1, 1)?\\n}\\n\\nproc build_bare_through_alias() [error] -> StringListResult {\\n  let built = [\\\"ok\\\"]\\n  built\\n}\\n\\nproc leaf(value: Int) [error] -> Result[Int] {\\n  value\\n}\\n\\nproc middle(value: Int) [error] -> Result[Int] {\\n  leaf(value)?\\n}\\n\\nproc parse_uint(s: Str, min: Int) [error] -> Int {\\n  let value = s.parse_int()?\\n  if value < min {\\n    return min\\n  }\\n  return value\\n}\\n\\nproc test_value_returning_error_helper() [error] {\\n  test.eq(parse_uint(\\\"42\\\", 10), 42)?\\n  test.error_kind(parse_uint(\\\"not-a-number\\\", 10), \\\"parse-int\\\")?\\n}\\n\\nproc test_implicit_result_return_in_par_map() [error] {\\n  let values = [1, 2]\\n    |> par-map --jobs=2 { |_|\\n      build()\\n    }\\n\\n  test.eq(values, [[\\\"ok\\\"], [\\\"ok\\\"]])?\\n\\n  let block_values = [1, 2]\\n    |> par-map --jobs=2 { |_|\\n      let built = [\\\"ok\\\"]\\n      built\\n    }\\n\\n  test.eq(block_values, [[\\\"ok\\\"], [\\\"ok\\\"]])?\\n}\\n\\nproc test_result_return_shapes_agree() [error] {\\n  test.eq(build()?, [\\\"ok\\\"])?\\n  implicit_unit()?\\n\\n  match fail_explicitly() {\\n    Err(error) => test.eq(error.message, \\\"explicit failure\\\")?\\n    _ => test.ok(false)?\\n  }\\n\\n  match fail_through_question() {\\n    Err(error) => test.eq(error.message, \\\"propagated failure\\\")?\\n    _ => test.ok(false)?\\n  }\\n}\\n\\nproc test_nested_result_calls_in_par_map() [error] {\\n  let values = [1, 2]\\n    |> par-map --jobs=2 { |value|\\n      middle(value)\\n    }\\n\\n  test.eq(values, [1, 2])?\\n}\\n\\nproc test_result_alias_return_shape() [error] {\\n  test.eq(build_bare_through_alias()?, [\\\"ok\\\"])?\\n}\\n\\nproc test_explicit_result_return_shapes(ctx: TestContext) [fs, error] {\\n  let output = test.run_script(\\n    ctx,\\n    \\\"\\\"\\\"type StringListResult = Result[List[Str]]\\n\\nproc build_explicitly() [error] -> Result[List[Str]] {\\n  return Ok([\\\"ok\\\"])\\n}\\n\\nproc build_through_alias() [error] -> StringListResult {\\n  return Ok([\\\"ok\\\"])\\n}\\n\\nproc leaf(value: Int) [error] -> Result[Int] {\\n  return Ok(value)\\n}\\n\\nproc middle(value: Int) [error] -> Result[Int] {\\n  leaf(value)?\\n}\\n\\nlet direct = build_explicitly()?\\nlet alias = build_through_alias()?\\nprint direct[0] alias[0] middle(3)?\\n\\\"\\\"\\\",\\n  )?\\n\\n  test.ok(output.success, output.stderr)?\\n  test.eq(\\n    output.stdout,\\n    \\\"\\\"\\\"ok ok 3\\n\\\"\\\"\\\",\\n  )?\\n}\\n\\nproc test_implicit_result_return_through_module(ctx: TestContext) [fs, error] {\\n  let root = test.temp_dir(ctx, name: \\\"implicit-result-module\\\")?\\n  let module_dir = fp\\\"${root}/lib\\\"\\n  module_dir.mkdir()?\\n  fp\\\"${module_dir}/helper.xsh\\\".write(\\\"\\\"\\\"\\n##! Helper module for implicit Result return coverage.\\n\\n## Builds the fixed value through an implicit Result tail.\\nexport proc build() [error] -> Result[List[Str]] {\\n  let built = [\\\"ok\\\"]\\n  built\\n}\\n\\\"\\\"\\\")?\\n\\n  let output = test.run_script(\\n    ctx,\\n    \\\"\\\"\\\"\\nuse helper\\n\\nlet values = [1, 2] |> par-map --jobs=2 { |_\\n  helper.build()\\n}\\nprint values[0][0] values[1][0]\\n\\\"\\\"\\\",\\n    [],\\n    {XSH_MODULE_PATH: module_dir.display()},\\n  )?\\n\\n  test.ok(output.status == 0, output.stderr)?\\n  test.eq(\\n    output.stdout,\\n    \\\"\\\"\\\"ok ok\\n\\\"\\\"\\\",\\n  )?\\n}\\n\"\n}",
+        "tool": "edit",
+        "turn": 39,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-histogram-004"
+        }
+      },
+      {
+        "report": "phases/01-ticket/workers/engineer/task-histogram-004/report.json",
+        "summary": "    Blocking waiting for file lock on package cache\n    Blocking waiting for file lock on package cache\n    Blocking waiting for file lock on package cache\n   Compiling libc v0.2.186\n   Compiling cfg-if v1.0.4\n   Compiling crossbeam-utils v0.8.21\n   Compiling pin-project-lite v0.2.17\n   Compiling shlex v2.0.1\n   Compiling bitflags v2.13.0\n   Compiling find-msvc-tools v0.1.9\n   Compiling rustix v1.1.4\n   Compiling parking v2.2.1\n   Compiling futures-core v0.3.32\n   Compiling futures-io v0.3.32\n   Compiling unicode-ident v1.0.24\n   Compiling fastrand v2.4.1\n   Compiling value-bag v1.13.1\n   Compiling once_cell v1.21.4\n   Compiling fs_extra v1.3.0\n   Compiling dunce v1.0.5\n   Compiling proc-macro2 v1.0.106\n   Compiling quote v1.0.46\n   Compiling futures-lite v2.6.1\n   Compiling log v0.4.33\n   Compiling io-lifetimes v3.0.1\n   Compiling io-lifetimes v2.0.4\n   Compiling io-extras v0.19.0\n   Compiling atomic-waker v1.1.2\n   Compiling zeroize v1.9.0\n   Compiling slab v0.4.12\n   Compiling typenum v1.20.1\n   Compiling concurrent-queue v2.5.0\n   Compiling cap-primitives v4.0.2\n   Compiling aws-lc-rs v1.17.0\n   Compiling cap-std v4.0.2\n   Compiling event-listener v5.4.1\n   Compiling jobserver v0.1.34\n   Compiling errno v0.3.14\n   Compiling memchr v2.8.1\n   Compiling ipnet v2.12.0\n   Compiling cc v1.2.66\n   Compiling hybrid-array v0.4.12\n   Compiling itoa v1.0.18\n   Compiling syn v2.0.118\n   Compiling maybe-owned v0.3.4\n   Compiling ambient-authority v0.0.2\n   Compiling autocfg v1.5.1\n   Compiling event-listener-strategy v0.5.4\n   Compiling rustls-pki-types v1.15.0\n   Compiling bytes v1.11.1\n   Compiling crc32fast v1.5.0\n   Compiling async-task v4.7.1\n   Compiling cmake v0.1.58\n   Compiling async-io v2.6.0\n   Compiling foldhash v0.2.0\n   Compiling crypto-common v0.2.2\n   Compiling block-buffer v0.12.0\n   Compiling hashbrown v0.17.1\n   Compiling http v1.5.0\n   Compiling untrusted v0.9.0\n   Compiling core-foundation-sys v0.8.7\n   Compiling simd-adler32 v0.3.9\n   Compiling rustls v0.23.41\n   Compiling aws-lc-sys v0.41.0\n   Compiling getrandom v0.4.2\n   Compiling adler2 v2.0.1\n   Compiling const-oid v0.10.2\n   Compiling miniz_oxide v0.8.9\n   Compiling digest v0.11.3\n   Compiling async-executor v1.14.0\n   Compiling async-channel v2.5.0\n   Compiling aho-corasick v1.1.4\n   Compiling piper v0.2.5\n   Compiling tracing-core v0.1.36\n   Compiling subtle v2.6.1\n   Compiling equivalent v1.0.2\n   Compiling zlib-rs v0.6.3\n   Compiling httparse v1.10.1\n   Compiling regex-syntax v0.8.11\n   Compiling indexmap v2.14.0\n   Compiling blocking v1.6.2\n   Compiling fs-set-times v0.20.3\n   Compiling polling v3.11.0\n   Compiling tracing v0.1.44\n   Compiling http-body v1.1.0\n   Compiling security-framework-sys v2.17.0\n   Compiling core-foundation v0.10.1\n   Compiling async-lock v3.4.2\n   Compiling regex-automata v0.4.14\n   Compiling cpufeatures v0.3.0\n   Compiling futures-sink v0.3.33\n   Compiling try-lock v0.2.5\n   Compiling smallvec v1.15.2\n   Compiling event-listener v2.5.3\n   Compiling thiserror v2.0.18\n   Compiling option-ext v0.2.0\n   Compiling fnv v1.0.7\n   Compiling zmij v1.0.21\n   Compiling compression-core v0.4.32\n   Compiling dirs-sys v0.5.0\n   Compiling h2-futures v0.4.15 (https://github.com/joshuarli/h2-futures-lite?rev=732e8770cc6bbf998c573844f62e0afaccec3192#732e8770)\n   Compiling async-channel v1.9.0\n   Compiling async-global-executor v2.4.1\n   Compiling want v0.3.1\n   Compiling thiserror-impl v2.0.18\n   Compiling pin-project-internal v1.1.13\n   Compiling security-framework v3.7.0\n   Compiling crossbeam-epoch v0.9.18\n   Compiling kv-log-macro v1.0.7\n   Compiling futures-channel v0.3.32\n   Compiling same-file v1.0.6\n   Compiling xsh-registry v0.0.1 (/Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786177505335/task-histogram-004/crates/xsh-registry)\n   Compiling miniserde v0.1.45\n   Compiling pin-utils v0.1.0\n   Compiling cap-fs-ext v4.0.2\n   Compiling async-std v1.13.2\n   Compiling pin-project v1.1.13\n   Compiling walkdir v2.5.0\n   Compiling crossbeam-deque v0.8.6\n   Compiling mini-internal v0.1.45\n   Compiling directories v6.0.0\n   Compiling cap-net-ext v4.0.2\n   Compiling sha2 v0.11.0\n   Compiling http-body-util v0.1.4\n   Compiling uuid v1.23.3\n   Compiling bstr v1.12.1\n   Compiling rustls-pemfile v2.2.0\n   Compiling filetime v0.2.29\n   Compiling crossbeam-channel v0.5.15\n   Compiling hyper v1.11.0 (https://github.com/joshuarli/hyper-futures-lite?rev=c99b20ce178251a962289977fdfa2474e2564f8e#c99b20ce)\n   Compiling rustc-hash v2.1.3\n   Compiling globset v0.4.18\n   Compiling libbz2-rs-sys v0.2.5\n   Compiling xsh v0.0.1 (/Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786177505335/task-histogram-004)\n   Compiling async-tar v0.6.1 (https://github.com/dignifiedquire/async-tar.git?rev=109365969684b9cfdbe2696d5185b4ebcfb29b4c#10936596)\n   Compiling flate2 v1.1.9\n   Compiling bzip2 v0.6.1\n   Compiling ignore v0.4.25\n   Compiling lzma-rust2 v0.16.5\n   Compiling cap-tempfile v4.0.2\n   Compiling cap-directories v4.0.2\n   Compiling compression-codecs v0.4.38\n   Compiling sha1 v0.11.0\n   Compiling tempfile v3.27.0\n   Compiling md-5 v0.11.0\n   Compiling async-compression v0.4.42\n   Compiling diffy v0.5.0\n   Compiling data-encoding v2.11.0\n   Compiling jiff v0.2.31\n   Compiling regex-lite v0.1.9\n   Compiling libmimalloc-sys v0.1.49\n   Compiling astral_async_zip v0.0.20\n   Compiling mimalloc v0.1.52\n   Compiling rustls-webpki v0.103.13\n   Compiling futures-rustls v0.26.0\n   Compiling rustls-platform-verifier v0.7.0\n   Compiling xsh-net v0.0.1 (/Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786177505335/task-histogram-004/crates/xsh-net)\nerror[E0599]: no method named `into_value` found for struct `Box<runtime::value::Value>` in the current scope\n   --> src/runtime/eval/lowered_ops.rs:647:55\n    |\n647 |             Err(super::runtime_error_from_value(error.into_value(), span))\n    |                                                       ^^^^^^^^^^ method not found in `Box<runtime::value::Value>`\n\nFor more information about this error, try `rustc --explain E0599`.\nerror: could not compile `xsh` (lib) due to 1 previous error\n\n\nCommand exited with code 101",
+        "tool": "bash",
+        "turn": 43,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-histogram-004"
+        }
+      },
+      {
+        "report": "phases/01-ticket/workers/engineer/task-histogram-004/report.json",
+        "summary": "    Blocking waiting for file lock on package cache\n    Blocking waiting for file lock on package cache\n    Blocking waiting for file lock on package cache\n    Blocking waiting for file lock on build directory\n   Compiling xsh v0.0.1 (/Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786177505335/task-histogram-004)\nerror[E0599]: no method named `into_value` found for struct `Box<runtime::value::Value>` in the current scope\n   --> src/runtime/eval/lowered_ops.rs:647:55\n    |\n647 |             Err(super::runtime_error_from_value(error.into_value(), span))\n    |                                                       ^^^^^^^^^^ method not found in `Box<runtime::value::Value>`\n\nFor more information about this error, try `rustc --explain E0599`.\nerror: could not compile `xsh` (lib) due to 1 previous error\n\n\nCommand exited with code 101",
+        "tool": "bash",
+        "turn": 43,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-histogram-004"
+        }
+      },
+      {
+        "report": "phases/01-ticket/workers/engineer/task-histogram-004/report.json",
+        "summary": "/bin/bash: target/debug/xsht: No such file or directory\n\n\nCommand exited with code 127",
+        "tool": "bash",
+        "turn": 46,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-histogram-004"
+        }
+      },
+      {
+        "report": "phases/01-ticket/workers/engineer/task-histogram-004/report.json",
+        "summary": "    Blocking waiting for file lock on package cache\n    Blocking waiting for file lock on package cache\n    Blocking waiting for file lock on package cache\n    Blocking waiting for file lock on build directory\n    Finished `test` profile [unoptimized] target(s) in 0.35s\n     Running tests/integration.rs (target/debug/deps/integration-4d74d0805adc1abb)\n\nrunning 1 test\n   Compiling xsh v0.0.1 (/Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786177505335/task-histogram-004)\n   Compiling xsht v0.0.1 (/Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786177505335/task-histogram-004/crates/xsht)\n   Compiling xshi v0.0.1 (/Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786177505335/task-histogram-004/crates/xshi)\n    Finished `dev` profile [unoptimized] target(s) in 14.13s\ntest runtime::coverage::runnable_xsh_corpus_is_formatted_and_lints_without_warnings ... FAILED\n\nfailures:\n\n---- runtime::coverage::runnable_xsh_corpus_is_formatted_and_lints_without_warnings stdout ----\n\nthread 'runtime::coverage::runnable_xsh_corpus_is_formatted_and_lints_without_warnings' (15258564) panicked at tests/runtime/common.rs:541:5:\nstatus=Some(1)\nstdout:\ntests/xsh/implicit-result-return.xsh: needs formatting\ntests/xsh/stdlib/streams.xsh: needs formatting\n\nstderr:\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\n\nfailures:\n    runtime::coverage::runnable_xsh_corpus_is_formatted_and_lints_without_warnings\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 492 filtered out; finished in 14.79s\n\nerror: test failed, to rerun pass `--test integration`\n\n\nCommand exited with code 101",
+        "tool": "bash",
+        "turn": 46,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-histogram-004"
+        }
+      },
+      {
+        "report": "phases/01-ticket/workers/engineer/task-histogram-004/report.json",
+        "summary": "running 1 tests\ntests/xsh/implicit-result-return.xsh::test_value_returning_error_helper ... FAILED 2ms\n\nfailures:\n\n---- tests/xsh/implicit-result-return.xsh::test_value_returning_error_helper ----\nerr[runtime.error]: invalid integer `not-a-number`\n  /Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786177505335/task-histogram-004/tests/xsh/implicit-result-return.xsh:40:15\n    let value = s.parse_int()?\n                ^^^^^^^^^^^^^\nruntime traceback\nexecutable: /Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786177505335/task-histogram-004/target/debug/xsht\noperation: result.propagate\nerror: parse-int: invalid integer `not-a-number`\ncall path:\n  1. proc test_value_returning_error_helper at /Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786177505335/task-histogram-004/tests/xsh/implicit-result-return.xsh:1:1-2:1\n  2. proc parse_uint at /Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786177505335/task-histogram-004/tests/xsh/implicit-result-return.xsh:49:19-49:49\n\ntest result: FAILED. 0 passed; 1 failed; 0 skipped\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 48,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-histogram-004"
+        }
+      },
+      {
+        "report": "phases/01-ticket/workers/engineer/task-histogram-004/report.json",
+        "summary": "running 1 tests\ntests/xsh/implicit-result-return.xsh::test_value_returning_error_helper ... FAILED 169ms\n\nfailures:\n\n---- tests/xsh/implicit-result-return.xsh::test_value_returning_error_helper ----\ntest-fail: expected equality, left=3, right=1\n\ntest result: FAILED. 0 passed; 1 failed; 0 skipped\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 51,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-histogram-004"
+        }
+      },
+      {
+        "report": "phases/01-ticket/workers/engineer/task-histogram-004/report.json",
+        "summary": "    Finished `test` profile [unoptimized] target(s) in 0.18s\n     Running tests/integration.rs (target/debug/deps/integration-4d74d0805adc1abb)\n\nrunning 1 test\n    Finished `dev` profile [unoptimized] target(s) in 0.16s\ntest runtime::coverage::runnable_xsh_corpus_is_formatted_and_lints_without_warnings ... FAILED\n\nfailures:\n\n---- runtime::coverage::runnable_xsh_corpus_is_formatted_and_lints_without_warnings stdout ----\n\nthread 'runtime::coverage::runnable_xsh_corpus_is_formatted_and_lints_without_warnings' (15261883) panicked at tests/runtime/common.rs:541:5:\nstatus=Some(1)\nstdout:\ntests/xsh/implicit-result-return.xsh: needs formatting\ntests/xsh/stdlib/streams.xsh: needs formatting\n\nstderr:\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\n\nfailures:\n    runtime::coverage::runnable_xsh_corpus_is_formatted_and_lints_without_warnings\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 492 filtered out; finished in 0.58s\n\nerror: test failed, to rerun pass `--test integration`\n\n\nCommand exited with code 101",
+        "tool": "bash",
+        "turn": 56,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-histogram-004"
+        }
+      },
+      {
+        "report": "phases/01-ticket/workers/engineer/task-histogram-004/report.json",
+        "summary": "    Finished `test` profile [unoptimized] target(s) in 0.17s\n     Running tests/integration.rs (target/debug/deps/integration-4d74d0805adc1abb)\n\nrunning 1 test\n    Finished `dev` profile [unoptimized] target(s) in 0.16s\ntest runtime::coverage::runnable_xsh_corpus_is_formatted_and_lints_without_warnings ... FAILED\n\nfailures:\n\n---- runtime::coverage::runnable_xsh_corpus_is_formatted_and_lints_without_warnings stdout ----\n\nthread 'runtime::coverage::runnable_xsh_corpus_is_formatted_and_lints_without_warnings' (15262169) panicked at tests/runtime/common.rs:541:5:\nstatus=Some(1)\nstdout:\ntests/xsh/stdlib/streams.xsh: needs formatting\n\nstderr:\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\n\nfailures:\n    runtime::coverage::runnable_xsh_corpus_is_formatted_and_lints_without_warnings\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 492 filtered out; finished in 0.59s\n\nerror: test failed, to rerun pass `--test integration`\n\n\nCommand exited with code 101",
+        "tool": "bash",
+        "turn": 59,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-histogram-004"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-worker/task-histogram-1/report.json",
+        "summary": "CHECK_OK\nLINT_OK\n=== /usr/share/hist-data.txt exists? ===\nls: /usr/share/hist-data.txt: No such file or directory\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 28,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-histogram-1"
+        }
+      }
+    ],
+    "workers": [
+      {
+        "identity": {
+          "role": "director",
+          "worker_id": "director"
+        },
+        "path": "phases/01-ticket/workers/director/director/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 10,
+          "budget_usd": 0.06,
+          "cache_read_cost_usd": 0.0014054399999999998,
+          "cache_read_tokens": 78080,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.016619580000000002,
+          "input_cost_usd": 0.0142119,
+          "input_tokens": 157910,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00100224,
+          "output_tokens": 5568,
+          "provider_total_tokens": 241558,
+          "reasoning_tokens": 2388,
+          "thinking_blocks": 9,
+          "tool_calls": 17,
+          "tool_errors": 0,
+          "tool_results": 17,
+          "total_bucket_tokens": 241558,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "engineer",
+          "worker_id": "task-histogram-004"
+        },
+        "path": "phases/01-ticket/workers/engineer/task-histogram-004/report.json",
+        "result": "pass",
+        "tool_errors": 9,
+        "usage": {
+          "assistant_turns": 68,
+          "budget_usd": 0.35,
+          "cache_read_cost_usd": 0.04495877,
+          "cache_read_tokens": 4495877,
+          "cache_write_cost_usd": 0.024237124999999984,
+          "cache_write_tokens": 193897,
+          "cost_usd": 0.08307449500000004,
+          "input_cost_usd": 0.000020400000000000015,
+          "input_tokens": 204,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.013858199999999994,
+          "output_tokens": 23097,
+          "provider_total_tokens": 4713075,
+          "reasoning_tokens": 13231,
+          "thinking_blocks": 17,
+          "tool_calls": 118,
+          "tool_errors": 9,
+          "tool_results": 118,
+          "total_bucket_tokens": 4713075,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-histogram"
+        },
+        "path": "phases/02-reeval-task-histogram-004/workers/eval-manager/task-histogram/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 6,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.00050688,
+          "cache_read_tokens": 28160,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.00908505,
+          "input_cost_usd": 0.00768771,
+          "input_tokens": 85419,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00089046,
+          "output_tokens": 4947,
+          "provider_total_tokens": 118526,
+          "reasoning_tokens": 3431,
+          "thinking_blocks": 6,
+          "tool_calls": 14,
+          "tool_errors": 0,
+          "tool_results": 14,
+          "total_bucket_tokens": 118526,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-histogram-1"
+        },
+        "path": "phases/02-reeval-task-histogram-004/workers/eval-worker/task-histogram-1/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 28,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.006206976000000001,
+          "cache_read_tokens": 344832,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.017042616,
+          "input_cost_usd": 0.008541,
+          "input_tokens": 94900,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00229464,
+          "output_tokens": 12748,
+          "provider_total_tokens": 452480,
+          "reasoning_tokens": 7859,
+          "thinking_blocks": 25,
+          "tool_calls": 45,
+          "tool_errors": 0,
+          "tool_results": 45,
+          "total_bucket_tokens": 452480,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-pathparts"
+        },
+        "path": "phases/02-reeval-task-pathparts-003/workers/eval-manager/task-pathparts/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 12,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.001124352,
+          "cache_read_tokens": 62464,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.019381752,
+          "input_cost_usd": 0.016479720000000003,
+          "input_tokens": 183108,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0017776800000000002,
+          "output_tokens": 9876,
+          "provider_total_tokens": 255448,
+          "reasoning_tokens": 6313,
+          "thinking_blocks": 12,
+          "tool_calls": 20,
+          "tool_errors": 0,
+          "tool_results": 19,
+          "total_bucket_tokens": 255448,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-pathparts-1"
+        },
+        "path": "phases/02-reeval-task-pathparts-003/workers/eval-worker/task-pathparts-1/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 13,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.001176192,
+          "cache_read_tokens": 65344,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.005888592,
+          "input_cost_usd": 0.0041247,
+          "input_tokens": 45830,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0005877,
+          "output_tokens": 3265,
+          "provider_total_tokens": 114439,
+          "reasoning_tokens": 1376,
+          "thinking_blocks": 9,
+          "tool_calls": 16,
+          "tool_errors": 0,
+          "tool_results": 16,
+          "total_bucket_tokens": 114439,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-histogram"
+        },
+        "path": "phases/03-eval/workers/eval-manager/task-histogram/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 9,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.000129024,
+          "cache_read_tokens": 7168,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.016770384,
+          "input_cost_usd": 0.015672059999999998,
+          "input_tokens": 174134,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0009693,
+          "output_tokens": 5385,
+          "provider_total_tokens": 186687,
+          "reasoning_tokens": 2098,
+          "thinking_blocks": 7,
+          "tool_calls": 17,
+          "tool_errors": 0,
+          "tool_results": 17,
+          "total_bucket_tokens": 186687,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-histogram-1"
+        },
+        "path": "phases/03-eval/workers/eval-worker/task-histogram-1/report.json",
+        "result": "pass",
+        "tool_errors": 1,
+        "usage": {
+          "assistant_turns": 32,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.01021824,
+          "cache_read_tokens": 567680,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.019261079999999996,
+          "input_cost_usd": 0.006855120000000002,
+          "input_tokens": 76168,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0021877199999999993,
+          "output_tokens": 12154,
+          "provider_total_tokens": 656002,
+          "reasoning_tokens": 6996,
+          "thinking_blocks": 27,
+          "tool_calls": 42,
+          "tool_errors": 1,
+          "tool_results": 42,
+          "total_bucket_tokens": 656002,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "e4059a21ae8942fa07a0e8e61bac971ed703237c"
+  },
+  "findings": [
+    {
+      "id": "02-reeval-task-histogram-004",
+      "kind": "phase",
+      "result": "fail"
+    },
+    {
+      "id": "02-reeval-task-pathparts-003",
+      "kind": "phase",
+      "result": "fail"
+    }
+  ],
+  "identity": {
+    "mode": "organization",
+    "run_id": "run-1786177505335"
+  },
+  "kind": "run",
+  "result": "fail",
+  "schema_version": 1,
+  "state": "completed"
+}

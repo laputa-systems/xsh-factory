@@ -883,7 +883,9 @@ for argument in "$@"; do
 done
 worker_dir="$FACTORY_RUN_DIR/workers/$FACTORY_ROLE/$FACTORY_WORKER_ID"
 mkdir -p "$worker_dir"
-cp "$FACTORY_HANDBOOK_FILE" "$FACTORY_RUN_DIR/lineage/handbook-candidate.md"
+if [ "${FACTORY_TEST_SKIP_MANAGER_CANDIDATE_COPY:-false}" != "true" ]; then
+  cp "$FACTORY_HANDBOOK_FILE" "$FACTORY_RUN_DIR/lineage/handbook-candidate.md"
+fi
 cat > "$worker_dir/REPORT.md" <<EOF
 # Eval manager report
 
@@ -968,6 +970,7 @@ exit 0
         FACTORY_PHASE_DIR: run_dir.display(),
         FACTORY_SKIP_CYCLE_BUDGET: "true",
         FACTORY_SKIP_TICKET_RECONCILE: "true",
+        FACTORY_TEST_SKIP_MANAGER_CANDIDATE_COPY: "true",
         FACTORY_XSH_REPO: xsh_repo.display(),
         HOME: root.display(),
         PATH: env_path,
@@ -985,6 +988,10 @@ exit 0
   test.ok(schema.valid(report, "phase"))?
   test.eq(schema.value_text(json.get(report, ["result"], "")), "pass")?
   test.eq(json.get(json.read(fp"${run_dir}/required-outputs.json")?, ["required"], false), true)?
+  test.eq(
+    fs.read_text(fp"${run_dir}/lineage/handbook-candidate.md")?,
+    fs.read_text(fp"${run_dir}/lineage/handbook-approved.md")?,
+  )?
   test.eq(json.get(json.read(fp"${run_dir}/workers/eval-worker/task-bigfiles-1/run.json")?, ["result"], ""), "pass")?
   test.ok(fs.exists(fp"${run_dir}/CTO-REPORT.md")?)?
 }

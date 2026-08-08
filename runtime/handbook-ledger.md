@@ -606,6 +606,19 @@ positional-only API guidance candidate, but it is single-eval evidence. Keep
 the approved handbook unchanged until `task-dupcheck` and a second
 defaulted-parameter eval confirm the guidance generalizes.
 
+## Explicit CTO disposition — run-1786177505335
+
+| Candidate SHA-256 | Disposition |
+| --- | --- |
+| `44d8ba3d8a0edb2fa823023b55a95ffa4388dd195ce77987804983cc255a832c` | no candidate; unchanged approved snapshot |
+
+The independent histogram eval and primary ticket phase both preserved the
+approved handbook unchanged. The linked pathparts manager proposed a useful
+print-spacing lesson but failed its required lineage gate before staging a
+candidate, and the linked histogram manager was stopped by the wall watcher.
+Do not promote any handbook change from this cycle; replay the deferred
+pathparts lesson only after a complete manager lineage packet exists.
+
 ## Explicit CTO disposition — run-1786174072800
 
 | Candidate SHA-256 | Disposition |

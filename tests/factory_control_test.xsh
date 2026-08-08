@@ -297,7 +297,7 @@ proc test_role_defaults_are_coded_and_capped() [env, error] {
       test.eq(control.default_model(role), "deepseek/deepseek-v4-flash-0731")?
     }
 
-    test.eq(control.default_thinking(role), "high")?
+    test.eq(control.default_thinking(role), if role == "eval-manager" { "medium" } else { "high" })?
     test.ok(control.default_budget(role) != "")?
     test.ok(control.default_max_turns(role) != "")?
   }
@@ -307,7 +307,8 @@ proc test_role_defaults_are_coded_and_capped() [env, error] {
   test.eq(control.default_max_turns("engineer"), "220")?
   test.eq(control.default_max_wall_seconds("director"), "1800")?
   test.eq(control.default_max_wall_seconds("eval-designer"), "720")?
-  test.eq(control.default_max_wall_seconds("eval-manager"), "1200")?
+  test.eq(control.default_max_turns("eval-manager"), "24")?
+  test.eq(control.default_max_wall_seconds("eval-manager"), "1800")?
   test.eq(control.default_max_wall_seconds("eval-worker"), "1800")?
   test.eq(control.default_max_wall_seconds("engineer"), "1800")?
   env FACTORY_ENGINEER_BUDGET_USD="2" {

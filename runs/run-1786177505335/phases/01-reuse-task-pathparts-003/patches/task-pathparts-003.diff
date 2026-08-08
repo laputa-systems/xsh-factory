@@ -1,0 +1,173 @@
+diff --git a/crates/xsht/tests/lint.rs b/crates/xsht/tests/lint.rs
+index db90db8..5d4a9f8 100644
+--- a/crates/xsht/tests/lint.rs
++++ b/crates/xsht/tests/lint.rs
+@@ -313,6 +313,38 @@ main()?
+     assert_eq!(messages, ["unused local variable `_unused`"]);
+ }
+ 
++#[test]
++fn linter_marks_display_string_interpolation_as_used() {
++    let source = "\
++proc main() {
++  let dir = \"tmp\"
++  let unused = \"never read\"
++  print f\"dir=$dir\"
++}
++";
++    let parsed = parse_lint_source(source);
++    assert!(parsed.diagnostics.is_empty(), "{:?}", parsed.diagnostics);
++    let checked = Checker::check_arena(&parsed.arena, source);
++    assert!(checked.diagnostics.is_empty(), "{:?}", checked.diagnostics);
++
++    let diagnostics = lint_and_assert_fmt_stable(&parsed.arena, source, LintOptions::default());
++
++    assert!(
++        diagnostics.iter().any(|diagnostic| {
++            diagnostic.code.as_deref() == Some("lint.unused-local")
++                && diagnostic.message.contains("`unused`")
++        }),
++        "genuinely unused local should still be reported: {diagnostics:?}"
++    );
++    assert!(
++        !diagnostics.iter().any(|diagnostic| {
++            diagnostic.code.as_deref() == Some("lint.unused-local")
++                && diagnostic.message.contains("`dir`")
++        }),
++        "display-string interpolation should count as a use: {diagnostics:?}"
++    );
++}
++
+ #[test]
+ fn linter_marks_indexed_assignment_keys_as_used() {
+     let source = "\
+diff --git a/docs/SPEC.md b/docs/SPEC.md
+index d007e31..2ea46ac 100644
+--- a/docs/SPEC.md
++++ b/docs/SPEC.md
+@@ -366,8 +366,9 @@ The runtime representation is IEEE 754 binary64.
+ Duration literals are decimal integers followed immediately by `ms`, `s`, `m`,
+ or `h`. They produce `Duration` values.
+ 
+-Display strings use `f"..."` or `f"""..."""` and support `${expr}`
+-interpolation with display conversion. Interpolation scans balanced braces,
++Display strings use `f"..."` or `f"""..."""` and support `$name` shorthand
++and `${expr}` interpolation with display conversion. Shorthand names may use
++field access, such as `$entry.name`. Interpolation scans balanced braces,
+ brackets, parentheses, and string literals inside the expression, so nested
+ record literals, `if` expressions, `match` expressions, and inner strings do
+ not terminate the interpolation early. The same interpolation scanner is used by
+diff --git a/src/syntax/literal.rs b/src/syntax/literal.rs
+index f098deb..ba37755 100644
+--- a/src/syntax/literal.rs
++++ b/src/syntax/literal.rs
+@@ -166,25 +166,40 @@ pub(crate) fn interpolation_chunks(
+     let mut chunks = Vec::new();
+     let mut rest_start = 0;
+     let mut search_start = 0;
+-    while let Some(relative) = raw[search_start..].find("${") {
+-        let open = search_start + relative;
+-        if is_escaped(raw.as_bytes(), open) {
+-            search_start = open + 1;
++    while search_start < raw.len() {
++        let Some(relative) = raw[search_start..].find('$') else {
++            break;
++        };
++        let dollar = search_start + relative;
++        if is_escaped(raw.as_bytes(), dollar) {
++            search_start = dollar + 1;
+             continue;
+         }
+-        if open > rest_start {
++        let bytes = raw.as_bytes();
++        let Some(next) = bytes.get(dollar + 1).copied() else {
++            break;
++        };
++        let (expr_start, close) = if next == b'{' {
++            let expr_start = dollar + 2;
++            (expr_start, interpolation_close(raw, expr_start)?)
++        } else if is_ident_start(next) {
++            let close = shorthand_end(bytes, dollar + 1);
++            (dollar + 1, close)
++        } else {
++            search_start = dollar + 1;
++            continue;
++        };
++        if dollar > rest_start {
+             chunks.push(InterpolationChunk::Text {
+-                source: &raw[rest_start..open],
++                source: &raw[rest_start..dollar],
+                 offset: content_offset + rest_start,
+             });
+         }
+-        let expr_start = open + 2;
+-        let close = interpolation_close(raw, expr_start)?;
+         chunks.push(InterpolationChunk::Expr {
+             source: &raw[expr_start..close],
+             offset: content_offset + expr_start,
+         });
+-        rest_start = close + 1;
++        rest_start = if next == b'{' { close + 1 } else { close };
+         search_start = rest_start;
+     }
+     if rest_start < raw.len() {
+@@ -196,6 +211,32 @@ pub(crate) fn interpolation_chunks(
+     Some(chunks)
+ }
+ 
++fn shorthand_end(bytes: &[u8], start: usize) -> usize {
++    let mut end = start;
++    while bytes.get(end).is_some_and(|byte| is_ident_continue(*byte)) {
++        end += 1;
++    }
++    while bytes.get(end) == Some(&b'.')
++        && bytes
++            .get(end + 1)
++            .is_some_and(|byte| is_ident_start(*byte))
++    {
++        end += 1;
++        while bytes.get(end).is_some_and(|byte| is_ident_continue(*byte)) {
++            end += 1;
++        }
++    }
++    end
++}
++
++fn is_ident_continue(byte: u8) -> bool {
++    byte.is_ascii_alphanumeric() || byte == b'_'
++}
++
++fn is_ident_start(byte: u8) -> bool {
++    byte.is_ascii_alphabetic() || byte == b'_'
++}
++
+ pub(crate) fn decode_string_text(
+     raw: &str,
+     base_offset: usize,
+diff --git a/tests/syntax.rs b/tests/syntax.rs
+index 728ff34..432e613 100644
+--- a/tests/syntax.rs
++++ b/tests/syntax.rs
+@@ -825,6 +825,22 @@ run echo "${{name: "demo"}.name}"
+         ArenaExprKind::PathFmtString(parts) if arena.fmt_parts(parts).count() == 2));
+ }
+ 
++#[test]
++fn parser_accepts_display_string_shorthand_interpolation() {
++    let source = r#"
++let name = "world"
++let label = f"hello $name"
++"#;
++    let output = Parser::parse_source_arena_only(SourceId::new(0), source);
++
++    assert!(output.diagnostics.is_empty(), "{:?}", output.diagnostics);
++    let arena = &output.arena.arena;
++    assert!(matches!(
++        arena.expr(root_let_init_expr(&output, 1)).kind,
++        ArenaExprKind::FmtString(parts) if arena.fmt_parts(parts).count() == 2
++    ));
++}
++
+ #[test]
+ fn parser_accepts_nested_interpolation_boundaries_from_shared_scanner() {
+     let source = r#"

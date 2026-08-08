@@ -1,0 +1,244 @@
+{
+  "artifacts": [
+    {
+      "kind": "session-directory",
+      "path": "workers/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 25,
+      "budget_failures": 0,
+      "cost_usd": 0.025270344,
+      "tool_errors": 0,
+      "total_bucket_tokens": 369887.0,
+      "unknown_costs": 0,
+      "workers": 2
+    },
+    "designer": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786177505335/phases/02-reeval-task-pathparts-003/workers/eval-designer/proposal-1/REPORT.md",
+      "present": false,
+      "result": "not-requested",
+      "role": "eval-designer",
+      "valid": true
+    },
+    "director": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786177505335/phases/02-reeval-task-pathparts-003/workers/director/director/REPORT.md",
+      "present": false,
+      "result": "not-requested",
+      "role": "director",
+      "valid": true
+    },
+    "engineer": [],
+    "handbook_lineage": {
+      "approved": "lineage/handbook-approved.md",
+      "candidate": "missing"
+    },
+    "manager": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786177505335/phases/02-reeval-task-pathparts-003/workers/eval-manager/task-pathparts/REPORT.md",
+      "present": true,
+      "result": "pass",
+      "role": "eval-manager",
+      "valid": true
+    },
+    "mode": "eval",
+    "narratives": [
+      {
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786177505335/phases/02-reeval-task-pathparts-003/workers/eval-manager/task-pathparts/REPORT.md",
+        "present": true,
+        "result": "pass",
+        "role": "eval-manager",
+        "valid": true
+      }
+    ],
+    "open_tickets": [
+      {
+        "eval_id": "task-bigfiles",
+        "id": "task-bigfiles-002",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-bigfiles-002.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-dupcheck",
+        "id": "task-dupcheck-002",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-dupcheck-002.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-004",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-004.md",
+        "status": "Approved."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-005",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-005.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-006",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-006.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-007",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-007.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-008",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-008.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-pathparts",
+        "id": "task-pathparts-003",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-pathparts-003.md",
+        "status": "Approved."
+      }
+    ],
+    "outcomes": {
+      "cycle": "fail",
+      "evaluator": "pass",
+      "infrastructure": "fail",
+      "product": "pass"
+    },
+    "required_outputs": {
+      "audit": false,
+      "candidate_handbook": false,
+      "designer_handbook_read": true,
+      "designer_output": true,
+      "handbook_lineage": false,
+      "manager_evidence_read": true,
+      "manager_handbook_read": true,
+      "manager_report": true,
+      "manager_session": true,
+      "required": false,
+      "ticket_snapshot_unchanged": true,
+      "trial1_process": true,
+      "trial1_report": true,
+      "trial2_process": true,
+      "trial2_report": true,
+      "worker_handbook_read": true
+    },
+    "sessions": [
+      "workers/eval-manager/task-pathparts/session.jsonl.bz2",
+      "workers/eval-worker/task-pathparts-1/session.jsonl.bz2"
+    ],
+    "tool_errors": [],
+    "trials": [
+      {
+        "evidence": {
+          "candidate_sha256": "54ab1746ef6e90d4eb8d64f08a74b859eb33ad6f010602ec954fedd5574ad2e3",
+          "classification": "pass",
+          "correctness": "pass",
+          "eval_id": "task-pathparts",
+          "handbook_sha256": "44d8ba3d8a0edb2fa823023b55a95ffa4388dd195ce77987804983cc255a832c",
+          "oracle_sha256": "54ab1746ef6e90d4eb8d64f08a74b859eb33ad6f010602ec954fedd5574ad2e3",
+          "passed": true,
+          "protocol": "pass",
+          "restrictions": "pass",
+          "result": "pass",
+          "timing": "pass",
+          "trial_id": "1",
+          "valid": true
+        },
+        "path": "workers/eval-worker/task-pathparts-1/run.json"
+      }
+    ],
+    "workers": [
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-pathparts"
+        },
+        "path": "workers/eval-manager/task-pathparts/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 12,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.001124352,
+          "cache_read_tokens": 62464,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.019381752,
+          "input_cost_usd": 0.016479720000000003,
+          "input_tokens": 183108,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0017776800000000002,
+          "output_tokens": 9876,
+          "provider_total_tokens": 255448,
+          "reasoning_tokens": 6313,
+          "thinking_blocks": 12,
+          "tool_calls": 20,
+          "tool_errors": 0,
+          "tool_results": 19,
+          "total_bucket_tokens": 255448,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-pathparts-1"
+        },
+        "path": "workers/eval-worker/task-pathparts-1/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 13,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.001176192,
+          "cache_read_tokens": 65344,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.005888592,
+          "input_cost_usd": 0.0041247,
+          "input_tokens": 45830,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0005877,
+          "output_tokens": 3265,
+          "provider_total_tokens": 114439,
+          "reasoning_tokens": 1376,
+          "thinking_blocks": 9,
+          "tool_calls": 16,
+          "tool_errors": 0,
+          "tool_results": 16,
+          "total_bucket_tokens": 114439,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "e4059a21ae8942fa07a0e8e61bac971ed703237c"
+  },
+  "findings": [
+    {
+      "kind": "required-outputs",
+      "state": "failed"
+    },
+    {
+      "kind": "handbook-lineage",
+      "state": "missing"
+    }
+  ],
+  "identity": {
+    "eval_id": "task-pathparts",
+    "mode": "eval",
+    "run_id": "02-reeval-task-pathparts-003"
+  },
+  "kind": "phase",
+  "result": "fail",
+  "schema_version": 1,
+  "state": "completed"
+}

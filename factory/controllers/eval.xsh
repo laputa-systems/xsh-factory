@@ -302,6 +302,10 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   )?
   fs.copy(request, fp"${run_dir}/CYCLE-REQUEST.md", overwrite: true)?
   fs.copy(fp"${factory_dir}/runtime/handbook.md", baseline_handbook, overwrite: true)?
+  # The approved snapshot is also the fail-safe candidate. A manager may
+  # overwrite this file with a provisional change, but an unchanged decision
+  # must not fail because copying identical content was forgotten.
+  fs.copy(baseline_handbook, candidate_handbook, overwrite: true)?
 
   let xsh_commit = run.text "git" "-C" $xsh_repo "rev-parse" "HEAD" ?
   let skip_reconcile = env.get_or("FACTORY_SKIP_TICKET_RECONCILE", "false")? == "true"

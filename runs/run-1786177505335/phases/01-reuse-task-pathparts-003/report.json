@@ -1,0 +1,31 @@
+{
+  "artifacts": [
+    {
+      "kind": "portable-patch",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786177505335/phases/01-reuse-task-pathparts-003/patches/task-pathparts-003.diff"
+    }
+  ],
+  "data": {
+    "base_commit": "e4059a21ae8942fa07a0e8e61bac971ed703237c",
+    "branch": "factory/task-pathparts-003/1786174073904",
+    "clean": true,
+    "fast_path": true,
+    "fast_path_kind": "deterministic-retained-branch-validation",
+    "implementation_commit": "f697fa2453f676f686c685171f5a8a9d514f871e",
+    "merge_base": "e4059a21ae8942fa07a0e8e61bac971ed703237c",
+    "mode": "ticket-reuse",
+    "patch": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786177505335/phases/01-reuse-task-pathparts-003/patches/task-pathparts-003.diff",
+    "ticket_id": "task-pathparts-003",
+    "worktree": "/Users/josh/d/laputa-systems/xsh-factory/../.xsh-factory-worktrees/run-1786177505335/task-pathparts-003"
+  },
+  "findings": [],
+  "identity": {
+    "mode": "ticket-reuse",
+    "run_id": "01-reuse-task-pathparts-003",
+    "ticket_id": "task-pathparts-003"
+  },
+  "kind": "phase",
+  "result": "pass",
+  "schema_version": 1,
+  "state": "completed"
+}

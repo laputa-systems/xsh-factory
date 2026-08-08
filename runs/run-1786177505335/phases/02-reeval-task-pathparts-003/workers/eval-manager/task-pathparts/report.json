@@ -1,0 +1,108 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786177505335/phases/02-reeval-task-pathparts-003/workers/eval-manager/task-pathparts/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_process": "nonzero-exit",
+    "dispatch_claim": "0ef83a66c0b8d1fd6bafecd65ab63110d7f1620bf63cf66a991f2492791c35ab",
+    "dispatch_id": "eval-manager-task-pathparts",
+    "factory_source": "unchanged",
+    "message_sha256": "0ef83a66c0b8d1fd6bafecd65ab63110d7f1620bf63cf66a991f2492791c35ab",
+    "reporting": "pass",
+    "required_report": "present",
+    "session_limit_watcher": "failed",
+    "system_prompt_sha256": "5be88af46c6bb990e968777a5f23e7fb24e7c4490c0d65428232363e7a5e4854",
+    "watcher": "pass"
+  },
+  "findings": [],
+  "identity": {
+    "role": "eval-manager",
+    "worker_id": "task-pathparts"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "provider_telemetry": {
+    "event_turns": 12,
+    "events_path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786177505335/phases/02-reeval-task-pathparts-003/workers/eval-manager/task-pathparts/session.jsonl.events.jsonl",
+    "output_tokens_per_second": 0,
+    "present": true,
+    "provider_errors": [
+      "Upstream error from DigitalOcean: Timeout on reading data from socket"
+    ],
+    "response_elapsed_ms": 0,
+    "retry_count": 1,
+    "retry_delay_ms": 2000,
+    "retry_errors": [
+      "Upstream error from DigitalOcean: Timeout on reading data from socket"
+    ],
+    "retry_failures": 0,
+    "retry_successes": 1
+  },
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786177505335/phases/02-reeval-task-pathparts-003/workers/eval-manager/task-pathparts/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "error"
+    },
+    {
+      "count": 11,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 1135850
+  },
+  "tool_errors": [],
+  "tools": [
+    {
+      "count": 5,
+      "name": "bash"
+    },
+    {
+      "count": 1,
+      "name": "find"
+    },
+    {
+      "count": 1,
+      "name": "ls"
+    },
+    {
+      "count": 11,
+      "name": "read"
+    },
+    {
+      "count": 2,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 12,
+    "budget_usd": 0.15,
+    "cache_read_cost_usd": 0.001124352,
+    "cache_read_tokens": 62464,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.019381752,
+    "input_cost_usd": 0.016479720000000003,
+    "input_tokens": 183108,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.0017776800000000002,
+    "output_tokens": 9876,
+    "provider_total_tokens": 255448,
+    "reasoning_tokens": 6313,
+    "thinking_blocks": 12,
+    "tool_calls": 20,
+    "tool_errors": 0,
+    "tool_results": 19,
+    "total_bucket_tokens": 255448,
+    "user_messages": 1
+  }
+}
