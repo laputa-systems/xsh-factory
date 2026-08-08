@@ -5,6 +5,11 @@ use factory.runtime as runtime
 
 proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   let factory_dir = env.path("FACTORY_DIR")?
+  let expected_source_sha = env.get_or("FACTORY_SOURCE_SHA", "")?
+  if expected_source_sha != "" and ! runtime.verify_factory_source(factory_dir, expected_source_sha)? {
+    eprint "factory source changed before eval executor admission"
+    abort(1)
+  }
   let eval_id = if argv.len() > 0 { argv[0] } else { env.get_or("FACTORY_EVAL_ID", "")? }
   if eval_id == "" {
     eprint "eval-executor requires an eval id"

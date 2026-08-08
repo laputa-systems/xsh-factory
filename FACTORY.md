@@ -58,6 +58,9 @@ is created.
 - Separate orchestration from judgment. Controllers own admission, exact
   assignment, process boundaries, cancellation, state transitions, and
   validation. Pi roles own interpretation, diagnosis, and recommendations.
+  `run.xsh` fingerprints immutable factory inputs at admission, propagates that
+  pin to every controller-owned child, and fails closed if source changes before
+  admission or after the cycle.
   validation. Pi roles own interpretation, diagnosis, and recommendations.
 Every host-side Pi session requires a controller-written dispatch manifest at
 `runs/<run>/dispatch/<role>-<worker>.json`. `factory/entrypoints/run-agent.xsh` rejects a missing,

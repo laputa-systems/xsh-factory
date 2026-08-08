@@ -112,6 +112,12 @@ proc main(...argv: List[Str]) [fs, process, env, error, io] {
   }
 
   let phase_dir = env.path("FACTORY_PHASE_DIR")?
+  let factory_dir = env.path("FACTORY_DIR")?
+  let expected_source_sha = env.get_or("FACTORY_SOURCE_SHA", "")?
+  if expected_source_sha != "" and ! runtime.verify_factory_source(factory_dir, expected_source_sha)? {
+    eprint "factory source changed before ticket reuse admission"
+    abort(1)
+  }
   let xsh_repo = env.path("FACTORY_XSH_REPO")?
   let ticket_id = env.get("FACTORY_TICKET_ID")?
   let branch = env.get("FACTORY_TICKET_BRANCH")?

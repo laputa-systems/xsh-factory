@@ -21,6 +21,11 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   }
 
   let factory_dir = env.path("FACTORY_DIR", fs.cwd()?)?
+  let expected_source_sha = env.get_or("FACTORY_SOURCE_SHA", "")?
+  if expected_source_sha != "" and ! runtime.verify_factory_source(factory_dir, expected_source_sha)? {
+    eprint "factory source changed before eval-design admission"
+    abort(1)
+  }
   let request = fp"${argv[0]}"
   let request_text = request.read_text()?
   if typed_request.mode_value(request_text)? != "eval-design" {
@@ -180,6 +185,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     FACTORY_NORTH_STAR_FILE: fp"${factory_dir}/NORTH-STAR.md".display(),
     FACTORY_XSH_REPO: xsh_repo.display(),
     FACTORY_XSH_COMMIT: xsh_commit.trim(),
+    FACTORY_SOURCE_SHA: expected_source_sha,
     FACTORY_IMAGE_ID: "not-used-design-cycle",
     FACTORY_EVAL_DIR: "",
     FACTORY_EVAL_IMAGE: "",

@@ -57,6 +57,10 @@ proc spawn_child(
   if configured_base_image != "" {
     assignments = assignments.push("FACTORY_BASE_IMAGE=" + configured_base_image)
   }
+  let source_sha = env.get_or("FACTORY_SOURCE_SHA", "")?
+  if source_sha != "" {
+    assignments = assignments.push("FACTORY_SOURCE_SHA=" + source_sha)
+  }
 
   assignments = assignments.push("FACTORY_ACTIVE_RUN=" + fp"${phase_dir}/ACTIVE".display())
   assignments = assignments.push("FACTORY_LOCK_PATH=" + fp"${phase_dir}/factory.lock".display())
@@ -229,6 +233,11 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   }
 
   let factory_dir = env.path("FACTORY_DIR", fs.cwd()?)?
+  let expected_source_sha = env.get_or("FACTORY_SOURCE_SHA", "")?
+  if expected_source_sha != "" and ! runtime.verify_factory_source(factory_dir, expected_source_sha)? {
+    eprint "factory source changed before organization admission"
+    abort(1)
+  }
   let request = fp"${argv[0]}"
   let request_text = request.read_text()?
   if typed_request.mode_value(request_text)? != "organization" {

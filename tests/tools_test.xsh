@@ -52,6 +52,20 @@ proc run_factory_entrypoint(file: Str, args: List[Str]) [fs, process, error] -> 
 }
 
 proc test_controller_and_tool_entrypoints_fail_closed(ctx: TestContext) [fs, process, error] {
+  for source in [
+    "run.xsh",
+    "factory/controllers/organization.xsh",
+    "factory/controllers/ticket.xsh",
+    "factory/controllers/eval.xsh",
+    "factory/controllers/design.xsh",
+    "factory/controllers/reuse.xsh",
+    "factory/entrypoints/run-agent.xsh",
+    "factory/entrypoints/eval-executor.xsh",
+  ] {
+    let source_text = fs.read_text(fp"${fs.cwd()?}/${source}")?
+    test.contains(source_text, "FACTORY_SOURCE_SHA")?
+    test.contains(source_text, "verify_factory_source")?
+  }
   test.ok(! run_factory_entrypoint("run.xsh", [])?)?
   test.ok(! run_factory_entrypoint("run.xsh", ["missing-request.md"])?)?
   test.ok(! run_factory_entrypoint("factory/controllers/eval.xsh", [])?)?
@@ -658,6 +672,35 @@ exit 17
   test.eq(schema.value_text(json.get(report, ["result"], "")), "fail")?
   let report_text = fs.read_text(fp"${run_dir}/report.json")?
   test.contains(report_text, "\"stage\": \"xsh\"")?
+}
+
+proc test_factory_source_fingerprint_detects_immutable_mutation(ctx: TestContext) [fs, error] {
+  let root = test.temp_dir(ctx, name: "factory-source-fingerprint")?
+  for directory in ["factory/controllers", "roles", "templates", "evals/task-test", "runtime", "tickets", "runs"] {
+    fs.mkdir(fp"${root}/${directory}")?
+  }
+  for file in [
+    "run.xsh",
+    "NORTH-STAR.md",
+    "FACTORY.md",
+    "README.md",
+    "CTO.md",
+    "THROUGHPUT.md",
+    "runtime/handbook.md",
+    "runtime/handbook-ledger.md",
+    "factory/controllers/eval.xsh",
+  ] {
+    fs.write(fp"${root}/${file}", "stable\n")?
+  }
+
+  let before = runtime.factory_source_fingerprint(root)?
+  test.ok(before != "")?
+  fs.write(fp"${root}/factory/controllers/eval.xsh", "changed\n")?
+  let after_source_change = runtime.factory_source_fingerprint(root)?
+  test.ok(after_source_change != before)?
+  fs.write(fp"${root}/tickets/task-test.md", "lifecycle-only\n")?
+  let after_ticket_change = runtime.factory_source_fingerprint(root)?
+  test.eq(after_ticket_change, after_source_change)?
 }
 
 proc test_eval_controller_completes_with_fake_build_docker_and_pi(ctx: TestContext) [fs, process, env, error] {
@@ -2667,7 +2710,7 @@ proc test_host_agent_dispatch_requires_controller_manifest(ctx: TestContext) [fs
   test.contains(runner, "agent invocation does not match controller dispatch record")?
 }
 
-proc test_runtime_registration_and_bound_dispatch_are_durable(ctx: TestContext) [fs, process, error] {
+proc test_runtime_registration_and_bound_dispatch_are_durable(ctx: TestContext) [fs, process, env, error] {
   let root = test.temp_dir(ctx, name: "runtime-registration")?
   let factory = fp"${root}/factory"
   let run_dir = fp"${root}/runs/run-1/01-ticket"

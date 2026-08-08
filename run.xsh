@@ -314,6 +314,12 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     abort(1)
   }
 
+  let factory_source_sha = runtime.factory_source_fingerprint(factory_dir)?
+  if factory_source_sha == "" {
+    eprint "factory source fingerprint could not be established"
+    abort(1)
+  }
+
   let child = if mode == "ticket-implementation" {
     fp"${factory_dir}/factory/controllers/ticket.xsh"
   } else if mode == "eval" {
@@ -329,7 +335,12 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
       xsh_path,
       [xsh_path.display(), child.display(), "--"].extend(argv),
       cwd: factory_dir,
+      env: {FACTORY_SOURCE_SHA: factory_source_sha},
     ),
   )?
+  if ! runtime.verify_factory_source(factory_dir, factory_source_sha)? {
+    eprint "factory source changed during the cycle; run failed closed"
+    abort(1)
+  }
   abort(if status.ok { 0 } else { status.exit_code() ?? 1 })
 }

@@ -22,6 +22,11 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   let system_prompt = fp"${argv[2]}"
   let message_file = fp"${argv[3]}"
   let factory_dir = env.path("FACTORY_DIR")?.resolve()?
+  let expected_source_sha = env.get_or("FACTORY_SOURCE_SHA", "")?
+  if expected_source_sha != "" and ! runtime.verify_factory_source(factory_dir, expected_source_sha)? {
+    eprint "factory source changed before worker admission"
+    abort(2)
+  }
   let run_dir = env.path("FACTORY_RUN_DIR")?.resolve()?
   let handbook_file = env.path("FACTORY_HANDBOOK_FILE", fp"${factory_dir}/runtime/handbook.md")?
   let north_star_file = env.path("FACTORY_NORTH_STAR_FILE", fp"${factory_dir}/NORTH-STAR.md")?

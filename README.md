@@ -91,6 +91,8 @@ Never launch Pi directly. Request templates live under `templates/`; the
 controller copies each immutable request into its run directory. `run.xsh`
 performs preflight, owns cancellation,
 and delegates every Pi process through `factory/entrypoints/run-agent.xsh`.
+At admission it pins the immutable factory source set; controllers and workers
+reject a changed pin, and the launcher verifies the source again at cycle end.
 
 An operator request for one cycle permits one paid `run.xsh` invocation. If
 that attempt exposes a controller defect, stop and repair it with native tests;

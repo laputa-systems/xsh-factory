@@ -29,6 +29,7 @@ proc spawn_engineer(
     FACTORY_RUN_AGENT: run_agent.display(),
     FACTORY_XSH_REPO: xsh_repo.display(),
     FACTORY_XSH_COMMIT: xsh_commit,
+    FACTORY_SOURCE_SHA: env.get_or("FACTORY_SOURCE_SHA", "")?,
     FACTORY_MODE: "ticket-implementation",
     FACTORY_EVAL_ID: "",
     FACTORY_PARENT_ID: "controller",
@@ -434,6 +435,7 @@ proc run_ticket_cycle(
     FACTORY_RUN_AGENT: run_agent.display(),
     FACTORY_XSH_REPO: xsh_repo.display(),
     FACTORY_XSH_COMMIT: xsh_commit.trim(),
+    FACTORY_SOURCE_SHA: env.get_or("FACTORY_SOURCE_SHA", "")?,
     FACTORY_MODE: "ticket-implementation",
     FACTORY_DIRECTOR_RECONCILE_ONLY: "true",
     FACTORY_EVAL_ID: "",
@@ -758,6 +760,11 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   }
 
   let factory_dir = env.path("FACTORY_DIR", fs.cwd()?)?
+  let expected_source_sha = env.get_or("FACTORY_SOURCE_SHA", "")?
+  if expected_source_sha != "" and ! runtime.verify_factory_source(factory_dir, expected_source_sha)? {
+    eprint "factory source changed before ticket admission"
+    abort(1)
+  }
   let request = fp"${argv[0]}"
   let xsh_repo = env.path("FACTORY_XSH_REPO", fp"${factory_dir}/../xsh")?
   let home = env.get("HOME")?

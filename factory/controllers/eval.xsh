@@ -211,6 +211,11 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   }
 
   let factory_dir = env.path("FACTORY_DIR", fs.cwd()?)?
+  let expected_source_sha = env.get_or("FACTORY_SOURCE_SHA", "")?
+  if expected_source_sha != "" and ! runtime.verify_factory_source(factory_dir, expected_source_sha)? {
+    eprint "factory source changed before eval admission"
+    abort(1)
+  }
   let request = fp"${argv[0]}"
   let request_text = request.read_text()?
   let request_evals = typed_request.eval_values(request_text)?
@@ -691,6 +696,7 @@ wall-ms=${build_elapsed}
     f"FACTORY_RUN_AGENT=${run_agent.display()}",
     f"FACTORY_XSH_REPO=${xsh_repo.display()}",
     f"FACTORY_XSH_COMMIT=${xsh_commit.trim()}",
+    f"FACTORY_SOURCE_SHA=${env.get_or("FACTORY_SOURCE_SHA", "")?}",
     f"FACTORY_HANDBOOK_FILE=${baseline_handbook.display()}",
     f"FACTORY_NORTH_STAR_FILE=${factory_dir}/NORTH-STAR.md",
     f"XSH_MODULE_PATH=${factory_dir.display()}",

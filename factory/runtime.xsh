@@ -66,7 +66,7 @@ export proc cleanup_active_run() [fs, process, env, error] -> Result[Unit] {
 }
 
 ## Registers a controller so cleanup covers phase and top-level processes alike.
-export proc register_cycle_controller(run_dir: Path) [fs, process, error] -> Result[Unit] {
+export proc register_cycle_controller(run_dir: Path) [fs, process, env, error] -> Result[Unit] {
   let processes = fp"${run_dir}/processes"
   fs.mkdir(processes)?
   let pid = process.current_pid()?
@@ -75,6 +75,10 @@ export proc register_cycle_controller(run_dir: Path) [fs, process, error] -> Res
     f"""${pid}
 """,
   )?
+  let source_sha = env.get_or("FACTORY_SOURCE_SHA", "")?
+  if source_sha != "" {
+    fs.write_atomic(fp"${run_dir}/factory-source.sha256", source_sha + "\n")?
+  }
 }
 
 ## Writes one controller-owned host-agent dispatch record.
@@ -1636,6 +1640,48 @@ export proc acquire_run_lock(factory_dir: Path) [fs, error] -> Result[Record] {
 export proc verify_factory_handbook(factory_dir: Path, expected_sha: Str) [fs, error] -> Result[Bool] {
   let handbook = fp"${factory_dir}/runtime/handbook.md"
   return fs.exists(handbook)? and hash.sha256(handbook)?.hex() == expected_sha
+}
+
+## Returns the fingerprint of immutable factory inputs used by a paid run.
+## Run evidence, ticket lifecycle records, and archived outputs are deliberately
+## excluded because controllers own those mutable boundaries during a cycle.
+export proc factory_source_fingerprint(factory_dir: Path) [fs, error] -> Result[Str] {
+  var files: List[Path] = [
+    fp"${factory_dir}/run.xsh",
+    fp"${factory_dir}/NORTH-STAR.md",
+    fp"${factory_dir}/FACTORY.md",
+    fp"${factory_dir}/README.md",
+    fp"${factory_dir}/CTO.md",
+    fp"${factory_dir}/THROUGHPUT.md",
+    fp"${factory_dir}/runtime/handbook.md",
+    fp"${factory_dir}/runtime/handbook-ledger.md",
+  ]
+  for root in ["factory", "roles", "templates", "evals"] {
+    let root_path = fp"${factory_dir}/${root}"
+    if fs.exists(root_path)? {
+      for entry in fs.walk(root_path, gitignore: false, hidden: true)? |> where .kind == "file" {
+        continue when "/.dist/" in entry.path.display()
+        files = files.push(entry.path)
+      }
+    }
+  }
+
+  files = files |> sort-by .display() |> collect()
+  var manifest = ""
+  for file in files {
+    if ! fs.exists(file)? {
+      return ""
+    }
+
+    manifest = manifest + file.display() + "\n" + hash.sha256(file)?.hex() + "\n"
+  }
+
+  return hash.sha256(bytes.from_text(manifest)).hex()
+}
+
+## Verifies that the immutable factory inputs still match paid admission.
+export proc verify_factory_source(factory_dir: Path, expected_sha: Str) [fs, error] -> Result[Bool] {
+  return expected_sha != "" and factory_source_fingerprint(factory_dir)? == expected_sha
 }
 
 ## Counts historical candidate snapshots with no explicit ledger disposition.
