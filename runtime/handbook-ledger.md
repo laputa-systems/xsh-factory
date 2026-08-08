@@ -7,6 +7,17 @@ A candidate hash listed as `promoted` has been incorporated into the rolling
 must remain visible as unresolved work in the CTO briefing; controllers must
 not silently discard it.
 
+## Explicit CTO disposition — run-1786167293099
+
+| Candidate SHA-256 | Disposition |
+| --- | --- |
+| `2953f932b3a4d428f0186922307de44ebfa50daaa947e274dfc924ea4b3a3bed` | deferred pending cross-eval replay; not promoted |
+
+The task-pathparts replay supplied a general standard-module-shadowing rule,
+but it is one fresh trial and repeats the already-deferred lesson recorded
+under `dbb77ccc...`. Preserve the candidate and require a second path/stream
+or environment construction replay before promoting it.
+
 ## Explicit CTO disposition — run-1786159268557
 
 | Candidate SHA-256 | Disposition |
