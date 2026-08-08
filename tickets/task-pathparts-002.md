@@ -2,7 +2,7 @@
 
 ## Status
 
-Approved.
+Merged.
 
 ## CTO decision — pre-cycle-4
 
@@ -47,10 +47,10 @@ None.
 
 ## Merge record
 
-- Implementation branch: `{{IMPLEMENTATION_BRANCH}}`
-- Implementation commit: `{{IMPLEMENTATION_COMMIT}}`
-- Detected at XSH commit: `{{DETECTED_XSH_COMMIT}}`
-- Implementation run: `{{IMPLEMENTATION_RUN}}`
+- Implementation branch: `factory/task-pathparts-002/1786167297024`
+- Implementation commit: `a652116f9cb91eb4a6d432731c9902c34007b172`
+- Detected at XSH commit: `a652116f9cb91eb4a6d432731c9902c34007b172`
+- Implementation run: `/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786167293099/phases/01-ticket`
 
 ## Source eval and manager
 

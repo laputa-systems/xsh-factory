@@ -1791,6 +1791,49 @@ proc test_organization_audit_projects_throughput_from_existing_evidence(ctx: Tes
   test.ok(json.get(throughput, ["overlap_retained_fresh"], false))?
 }
 
+proc test_organization_audit_preserves_phase_outcome_dimensions(ctx: TestContext) [fs, process, error] {
+  let root = test.temp_dir(ctx, name: "audit-organization-outcomes")?
+  let factory = fs.cwd()?
+  fs.mkdir(fp"${root}/phases/03-eval")?
+  json.write(
+    fp"${root}/phases/03-eval/report.json",
+    {
+      schema_version: 1,
+      kind: "phase",
+      identity: {run_id: "03-eval", mode: "eval", eval_id: "task-a"},
+      state: "completed",
+      result: "fail",
+      data: {
+        mode: "eval",
+        outcomes: {product: "pass", evaluator: "fail", infrastructure: "fail"},
+        cost: {workers: 0, assistant_turns: 0, total_bucket_tokens: 0, cost_usd: 0.0, tool_errors: 0},
+      },
+      findings: [],
+      artifacts: [],
+    },
+    pretty: true,
+  )?
+  fs.write(
+    fp"${root}/events.jsonl",
+    """{"event_id":"90-cycle-failed","detail":"product=pass; evaluator=fail; infrastructure=fail"}
+""",
+  )?
+  let status = process.run(
+    process.command_argv(
+      process.which("xsh")?,
+      ["xsh", fp"${factory}/factory/tools/audit.xsh", "--", root.display(), "organization"],
+      cwd: factory,
+      env: {FACTORY_DIR: factory.display(), XSH_MODULE_PATH: factory.display(), FACTORY_XSH_COMMIT: "fixture"},
+    ),
+  )?
+  test.ok(status.ok, "organization audit should emit a report for a failed phase")?
+  let report = json.read(fp"${root}/report.json")?
+  test.eq(json.get(report, ["result"], ""), "fail")?
+  test.eq(json.get(report, ["data", "outcomes", "product"], ""), "pass")?
+  test.eq(json.get(report, ["data", "outcomes", "evaluator"], ""), "fail")?
+  test.eq(json.get(report, ["data", "outcomes", "infrastructure"], ""), "fail")?
+}
+
 proc test_reconciliation_ignores_retired_branch_reference(ctx: TestContext) [fs, process, error] {
   let root = test.temp_dir(ctx, name: "retired-branch-reconciliation")?
   let factory = fs.cwd()?
@@ -2488,6 +2531,17 @@ proc test_organization_starts_independent_eval_before_primary_wait() [fs, error]
   test.contains(before_primary_wait, "let independent_eval_handle = spawn_child")?
   test.contains(before_primary_wait, "independent_eval_handles = independent_eval_handles.push")?
   test.contains(before_primary_wait, "reuse_primary_handle = spawn_reuse_phase")?
+
+  let before_independent_close = organization.split("var independent_eval_state").get(0, "")
+  let after_independent_close = organization.split("var independent_eval_state").get(1, "")
+  test.ok(
+    ! before_independent_close.contains("reconcile_tickets(factory_dir, xsh_repo, delivered_xsh_commit.trim())"),
+    "ticket reconciliation must not race the independent manager snapshot",
+  )?
+  test.contains(
+    after_independent_close,
+    "reconcile_tickets(factory_dir, xsh_repo, delivered_xsh_commit.trim())",
+  )?
 }
 
 proc test_organization_supports_two_discovery_evals() [fs, error] {

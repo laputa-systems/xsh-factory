@@ -7,6 +7,17 @@ A candidate hash listed as `promoted` has been incorporated into the rolling
 must remain visible as unresolved work in the CTO briefing; controllers must
 not silently discard it.
 
+## Explicit CTO disposition — run-1786168895521
+
+| Candidate SHA-256 | Disposition |
+| --- | --- |
+| `02dd3b39826a462af69981b0908434b174690c92722abe7c409520f639f72400` | deferred pending cross-eval replay; not promoted |
+
+The linked task-pathparts replay supplied a reusable `print`/`eprint` effect
+rule, but the independent task-bigfiles manager did not complete its review
+because the overlapping ticket snapshot race failed closed. Preserve the
+candidate and require a second output-producing eval before promotion.
+
 ## Explicit CTO disposition — run-1786167293099
 
 | Candidate SHA-256 | Disposition |

@@ -163,6 +163,71 @@ proc organization_throughput(run_dir: Path, worker_reports: List[Path]) [fs, err
   }
 }
 
+# Preserve the phase's explicit outcome dimension when present. Older or
+# synthetic phase fixtures may only carry a terminal result, so that remains
+# the conservative fallback for the common report envelope.
+pure phase_outcome(value: Any, dimension: Str) -> Bool {
+  let explicit = schema.value_text(json.get(value, ["data", "outcomes", dimension], ""))
+  return if explicit == "pass" {
+    true
+  } else if explicit == "fail" {
+    false
+  } else {
+    text(json.get(value, ["result"], "fail")) == "pass"
+  }
+}
+
+pure detail_outcome(detail: Str, dimension: Str, fallback: Bool) -> Bool {
+  let prefix = dimension + "="
+  for part in detail.split(";") {
+    let field = part.trim()
+    if field.starts_with(prefix) {
+      return field.replace(prefix, "").trim() == "pass"
+    }
+  }
+  fallback
+}
+
+proc organization_event_outcomes(
+  run_dir: Path,
+  fallback_product: Bool,
+  fallback_evaluator: Bool,
+  fallback_infrastructure: Bool,
+) [fs, error] -> Result[Any] {
+  let events_path = fp"${run_dir}/events.jsonl"
+  if ! fs.exists(events_path)? {
+    return {
+      product: fallback_product,
+      evaluator: fallback_evaluator,
+      infrastructure: fallback_infrastructure,
+    }
+  }
+
+  for line in fs.read_text(events_path)?.lines() {
+    match json.decode(line) {
+      Ok(event) => {
+        let event_id = text(json.get(event, ["event_id"], ""))
+        continue unless event_id == "90-cycle-completed" or event_id == "90-cycle-failed"
+        let detail = text(json.get(event, ["detail"], ""), "")
+        if detail != "" {
+          return {
+            product: detail_outcome(detail, "product", fallback_product),
+            evaluator: detail_outcome(detail, "evaluator", fallback_evaluator),
+            infrastructure: detail_outcome(detail, "infrastructure", fallback_infrastructure),
+          }
+        }
+      }
+      Err(_) => {}
+    }
+  }
+
+  {
+    product: fallback_product,
+    evaluator: fallback_evaluator,
+    infrastructure: fallback_infrastructure,
+  }
+}
+
 proc open_ticket_snapshot(factory_dir: Path) [fs, error] -> Result[List[Any]] {
   var tickets: List[Any] = []
   let ticket_dir = fp"${factory_dir}/tickets"
@@ -553,7 +618,9 @@ proc audit_organization(run_dir: Path, factory_dir: Path) [fs, process, env, err
   let phases_dir = fp"${run_dir}/phases"
   var phases: List[Any] = []
   var findings: List[Any] = []
-  var all_pass = true
+  var product_ok = true
+  var evaluator_ok = true
+  var infrastructure_ok = true
   if fs.exists(phases_dir)? {
     for entry in fs.children(phases_dir, stat: false, ordered: true)
       |> where .kind == "dir"
@@ -567,23 +634,34 @@ proc audit_organization(run_dir: Path, factory_dir: Path) [fs, process, env, err
         {id: entry.name, path: relative_path(run_dir.display(), report_path), valid: valid, result: result},
       )
       if ! valid or result != "pass" {
-        all_pass = false
         findings = findings.push({kind: "phase", id: entry.name, result: result})
+      }
+      if valid {
+        product_ok = product_ok and phase_outcome(value, "product")
+        evaluator_ok = evaluator_ok and phase_outcome(value, "evaluator")
+        infrastructure_ok = infrastructure_ok and phase_outcome(value, "infrastructure")
+      } else {
+        product_ok = false
+        evaluator_ok = false
+        infrastructure_ok = false
       }
     }
   }
 
   if phases.len() == 0 {
-    all_pass = false
     findings = findings.push({kind: "phases", state: "missing"})
   }
 
   let worker_reports = worker_report_paths(run_dir)?
   let workers = worker_data(run_dir, worker_reports)?
   let throughput = organization_throughput(run_dir, worker_reports)?
-  let product_ok = phases.len() > 0 and all_pass
-  let evaluator_ok = all_pass
-  let infrastructure_ok = workers.usage.budget_failures == 0 and workers.usage.unknown_costs == 0
+  product_ok = phases.len() > 0 and product_ok
+  evaluator_ok = phases.len() > 0 and evaluator_ok
+  infrastructure_ok = phases.len() > 0 and infrastructure_ok and workers.usage.budget_failures == 0 and workers.usage.unknown_costs == 0
+  let event_outcomes = organization_event_outcomes(run_dir, product_ok, evaluator_ok, infrastructure_ok)?
+  product_ok = json.get(event_outcomes, ["product"], false) == true
+  evaluator_ok = json.get(event_outcomes, ["evaluator"], false) == true
+  infrastructure_ok = json.get(event_outcomes, ["infrastructure"], false) == true and workers.usage.budget_failures == 0 and workers.usage.unknown_costs == 0
   let result = if product_ok and evaluator_ok and infrastructure_ok { "pass" } else { "fail" }
   let xsh_commit = current_xsh_commit(factory_dir)?.trim()
   let report = {

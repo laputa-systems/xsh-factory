@@ -1020,7 +1020,6 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   let final_worktree_cleanup_ok = runtime.remove_run_worktrees(xsh_repo, run_dir)?
   worktree_cleanup_ok = worktree_cleanup_ok and final_worktree_cleanup_ok
   let delivered_xsh_commit = run.text "git" "-C" $xsh_repo "rev-parse" "HEAD" ?
-  let _ = runtime.reconcile_tickets(factory_dir, xsh_repo, delivered_xsh_commit.trim())?
 
   var independent_eval_state = if independent_eval_requested { "not-run" } else { "not-applicable" }
   var independent_eval_report_state = if independent_eval_requested { "not-run" } else { "not-applicable" }
@@ -1083,6 +1082,12 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     independent_eval_state = if all_independent_evals_pass { "pass" } else { "fail" }
     independent_eval_report_state = if all_independent_eval_reports_pass { "pass" } else { "missing-or-failed" }
   }
+
+  # The independent eval may still be checking its pre-manager ticket
+  # snapshot. Reconcile delivered tickets only after that overlapping phase
+  # has closed, so controller-owned lifecycle updates cannot look like a
+  # manager mutation.
+  let _ = runtime.reconcile_tickets(factory_dir, xsh_repo, delivered_xsh_commit.trim())?
 
   var design_state = "not-requested"
   var design_report_state = "not-requested"
