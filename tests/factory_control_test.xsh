@@ -570,6 +570,8 @@ fixture
   test.ok(control.manager_report_gate_ok(manager_report, true, false))?
   test.ok(control.reeval_manager_acceptance_gate("Candidate acceptance: pass; no replay required."))?
   test.ok(control.reeval_manager_acceptance_gate("Candidate acceptance surface exercised; the linked candidate passed."))?
+  test.ok(control.reeval_manager_acceptance_gate("The worker actually exercised the candidate surface and it was accepted for merge."))?
+  test.ok(control.reeval_manager_acceptance_gate("Accept-for-merge decision recorded after the candidate surface was exercised."))?
   test.ok(control.reeval_manager_acceptance_gate("Controller decision in conference: retain/accept the candidate branch."))?
   test.ok(! control.reeval_manager_acceptance_gate("Result pass, but needs-replay: acceptance was not exercised."))?
   test.ok(control.reeval_manager_acceptance_gate("""## Post-merge decisions

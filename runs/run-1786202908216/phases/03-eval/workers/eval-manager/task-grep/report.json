@@ -1,0 +1,92 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786202908216/phases/03-eval/workers/eval-manager/task-grep/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_process": "pass",
+    "dispatch_claim": "69fec831be548cc560de42b53f08ab8c247e7b51ba165d35ef3590be002dabb2",
+    "dispatch_id": "eval-manager-task-grep",
+    "factory_source": "unchanged",
+    "message_sha256": "69fec831be548cc560de42b53f08ab8c247e7b51ba165d35ef3590be002dabb2",
+    "reporting": "pass",
+    "required_report": "present",
+    "session_limit_watcher": "pass",
+    "system_prompt_sha256": "dcc7697c0a5a0136550a54a072d38bfd766fa8357453aa03c356a5e812d0e829",
+    "watcher": "pass"
+  },
+  "findings": [],
+  "identity": {
+    "role": "eval-manager",
+    "worker_id": "task-grep"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "provider_telemetry": {
+    "event_turns": 10,
+    "events_path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786202908216/phases/03-eval/workers/eval-manager/task-grep/session.jsonl.events.jsonl",
+    "output_tokens_per_second": 0,
+    "present": true,
+    "provider_errors": [],
+    "response_elapsed_ms": 0,
+    "retry_count": 0,
+    "retry_delay_ms": 0,
+    "retry_errors": [],
+    "retry_failures": 0,
+    "retry_successes": 0
+  },
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786202908216/phases/03-eval/workers/eval-manager/task-grep/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 9,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 369756
+  },
+  "tool_errors": [],
+  "tools": [
+    {
+      "count": 13,
+      "name": "read"
+    },
+    {
+      "count": 3,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 10,
+    "budget_usd": 0.15,
+    "cache_read_cost_usd": 0.005354496,
+    "cache_read_tokens": 297472,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.013317696,
+    "input_cost_usd": 0.0054122400000000005,
+    "input_tokens": 60136,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.0025509599999999997,
+    "output_tokens": 14172,
+    "provider_total_tokens": 371780,
+    "reasoning_tokens": 7750,
+    "thinking_blocks": 9,
+    "tool_calls": 16,
+    "tool_errors": 0,
+    "tool_results": 16,
+    "total_bucket_tokens": 371780,
+    "user_messages": 1
+  }
+}

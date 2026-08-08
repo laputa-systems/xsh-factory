@@ -299,6 +299,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   runtime.stage_cto_improvement(factory_dir, run_dir)?
   runtime.stage_cto_productivity_report(factory_dir, run_dir)?
   runtime.register_cycle_controller(run_dir)?
+  defer runtime.unregister_cycle_controller(run_dir)?
   let skip_cycle_budget = env.get_or("FACTORY_SKIP_CYCLE_BUDGET", "false")? == "true"
   if ! skip_cycle_budget {
     let _ = runtime.start_cycle_budget_watch(factory_dir, run_dir)?

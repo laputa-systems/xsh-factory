@@ -217,6 +217,18 @@ export proc register_process(run_dir: Path, name: Str, pid: Int) [fs, error] -> 
   )?
 }
 
+## Removes a completed child registration. Keeping only live registrations
+## prevents run-status from mistaking a later, unrelated PID reuse for factory
+## work after a controller has already waited for the child.
+export proc unregister_process(run_dir: Path, name: Str) [fs, error] -> Result[Unit] {
+  fs.remove(fp"${run_dir}/processes/${name}.pids", missing_ok: true)?
+}
+
+## The controller registration is live evidence only while its controller runs.
+export proc unregister_cycle_controller(run_dir: Path) [fs, error] -> Result[Unit] {
+  unregister_process(run_dir, "controller")?
+}
+
 ## Starts the one aggregate watcher owned by a top-level cycle controller.
 export proc start_cycle_budget_watch(
   factory_dir: Path,

@@ -1,0 +1,31 @@
+{
+  "artifacts": [
+    {
+      "kind": "portable-patch",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786202908216/phases/01-reuse-task-dupcheck-002/patches/task-dupcheck-002.diff"
+    }
+  ],
+  "data": {
+    "base_commit": "608ab11bcf25cb0f69df4cb352fa40b27c1be2b3",
+    "branch": "factory/task-dupcheck-002/1786201139234",
+    "clean": true,
+    "fast_path": true,
+    "fast_path_kind": "deterministic-retained-branch-validation",
+    "implementation_commit": "b9cc3ffc6425b365a172c5a897ed9684db235487",
+    "merge_base": "c77b01a3e2fb676cc57cdeddbb7575be7723aa32",
+    "mode": "ticket-reuse",
+    "patch": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786202908216/phases/01-reuse-task-dupcheck-002/patches/task-dupcheck-002.diff",
+    "ticket_id": "task-dupcheck-002",
+    "worktree": "/Users/josh/d/laputa-systems/xsh-factory/../.xsh-factory-worktrees/run-1786202908216/task-dupcheck-002"
+  },
+  "findings": [],
+  "identity": {
+    "mode": "ticket-reuse",
+    "run_id": "01-reuse-task-dupcheck-002",
+    "ticket_id": "task-dupcheck-002"
+  },
+  "kind": "phase",
+  "result": "pass",
+  "schema_version": 1,
+  "state": "completed"
+}

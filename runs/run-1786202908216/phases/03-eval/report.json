@@ -1,0 +1,235 @@
+{
+  "artifacts": [
+    {
+      "kind": "session-directory",
+      "path": "workers/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 35,
+      "budget_failures": 0,
+      "cost_usd": 0.027050435999999997,
+      "tool_errors": 1,
+      "total_bucket_tokens": 638864.0,
+      "unknown_costs": 0,
+      "workers": 2
+    },
+    "designer": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786202908216/phases/03-eval/workers/eval-designer/proposal-1/REPORT.md",
+      "present": false,
+      "result": "not-requested",
+      "role": "eval-designer",
+      "valid": true
+    },
+    "director": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786202908216/phases/03-eval/workers/director/director/REPORT.md",
+      "present": false,
+      "result": "not-requested",
+      "role": "director",
+      "valid": true
+    },
+    "engineer": [],
+    "handbook_lineage": {
+      "approved": "lineage/handbook-approved.md",
+      "candidate": "lineage/handbook-candidate.md"
+    },
+    "manager": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786202908216/phases/03-eval/workers/eval-manager/task-grep/REPORT.md",
+      "present": true,
+      "result": "pass",
+      "role": "eval-manager",
+      "valid": true
+    },
+    "mode": "eval",
+    "narratives": [
+      {
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786202908216/phases/03-eval/workers/eval-manager/task-grep/REPORT.md",
+        "present": true,
+        "result": "pass",
+        "role": "eval-manager",
+        "valid": true
+      }
+    ],
+    "open_tickets": [
+      {
+        "eval_id": "task-dupcheck",
+        "id": "task-dupcheck-002",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-dupcheck-002.md",
+        "status": "Approved."
+      },
+      {
+        "eval_id": "task-grep (evals/task-grep/EVAL.md, Approved)",
+        "id": "task-grep-001",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-grep-001.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-005",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-005.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-006",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-006.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-007",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-007.md",
+        "status": "Approved."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-008",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-008.md",
+        "status": "Open."
+      }
+    ],
+    "outcomes": {
+      "cycle": "pass",
+      "evaluator": "pass",
+      "infrastructure": "pass",
+      "product": "pass"
+    },
+    "required_outputs": {
+      "audit": true,
+      "candidate_acceptance": true,
+      "candidate_handbook": true,
+      "designer_handbook_read": true,
+      "designer_output": true,
+      "handbook_lineage": true,
+      "manager_evidence_read": true,
+      "manager_handbook_read": true,
+      "manager_report": true,
+      "manager_session": true,
+      "required": true,
+      "ticket_snapshot_unchanged": true,
+      "trial1_process": true,
+      "trial1_report": true,
+      "trial2_process": true,
+      "trial2_report": true,
+      "worker_handbook_read": true
+    },
+    "sessions": [
+      "workers/eval-manager/task-grep/session.jsonl.bz2",
+      "workers/eval-worker/task-grep-1/session.jsonl.bz2"
+    ],
+    "tool_errors": [
+      {
+        "report": "workers/eval-worker/task-grep-1/report.json",
+        "summary": "sh: syntax error: unexpected \"(\"\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 5,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-grep-1"
+        }
+      }
+    ],
+    "trials": [
+      {
+        "evidence": {
+          "candidate_sha256": "unknown",
+          "classification": "pass",
+          "correctness": "pass",
+          "eval_id": "task-grep",
+          "handbook_sha256": "unknown",
+          "oracle_sha256": "unknown",
+          "passed": true,
+          "protocol": "pass",
+          "restrictions": "pass",
+          "result": "pass",
+          "timing": "pass",
+          "trial_id": "1",
+          "valid": true
+        },
+        "path": "workers/eval-worker/task-grep-1/run.json"
+      }
+    ],
+    "workers": [
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-grep"
+        },
+        "path": "workers/eval-manager/task-grep/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 10,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.005354496,
+          "cache_read_tokens": 297472,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.013317696,
+          "input_cost_usd": 0.0054122400000000005,
+          "input_tokens": 60136,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0025509599999999997,
+          "output_tokens": 14172,
+          "provider_total_tokens": 371780,
+          "reasoning_tokens": 7750,
+          "thinking_blocks": 9,
+          "tool_calls": 16,
+          "tool_errors": 0,
+          "tool_results": 16,
+          "total_bucket_tokens": 371780,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-grep-1"
+        },
+        "path": "workers/eval-worker/task-grep-1/report.json",
+        "result": "pass",
+        "tool_errors": 1,
+        "usage": {
+          "assistant_turns": 25,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.0026783999999999996,
+          "cache_read_tokens": 148800,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.013732739999999998,
+          "input_cost_usd": 0.010236779999999996,
+          "input_tokens": 113742,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0008175599999999999,
+          "output_tokens": 4542,
+          "provider_total_tokens": 267084,
+          "reasoning_tokens": 1563,
+          "thinking_blocks": 18,
+          "tool_calls": 26,
+          "tool_errors": 1,
+          "tool_results": 26,
+          "total_bucket_tokens": 267084,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "608ab11bcf25cb0f69df4cb352fa40b27c1be2b3"
+  },
+  "findings": [],
+  "identity": {
+    "eval_id": "task-grep",
+    "mode": "eval",
+    "run_id": "03-eval"
+  },
+  "kind": "phase",
+  "result": "pass",
+  "schema_version": 1,
+  "state": "completed"
+}

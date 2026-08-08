@@ -149,7 +149,10 @@ proc active_processes(run_dir: Path) [fs, process, error] -> Result[List[Any]] {
       match pid_line.trim().parse_int() {
         Ok(pid) => {
           for observed in processes {
-            continue when observed.pid != pid or observed.status == "zombie"
+            # Host process tables use both the readable `zombie` spelling and
+            # the POSIX `Z` state. Treat both as terminal; a zombie is not
+            # actionable live work and must not inflate ACTIVE counts.
+            continue when observed.pid != pid or observed.status == "zombie" or observed.status == "Z"
             rows = rows.push({
               label: label,
               pid: pid,

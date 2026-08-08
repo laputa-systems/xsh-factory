@@ -1095,6 +1095,9 @@ export pure reeval_manager_acceptance_gate(report: Str) -> Bool {
     "decision: **accept**",
   ) or lower.contains("decision: accept") or lower.contains("candidate acceptance exercised")
     or lower.contains("candidate acceptance surface exercised")
+    or lower.contains("actually exercised the candidate surface")
+    or lower.contains("accepted for merge")
+    or lower.contains("accept-for-merge")
     or lower.contains("decision in conference: retain/accept") or lower.contains(
       "controller decision in conference: retain/accept",
     )

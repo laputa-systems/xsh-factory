@@ -146,6 +146,7 @@ proc run_ticket_cycle(
   )?
   runtime.stage_cto_improvement(factory_dir, run_dir)?
   runtime.register_cycle_controller(run_dir)?
+  defer runtime.unregister_cycle_controller(run_dir)?
   let skip_cycle_budget = env.get_or("FACTORY_SKIP_CYCLE_BUDGET", "false")? == "true"
   let retain_worktree = env.get_or("FACTORY_RETAIN_WORKTREE", "false")? == "true"
   if ! retain_worktree {

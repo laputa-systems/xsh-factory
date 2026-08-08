@@ -2708,6 +2708,8 @@ proc test_eval_gate_diagnostics_are_persisted() [fs, error] {
   test.contains(evaluator, "controller-managed; do not read")?
   test.contains(evaluator, "REPORT.attempt-1.md")?
   test.contains(evaluator, "manager-retry-recovered")?
+  test.contains(evaluator, "EVAL-MANAGER-RETRY.md")?
+  test.contains(evaluator, "retry_guidance")?
 }
 
 proc test_process_run_status_contract_is_executable(ctx: TestContext) [fs, process, error] {
@@ -3253,6 +3255,10 @@ proc test_run_status_inspects_live_and_completed_evidence(ctx: TestContext) [fs,
   test.contains(report, "age=")?
   test.contains(report, "01-ticket completed pass")?
   test.contains(report, "engineer/task-a pass turns=7 cost=0.040000 errors=1")?
+
+  fs.write(fp"${run_dir}/processes/completed.pids", f"${controller_pid}\n")?
+  runtime.unregister_process(run_dir, "completed")?
+  test.ok(! fs.exists(fp"${run_dir}/processes/completed.pids")?, "completed process registrations must be removable")?
 
   fs.write(
     fp"${run_dir}/events.jsonl",

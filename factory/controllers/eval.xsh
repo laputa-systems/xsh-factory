@@ -201,6 +201,7 @@ proc run_executor_trial(
   )?
   runtime.register_process(run_dir, f"executor-${eval_id}-${trial_id}", handle.pid)?
   let status = wait handle?
+  runtime.unregister_process(run_dir, f"executor-${eval_id}-${trial_id}")?
   status.ok
 }
 
@@ -283,6 +284,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   fs.mkdir(lineage_dir)?
   runtime.stage_cto_improvement(factory_dir, run_dir)?
   runtime.register_cycle_controller(run_dir)?
+  defer runtime.unregister_cycle_controller(run_dir)?
   let skip_cycle_budget = env.get_or("FACTORY_SKIP_CYCLE_BUDGET", "false")? == "true"
   if ! skip_cycle_budget {
     let _ = runtime.start_cycle_budget_watch(factory_dir, run_dir)?
@@ -957,6 +959,7 @@ wall-ms=${build_elapsed}
     fp"${run_dir}/manager.stderr",
   )?
   let manager_status = wait manager_handle?
+  runtime.unregister_process(run_dir, f"controller-eval-manager-${eval_id}")?
   let manager_session = fp"${run_dir}/workers/eval-manager/${eval_id}/session.jsonl"
   let manager_report = fp"${run_dir}/workers/eval-manager/${eval_id}/REPORT.md"
   let manager_worker_report = fp"${run_dir}/workers/eval-manager/${eval_id}/report.json"
@@ -975,7 +978,15 @@ wall-ms=${build_elapsed}
       "eval-manager",
       {reason: "manager report incomplete", worker_id: retry_worker_id},
     )?
-    let retry_assignment = manager_message.read_text()?.replace(
+    let retry_report = fp"${run_dir}/workers/eval-manager/${retry_worker_id}/REPORT.md"
+    let retry_guidance = control.fill_template(
+      fp"${factory_dir}/templates/EVAL-MANAGER-RETRY.md".read_text()?,
+      [
+        {key: "PHASE_REPORT", value: fp"${run_dir}/report.json".display()},
+        {key: "REPORT_PATH", value: retry_report.display()},
+      ],
+    )
+    let retry_assignment = retry_guidance + "\n\n" + manager_message.read_text()?.replace(
       fp"${run_dir}/workers/eval-manager/${eval_id}".display(),
       fp"${run_dir}/workers/eval-manager/${retry_worker_id}".display(),
     )
@@ -1004,8 +1015,8 @@ wall-ms=${build_elapsed}
       retry_stderr,
     )?
     let retry_status = wait retry_handle?
+    runtime.unregister_process(run_dir, f"controller-eval-manager-${retry_worker_id}")?
     manager_process_ok = retry_status.ok
-    let retry_report = fp"${run_dir}/workers/eval-manager/${retry_worker_id}/REPORT.md"
     let retry_worker_report = fp"${run_dir}/workers/eval-manager/${retry_worker_id}/report.json"
     let retry_session = fp"${run_dir}/workers/eval-manager/${retry_worker_id}/session.jsonl"
     let retry_narrative = if fs.exists(retry_report)? { fs.read_text(retry_report)? } else { "" }
@@ -1050,6 +1061,7 @@ wall-ms=${build_elapsed}
   var designer_ok = true
   if designer_handle != null {
     let designer_status = wait designer_handle?
+    runtime.unregister_process(run_dir, f"controller-eval-designer-${designer_worker}")?
     designer_ok = designer_status.ok
   }
 
