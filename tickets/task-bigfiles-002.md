@@ -2,7 +2,21 @@
 
 ## Status
 
-Open.
+Approved.
+
+## CTO decision — cycle-11 adaptive queue
+
+- Decision: Approved for one fresh engineer row.
+- Basis: This is the oldest focused open product observation, its linked eval
+  is available, and the queue has high open pressure with no remaining
+  approved implementation branch. The proposed change is narrow API-reference
+  guidance with an existing evaluator and a clear replay contract.
+- Scope: Clarify the command-word spelling for block-bearing stream stages in
+  `xsht api`, especially `sort-by --desc { |e| e.size }`; preserve parser
+  behavior and evaluator contracts.
+- Required acceptance: the engineer's reference change passes focused native
+  tests, and the linked replay must actually exercise the documented spelling
+  before delivery.
 
 ## CTO review
 

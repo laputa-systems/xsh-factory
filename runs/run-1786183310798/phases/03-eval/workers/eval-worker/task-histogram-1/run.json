@@ -1,0 +1,96 @@
+{
+  "classification": "pass",
+  "correctness": {
+    "all_exact": true,
+    "cases": [
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 10736740,
+        "exact": true,
+        "name": "public",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 12062786
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 11306991,
+        "exact": true,
+        "name": "hidden_width",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 11000824
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 12325952,
+        "exact": true,
+        "name": "hidden_many",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 12229786
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 13915290,
+        "exact": true,
+        "name": "hidden_sparse",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 15328794
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 12358160,
+        "exact": true,
+        "name": "hidden_single",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 11458491
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 14298667,
+        "exact": true,
+        "name": "hidden_ties",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 12244119
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 10959032,
+        "exact": true,
+        "name": "hidden_empty",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 14914377
+      },
+      {
+        "candidate_exit": 1,
+        "candidate_wall_ns": 12619411,
+        "exact": true,
+        "name": "hidden_bad_width",
+        "oracle_exit": 1,
+        "oracle_wall_ns": 14617542
+      },
+      {
+        "candidate_exit": 1,
+        "candidate_wall_ns": 12005910,
+        "exact": true,
+        "name": "hidden_bad_value",
+        "oracle_exit": 2,
+        "oracle_wall_ns": 12317994
+      }
+    ],
+    "passed": true
+  },
+  "eval_id": "task-histogram",
+  "image_id": "sha256:cf611716a7124ad78e3626c27501cd300686717e9f7b741560cfe632681a74a8",
+  "platform": "linux/arm64",
+  "protocol": {
+    "artifact_present": true,
+    "review_ok": true
+  },
+  "restrictions": {
+    "passed": true
+  },
+  "result": "pass",
+  "timings": {
+    "passed": true
+  },
+  "trial_id": "1"
+}

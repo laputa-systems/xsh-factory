@@ -1062,11 +1062,12 @@ wall-ms=${build_elapsed}
   }
 
   let manager_tool_errors = report_has_tool_errors(manager_worker_report)?
+  let manager_narrative = if fs.exists(manager_report)? { fs.read_text(manager_report)? } else { "" }
   let manager_report_ok = fs.exists(manager_report)? and ! fs.exists(manager_report_marker)? and control.manager_report_gate_ok(
-    fs.read_text(manager_report)?,
+    manager_narrative,
     worker_tool_errors,
     manager_tool_errors,
-  )
+  ) and (candidate_ticket == "not-reevaluation" or control.reeval_manager_acceptance_gate(manager_narrative))
   let designer_session = fp"${run_dir}/workers/eval-designer/${designer_worker}/session.jsonl"
   let designer_worker_report = fp"${run_dir}/workers/eval-designer/${designer_worker}/report.json"
   let designer_report = fp"${run_dir}/workers/eval-designer/proposal-1/REPORT.md"
@@ -1145,6 +1146,7 @@ wall-ms=${build_elapsed}
       candidate_handbook: candidate_exists,
       handbook_lineage: lineage_ok,
       manager_report: manager_report_ok,
+      candidate_acceptance: candidate_ticket == "not-reevaluation" or control.reeval_manager_acceptance_gate(manager_narrative),
       ticket_snapshot_unchanged: ticket_snapshot_unchanged,
       designer_output: designer_output_ok,
       audit: audit_pass,

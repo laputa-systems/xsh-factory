@@ -2,7 +2,7 @@
 
 ## Status
 
-Approved.
+Merged.
 
 ## CTO decision — recovery cycle after run-1786174072800
 
@@ -55,10 +55,10 @@ None.
 
 ## Merge record
 
-- Implementation branch: `{{IMPLEMENTATION_BRANCH}}`
-- Implementation commit: `{{IMPLEMENTATION_COMMIT}}`
-- Detected at XSH commit: `{{DETECTED_XSH_COMMIT}}`
-- Implementation run: `{{IMPLEMENTATION_RUN}}`
+- Implementation branch: `factory/task-histogram-004/1786177507590`
+- Implementation commit: `d04e19f524cce28af9ccb2c37cc322b4da1ca7c3`
+- Detected at XSH commit: `fdeee37e911f820865dc617a14d61ec8e111c603`
+- Implementation run: `/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786177505335/phases/01-ticket`
 
 ## Source eval and manager
 

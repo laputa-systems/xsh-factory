@@ -1080,6 +1080,13 @@ export pure manager_report_gate_ok(report: Str, worker_tool_errors: Bool, manage
   ))
 }
 
+## A candidate-linked replay may not deliver an implementation that the
+## manager explicitly says was not exercised or needs another replay.
+export pure reeval_manager_acceptance_gate(report: Str) -> Bool {
+  let lower = report.lower()
+  return ! lower.contains("needs-replay") and ! lower.contains("not supported") and ! lower.contains("not exercised")
+}
+
 ## A Pi process may return nonzero after producing a valid report because of
 ## an agent-level tool failure. Watchers and report production remain hard
 ## completion gates; the process result is retained as structured evidence.

@@ -1,0 +1,120 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786183310798/phases/03-eval/workers/eval-worker/task-histogram-1/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_state": "pass",
+    "agent_wall_ms": 460991,
+    "artifact": {
+      "name": "histogram.xsh",
+      "state": "present"
+    },
+    "budget_state": "pass",
+    "classification": "pass",
+    "evaluator_manifest": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786183310798/phases/03-eval/workers/eval-worker/task-histogram-1/run.json",
+    "evaluator_state": "pass",
+    "reporting_state": "pass",
+    "result": "pass",
+    "review": {
+      "state": "present"
+    }
+  },
+  "findings": [
+    {
+      "count": 1,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "eval_id": "task-histogram",
+    "role": "eval-worker",
+    "run_id": "03-eval",
+    "worker_id": "task-histogram-1"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "provider_telemetry": {
+    "event_turns": 53,
+    "events_path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786183310798/phases/03-eval/workers/eval-worker/task-histogram-1/session.jsonl.events.jsonl",
+    "output_tokens_per_second": 0,
+    "present": true,
+    "provider_errors": [],
+    "response_elapsed_ms": 0,
+    "retry_count": 0,
+    "retry_delay_ms": 0,
+    "retry_errors": [],
+    "retry_failures": 0,
+    "retry_successes": 0
+  },
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786183310798/phases/03-eval/workers/eval-worker/task-histogram-1/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 52,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 459775
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786183310798/phases/03-eval/workers/eval-worker/task-histogram-1/session.jsonl.bz2",
+      "summary": "apk\nca-certificates\nmisc\nudhcpc\n===\nls: /usr/share/hist*: No such file or directory\n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 47
+    }
+  ],
+  "tools": [
+    {
+      "count": 57,
+      "name": "bash"
+    },
+    {
+      "count": 3,
+      "name": "edit"
+    },
+    {
+      "count": 4,
+      "name": "read"
+    },
+    {
+      "count": 3,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 53,
+    "budget_usd": 0.5,
+    "cache_read_cost_usd": 0.016507007999999997,
+    "cache_read_tokens": 917056,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.025715358,
+    "input_cost_usd": 0.006229529999999998,
+    "input_tokens": 69217,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.002978820000000001,
+    "output_tokens": 16549,
+    "provider_total_tokens": 1002822,
+    "reasoning_tokens": 9051,
+    "thinking_blocks": 39,
+    "tool_calls": 67,
+    "tool_errors": 1,
+    "tool_results": 67,
+    "total_bucket_tokens": 1002822,
+    "user_messages": 1
+  }
+}

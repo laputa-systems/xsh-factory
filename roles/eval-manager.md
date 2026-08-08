@@ -24,6 +24,11 @@ or oracle while diagnosing a run. A handbook change is provisional and belongs
 on the shared handbook lineage for the run, not on an eval-specific handbook
 branch.
 
+For a candidate-linked replay, accept delivery only when the worker actually
+exercised the ticket's acceptance criteria. If it used a workaround or did not
+exercise the proposed surface, say so explicitly; the controller will retain
+the branch for a directed replay.
+
 The controller-supplied `RUN_DIR/lineage/handbook-approved.md` path is
 authoritative and absolute. If you verify its hash, use that exact path (or the
 exact path in the assignment) rather than constructing a relative path from

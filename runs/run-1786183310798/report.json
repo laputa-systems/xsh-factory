@@ -1,0 +1,235 @@
+{
+  "artifacts": [
+    {
+      "kind": "phase-reports",
+      "path": "phases/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 117,
+      "budget_failures": 0,
+      "cost_usd": 0.063860742,
+      "tool_errors": 3,
+      "total_bucket_tokens": 2346750.0,
+      "unknown_costs": 0,
+      "workers": 4
+    },
+    "mode": "organization",
+    "outcomes": {
+      "cycle": "pass",
+      "evaluator": "pass",
+      "infrastructure": "pass",
+      "product": "pass"
+    },
+    "phases": [
+      {
+        "id": "01-ticket",
+        "path": "phases/01-ticket/report.json",
+        "result": "pass",
+        "valid": true
+      },
+      {
+        "id": "02-reeval-task-histogram-004",
+        "path": "phases/02-reeval-task-histogram-004/report.json",
+        "result": "pass",
+        "valid": true
+      },
+      {
+        "id": "03-eval",
+        "path": "phases/03-eval/report.json",
+        "result": "pass",
+        "valid": true
+      }
+    ],
+    "throughput": {
+      "admitted_tickets": 1,
+      "delivered_tickets": 1,
+      "delivery_conversion": 1.0,
+      "fresh_engineer_rows": 0,
+      "handbook_quarantines": 0,
+      "overlap_linked_replays": false,
+      "overlap_retained_fresh": false,
+      "reeval_dispatched": 1,
+      "reeval_passed": 1,
+      "retained_fast_paths": 1,
+      "retained_rows": 1
+    },
+    "tool_errors": [
+      {
+        "report": "phases/02-reeval-task-histogram-004/workers/eval-manager/task-histogram/report.json",
+        "summary": "ENOTDIR: not a directory, access '/Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786183310798/task-histogram-004/.git/HEAD'",
+        "tool": "read",
+        "turn": 4,
+        "worker": {
+          "role": "eval-manager",
+          "worker_id": "task-histogram"
+        }
+      },
+      {
+        "report": "phases/02-reeval-task-histogram-004/workers/eval-worker/task-histogram-1/report.json",
+        "summary": "Could not find the exact text in /work/histogram.xsh. The old text must match exactly including all whitespace and newlines.",
+        "tool": "edit",
+        "turn": 34,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-histogram-1"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-worker/task-histogram-1/report.json",
+        "summary": "apk\nca-certificates\nmisc\nudhcpc\n===\nls: /usr/share/hist*: No such file or directory\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 47,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-histogram-1"
+        }
+      }
+    ],
+    "workers": [
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-histogram"
+        },
+        "path": "phases/02-reeval-task-histogram-004/workers/eval-manager/task-histogram/report.json",
+        "result": "pass",
+        "tool_errors": 1,
+        "usage": {
+          "assistant_turns": 8,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.002921472,
+          "cache_read_tokens": 162304,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.008628912,
+          "input_cost_usd": 0.0034043399999999996,
+          "input_tokens": 37826,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0023031,
+          "output_tokens": 12795,
+          "provider_total_tokens": 212925,
+          "reasoning_tokens": 8139,
+          "thinking_blocks": 7,
+          "tool_calls": 17,
+          "tool_errors": 1,
+          "tool_results": 17,
+          "total_bucket_tokens": 212925,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-histogram-1"
+        },
+        "path": "phases/02-reeval-task-histogram-004/workers/eval-worker/task-histogram-1/report.json",
+        "result": "pass",
+        "tool_errors": 1,
+        "usage": {
+          "assistant_turns": 49,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.01645056,
+          "cache_read_tokens": 913920,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.022166550000000004,
+          "input_cost_usd": 0.0030795300000000013,
+          "input_tokens": 34217,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00263646,
+          "output_tokens": 14647,
+          "provider_total_tokens": 962784,
+          "reasoning_tokens": 8476,
+          "thinking_blocks": 36,
+          "tool_calls": 55,
+          "tool_errors": 1,
+          "tool_results": 55,
+          "total_bucket_tokens": 962784,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-histogram"
+        },
+        "path": "phases/03-eval/workers/eval-manager/task-histogram/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 7,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.0021611519999999995,
+          "cache_read_tokens": 120064,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.007349921999999999,
+          "input_cost_usd": 0.0034791299999999995,
+          "input_tokens": 38657,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00170964,
+          "output_tokens": 9498,
+          "provider_total_tokens": 168219,
+          "reasoning_tokens": 3546,
+          "thinking_blocks": 6,
+          "tool_calls": 18,
+          "tool_errors": 0,
+          "tool_results": 18,
+          "total_bucket_tokens": 168219,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-histogram-1"
+        },
+        "path": "phases/03-eval/workers/eval-worker/task-histogram-1/report.json",
+        "result": "pass",
+        "tool_errors": 1,
+        "usage": {
+          "assistant_turns": 53,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.016507007999999997,
+          "cache_read_tokens": 917056,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.025715358,
+          "input_cost_usd": 0.006229529999999998,
+          "input_tokens": 69217,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.002978820000000001,
+          "output_tokens": 16549,
+          "provider_total_tokens": 1002822,
+          "reasoning_tokens": 9051,
+          "thinking_blocks": 39,
+          "tool_calls": 67,
+          "tool_errors": 1,
+          "tool_results": 67,
+          "total_bucket_tokens": 1002822,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "fdeee37e911f820865dc617a14d61ec8e111c603"
+  },
+  "findings": [],
+  "identity": {
+    "mode": "organization",
+    "run_id": "run-1786183310798"
+  },
+  "kind": "run",
+  "result": "pass",
+  "schema_version": 1,
+  "state": "completed"
+}
