@@ -311,7 +311,6 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   let queue_counts = runtime.organization_ticket_counts(factory_dir, xsh_repo)?
   let approved_count = queue_counts.get(1, 0)
   let engineer_target = control.engineer_target(approved_count)
-  let discovery_target = if engineer_target > 0 { 1 } else { control.max_concurrent_discovery_evals() }
   let ticket_policy = typed_request.ticket_policy_value(request_text)?
   let selected_tickets = if requested_tickets.len() > 0 {
     requested_tickets
@@ -413,21 +412,30 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   }
 
   let requested_evals = typed_request.eval_values(request_text)?
-  let adaptive_eval_limit = if selected_tickets.len() > 0 { 1 } else { discovery_target }
+  let adaptive_eval_limit = control.organization_eval_target(
+    queue_counts.get(0, 0),
+    selected_tickets.len(),
+  )
   let request_evals = if requested_evals.len() == 0 {
     runtime.adaptive_approved_evals(factory_dir, adaptive_eval_limit)?
   } else {
     requested_evals
   }
-  if request_evals.len() < 1 or request_evals.len() > control.max_concurrent_discovery_evals() {
-    eprint f"organization cycles require one eval, or at most ${control.max_concurrent_discovery_evals()} discovery evals"
+  if request_evals.len() > control.max_concurrent_discovery_evals() {
+    eprint f"organization cycles allow at most ${control.max_concurrent_discovery_evals()} independent evals"
     abort(2)
   }
-  if selected_ticket != "" and request_evals.len() != 1 {
-    eprint "ticket organization cycles require exactly one independent eval"
+  if selected_ticket == "" and request_evals.len() < 1 {
+    eprint "ticketless organization cycles require at least one discovery eval"
     abort(2)
   }
-  let requested_eval = if request_evals.len() > 0 { request_evals[0] } else { "" }
+  let requested_eval = if request_evals.len() > 0 {
+    request_evals[0]
+  } else if selected_ticket != "" {
+    control.ticket_eval(selected_ticket_path.read_text()?)
+  } else {
+    ""
+  }
   if selected_ticket == "" {
     var seen_evals: List[Str] = []
     for eval_id in request_evals {
@@ -438,7 +446,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
       seen_evals = seen_evals.push(eval_id)
     }
   }
-  let independent_eval_requested = selected_ticket != "" or request_evals.len() > 1
+  let independent_eval_requested = request_evals.len() > 0 and (selected_ticket != "" or request_evals.len() > 1)
   let ticket_eval = if selected_ticket != "" {
     control.ticket_eval(selected_ticket_path.read_text()?)
   } else {
@@ -575,7 +583,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     "started",
     1,
     "controller",
-    f"open=${queue_counts.get(0, 0)}; approved=${queue_counts.get(1, 0)}; engineers=${engineer_target}; discovery_evals=${request_evals.len()}",
+    f"open=${queue_counts.get(0, 0)}; approved=${queue_counts.get(1, 0)}; engineers=${engineer_target}; independent_eval_target=${adaptive_eval_limit}; independent_evals=${request_evals.len()}; linked_replay=mandatory",
   )?
 
   var ticket_value = "None."
@@ -726,10 +734,9 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     independent_eval_spawn_index += 1
   }
 
-  # Start the deterministic retained-branch validation before waiting on the
-  # fresh primary. The retained phase does not consume Pi budget, but keeping
-  # both process handles live makes the overlap observable and leaves the
-  # merge/delivery boundary serialized below.
+  # Start the deterministic retained-branch preflight before waiting on the
+  # fresh primary. This reuse phase does not consume Pi budget; its linked
+  # replay still does and remains bounded quality evidence.
   var reuse_primary_handle: ProcessHandle? = null
   if reuse_existing_branch {
     let reuse_branch = runtime.open_ticket_branch(xsh_repo, reuse_ticket)?

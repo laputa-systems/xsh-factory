@@ -71,8 +71,9 @@ One cycle may:
 
 - admit two engineer tickets in a ticket-implementation cycle whenever two
   evidence-backed Approved tickets are available;
-- run one linked re-evaluation plus one independent active eval when a ticket
-  is admitted (two distinct eval runs);
+- run one linked re-evaluation for every passing engineer row; allocate the
+  optional independent eval lane from queue pressure (zero under heavy ticket
+  pressure, one at moderate pressure, and up to four for an empty queue);
 - produce and immediately review at most one new eval proposal;
 - promote that proposal package into `evals/` regardless of the review result;
   set `Approved.` only when the evaluator and evidence pass, otherwise retain
@@ -220,9 +221,9 @@ The source is a request template; the immutable cycle request belongs under
 the controller-created `runs/run-<id>/CYCLE-REQUEST.md`, not at repository top
 level:
 
-- with an approved ticket: implement it, run its linked replay, run one
-  different independent active eval, and produce, review, and promote one
-  design proposal when below the cap;
+- with an approved ticket: implement it and run its linked replay; run the
+  optional independent active eval only when queue pressure allocates it, and
+  produce, review, and promote one design proposal when below the cap;
 - without an approved ticket: run one active eval as primary and produce,
   review, and promote one design proposal when below the cap; or
 - at the eval cap: omit design and spend nothing on new eval creation.

@@ -14,9 +14,10 @@ cheap and preserve all worker evidence; do not create activity or tickets
 without a corresponding product hypothesis. Before invoking `run.xsh`, the CTO
 must review every `Open.` ticket, change each eligible ticket to `Approved.`,
 and record the evidence and any deferral reason in the ticket. Never leave an
-eligible ticket Open and silently substitute an eval-only cycle. When a ticket is admitted, run
-its linked re-evaluation and independent active eval, while the independent
-eval-design phase runs alongside the primary phase.
+eligible ticket Open and silently substitute an eval-only cycle. When a ticket
+is admitted, its linked re-evaluation is mandatory; the independent eval lane
+is allocated by queue pressure, while the independent eval-design phase runs
+alongside the primary phase.
 
 ## Mode
 
@@ -76,8 +77,8 @@ environment override in the invocation, using names such as
 
 - up to two approved ticket implementations and one linked pre-merge replay per
   ticket when tickets are available;
-- one independent active eval when a ticket is available, otherwise one active
-  eval as the primary phase;
+- the queue-pressure allocation of independent evals when a ticket is
+  available, otherwise the adaptive active-eval batch as the primary phase;
 - one substantive eval-design proposal meeting the difficulty gate pending review;
 - structured worker reports and raw Pi sessions;
 - a run-level `report.json` covering every worker;

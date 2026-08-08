@@ -49,8 +49,9 @@ Before launch, the CTO reviews every remaining `Open.` ticket. The CTO checks
 evidence, duplication, scope, and acceptance criteria.
 The controller reconciles merged tickets and admits up to two implementations.
 It starts safe independent phases concurrently.
-It replays successful tickets against linked evals.
-It runs a different independent active eval.
+It replays successful tickets against linked evals. The optional independent
+eval lane adapts to queue pressure so product delivery keeps capacity when the
+ticket queue is crowded.
 It can produce, review, and promote one eval proposal.
 With no approved ticket, the selected eval becomes the primary phase.
 

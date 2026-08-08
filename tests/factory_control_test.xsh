@@ -170,6 +170,17 @@ proc test_fresh_ticket_order_preserves_replay_gates() [error] {
   )?
 }
 
+proc test_organization_eval_target_follows_queue_pressure() [error] {
+  test.eq(control.organization_eval_target(0, 0), 4)?
+  test.eq(control.organization_eval_target(1, 0), 2)?
+  test.eq(control.organization_eval_target(2, 0), 2)?
+  test.eq(control.organization_eval_target(3, 0), 1)?
+  test.eq(control.organization_eval_target(0, 1), 1)?
+  test.eq(control.organization_eval_target(2, 1), 1)?
+  test.eq(control.organization_eval_target(3, 1), 0)?
+  test.eq(control.organization_eval_target(3, 2), 0)?
+}
+
 proc test_cto_inventory_surfaces_ticket_state() [error] {
   let markdown = runtime.cto_inventory_markdown(
     [
@@ -392,8 +403,9 @@ proc test_ticket_api_surface_gate_is_documented() [fs, error] {
 
 proc test_approved_dupcheck_ticket_satisfies_admission_gate() [fs, error] {
   let ticket = fs.read_text(fp"${fs.cwd()?}/tickets/task-dupcheck-002.md")?
-  test.ok(control.ticket_is_accepted(ticket))?
-  test.ok(control.ticket_api_surface_gate_ok(ticket))?
+  let approved = control.replace_ticket_status(ticket, "Approved.")
+  test.ok(control.ticket_is_accepted(approved))?
+  test.ok(control.ticket_api_surface_gate_ok(approved))?
 }
 
 proc test_admission_and_report_contracts() [error] {
@@ -1030,6 +1042,7 @@ proc test_standard_cycle_uses_diverse_active_eval(ctx: TestContext) [fs, error] 
   test.contains(launcher, "unresolved_handbook_candidates")?
   test.contains(launcher, "factory/tools/cto.xsh")?
   test.contains(organization, "adaptive_approved_tickets")?
+  test.contains(organization, "organization_eval_target")?
   test.contains(organization, "max_concurrent_discovery_evals()")?
   test.contains(runtime_source, "organization_ticket_counts")?
   test.contains(fs.read_text(fp"${fs.cwd()?}/run.xsh")?, "next_untried_approved_eval")?

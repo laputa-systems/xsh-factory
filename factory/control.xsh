@@ -282,6 +282,26 @@ export pure engineer_target(approved_count: Int) -> Int {
   }
 }
 
+## Allocates the optional independent-eval lane from queue pressure. Linked
+## replays are not included here: every passing engineer row still requires its
+## own linked replay before delivery. A crowded product queue spends the paid
+## capacity on implementation; an empty queue spends it on discovery.
+export pure organization_eval_target(open_count: Int, selected_ticket_count: Int) -> Int {
+  let open = if open_count < 0 { 0 } else { open_count }
+  let selected = if selected_ticket_count < 0 { 0 } else { selected_ticket_count }
+  if selected > 0 {
+    return if open >= 3 { 0 } else { 1 }
+  }
+
+  return if open == 0 {
+    max_concurrent_discovery_evals()
+  } else if open <= 2 {
+    2
+  } else {
+    1
+  }
+}
+
 ## Orders a mixed organization batch so fresh product work reaches the merge
 ## boundary before a retained branch replay. Every row still keeps its own
 ## replay and provenance gates; this only prevents an older branch from

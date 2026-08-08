@@ -55,6 +55,15 @@ Include the exact sentence `Candidate acceptance: pass.` when the candidate is
 accepted, or `Candidate acceptance: fail.` when it is not. Do not rely on
 implicit wording for this delivery decision.
 
+Keep evidence ownership separate. The engineer's primary report owns native
+compiler, checker, and unit/API test execution; the linked replay owns the
+ticket's externally observable defining behavior and restriction/protocol
+boundary. When an acceptance criterion explicitly names a primary-phase test,
+do not require the evaluator sandbox to duplicate that test. Verify that the
+criterion is recorded in the structured engineer evidence named by the ticket
+or phase packet, and require the replay to cover the distinct behavior that
+would fail without the proposed change.
+
 The controller has completed exactly `{{TRIAL_COUNT}}` fresh trial(s). Preserve
 separate evidence under `{{RUN_DIR}}/workers/eval-worker/` and inspect each
 worker `report.json`, evaluator `run.json`, artifact, review, and quantitative

@@ -1985,7 +1985,10 @@ proc test_adaptive_ticket_selection_prefers_fresh_rows(ctx: TestContext) [fs, pr
   let tickets = fp"${root}/tickets"
   fs.mkdir(product)?
   fs.mkdir(tickets)?
-  let ticket = fs.read_text(fp"${factory}/tickets/task-dupcheck-002.md")?
+  let ticket = control.replace_ticket_status(
+    fs.read_text(fp"${factory}/tickets/task-dupcheck-002.md")?,
+    "Approved.",
+  )
   fs.write(fp"${tickets}/task-a.md", ticket.replace("task-dupcheck-002", "task-a"))?
   fs.write(fp"${tickets}/task-b.md", ticket.replace("task-dupcheck-002", "task-b"))?
 
@@ -2728,6 +2731,8 @@ proc test_eval_manager_assignment_proves_exact_handbook_read() [fs, error] {
   test.contains(assignment, "portable patch")?
   test.contains(assignment, "Candidate acceptance: pass.")?
   test.contains(assignment, "Candidate acceptance: fail.")?
+  test.contains(assignment, "Keep evidence ownership separate")?
+  test.contains(assignment, "do not require the evaluator sandbox to duplicate")?
 }
 
 proc test_organization_delivery_is_a_success_gate() [fs, error] {

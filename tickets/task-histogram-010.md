@@ -20,6 +20,21 @@ Approved.
   `../runs/run-1786218719345/phases/02-reeval-task-histogram-009/` passed all
   nine cases and exercised `parse_uint_positive`.
 
+## CTO replay repair — cycle 30 close
+
+- Decision: keep the approved implementation branch and repair the linked
+  replay contract before its next delivery attempt.
+- Basis: cycle 30's manager correctly found that the nine-case evaluator did
+  not distinguish the whitespace-normalization fix. The evaluator now includes
+  `hidden_padded_width` and documents the ten-case contract.
+- Evidence: `runs/run-1786220380763/phases/02-reeval-task-histogram-010/`
+  records the non-discriminating replay; the repaired package is checked in by
+  `b451bf1` and covered by
+  `test_task_histogram_restriction_accepts_typed_unsigned_parse`.
+- Evidence ownership: native parser/API tests and `xsht` checks remain
+  primary engineer evidence; the linked replay must prove the padded-width
+  behavior and the evaluator restriction/protocol boundary.
+
 ## Change target
 
 - `product`
@@ -60,7 +75,8 @@ such as `" 5 "` succeed through `parse_uint` and fail through
   `e6d3fd96f9fa654c0d1c9f434f83b6984a60c204`.
 - Linked replay: cycle-29 `task-histogram` manager report confirms the new
   typed positive parser is discoverable and used successfully for the width;
-  the task's argv cases do not exercise surrounding whitespace.
+  the task's argv cases did not exercise surrounding whitespace until the
+  replay repair recorded above.
 - The discrepancy is visible by comparing the two adjacent conversion
   implementations and is isolated to the new method.
 
@@ -76,7 +92,7 @@ existing family predictable without expanding the language surface.
 
 Consistent typed conversions reduce agent guesswork and make numeric boundary
 validation composable. Falsification requires the linked histogram eval to
-remain byte-exact and native tests to show that positive parsing accepts the
+remain byte-exact, including its padded-width case, and primary native tests to show that positive parsing accepts the
 documented surrounding-whitespace form while still rejecting zero, signs,
 malformed text, and overflow.
 
@@ -91,7 +107,7 @@ malformed text, and overflow.
   second conversion or a caller-side workaround.
 - Maintenance cost is limited to the parser implementation, API contract
   wording if needed, native method tests, and one linked eval replay.
-- Falsification evidence is the full nine-case `task-histogram` replay plus
+- Falsification evidence is the full ten-case `task-histogram` replay plus
   direct whitespace/zero/sign/malformed/overflow tests.
 
 ## Proposed XSH change
@@ -105,9 +121,11 @@ positive-decimal validation and typed error behavior. Preserve all existing
 1. `" 5 ".parse_uint_positive()?` returns `5`.
 2. Zero, signs, malformed text, and out-of-range text still return the existing
    typed `parse-uint-positive` error.
-3. The linked `task-histogram` replay passes all nine cases byte-exact, with no
-   restriction or protocol regression.
-4. Native parser/API tests and the relevant XSH checks pass.
+3. The linked `task-histogram` replay passes all ten cases byte-exact, including
+   a surrounding-whitespace width, with no restriction or protocol regression.
+4. The primary engineer report records native parser/API tests and the
+   relevant XSH checks as passing; the replay need not duplicate the native
+   suite.
 
 ## Scope and non-goals
 
@@ -117,6 +135,7 @@ positive-decimal validation and typed error behavior. Preserve all existing
 
 ## Post-merge evaluation
 
-Replay `task-histogram` against the merged commit, including the existing nine
-cases and the parser's typed positive-bound behavior; record the decision in
-the linked eval-manager report.
+Replay `task-histogram` against the merged commit, including all ten cases and
+the parser's typed positive-bound behavior; record the decision in the linked
+eval-manager report. Treat the primary engineer report as the evidence source
+for native parser/API tests.

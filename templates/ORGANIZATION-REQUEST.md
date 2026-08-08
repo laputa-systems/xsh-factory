@@ -10,9 +10,9 @@ top level.
 
 Run one bounded organization cycle. The controller applies the queue-pressure
 policy after deterministic CTO inventory: it dispatches up to two already
-approved product tickets when the ready queue supports them, keeps one
-independent eval alongside product work, and runs up to four discovery evals
-when no approved ticket is ready. It never promotes an `Open.` ticket.
+approved product tickets when the ready queue supports them, keeps every
+engineer's linked replay hard, and allocates the optional independent-eval lane
+from queue pressure. It never promotes an `Open.` ticket.
 
 ## Bottleneck review
 
@@ -66,8 +66,8 @@ invocation with a role-specific setting.
 ## Required outputs
 
 - one engineer implementation row for every selected approved ticket;
-- one independent eval alongside product work, or the adaptive discovery batch
-  when no approved ticket is ready;
+- the adaptive independent-eval lane alongside product work, or the adaptive
+  discovery batch when no approved ticket is ready;
 - structured worker reports and raw Pi sessions;
 - a run-level `report.json` covering every worker;
 - a `## North-star impact` section in each narrative role report;

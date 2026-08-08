@@ -76,9 +76,11 @@ The current throughput package is implemented and covered by native tests:
   the existing run `report.json`; no second throughput artifact or schema is
   introduced.
 - `run.xsh` and `factory/controllers/organization.xsh` apply queue pressure
-  deterministically: the approved ready queue selects up to two engineer rows
-  and one independent eval; an empty ready queue expands discovery to the four
-  eval ceiling. Open tickets are reported as pressure but are never promoted
+  deterministically: the approved ready queue selects up to two engineer rows;
+  every passing row retains its hard linked replay, while the optional
+  independent-eval lane is reduced to zero under heavy pressure, one at
+  moderate pressure, and expands to the four-eval ceiling when the ready queue
+  is empty. Open tickets are reported as pressure but are never promoted
   without CTO approval.
 - `factory/tools/run-status.xsh` gives the CTO a single read-only view of live
   process state, lifecycle progress, adaptive allocation, worker effort, and
@@ -88,6 +90,6 @@ The current throughput package is implemented and covered by native tests:
 The coded bounds remain unchanged: at most two engineer rows, one retained
 branch per batch, one linked replay per passing row, and the aggregate budget
 remain hard gates. Queue pressure is evaluated after each CTO inventory: a
-ready ticket keeps one independent eval beside product work; an empty ready
-queue expands to discovery. The next cycle validates these changes against the
-approved `task-safepath-002` implementation and its linked replay.
+crowded Open queue cuts optional discovery so delivery gets capacity; an empty
+ready queue expands discovery. The next cycle validates these changes against
+the next approved implementation and its linked replay.
