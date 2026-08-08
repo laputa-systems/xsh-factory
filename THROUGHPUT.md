@@ -181,12 +181,26 @@ The manager must:
 
 - use only the assigned `read`, `write`, and `edit` tools;
 - read the exact handbook lineage path first;
+- after the required structured reads, make the next tool call a `write` or
+  `edit` of the staged report;
+- replace every `not-ready` and `Fill from`/`Fill every` placeholder in that
+  first draft, even when a field is unavailable (use `unknown` or `None.`);
 - inspect the exact manifest paths and never guess an `artifacts/` directory;
 - account for every structured worker and manager tool error;
 - consult raw session JSONL only for a named structured discrepancy;
 - write the staged report before optional investigation; and
 - finish with one exact machine-readable decision line in the existing report:
   `Candidate acceptance: pass.` or `Candidate acceptance: fail.`
+
+The report-first order is a throughput control, not a qualitative shortcut.
+The structured phase report already contains turns, tokens, dollars, tool
+errors, worker identities, trial results, handbook lineage, and required
+output status. The manager's first draft must classify those facts before it
+spends time reading large raw sessions. A manager may refine the draft once,
+or perform one targeted reproduction for a named contradiction, but it may
+not postpone the report until after an open-ended transcript review. This
+prevents the report itself from becoming the bottleneck that blocks a passing
+engineer candidate.
 
 The controller owns the semantic gates. The manager may explain evidence, but
 cannot override evaluator correctness, restriction, or protocol failure. A
@@ -252,6 +266,14 @@ provenance/patch/clean-worktree checks independently pass.
 No failure class is repaired by relaunching the same paid request. Deterministic
 machinery failures get a native regression test and a later explicit request.
 
+When the manager process returns a valid machine `report.json` but leaves the
+qualitative `REPORT.md` at `not-ready`, the outcome is an infrastructure
+failure, not a delivery. The controller must preserve both attempts, emit the
+retry lifecycle events, and withhold the candidate. The CTO then tightens the
+report-first handoff and tests the prompt contract before another paid cycle.
+The controller must never infer acceptance from a manager's final prose,
+session thoughts, evaluator pass, or a partially written report.
+
 ## Native validation matrix
 
 The machinery is validated without Pi using `xsht` tests, synthetic sessions,
@@ -285,6 +307,39 @@ Before paid qualification, also run deterministic preflight and inspect
 `factory/tools/cto.xsh` output for unresolved handbook candidates, stale
 factory branches, the eval cap, root/phase path boundaries, and a clean product
 checkout.
+
+## Executed implementation ledger
+
+The implementation tranche was committed as `06418ac`, with subsequent
+bounded repairs and evidence closeouts kept separate. The machinery now
+includes adaptive queue pressure, one-fresh-plus-one-retained selection,
+independent-eval suppression under ticket pressure, split product/evaluator/
+infrastructure outcomes, provenance-aware delivery accounting, manager retry
+bounds, and epoch-correct inactivity detection. It has been exercised by the
+141-test native suite.
+
+The paid validation sequence exposed and repaired real boundary failures:
+
+| Run | Admission | Evaluator | Manager/delivery result | CTO disposition |
+| --- | --- | --- | --- | --- |
+| `run-1786225102047` | retained `task-histogram-005`; independent lane was accidentally admitted | preflight failed on the base image | no worker and no delivery | fixed organization independent-lane gate; built a local qualified image |
+| `run-1786225653459` | retained `task-histogram-005`; no independent eval | correctness/protocol pass, restriction fail | manager report incomplete after an epoch-unit bug | fixed session mtime conversion; deferred ticket 005 to `Open.` |
+| `run-1786226438672` | retained `task-histogram-006`; no independent eval | correctness/restriction/protocol pass | manager timed out at 60 seconds and retry at 180; no delivery | widened manager inactivity to 120 seconds |
+| `run-1786227317528` | retained `task-histogram-006`; no independent eval | correctness/restriction/protocol pass | active manager review survived the old idle bound, but both narrative reports remained `not-ready`; no delivery | tightened report-first manager and retry instructions; validation pending |
+
+Run 4 is an important negative result. It proves that the 120-second idle
+repair fixed a false-positive inactivity diagnosis, but it did not yet prove
+delivery throughput. The evaluator cost was `$0.052622`, with 3 workers and 62
+assistant turns; the root report separated product pass, evaluator pass, and
+infrastructure fail. No engineer commit may be counted for this run.
+
+The current queue contains one deferred Open ticket (`task-histogram-005`) and
+two retained Approved branches (`task-histogram-006` and
+`task-histogram-007`). Because there is no branchless Approved ticket, the
+three-cycle fresh-delivery qualification has not honestly started. Retained
+replays may drain pending engineer work, but their commits do not satisfy the
+fresh target. CTO inventory must obtain a new branchless Approved ticket before
+claiming the first eligible qualification cycle.
 
 ## Qualification and closeout
 

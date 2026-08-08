@@ -2781,6 +2781,8 @@ proc test_eval_manager_assignment_proves_exact_handbook_read() [fs, error] {
   test.contains(assignment, "portable patch")?
   test.contains(assignment, "Candidate acceptance: pass.")?
   test.contains(assignment, "Candidate acceptance: fail.")?
+  test.contains(assignment, "your next tool call MUST")?
+  test.contains(assignment, "before reading raw session JSONL")?
   test.contains(assignment, "Keep evidence ownership separate")?
   test.contains(assignment, "do not require the evaluator sandbox to duplicate")?
   test.contains(assignment, "exact artifact/review paths")?
@@ -2866,6 +2868,9 @@ proc test_eval_gate_diagnostics_are_persisted() [fs, error] {
   test.contains(evaluator, "EVAL-MANAGER-RETRY.md")?
   test.contains(evaluator, "retry_guidance")?
   test.contains(evaluator, "FACTORY_EVAL_MANAGER_MAX_WALL_SECONDS=180")?
+  let retry_template = fs.read_text(fp"${fs.cwd()?}/templates/EVAL-MANAGER-RETRY.md")?
+  test.contains(retry_template, "Your next tool call after those two reads MUST")?
+  test.contains(retry_template, "optional investigation")?
 }
 
 proc test_process_run_status_contract_is_executable(ctx: TestContext) [fs, process, error] {

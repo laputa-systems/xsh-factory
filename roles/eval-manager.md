@@ -100,11 +100,16 @@ repeated discovery failure must become either one concise general handbook
 candidate or one reproducible product ticket, never another research loop.
 
 Write the staged `REPORT.md` incrementally before composing the final
-response. Keep `## Result` as `not-ready` until the evidence classifications,
-lineage decision, and required sections are complete; then change it to
-`pass` or `fail` and re-read it. The final response should name the report
-path and result; it must not contain a second copy of the report. A missing
+response. After the required structured reads, the very next closeout action
+must be a complete concise draft of `REPORT.md`: replace `not-ready`, populate
+every heading, and include the explicit candidate decision. Do this before
+reading raw session JSONL, candidate artifacts, or performing any optional
+reproduction. Keep `## Result` as `not-ready` only until that first draft is
+complete; then change it to `pass` or `fail` and re-read it. A missing
 narrative report is a controller failure even when the executor itself passed.
+If a structured field is unavailable, write `unknown` and continue; do not
+spend the report budget trying to discover it. The final response should name
+the report path and result; it must not contain a second copy of the report.
 
 Finish `REPORT.md` with exactly these headings: `## Result`,
 `## Effort metrics`, `## Usage and cost`, `## Thinking evidence`,

@@ -1,0 +1,101 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786227317528/phases/02-reeval-task-histogram-006/workers/eval-manager/task-histogram/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_process": "nonzero-exit",
+    "dispatch_claim": "51d0171e0eb4b3eff8168b2c3b8382c819ecc2dad075b2c766235a86a036feac",
+    "dispatch_id": "eval-manager-task-histogram",
+    "factory_source": "unchanged",
+    "message_sha256": "51d0171e0eb4b3eff8168b2c3b8382c819ecc2dad075b2c766235a86a036feac",
+    "reporting": "pass",
+    "required_report": "present",
+    "session_limit_watcher": "failed",
+    "system_prompt_sha256": "0cbd51d0d0de63f2dab115a7f43a633f7cd615689ffabd407aab8304bc4efe11",
+    "watcher": "pass"
+  },
+  "findings": [
+    {
+      "count": 1,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "role": "eval-manager",
+    "worker_id": "task-histogram"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "provider_telemetry": {
+    "event_turns": 9,
+    "events_path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786227317528/phases/02-reeval-task-histogram-006/workers/eval-manager/task-histogram/session.jsonl.events.jsonl",
+    "output_tokens_per_second": 0,
+    "present": true,
+    "provider_errors": [],
+    "response_elapsed_ms": 0,
+    "retry_count": 0,
+    "retry_delay_ms": 0,
+    "retry_errors": [],
+    "retry_failures": 0,
+    "retry_successes": 0
+  },
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786227317528/phases/02-reeval-task-histogram-006/workers/eval-manager/task-histogram/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 9,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 281504
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786227317528/phases/02-reeval-task-histogram-006/workers/eval-manager/task-histogram/session.jsonl.bz2",
+      "summary": "ENOENT: no such file or directory, access '/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786227317528/phases/02-reeval-task-histogram-006/workers/eval-worker/task-histogram-1/session.jsonl.events.jsonl'",
+      "tool": "read",
+      "turn": 8
+    }
+  ],
+  "tools": [
+    {
+      "count": 15,
+      "name": "read"
+    },
+    {
+      "count": 1,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 9,
+    "budget_usd": 0.15,
+    "cache_read_cost_usd": 0.0064661760000000006,
+    "cache_read_tokens": 359232,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.017150345999999997,
+    "input_cost_usd": 0.007920090000000001,
+    "input_tokens": 88001,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.00276408,
+    "output_tokens": 15356,
+    "provider_total_tokens": 462589,
+    "reasoning_tokens": 12072,
+    "thinking_blocks": 9,
+    "tool_calls": 16,
+    "tool_errors": 1,
+    "tool_results": 16,
+    "total_bucket_tokens": 462589,
+    "user_messages": 1
+  }
+}

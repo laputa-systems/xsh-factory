@@ -1,0 +1,31 @@
+{
+  "artifacts": [
+    {
+      "kind": "portable-patch",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786227317528/phases/01-ticket/patches/task-histogram-006.diff"
+    }
+  ],
+  "data": {
+    "base_commit": "b2ed25f69ea49eb22c5e06318a10d26f7736c481",
+    "branch": "factory/task-histogram-006/1786209590202",
+    "clean": true,
+    "fast_path": true,
+    "fast_path_kind": "deterministic-retained-branch-validation",
+    "implementation_commit": "fc432eadf48fdbf607c52fe487770d630dad5838",
+    "merge_base": "26d59eb844b670365931d91ffb15ae8c109bae12",
+    "mode": "ticket-reuse",
+    "patch": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786227317528/phases/01-ticket/patches/task-histogram-006.diff",
+    "ticket_id": "task-histogram-006",
+    "worktree": "/Users/josh/d/laputa-systems/xsh-factory/../.xsh-factory-worktrees/run-1786227317528/task-histogram-006"
+  },
+  "findings": [],
+  "identity": {
+    "mode": "ticket-reuse",
+    "run_id": "01-ticket",
+    "ticket_id": "task-histogram-006"
+  },
+  "kind": "phase",
+  "result": "pass",
+  "schema_version": 1,
+  "state": "completed"
+}
