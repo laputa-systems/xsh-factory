@@ -1358,8 +1358,22 @@ export proc merge_validated_ticket(
     return evidence
   }
 
+  # Retained organization branches may predate the current cycle baseline.
+  # Require a verified common ancestor instead of requiring the branch to
+  # contain the latest baseline; this preserves the checked merge path for
+  # independent, reviewable work while rejecting unrelated histories.
+  var merge_base = base_commit.trim()
+  var reported_merge_base = ""
+  if fs.exists(phase_report)? {
+    let report = json.read(phase_report)?
+    reported_merge_base = schema.value_text(json.get(report, ["data", "merge_base"], ""))
+    if reported_merge_base != "" {
+      merge_base = reported_merge_base
+    }
+  }
+
   let product_status = run.text "git" "-C" $xsh_repo "status" "--porcelain" ?
-  if product_status.trim() != "" or ! ref_contains_commit(xsh_repo, "HEAD", base_commit.trim())? {
+  if product_status.trim() != "" or merge_base == "" or ! ref_contains_commit(xsh_repo, "HEAD", base_commit.trim())? {
     return evidence
   }
 
@@ -1373,7 +1387,13 @@ export proc merge_validated_ticket(
     return evidence
   }
   let branch_head = run.text "git" "-C" $xsh_repo "rev-parse" $branch ?
-  if branch_head.trim() != implementation_commit.trim() or ! ref_contains_commit(xsh_repo, branch, base_commit.trim())? {
+  let actual_merge_base = run.text "git" "-C" $xsh_repo "merge-base" "HEAD" $branch ?
+  let merge_base_matches_contract = if reported_merge_base == "" {
+    actual_merge_base.trim() == base_commit.trim()
+  } else {
+    actual_merge_base.trim() == merge_base
+  }
+  if branch_head.trim() != implementation_commit.trim() or ! merge_base_matches_contract or ! ref_contains_commit(xsh_repo, "HEAD", merge_base)? or ! ref_contains_commit(xsh_repo, branch, merge_base)? {
     return evidence
   }
 

@@ -45,7 +45,8 @@ printf 'dir=%s\nname=%s\next=%s\n' "$dir" "$name" "$ext"
 ```
 
 Build the path through the typed `Path` value (for example
-`Path(argv[0]).parent()`, `.name()`, `.ext()`). The program must not start
+`Path(argv[0]).parent()`, `.name()`, `.ext()`, or the lint-preferred
+`fp"${argv[0]}"` form). The program must not start
 subprocesses, invoke an external command, or add diagnostic text to stdout. Do
 not hard-code your own machine's paths.
 

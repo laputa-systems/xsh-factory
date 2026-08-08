@@ -114,10 +114,11 @@ manifest. Public and hidden cases:
 - `hidden_targz`: `report.tar.gz`.
 
 The evaluator checks the source does not contain the forbidden subprocess
-boundary, requires that the source references the `Path` construction
-(`Path(`) so a hard-coded text workaround is classified as a restriction
-failure, and checks that `review.md` preserves both required headings and
-contains no template placeholders.
+boundary, requires that the source references a documented typed-`Path`
+construction (`Path(` or the lint-preferred `fp"${...}"`) so a hard-coded
+text workaround is classified as a restriction failure, and checks that
+`review.md` preserves both required headings and contains no template
+placeholders.
 
 ## Metrics
 

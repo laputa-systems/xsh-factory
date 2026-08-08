@@ -60,7 +60,7 @@ contract or the handbook signals this off-by-one.
 
 ## Evidence
 
-- Worker session: `runs/run-1786151585420/phases/03-eval/workers/eval-worker/task-trim-1/session.jsonl` — the probe turn (message `5b1d080c`) shows `count 2` / `[a]` / `[b]` for `"a\nb\n"`, establishing that `lines()` drops the trailing empty segment; the `482f4c22` and `50d7738c` thinking blocks reason that the trailing `"\n"` must be re-added; the `99367cb9` and `b8a62b5d` turns verify byte-exact output with `od -c`/`cmp` against the `sed` oracle.
+- Worker session: `runs/run-1786151585420/phases/03-eval/workers/eval-worker/task-trim-1/session.jsonl.bz2` — the probe turn (message `5b1d080c`) shows `count 2` / `[a]` / `[b]` for `"a\nb\n"`, establishing that `lines()` drops the trailing empty segment; the `482f4c22` and `50d7738c` thinking blocks reason that the trailing `"\n"` must be re-added; the `99367cb9` and `b8a62b5d` turns verify byte-exact output with `od -c`/`cmp` against the `sed` oracle.
 - Final artifact: `runs/run-1786151585420/phases/03-eval/workers/eval-worker/task-trim-1/work/trim.xsh` — `let result = trimmed.join("\n") + "\n"`.
 - Worker review: `runs/run-1786151585420/phases/03-eval/workers/eval-worker/task-trim-1/work/review.md` — "xsft friction: `Str.lines()` drops the empty segment produced by a terminal newline … required manually re-appending `\"\\n\"`".
 - Worker `report.json`: 4 tool errors, 21 turns, pass result (all 8 cases, restrictions, protocol).

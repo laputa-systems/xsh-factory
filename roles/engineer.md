@@ -11,10 +11,12 @@ ticket, or broaden scope. If the assignment is missing or conflicts with
 problem; do not guess.
 
 The worktree is the XSH product repository; factory documents are outside it.
-Use the exact absolute paths supplied by the controller assignment for
-`NORTH-STAR.md` and the single shared `runtime/handbook.md`. Use the `read`
+Use the exact run-scoped snapshot paths supplied by the controller assignment
+for `NORTH-STAR.md` and the single shared `runtime/handbook.md`. Use the `read`
 tool on both before coding so the session JSONL proves that the worker
-consumed the current factory guidance. Then read the inlined ticket, its
+consumed the current factory guidance. These snapshots are inputs: never edit
+them or any factory file; request a handbook promotion separately in the
+report. Then read the inlined ticket, its
 linked eval and manager evidence if needed using the exact factory root and
 run paths in the assignment, and the XSH repository's `AGENTS.md` and
 `docs/CHAPTER-01-why-xsh.md`. Do not resolve factory links relative to the

@@ -1978,6 +1978,49 @@ ${second_implementation.trim()}
   test.ok(command_ok(git, ["git", "-C", product.display(), "merge-base", "--is-ancestor", implementation.trim(), "HEAD"])?)?
   test.ok(command_ok(git, ["git", "-C", product.display(), "merge-base", "--is-ancestor", second_implementation.trim(), "HEAD"])?)?
   test.ok(command_ok(git, ["git", "-C", product.display(), "worktree", "remove", "-f", second_worktree.display()])?)?
+
+  # A retained branch from the old cycle baseline must still be deliverable
+  # after an unrelated product commit advanced the current cycle baseline.
+  fs.write(fp"${product}/CURRENT", "current\n")?
+  test.ok(command_ok(git, ["git", "-C", product.display(), "add", "CURRENT"])?)?
+  test.ok(command_ok(git, ["git", "-C", product.display(), "commit", "-qm", "current baseline"])?)?
+  let current_base = run.text "git" "-C" $product "rev-parse" "HEAD" ?
+  let third_worktree = fp"${root}/third-worktree"
+  test.ok(
+    command_ok(
+      git,
+      [
+        "git",
+        "-C",
+        product.display(),
+        "worktree",
+        "add",
+        "-q",
+        "-b",
+        "factory/task-c/run-1",
+        third_worktree.display(),
+        base.trim(),
+      ],
+    )?,
+  )?
+  fs.write(fp"${third_worktree}/THIRD", "third\n")?
+  test.ok(command_ok(git, ["git", "-C", third_worktree.display(), "add", "THIRD"])?)?
+  test.ok(command_ok(git, ["git", "-C", third_worktree.display(), "commit", "-qm", "third engineer"])?)?
+  let third_implementation = run.text "git" "-C" $third_worktree "rev-parse" "HEAD" ?
+  json.write(
+    fp"${phase}/report.json",
+    {
+      data: {
+        branch: "factory/task-c/run-1",
+        implementation_commit: third_implementation.trim(),
+        merge_base: base.trim(),
+      },
+    },
+  )?
+  let third_evidence = runtime.merge_validated_ticket(product, phase, "task-c", current_base.trim())?
+  test.ok(third_evidence.merged, "a retained branch must merge from a verified common ancestor")?
+  test.ok(command_ok(git, ["git", "-C", product.display(), "merge-base", "--is-ancestor", third_implementation.trim(), "HEAD"])?)?
+  test.ok(command_ok(git, ["git", "-C", product.display(), "worktree", "remove", "-f", third_worktree.display()])?)?
 }
 
 proc test_engineer_provenance_amend(ctx: TestContext) [fs, process, error] {
@@ -2280,6 +2323,17 @@ proc test_organization_reuses_existing_branch_without_duplicate_dispatch() [fs, 
   )?
 }
 
+proc test_organization_batches_retained_and_fresh_tickets() [fs, error] {
+  let organization = fs.read_text(fp"${fs.cwd()?}/factory/controllers/organization.xsh")?
+  test.contains(organization, "var reuse_tickets: List[Str] = []")?
+  test.contains(organization, "var fresh_tickets: List[Str] = []")?
+  test.contains(organization, r"""01-reuse-${reuse_ticket}""")?
+  test.contains(organization, "fresh_tickets.len() > 0")?
+  test.contains(organization, "reuse_primary_ok = run_reuse_phase")?
+  test.contains(organization, "ticket_is_reused")?
+  test.contains(organization, "runtime.merge_validated_ticket(xsh_repo, ticket_phase")?
+}
+
 proc test_organization_starts_independent_eval_before_primary_wait() [fs, error] {
   let organization = fs.read_text(fp"${fs.cwd()?}/factory/controllers/organization.xsh")?
   let before_primary_wait = organization.split("primary_ok = wait_child(primary_handle)?").get(0, "")
@@ -2304,6 +2358,17 @@ proc test_ticket_cycles_create_independent_eval_phase_boundary() [fs, error] {
   let organization = fs.read_text(fp"${fs.cwd()?}/factory/controllers/organization.xsh")?
   test.contains(organization, "if selected_ticket != \"\" {")?
   test.contains(organization, r"""fs.mkdir(fp"${phases_dir}/03-eval")?""")?
+}
+
+proc test_engineer_guidance_is_run_scoped() [fs, error] {
+  let ticket = fs.read_text(fp"${fs.cwd()?}/factory/controllers/ticket.xsh")?
+  let assignment = fs.read_text(fp"${fs.cwd()?}/templates/ENGINEER-ASSIGNMENT.md")?
+  test.contains(ticket, "let guidance_dir = fp")?
+  test.contains(ticket, "factory_dir}/runtime/handbook.md")?
+  test.contains(ticket, "guidance_dir}/handbook.md")?
+  test.contains(ticket, r"""session_read_path(session, fp"${guidance_dir}/handbook.md")""")?
+  test.contains(assignment, "run-scoped snapshots")?
+  test.contains(assignment, "never edit them or any other factory file")?
 }
 
 proc test_eval_manager_assignment_proves_exact_handbook_read() [fs, error] {
@@ -2415,6 +2480,15 @@ proc test_task_trim_restriction_accepts_typed_path_io() [fs, error] {
   test.contains(evaluator, "\".write(\" in source")?
   test.contains(evaluator, "source_uses_file_io(source)")?
   test.ok("let restriction_ok = \"fs.\" in source" not in evaluator)?
+}
+
+proc test_task_pathparts_restriction_accepts_documented_typed_path_forms() [fs, error] {
+  let evaluator = fs.read_text(fp"${fs.cwd()?}/evals/task-pathparts/evaluator.xsh")?
+  test.contains(evaluator, "pure source_references_typed_path(source: Str) -> Bool")?
+  test.contains(evaluator, "\"Path(\" in code")?
+  test.contains(evaluator, r"""fp"${""")?
+  test.contains(evaluator, "source_references_typed_path(source)")?
+  test.ok("path_referenced = \"Path(\" in source" not in evaluator)?
 }
 
 proc test_eval_staging_context_is_run_scoped() [fs, error] {

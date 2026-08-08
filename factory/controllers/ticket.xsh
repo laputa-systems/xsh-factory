@@ -36,8 +36,8 @@ proc spawn_engineer(
     FACTORY_TICKET_ID: ticket_id,
     FACTORY_ASSIGNMENT_SHA: hash.sha256(assignment)?.hex(),
     FACTORY_WORKDIR: worktree.display(),
-    FACTORY_HANDBOOK_FILE: fp"${factory_dir}/runtime/handbook.md".display(),
-    FACTORY_NORTH_STAR_FILE: fp"${factory_dir}/NORTH-STAR.md".display(),
+    FACTORY_HANDBOOK_FILE: fp"${run_dir}/guidance/handbook.md".display(),
+    FACTORY_NORTH_STAR_FILE: fp"${run_dir}/guidance/NORTH-STAR.md".display(),
     FACTORY_PLATFORM: platform,
     FACTORY_ENGINEER_PROVIDER: control.configured_role_setting("engineer", "PROVIDER")?,
     FACTORY_ENGINEER_MODEL: control.configured_role_setting("engineer", "MODEL")?,
@@ -119,6 +119,18 @@ proc run_ticket_cycle(
   fs.mkdir(patch_root)?
   fs.mkdir(fp"${run_dir}/messages")?
   fs.mkdir(fp"${run_dir}/tickets")?
+  let guidance_dir = fp"${run_dir}/guidance"
+  fs.mkdir(guidance_dir)?
+  fs.copy(
+    fp"${factory_dir}/NORTH-STAR.md",
+    fp"${guidance_dir}/NORTH-STAR.md",
+    overwrite: true,
+  )?
+  fs.copy(
+    fp"${factory_dir}/runtime/handbook.md",
+    fp"${guidance_dir}/handbook.md",
+    overwrite: true,
+  )?
   runtime.stage_cto_improvement(factory_dir, run_dir)?
   runtime.register_cycle_controller(run_dir)?
   let skip_cycle_budget = env.get_or("FACTORY_SKIP_CYCLE_BUDGET", "false")? == "true"
@@ -283,11 +295,11 @@ proc run_ticket_cycle(
       },
       {
         key: "NORTH_STAR_FILE",
-        value: fp"${factory_dir}/NORTH-STAR.md".display(),
+        value: fp"${guidance_dir}/NORTH-STAR.md".display(),
       },
       {
         key: "HANDBOOK_FILE",
-        value: fp"${factory_dir}/runtime/handbook.md".display(),
+        value: fp"${guidance_dir}/handbook.md".display(),
       },
       {
         key: "XSH_AGENTS_FILE",
@@ -512,8 +524,8 @@ proc run_ticket_cycle(
     let engineer_report = fp"${worker_dir}/REPORT.md"
     let worker_report = fp"${worker_dir}/report.json"
     let session = fp"${worker_dir}/session.jsonl"
-    let north_star_read_ok = runtime.session_read_path(session, fp"${factory_dir}/NORTH-STAR.md")?
-    let handbook_read_ok = runtime.session_read_path(session, fp"${factory_dir}/runtime/handbook.md")?
+    let north_star_read_ok = runtime.session_read_path(session, fp"${guidance_dir}/NORTH-STAR.md")?
+    let handbook_read_ok = runtime.session_read_path(session, fp"${guidance_dir}/handbook.md")?
     let report_ok = fs.exists(worker_report)? and schema.valid(json.read(worker_report)?, "worker") and fs.exists(
       engineer_report,
     )? and ! fs.exists(fp"${worker_dir}/REPORT-MISSING")? and control.engineer_report_contract_ok(

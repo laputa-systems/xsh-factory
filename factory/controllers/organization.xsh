@@ -339,15 +339,32 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     abort(2)
   }
 
-  let selected_open_branch = if selected_tickets.len() == 1 {
-    runtime.open_ticket_branch(xsh_repo, selected_ticket)?
-  } else {
-    ""
+  # A bounded organization batch may contain one retained implementation and
+  # one fresh ticket. The retained branch is replayed without Pi while the
+  # fresh ticket is dispatched through the normal concurrent engineer path.
+  # More than one retained branch is rejected explicitly because each branch
+  # needs its own isolated primary phase and merge evidence.
+  var reuse_tickets: List[Str] = []
+  var fresh_tickets: List[Str] = []
+  for ticket_id in selected_tickets {
+    let branch = runtime.open_ticket_branch(xsh_repo, ticket_id)?
+    if branch == "" {
+      fresh_tickets = fresh_tickets.push(ticket_id)
+    } else {
+      reuse_tickets = reuse_tickets.push(ticket_id)
+    }
   }
-  let reuse_existing_branch = selected_open_branch != ""
+  if reuse_tickets.len() > 1 {
+    eprint "organization cycles support at most one retained implementation branch per batch"
+    abort(2)
+  }
+  let reuse_existing_branch = reuse_tickets.len() == 1
+  let reuse_ticket = if reuse_existing_branch { reuse_tickets[0] } else { "" }
   if reuse_existing_branch {
-    eprint f"reusing existing implementation branch for ${selected_ticket}: ${selected_open_branch}"
+    let reuse_branch = runtime.open_ticket_branch(xsh_repo, reuse_ticket)?
+    eprint f"reusing existing implementation branch for ${reuse_ticket}: ${reuse_branch}"
   }
+  let primary_dispatch_requested = selected_ticket == "" or fresh_tickets.len() > 0
 
   for ticket_id in selected_tickets {
     let ticket_path = fp"${factory_dir}/tickets/${ticket_id}.md"
@@ -372,7 +389,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     }
 
     let open_branch = runtime.open_ticket_branch(xsh_repo, ticket_id)?
-    if open_branch != "" and ! (reuse_existing_branch and ticket_id == selected_ticket) {
+    if open_branch != "" and ! (reuse_existing_branch and ticket_id == reuse_ticket) {
       eprint f"ticket ${ticket_id} already has an unmerged implementation branch: ${open_branch}"
       eprint "replay or review that branch before dispatching another engineer"
       abort(2)
@@ -441,6 +458,11 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   } else {
     fp"${phases_dir}/01-ticket"
   }
+  let reuse_phase = if reuse_existing_branch and fresh_tickets.len() > 0 {
+    fp"${phases_dir}/01-reuse-${reuse_ticket}"
+  } else {
+    primary_phase
+  }
   let design_phase = if selected_ticket == "" {
     fp"${phases_dir}/0${request_evals.len() + 1}-eval-design"
   } else {
@@ -473,6 +495,9 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   fs.mkdir(phases_dir)?
   fs.mkdir(phase_requests_dir)?
   fs.mkdir(primary_phase)?
+  if reuse_existing_branch and fresh_tickets.len() > 0 {
+    fs.mkdir(reuse_phase)?
+  }
   if design_requested {
     fs.mkdir(design_phase)?
   }
@@ -522,9 +547,9 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   )?
 
   var ticket_value = "None."
-  if selected_tickets.len() > 0 {
+  if fresh_tickets.len() > 0 {
     ticket_value = ""
-    for ticket_id in selected_tickets {
+    for ticket_id in fresh_tickets {
       ticket_value = if ticket_value == "" { f"`${ticket_id}`" } else { f"""${ticket_value}
 - `${ticket_id}`""" }
     }
@@ -532,19 +557,23 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
 
   let primary_objective = if selected_ticket == "" {
     f"Run one fresh ${selected_eval} eval because no approved ticket was admitted."
+  } else if fresh_tickets.len() > 0 {
+    f"Implement the fresh approved ticket rows ${ticket_value} in isolated XSH worktrees; replay the retained branch in its separate reuse phase."
   } else {
     f"Implement exactly ${selected_ticket} in one isolated XSH worktree."
   }
-  phase_request(
-    phase_template,
-    primary_request,
-    primary_mode,
-    selected_eval,
-    trial_count,
-    0,
-    ticket_value,
-    primary_objective,
-  )?
+  if primary_dispatch_requested {
+    phase_request(
+      phase_template,
+      primary_request,
+      primary_mode,
+      selected_eval,
+      trial_count,
+      0,
+      ticket_value,
+      primary_objective,
+    )?
+  }
   if independent_eval_requested {
   var independent_eval_index = 0
   for eval_id in independent_eval_ids {
@@ -606,7 +635,13 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     )?
   }
 
-  let primary_subject = if selected_ticket == "" { selected_eval } else { selected_ticket }
+  let primary_subject = if selected_ticket == "" {
+    selected_eval
+  } else if fresh_tickets.len() > 0 {
+    fresh_tickets[0]
+  } else {
+    selected_ticket
+  }
   var independent_eval_handles: List[ProcessHandle] = []
   runtime.emit_event(
     event_template,
@@ -659,17 +694,8 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     independent_eval_spawn_index += 1
   }
 
-  var primary_ok = false
-  if reuse_existing_branch {
-    primary_ok = run_reuse_phase(
-      primary_phase,
-      factory_dir,
-      xsh_repo,
-      selected_ticket,
-      selected_open_branch,
-      xsh_commit.trim(),
-    )?
-  } else {
+  var fresh_primary_ok = ! primary_dispatch_requested
+  if primary_dispatch_requested {
     let primary_handle = spawn_child(
       primary_controller,
       primary_request,
@@ -695,10 +721,33 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
       fp"${run_dir}/primary.stdout",
       fp"${run_dir}/primary.stderr",
     )?
-    primary_ok = wait_child(primary_handle)?
+    fresh_primary_ok = wait_child(primary_handle)?
+  }
+  var reuse_primary_ok = true
+  if reuse_existing_branch {
+    let reuse_branch = runtime.open_ticket_branch(xsh_repo, reuse_ticket)?
+    reuse_primary_ok = run_reuse_phase(
+      reuse_phase,
+      factory_dir,
+      xsh_repo,
+      reuse_ticket,
+      reuse_branch,
+      xsh_commit.trim(),
+    )?
   }
 
-  let primary_report_ok = phase_run_pass(primary_phase, "report.json")?
+  let fresh_primary_report_ok = if primary_dispatch_requested {
+    phase_run_pass(primary_phase, "report.json")?
+  } else {
+    true
+  }
+  let reuse_primary_report_ok = if reuse_existing_branch {
+    phase_run_pass(reuse_phase, "report.json")?
+  } else {
+    true
+  }
+  let primary_ok = fresh_primary_ok and reuse_primary_ok
+  let primary_report_ok = fresh_primary_report_ok and reuse_primary_report_ok
   let primary_pass = primary_ok and primary_report_ok
   runtime.emit_event(
     event_template,
@@ -728,7 +777,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   }
 
   var reeval_pass_for_result = selected_ticket == ""
-  var worktree_cleanup_ok = selected_ticket == ""
+  var worktree_cleanup_ok = true
   var delivery_ok = selected_tickets.len() == 0
   if selected_ticket != "" {
     reeval_pass_for_result = primary_pass
@@ -738,8 +787,10 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
       let ticket_eval_id = control.ticket_eval(ticket_path.read_text()?)
       let ticket_reeval_phase = fp"${phases_dir}/02-reeval-${ticket_id}"
       let ticket_reeval_request = fp"${phase_requests_dir}/02-reeval-${ticket_id}.md"
-      let ticket_worktree = runtime.ticket_worktree_path(xsh_repo, primary_phase, ticket_id)
-      let ticket_patch = fp"${primary_phase}/patches/${ticket_id}.diff"
+      let ticket_is_reused = reuse_existing_branch and ticket_id == reuse_ticket
+      let ticket_phase = if ticket_is_reused { reuse_phase } else { primary_phase }
+      let ticket_worktree = runtime.ticket_worktree_path(xsh_repo, ticket_phase, ticket_id)
+      let ticket_patch = fp"${ticket_phase}/patches/${ticket_id}.diff"
       fs.mkdir(ticket_reeval_phase)?
       phase_request(
         phase_template,
@@ -768,8 +819,8 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
       # for the linked candidate replay; otherwise require the engineer worker
       # report. Without this, reuse mode short-circuited the replay child and
       # the linked re-evaluation was never dispatched.
-      let ticket_primary_pass = if reuse_existing_branch {
-        phase_run_pass(primary_phase, "report.json")?
+      let ticket_primary_pass = if ticket_is_reused {
+        phase_run_pass(ticket_phase, "report.json")?
       } else {
         ticket_worker_pass(primary_phase, ticket_id)?
       }
@@ -801,7 +852,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
       let reeval_pass = reeval_ok and reeval_report_ok
       reeval_pass_for_result = reeval_pass_for_result and reeval_pass
       let delivery = if ticket_primary_pass and reeval_pass {
-        runtime.merge_validated_ticket(xsh_repo, primary_phase, ticket_id, xsh_commit.trim())?
+        runtime.merge_validated_ticket(xsh_repo, ticket_phase, ticket_id, xsh_commit.trim())?
       } else {
         {
           merged: false,

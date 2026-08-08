@@ -44,6 +44,10 @@ JSONL proves that the worker consumed the current factory guidance:
 - North star: `{{NORTH_STAR_FILE}}`
 - Shared handbook: `{{HANDBOOK_FILE}}`
 
+These are run-scoped snapshots of the checked-in factory guidance. Read them
+as inputs; never edit them or any other factory file. A handbook improvement is
+a CTO-owned promotion request, not part of an engineer product commit.
+
 Then use the `read` tool on the product worktree's exact guidance files:
 
 - Product agent guide: `{{XSH_AGENTS_FILE}}`
@@ -52,10 +56,11 @@ Then use the `read` tool on the product worktree's exact guidance files:
 ## Implementation contract
 
 Work only in `{{WORKTREE}}` on branch `{{BRANCH}}`. Do not edit XSH main, the
-factory main tree, or the ticket diagnosis. Make the smallest general XSH
-language, tooling, test, or canonical-documentation change supported by the
-ticket. Run the narrowest relevant checks, commit the product change on this
-branch, and leave the worktree clean.
+factory checkout, the run-scoped guidance snapshots, or the ticket diagnosis.
+Make the smallest general XSH language, tooling, test, or
+canonical-documentation change supported by the ticket. Run the narrowest
+relevant checks, commit the product change on this branch, and leave the
+worktree clean.
 
 For ordinary product tickets, use `xsht lint --fix` for linting, then rerun the
 relevant checks. If this ticket specifically targets lint, parsing, or

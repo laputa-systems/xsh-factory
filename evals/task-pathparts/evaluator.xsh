@@ -5,6 +5,19 @@ type PathCase = {name: Str, path: Str}
 
 type CaseResult = {exact: Bool, candidate_wall_ns: Int, oracle_wall_ns: Int}
 
+## Accept either documented typed-Path construction. The evaluator must test
+## the semantic boundary, not force a spelling that `xsht lint` rejects.
+pure source_references_typed_path(source: Str) -> Bool {
+  for line in source.lines() {
+    let code = line.split("#").get(0, "")
+    if "Path(" in code or r"""fp"${""" in code {
+      return true
+    }
+  }
+
+  return false
+}
+
 pure forbidden_source(source: Str) -> Bool {
   for line in source.lines() {
     let code = line.split("#").get(0, "")
@@ -137,7 +150,7 @@ printf 'dir=%s\nname=%s\next=%s\n' "$dir" "$name" "$ext"
 
     let source = fs.read_text(/work/pathparts.xsh)?
     no_forbidden = ! forbidden_source(source)
-    path_referenced = "Path(" in source
+    path_referenced = source_references_typed_path(source)
     if ! all_exact or ! no_forbidden or ! path_referenced {
       eval_status = 1
     }

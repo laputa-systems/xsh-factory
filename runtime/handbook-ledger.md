@@ -548,6 +548,18 @@ positional-only API guidance candidate, but it is single-eval evidence. Keep
 the approved handbook unchanged until `task-dupcheck` and a second
 defaulted-parameter eval confirm the guidance generalizes.
 
+## Explicit CTO disposition — run-1786151585420
+
+| Candidate SHA-256 | Disposition |
+| --- | --- |
+| `388e8e92dea3b38ecff582c952a81c2d723670dc9b3cd365033a09b46484a8b6` | deferred pending cross-eval replay; not promoted |
+
+The `task-trim` candidate gives a useful `Str.lines()` terminal-newline rule,
+but the run supplied only one eval's evidence. Keep the approved handbook
+unchanged until the named second file-rewriting replay confirms that the rule
+generalizes; the related product documentation ticket remains separately
+approved for implementation.
+
 ## Explicit CTO disposition — run-1786142295779
 
 | Candidate SHA-256 | Disposition |
