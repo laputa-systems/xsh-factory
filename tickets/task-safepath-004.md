@@ -2,7 +2,21 @@
 
 ## Status
 
-Open.
+Approved.
+
+## CTO decision — throughput cycle 2026-08-08
+
+- Decision: Approved for one bounded implementation and linked-replay cycle.
+- Basis: The cycle-2 `task-safepath` replay reproduced a distinct compiler/type-
+  lowering defect in a common mutable string-accumulator form, with a minimal
+  workaround and a clear acceptance oracle.
+- Scope: Align existing `Str + Str` lowering in mutable `var` reassignment
+  inside loops, or improve the diagnostic if support remains blocked; no new
+  syntax, builtin, API, or evaluator changes.
+- Evidence: The linked replay report, worker session, and reproducer paths
+  recorded in this ticket under run `run-1786163685229`.
+- Admission: One engineer row is required; linked `task-safepath` replay and
+  one independent eval remain the delivery gates.
 
 ## Change target
 
