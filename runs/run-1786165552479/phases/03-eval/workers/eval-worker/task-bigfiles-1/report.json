@@ -1,0 +1,126 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786165552479/phases/03-eval/workers/eval-worker/task-bigfiles-1/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_state": "pass",
+    "agent_wall_ms": 110729,
+    "artifact": {
+      "name": "bigfiles.xsh",
+      "state": "present"
+    },
+    "budget_state": "pass",
+    "classification": "pass",
+    "evaluator_manifest": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786165552479/phases/03-eval/workers/eval-worker/task-bigfiles-1/run.json",
+    "evaluator_state": "pass",
+    "reporting_state": "pass",
+    "result": "pass",
+    "review": {
+      "state": "present"
+    }
+  },
+  "findings": [
+    {
+      "count": 2,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "eval_id": "task-bigfiles",
+    "role": "eval-worker",
+    "run_id": "03-eval",
+    "worker_id": "task-bigfiles-1"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "provider_telemetry": {
+    "event_turns": 30,
+    "events_path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786165552479/phases/03-eval/workers/eval-worker/task-bigfiles-1/session.jsonl.events.jsonl",
+    "output_tokens_per_second": 0,
+    "present": true,
+    "provider_errors": [],
+    "response_elapsed_ms": 0,
+    "retry_count": 0,
+    "retry_delay_ms": 0,
+    "retry_errors": [],
+    "retry_failures": 0,
+    "retry_successes": 0
+  },
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786165552479/phases/03-eval/workers/eval-worker/task-bigfiles-1/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 29,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 109496
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786165552479/phases/03-eval/workers/eval-worker/task-bigfiles-1/session.jsonl.bz2",
+      "summary": "sh: syntax error: unexpected \"(\"\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 5
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786165552479/phases/03-eval/workers/eval-worker/task-bigfiles-1/session.jsonl.bz2",
+      "summary": "err[check.pattern-constructor]: unknown constructor pattern\n  /tmp/t.xsh:5:5\n      ok(v) => print \"OK\" $v\n      ^^^^^ unknown constructor pattern\n\nerr[check.pattern-constructor]: unknown constructor pattern\n  /tmp/t.xsh:6:5\n      err(e) => print \"ERR\" $e\n      ^^^^^^ unknown constructor pattern\n== -5\nerr[check.pattern-constructor]: unknown constructor pattern\n  /tmp/t.xsh:5:5\n      ok(v) => print \"OK\" $v\n      ^^^^^ unknown constructor pattern\n\nerr[check.pattern-constructor]: unknown constructor pattern\n  /tmp/t.xsh:6:5\n      err(e) => print \"ERR\" $e\n      ^^^^^^ unknown constructor pattern\n== abc\nerr[check.pattern-constructor]: unknown constructor pattern\n  /tmp/t.xsh:5:5\n      ok(v) => print \"OK\" $v\n      ^^^^^ unknown constructor pattern\n\nerr[check.pattern-constructor]: unknown constructor pattern\n  /tmp/t.xsh:6:5\n      err(e) => print \"ERR\" $e\n      ^^^^^^ unknown constructor pattern\n== 1_000\nerr[check.pattern-constructor]: unknown constructor pattern\n  /tmp/t.xsh:5:5\n      ok(v) => print \"OK\" $v\n      ^^^^^ unknown constructor pattern\n\nerr[check.pattern-constructor]: unknown constructor pattern\n  /tmp/t.xsh:6:5\n      err(e) => print \"ERR\" $e\n      ^^^^^^ unknown constructor pattern\n== 007\nerr[check.pattern-constructor]: unknown constructor pattern\n  /tmp/t.xsh:5:5\n      ok(v) => print \"OK\" $v\n      ^^^^^ unknown constructor pattern\n\nerr[check.pattern-constructor]: unknown constructor pattern\n  /tmp/t.xsh:6:5\n      err(e) => print \"ERR\" $e\n      ^^^^^^ unknown constructor pattern\n== +12\nerr[check.pattern-constructor]: unknown constructor pattern\n  /tmp/t.xsh:5:5\n      ok(v) => print \"OK\" $v\n      ^^^^^ unknown constructor pattern\n\nerr[check.pattern-constructor]: unknown constructor pattern\n  /tmp/t.xsh:6:5\n      err(e) => print \"ERR\" $e\n      ^^^^^^ unknown constructor pattern\n== ''\nerr[check.pattern-constructor]: unknown constructor pattern\n  /tmp/t.xsh:5:5\n      ok(v) => print \"OK\" $v\n      ^^^^^ unknown constructor pattern\n\nerr[check.pattern-constructor]: unknown constructor pattern\n  /tmp/t.xsh:6:5\n      err(e) => print \"ERR\" $e\n      ^^^^^^ unknown constructor pattern\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 14
+    }
+  ],
+  "tools": [
+    {
+      "count": 29,
+      "name": "bash"
+    },
+    {
+      "count": 3,
+      "name": "edit"
+    },
+    {
+      "count": 3,
+      "name": "read"
+    },
+    {
+      "count": 2,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 30,
+    "budget_usd": 0.5,
+    "cache_read_cost_usd": 0.0066136319999999995,
+    "cache_read_tokens": 367424,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.010037592,
+    "input_cost_usd": 0.0020979000000000006,
+    "input_tokens": 23310,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.0013260599999999998,
+    "output_tokens": 7367,
+    "provider_total_tokens": 398101,
+    "reasoning_tokens": 3066,
+    "thinking_blocks": 15,
+    "tool_calls": 37,
+    "tool_errors": 2,
+    "tool_results": 37,
+    "total_bucket_tokens": 398101,
+    "user_messages": 1
+  }
+}

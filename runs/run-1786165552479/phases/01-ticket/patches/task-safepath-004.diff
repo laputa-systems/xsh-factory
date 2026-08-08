@@ -1,0 +1,91 @@
+diff --git a/docs/SPEC.md b/docs/SPEC.md
+index 33e2c11..a0c688e 100644
+--- a/docs/SPEC.md
++++ b/docs/SPEC.md
+@@ -769,7 +769,7 @@ Operators:
+   is `Ok`, otherwise it evaluates and returns the fallback expression.
+ - `==` and `!=` compare values of the same runtime type.
+ - `<`, `<=`, `>`, and `>=` operate on `Int` and `Str`.
+-- `+`, `-`, `*`, `/`, and `%` operate on `Int`.
++- `+` operates on `Int` and `Str`; `-`, `*`, `/`, and `%` operate on `Int`.
+ - Path composition is written with formatted path literals, such as
+   `fp"${root}/child"`. The `/` operator is numeric division only.
+ - `in` and `not in` test membership for `List`, substring containment for
+diff --git a/src/runtime/eval/lower.rs b/src/runtime/eval/lower.rs
+index 06e0f45..90f6b4a 100644
+--- a/src/runtime/eval/lower.rs
++++ b/src/runtime/eval/lower.rs
+@@ -5920,8 +5920,10 @@ impl CompactLowerConstructProbe<'_, '_> {
+                         item_slot,
+                     )?
+                 };
++                let binding_is_int = matches!(binding_ty, Some(Type::Int));
+                 let slot = slots.declare_with_type(name, binding_ty);
+-                if let Some(value) = self.lower_int_expr_candidate(&value)
++                if binding_is_int
++                    && let Some(value) = self.lower_int_expr_candidate(&value)
+                     && !self.lowered_int_expr_needs_type_context(&value)
+                 {
+                     Some(push_build_row!(
+@@ -6028,6 +6030,13 @@ impl CompactLowerConstructProbe<'_, '_> {
+                         ));
+                     }
+                 };
++                let value_is_int = match value {
++                    ArenaExprOrRun::Expr(expr) => matches!(
++                        self.infer_checked_expr_type_with_slots(expr, slots),
++                        Some(Type::Int)
++                    ),
++                    ArenaExprOrRun::Run(_) => false,
++                };
+                 let value = match value {
+                     ArenaExprOrRun::Expr(expr) => {
+                         self.lower_expr(expr, slots, current_function, item_slot)?
+@@ -6046,7 +6055,8 @@ impl CompactLowerConstructProbe<'_, '_> {
+                                 stmt,
+                                 BuildStmtRow::AssignBool { slot, value }
+                             ))
+-                        } else if let Some(value) = self.lower_int_expr_candidate(&value)
++                        } else if value_is_int
++                            && let Some(value) = self.lower_int_expr_candidate(&value)
+                             && !self.lowered_int_expr_needs_type_context(&value)
+                         {
+                             Some(push_build_row!(
+@@ -6088,7 +6098,8 @@ impl CompactLowerConstructProbe<'_, '_> {
+                             ArenaAssignTargetKind::Name(_)
+                         ) =>
+                     {
+-                        if let Some(value) = self.lower_int_expr_candidate(&value)
++                        if value_is_int
++                            && let Some(value) = self.lower_int_expr_candidate(&value)
+                             && !self.lowered_int_expr_needs_type_context(&value)
+                         {
+                             Some(push_build_row!(
+diff --git a/tests/runtime/coverage.rs b/tests/runtime/coverage.rs
+index 4cf26fd..e545823 100644
+--- a/tests/runtime/coverage.rs
++++ b/tests/runtime/coverage.rs
+@@ -1,5 +1,23 @@
+ use super::common::*;
+ 
++#[test]
++fn mutable_string_accumulator_uses_string_addition_in_loop() {
++    let path = write_temp_script(
++        "mutable-string-accumulator",
++        "proc main() {\n  var stack = \"\"\n  for segment in [\"a\", \"b\", \"c\"] {\n    stack = stack + segment\n  }\n  print $stack\n}\n",
++    );
++    let output = Command::new(env!("CARGO_BIN_EXE_xsh"))
++        .arg(&path)
++        .output()
++        .expect("run xsh");
++
++    assert_ok(&output);
++    assert_eq!(stdout_text(&output), "abc\n");
++    assert_eq!(stderr_text(&output), "");
++
++    std::fs::remove_file(path).expect("remove temp script");
++}
++
+ #[test]
+ fn reassigning_let_is_check_error() {
+     let path = write_temp_script("reassign-let-check-error", "let x = 1\nx = 2\n");

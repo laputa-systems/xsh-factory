@@ -2,7 +2,7 @@
 
 ## Status
 
-Merged.
+Approved.
 
 ## CTO decision — throughput cycle 2026-08-08
 
@@ -40,10 +40,10 @@ None.
 
 ## Merge record
 
-- Implementation branch: `factory/task-safepath-004/1786165555987`
-- Implementation commit: `9bbc473af32e20e7bb3fa9b967a51acd89eb5200`
-- Detected at XSH commit: `9bbc473af32e20e7bb3fa9b967a51acd89eb5200`
-- Implementation run: `/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786165552479/phases/01-ticket`
+- Implementation branch: `{{IMPLEMENTATION_BRANCH}}`
+- Implementation commit: `{{IMPLEMENTATION_COMMIT}}`
+- Detected at XSH commit: `{{DETECTED_XSH_COMMIT}}`
+- Implementation run: `{{IMPLEMENTATION_RUN}}`
 
 ## Source eval and manager
 
@@ -65,7 +65,7 @@ that the problem is `+` on Str in this position.
 ## Evidence
 
 - Worker session:
-  `runs/run-1786163685229/phases/02-reeval-task-safepath-003/workers/eval-worker/task-safepath-1/session.jsonl`
+  `runs/run-1786163685229/phases/02-reeval-task-safepath-003/workers/eval-worker/task-safepath-1/session.jsonl.bz2`
   — the `err[runtime.error]: lowered expression expected Int ... probe2.xsh:1:1`
   error recurs ~10 times while the agent tried `stack = stack + seg` in a
   `for` loop, and the same `+` on Str is confirmed accepted in expression /

@@ -1,0 +1,61 @@
+{
+  "classification": "pass",
+  "correctness": {
+    "all_exact": true,
+    "hidden_absolute_exact": true,
+    "hidden_collapse_exact": true,
+    "hidden_deep_escape_exact": true,
+    "hidden_dot_slash_exact": true,
+    "hidden_empty_exact": true,
+    "hidden_leading_dotdot_exact": true,
+    "hidden_midescape_exact": true,
+    "public_exact": true
+  },
+  "eval_id": "task-safepath",
+  "image_id": "sha256:0979e59b5e68192791eb0d05a17e2a35621277385e85281a52166d1de115e9ac",
+  "inputs": {
+    "agents_sha256": "1df8bf2bf3b49e3488a60b8c7086d4366bf730e1c05e6b2a0d32266f18b12bd3",
+    "handbook_sha256": "b152a97a29e98853ca2fe6a9577faa288ea19869ea9bc6a55293fcb619d67330",
+    "task_sha256": "3bbf86b93828fe3073216cf6c2c7864cf4fa604b540439cfca752a63723f6540"
+  },
+  "model": "deepseek/deepseek-v4-flash-0731",
+  "offline": "unknown",
+  "outputs": {
+    "candidate_sha256": "09f27ec66490e06ca2884e977214a12045e45ba312e1cb2fbfb0e6d272dc6ee1",
+    "oracle_sha256": "09f27ec66490e06ca2884e977214a12045e45ba312e1cb2fbfb0e6d272dc6ee1"
+  },
+  "platform": "linux/arm64",
+  "protocol": {
+    "artifact_present": true,
+    "review_ok": true
+  },
+  "provider": "openrouter",
+  "restrictions": {
+    "forbidden_operations": true,
+    "passed": true
+  },
+  "result": "pass",
+  "session": "/session/session.jsonl",
+  "telemetry": "unknown",
+  "thinking": "high",
+  "timings": {
+    "hidden_absolute_candidate_wall_ns": 11655855,
+    "hidden_absolute_oracle_wall_ns": 12275102,
+    "hidden_collapse_candidate_wall_ns": 13317762,
+    "hidden_collapse_oracle_wall_ns": 14461840,
+    "hidden_deep_escape_candidate_wall_ns": 10966692,
+    "hidden_deep_escape_oracle_wall_ns": 13484554,
+    "hidden_dot_slash_candidate_wall_ns": 13064764,
+    "hidden_dot_slash_oracle_wall_ns": 13722386,
+    "hidden_empty_candidate_wall_ns": 14031717,
+    "hidden_empty_oracle_wall_ns": 13285846,
+    "hidden_leading_dotdot_candidate_wall_ns": 13306346,
+    "hidden_leading_dotdot_oracle_wall_ns": 13465470,
+    "hidden_midescape_candidate_wall_ns": 11693772,
+    "hidden_midescape_oracle_wall_ns": 11747688,
+    "public_candidate_wall_ns": 11265773,
+    "public_oracle_wall_ns": 13140763
+  },
+  "trial_id": "1",
+  "xsh_commit": "9bbc473af32e20e7bb3fa9b967a51acd89eb5200"
+}

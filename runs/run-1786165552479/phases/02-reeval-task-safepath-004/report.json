@@ -1,0 +1,322 @@
+{
+  "artifacts": [
+    {
+      "kind": "session-directory",
+      "path": "workers/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 45,
+      "budget_failures": 0,
+      "cost_usd": 0.023308920000000004,
+      "tool_errors": 8,
+      "total_bucket_tokens": 753987.0,
+      "unknown_costs": 0,
+      "workers": 2
+    },
+    "designer": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786165552479/phases/02-reeval-task-safepath-004/workers/eval-designer/proposal-1/REPORT.md",
+      "present": false,
+      "result": "not-requested",
+      "role": "eval-designer",
+      "valid": true
+    },
+    "director": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786165552479/phases/02-reeval-task-safepath-004/workers/director/director/REPORT.md",
+      "present": false,
+      "result": "not-requested",
+      "role": "director",
+      "valid": true
+    },
+    "engineer": [],
+    "handbook_lineage": {
+      "approved": "lineage/handbook-approved.md",
+      "candidate": "lineage/handbook-candidate.md"
+    },
+    "manager": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786165552479/phases/02-reeval-task-safepath-004/workers/eval-manager/task-safepath/REPORT.md",
+      "present": true,
+      "result": "pass",
+      "role": "eval-manager",
+      "valid": true
+    },
+    "mode": "eval",
+    "narratives": [
+      {
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786165552479/phases/02-reeval-task-safepath-004/workers/eval-manager/task-safepath/REPORT.md",
+        "present": true,
+        "result": "pass",
+        "role": "eval-manager",
+        "valid": true
+      }
+    ],
+    "open_tickets": [
+      {
+        "eval_id": "task-bigfiles",
+        "id": "task-bigfiles-002",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-bigfiles-002.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-dupcheck",
+        "id": "task-dupcheck-002",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-dupcheck-002.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-004",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-004.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-005",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-005.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-006",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-006.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-007",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-007.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-008",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-008.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-pathparts",
+        "id": "task-pathparts-002",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-pathparts-002.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-safepath",
+        "id": "task-safepath-004",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-safepath-004.md",
+        "status": "Approved."
+      }
+    ],
+    "outcomes": {
+      "cycle": "pass",
+      "evaluator": "pass",
+      "infrastructure": "pass",
+      "product": "pass"
+    },
+    "required_outputs": {
+      "audit": true,
+      "candidate_handbook": true,
+      "designer_handbook_read": true,
+      "designer_output": true,
+      "handbook_lineage": true,
+      "manager_evidence_read": true,
+      "manager_handbook_read": true,
+      "manager_report": true,
+      "manager_session": true,
+      "required": true,
+      "ticket_snapshot_unchanged": true,
+      "trial1_process": true,
+      "trial1_report": true,
+      "trial2_process": true,
+      "trial2_report": true,
+      "worker_handbook_read": true
+    },
+    "sessions": [
+      "workers/eval-manager/task-safepath/session.jsonl.bz2",
+      "workers/eval-worker/task-safepath-1/session.jsonl.bz2"
+    ],
+    "tool_errors": [
+      {
+        "report": "workers/eval-manager/task-safepath/report.json",
+        "summary": "=== main/current xsh HEAD ===\n035239f546e4cc118f7de0e4f034d97f60544fbb\n=== is candidate an ancestor of main? ===\nfatal: Not a valid commit name 9bbc473af32e20e7bb3fa9b967a51acd89eb5200\nNO not ancestor\n=== does 7e9814fe exist? ===\nfatal: git cat-file: could not get object info\n=== 9bbc473 ===\nfatal: git cat-file: could not get object info\n\n\nCommand exited with code 128",
+        "tool": "bash",
+        "turn": 4,
+        "worker": {
+          "role": "eval-manager",
+          "worker_id": "task-safepath"
+        }
+      },
+      {
+        "report": "workers/eval-worker/task-safepath-1/report.json",
+        "summary": "(no output)\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 9,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-safepath-1"
+        }
+      },
+      {
+        "report": "workers/eval-worker/task-safepath-1/report.json",
+        "summary": "(no output)\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 11,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-safepath-1"
+        }
+      },
+      {
+        "report": "workers/eval-worker/task-safepath-1/report.json",
+        "summary": "len 3\nfind: 1\nslice0: a\nvalue: a//b\n---empty---\nlen 1\nfind: -1\nerr[runtime.error]: length cannot be negative\n  /tmp/t.xsh:7:19\n    print \"slice0:\" $s.byte_slice(0, b)\n                    ^^^^^^^^^^^^^^^^^^^\nruntime traceback\nexecutable: /usr/local/bin/xsh\noperation: runtime.error\nerror: text-byte-slice: length cannot be negative\n---trail---\nlen 3\nfind: 1\nslice0: a\nvalue: a/b/\n---noslash---\nlen 1\nfind: -1\nerr[runtime.error]: length cannot be negative\n  /tmp/t.xsh:7:19\n    print \"slice0:\" $s.byte_slice(0, b)\n                    ^^^^^^^^^^^^^^^^^^^\nruntime traceback\nexecutable: /usr/local/bin/xsh\noperation: runtime.error\nerror: text-byte-slice: length cannot be negative\n\n\nCommand exited with code 3",
+        "tool": "bash",
+        "turn": 15,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-safepath-1"
+        }
+      },
+      {
+        "report": "workers/eval-worker/task-safepath-1/report.json",
+        "summary": "(no output)\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 17,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-safepath-1"
+        }
+      },
+      {
+        "report": "workers/eval-worker/task-safepath-1/report.json",
+        "summary": "(no output)\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 19,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-safepath-1"
+        }
+      },
+      {
+        "report": "workers/eval-worker/task-safepath-1/report.json",
+        "summary": "err[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  /tmp/t2.xsh:12:15\n    print \"[\" + newacc + \"]\"\n                ^^^^^^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $newacc\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  /tmp/t2.xsh:12:15\n    print \"[\" + newacc + \"]\"\n                ^^^^^^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $newacc\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  /tmp/t2.xsh:12:15\n    print \"[\" + newacc + \"]\"\n                ^^^^^^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $newacc\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 22,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-safepath-1"
+        }
+      },
+      {
+        "report": "workers/eval-worker/task-safepath-1/report.json",
+        "summary": "FMT OK\nwarn[lint.prefer-guard]: use `continue when` instead of `if { continue }`\n  safepath.xsh:17:5\n      if seg == \"\" or seg == \".\" {\n      ---------------------------- replace with postfix guard\nhelp: use `continue when` -> continue when seg == \"\" or seg == \".\"\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 27,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-safepath-1"
+        }
+      }
+    ],
+    "trials": [
+      {
+        "evidence": {
+          "candidate_sha256": "09f27ec66490e06ca2884e977214a12045e45ba312e1cb2fbfb0e6d272dc6ee1",
+          "classification": "pass",
+          "correctness": "pass",
+          "eval_id": "task-safepath",
+          "handbook_sha256": "b152a97a29e98853ca2fe6a9577faa288ea19869ea9bc6a55293fcb619d67330",
+          "oracle_sha256": "09f27ec66490e06ca2884e977214a12045e45ba312e1cb2fbfb0e6d272dc6ee1",
+          "passed": true,
+          "protocol": "pass",
+          "restrictions": "pass",
+          "result": "pass",
+          "timing": "pass",
+          "trial_id": "1",
+          "valid": true
+        },
+        "path": "workers/eval-worker/task-safepath-1/run.json"
+      }
+    ],
+    "workers": [
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-safepath"
+        },
+        "path": "workers/eval-manager/task-safepath/report.json",
+        "result": "pass",
+        "tool_errors": 1,
+        "usage": {
+          "assistant_turns": 10,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.0043683839999999995,
+          "cache_read_tokens": 242688,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.011775384,
+          "input_cost_usd": 0.004365,
+          "input_tokens": 48500,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0030420000000000004,
+          "output_tokens": 16900,
+          "provider_total_tokens": 308088,
+          "reasoning_tokens": 12263,
+          "thinking_blocks": 8,
+          "tool_calls": 20,
+          "tool_errors": 1,
+          "tool_results": 20,
+          "total_bucket_tokens": 308088,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-safepath-1"
+        },
+        "path": "workers/eval-worker/task-safepath-1/report.json",
+        "result": "pass",
+        "tool_errors": 7,
+        "usage": {
+          "assistant_turns": 35,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.007318656,
+          "cache_read_tokens": 406592,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.011533536000000004,
+          "input_cost_usd": 0.0028603799999999996,
+          "input_tokens": 31782,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0013545000000000002,
+          "output_tokens": 7525,
+          "provider_total_tokens": 445899,
+          "reasoning_tokens": 3708,
+          "thinking_blocks": 23,
+          "tool_calls": 36,
+          "tool_errors": 7,
+          "tool_results": 36,
+          "total_bucket_tokens": 445899,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "7e9814fe774ceeb9e587ae95c967944548706701"
+  },
+  "findings": [],
+  "identity": {
+    "eval_id": "task-safepath",
+    "mode": "eval",
+    "run_id": "02-reeval-task-safepath-004"
+  },
+  "kind": "phase",
+  "result": "pass",
+  "schema_version": 1,
+  "state": "completed"
+}
