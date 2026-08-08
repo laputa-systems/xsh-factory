@@ -356,6 +356,18 @@ The existing operation is insufficient; semantic evidence is required.
 ),
 ),
   )?
+  test.ok(
+    control.ticket_api_surface_gate_ok(
+      ticket.replace(
+        "## Proposed XSH change",
+        """## API-surface justification
+
+The existing capability is insufficient; evidence supports the smaller change.
+
+## Proposed XSH change""",
+      ),
+    ),
+  )?
 }
 
 proc test_ticket_api_surface_gate_is_documented() [fs, error] {

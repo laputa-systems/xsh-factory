@@ -730,7 +730,8 @@ export pure ticket_api_surface_gate_ok(text: Str) -> Bool {
     }
   }
 
-  return "semantic" in justification and "existing" in justification and "evidence" in justification
+  let semantic_claim = "semantic" in justification or "capability" in justification
+  return semantic_claim and "existing" in justification and "evidence" in justification
 }
 
 ## Requires the checked-in approval state used for cycle admission.
