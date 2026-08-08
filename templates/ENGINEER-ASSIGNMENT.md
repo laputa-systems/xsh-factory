@@ -42,11 +42,14 @@ the `read` tool on each exact absolute path. This is required so the session
 JSONL proves that the worker consumed the current factory guidance:
 
 - North star: `{{NORTH_STAR_FILE}}`
-- Shared handbook: `{{HANDBOOK_FILE}}`
+- Approved handbook snapshot: `{{HANDBOOK_FILE}}`
+- Handbook candidate: `{{HANDBOOK_CANDIDATE_FILE}}`
 
-These are run-scoped snapshots of the checked-in factory guidance. Read them
-as inputs; never edit them or any other factory file. A handbook improvement is
-a CTO-owned promotion request, not part of an engineer product commit.
+The approved snapshot is a run-scoped copy of the checked-in handbook. Read it
+as an input and never edit it or the checked-in handbook. If this ticket
+produces a reusable lesson, add it to the run-scoped candidate path above; the
+candidate is shared review input and is promoted only after CTO review. If no
+handbook improvement is justified, leave the candidate unchanged.
 
 Then use the `read` tool on the product worktree's exact guidance files:
 
@@ -56,7 +59,7 @@ Then use the `read` tool on the product worktree's exact guidance files:
 ## Implementation contract
 
 Work only in `{{WORKTREE}}` on branch `{{BRANCH}}`. Do not edit XSH main, the
-factory checkout, the run-scoped guidance snapshots, or the ticket diagnosis.
+factory checkout, the approved handbook snapshot, or the ticket diagnosis.
 Make the smallest general XSH language, tooling, test, or
 canonical-documentation change supported by the ticket. Run the narrowest
 relevant checks, commit the product change on this branch, and leave the

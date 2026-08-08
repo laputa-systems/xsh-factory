@@ -2,7 +2,7 @@
 
 ## Status
 
-Approved.
+Merged.
 
 ## CTO decision — 2026-08-07
 
@@ -28,10 +28,20 @@ None.
 
 ## Merge record
 
-- Implementation branch: `{{IMPLEMENTATION_BRANCH}}`
-- Implementation commit: `{{IMPLEMENTATION_COMMIT}}`
-- Detected at XSH commit: `{{DETECTED_XSH_COMMIT}}`
-- Implementation run: `{{IMPLEMENTATION_RUN}}`
+- Implementation branch: `factory/task-pathparts-001/1786138323873`
+- Implementation commit: `30fabd4e12181830d146615b978861bef0737f96`
+- Detected at XSH commit: `1089456697e12bfe8c9d0b8082fdb83b721bb91f`
+- Implementation run: `runs/run-1786138321778/phases/01-ticket`
+
+## CTO acceptance — 2026-08-07
+
+- Review: accepted after code review and isolated native integration tests.
+- Evidence: the typed `Path` APIs, registry signatures, runtime lowering, docs,
+  and native path tests are all present in the engineer commit. The prior
+  seven-case correctness artifact passes byte-for-byte, and the updated
+  restriction now accepts its lint-preferred `fp"${argv[0]}"` typed-path form.
+- Delivery: merged into XSH `HEAD` through merge commit
+  `1089456697e12bfe8c9d0b8082fdb83b721bb91f`.
 
 ## Source eval and manager
 

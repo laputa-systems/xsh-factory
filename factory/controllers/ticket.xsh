@@ -37,6 +37,7 @@ proc spawn_engineer(
     FACTORY_ASSIGNMENT_SHA: hash.sha256(assignment)?.hex(),
     FACTORY_WORKDIR: worktree.display(),
     FACTORY_HANDBOOK_FILE: fp"${run_dir}/guidance/handbook.md".display(),
+    FACTORY_HANDBOOK_CANDIDATE_FILE: fp"${run_dir}/lineage/handbook-candidate.md".display(),
     FACTORY_NORTH_STAR_FILE: fp"${run_dir}/guidance/NORTH-STAR.md".display(),
     FACTORY_PLATFORM: platform,
     FACTORY_ENGINEER_PROVIDER: control.configured_role_setting("engineer", "PROVIDER")?,
@@ -120,7 +121,9 @@ proc run_ticket_cycle(
   fs.mkdir(fp"${run_dir}/messages")?
   fs.mkdir(fp"${run_dir}/tickets")?
   let guidance_dir = fp"${run_dir}/guidance"
+  let lineage_dir = fp"${run_dir}/lineage"
   fs.mkdir(guidance_dir)?
+  fs.mkdir(lineage_dir)?
   fs.copy(
     fp"${factory_dir}/NORTH-STAR.md",
     fp"${guidance_dir}/NORTH-STAR.md",
@@ -129,6 +132,16 @@ proc run_ticket_cycle(
   fs.copy(
     fp"${factory_dir}/runtime/handbook.md",
     fp"${guidance_dir}/handbook.md",
+    overwrite: true,
+  )?
+  fs.copy(
+    fp"${factory_dir}/runtime/handbook.md",
+    fp"${lineage_dir}/handbook-approved.md",
+    overwrite: true,
+  )?
+  fs.copy(
+    fp"${factory_dir}/runtime/handbook.md",
+    fp"${lineage_dir}/handbook-candidate.md",
     overwrite: true,
   )?
   runtime.stage_cto_improvement(factory_dir, run_dir)?
@@ -300,6 +313,10 @@ proc run_ticket_cycle(
       {
         key: "HANDBOOK_FILE",
         value: fp"${guidance_dir}/handbook.md".display(),
+      },
+      {
+        key: "HANDBOOK_CANDIDATE_FILE",
+        value: fp"${lineage_dir}/handbook-candidate.md".display(),
       },
       {
         key: "XSH_AGENTS_FILE",

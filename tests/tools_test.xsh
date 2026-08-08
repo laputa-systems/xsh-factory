@@ -479,6 +479,7 @@ done
 worker_dir="$FACTORY_RUN_DIR/workers/$FACTORY_ROLE/$FACTORY_WORKER_ID"
 mkdir -p "$worker_dir"
 if [ "$FACTORY_ROLE" = "engineer" ]; then
+  printf 'candidate handbook\n' > "$FACTORY_HANDBOOK_CANDIDATE_FILE"
   printf 'fixture change\n' > "$FACTORY_WORKDIR/coverage-fixture.txt"
   git -C "$FACTORY_WORKDIR" add coverage-fixture.txt
   git -C "$FACTORY_WORKDIR" commit -qm 'fixture engineer change'
@@ -582,6 +583,7 @@ exit 0
   test.ok(fs.exists(fp"${run_dir}/report.json")?)?
   test.ok(fs.exists(fp"${run_dir}/CTO-REPORT.md")?)?
   test.ok(fs.exists(fp"${run_dir}/events.jsonl")?)?
+  test.eq(fs.read_text(fp"${run_dir}/lineage/handbook-candidate.md")?, "candidate handbook\n")?
   test.ok(fs.exists(fp"${run_dir}/patches/${ticket_id}.diff")?)?
   test.ok(! fs.exists(runtime.ticket_worktree_path(product, run_dir, ticket_id))?)?
   let branches = run.text "git" "-C" $product "branch" "--format=%(refname:short)" ?
@@ -2364,11 +2366,14 @@ proc test_engineer_guidance_is_run_scoped() [fs, error] {
   let ticket = fs.read_text(fp"${fs.cwd()?}/factory/controllers/ticket.xsh")?
   let assignment = fs.read_text(fp"${fs.cwd()?}/templates/ENGINEER-ASSIGNMENT.md")?
   test.contains(ticket, "let guidance_dir = fp")?
+  test.contains(ticket, "lineage_dir = fp")?
   test.contains(ticket, "factory_dir}/runtime/handbook.md")?
   test.contains(ticket, "guidance_dir}/handbook.md")?
+  test.contains(ticket, "lineage_dir}/handbook-candidate.md")?
   test.contains(ticket, r"""session_read_path(session, fp"${guidance_dir}/handbook.md")""")?
-  test.contains(assignment, "run-scoped snapshots")?
-  test.contains(assignment, "never edit them or any other factory file")?
+  test.contains(assignment, "run-scoped copy")?
+  test.contains(assignment, "Handbook candidate")?
+  test.contains(assignment, "reusable lesson")?
 }
 
 proc test_eval_manager_assignment_proves_exact_handbook_read() [fs, error] {

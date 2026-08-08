@@ -9,7 +9,8 @@
 - Assignment SHA-256: `{{ASSIGNMENT_SHA}}`
 - Working directory: `{{WORKDIR}}`
 - North star: `{{NORTH_STAR_FILE}}`
-- Shared handbook: `{{HANDBOOK_FILE}}`
+- Approved handbook snapshot: `{{HANDBOOK_FILE}}`
+- Handbook candidate: `{{HANDBOOK_CANDIDATE_FILE}}`
 - Provider: `{{PROVIDER}}`
 - Model: `{{MODEL}}`
 - Thinking: `{{THINKING}}`

@@ -2,7 +2,7 @@
 
 ## Status
 
-Approved.
+Merged.
 
 ## CTO decision — 2026-08-07
 
@@ -31,10 +31,20 @@ None.
 
 ## Merge record
 
-- Implementation branch: `{{IMPLEMENTATION_BRANCH}}`
-- Implementation commit: `{{IMPLEMENTATION_COMMIT}}`
-- Detected at XSH commit: `{{DETECTED_XSH_COMMIT}}`
-- Implementation run: `{{IMPLEMENTATION_RUN}}`
+- Implementation branch: `factory/task-trim-002/1786155405105`
+- Implementation commit: `d917d6d84f7c8360d122b0c571d386a4db902211`
+- Detected at XSH commit: `ebd2936ed65e044235fcc9c2ed94396b0272ae38`
+- Implementation run: `runs/run-1786155403216/phases/01-ticket`
+
+## CTO acceptance — 2026-08-07
+
+- Review: accepted after code review and isolated native integration tests.
+- Evidence: the worker's `Str.lines()` contract and `Bytes.lines()` companion
+  documentation match the existing runtime behavior; its native regression
+  test passes in a clean checkout. The byte-exact task-trim evaluator fixture
+  also passes against the committed artifact.
+- Delivery: merged into XSH `HEAD` through merge commit
+  `ebd2936ed65e044235fcc9c2ed94396b0272ae38`.
 
 ## Source eval and manager
 

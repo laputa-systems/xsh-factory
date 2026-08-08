@@ -29,6 +29,10 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   }
   let run_dir = env.path("FACTORY_RUN_DIR")?.resolve()?
   let handbook_file = env.path("FACTORY_HANDBOOK_FILE", fp"${factory_dir}/runtime/handbook.md")?
+  let handbook_candidate_file = env.path(
+    "FACTORY_HANDBOOK_CANDIDATE_FILE",
+    fp"${run_dir}/lineage/handbook-candidate.md",
+  )?
   let north_star_file = env.path("FACTORY_NORTH_STAR_FILE", fp"${factory_dir}/NORTH-STAR.md")?
   let worker_dir = fp"${run_dir}/workers/${role}/${worker_id}"
   let process_registry = fp"${run_dir}/processes"
@@ -85,6 +89,11 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
 
   if role == "engineer" and canonical_paths.within(factory_dir, workdir)? {
     eprint "engineer workdir is inside the factory checkout"
+    abort(2)
+  }
+
+  if role == "engineer" and ! canonical_paths.within(run_dir, handbook_candidate_file)? {
+    eprint "engineer handbook candidate escapes the run evidence root"
     abort(2)
   }
 
@@ -206,6 +215,10 @@ ${dispatch_claim_token}
       value: handbook_file.display(),
     },
     {
+      key: "HANDBOOK_CANDIDATE_FILE",
+      value: handbook_candidate_file.display(),
+    },
+    {
       key: "PROVIDER",
       value: provider,
     },
@@ -289,6 +302,7 @@ ${dispatch_claim_token}
     FACTORY_ASSIGNMENT_SHA: assignment_sha,
     FACTORY_WORKDIR: workdir.display(),
     FACTORY_HANDBOOK_FILE: handbook_file.display(),
+    FACTORY_HANDBOOK_CANDIDATE_FILE: handbook_candidate_file.display(),
     FACTORY_NORTH_STAR_FILE: north_star_file.display(),
     FACTORY_XSH_REPO: env.get("FACTORY_XSH_REPO")?,
     FACTORY_XSH_COMMIT: env.get_or("FACTORY_XSH_COMMIT", "unknown")?,

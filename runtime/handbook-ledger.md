@@ -1,6 +1,7 @@
 # Handbook promotion ledger
 
-This ledger is the machine-readable disposition boundary for handbook lineage.
+This ledger is the machine-readable disposition boundary for handbook lineage
+contributed by workers and managers.
 A candidate hash listed as `promoted` has been incorporated into the rolling
 `runtime/handbook.md` by an explicit CTO decision. A candidate not listed here
 must remain visible as unresolved work in the CTO briefing; controllers must

@@ -2,8 +2,8 @@
 
 This is the single factory-wide rolling handbook for every eval. It is the
 approved baseline copied into each executor trial; evals must not carry their
-own handbook. A manager may stage a candidate under a run lineage, but only a
-reviewed promotion updates this file for all future trials.
+own handbook. Any worker or manager may stage a candidate under a run lineage,
+but only a reviewed promotion updates this file for all future trials.
 
 This is the user-facing reference for the isolated XSH gym. The agent runs as
 `root` in a minimal Alpine Linux container with its task workspace mounted at
