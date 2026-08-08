@@ -695,7 +695,7 @@ stream-fold replay that exercises the rule.
 
 | Candidate SHA-256 | Disposition |
 | --- | --- |
-| `f83c445e5cc6bade0d7fed0f4e93caec37477bceff157de2253d5299ec3a2140` | deferred pending strict-decimal replay; not promoted |
+| `f83c445e5cc6bade0d7fed0f4e93ceca37477bceff157de2253d5299ec3a2140` | deferred pending strict-decimal replay; not promoted |
 
 The retained histogram replay restaged the general rule that `Str.parse_int`
 accepts non-decimal spellings and that strict decimal contracts need explicit
