@@ -146,6 +146,7 @@ deferred, not promoted.
 | Candidate SHA-256 | Disposition |
 | --- | --- |
 | `b152a97a29e98853ca2fe6a9577faa288ea19869ea9bc6a55293fcb619d67330` | promoted |
+| `4610e8f4e282c52e2fa34eca91ec46f2ef93d6f313b35a88ffb82f5af7e4365a` | promoted baseline; superseded by this promotion |
 
 The `task-bigfiles` manager repeated the block-bearing stream-stage discovery
 friction after the same eval had supplied the accepted command-word spelling in
