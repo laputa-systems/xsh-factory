@@ -641,6 +641,7 @@ content
   test.eq(control.default_provider("unknown"), "")?
   test.eq(control.default_model("unknown"), "")?
   test.eq(control.default_tools("eval-worker"), "read,write,edit,bash")?
+  test.eq(control.default_tools("eval-manager"), "read,write,edit")?
   test.eq(control.default_tools("unknown"), "")?
   test.eq(control.clamp_session_limit("engineer", "MAX_TURNS", "999")?, "220")?
   test.eq(control.clamp_session_limit("engineer", "MAX_TURNS", "20")?, "20")?

@@ -302,6 +302,10 @@ export pure clamp_cycle_budget(configured: Str) -> Result[Str] {
 
 ## Selects the default Pi tool set for a known factory role.
 export pure default_tools(role: Str) -> Str {
+  if role == "eval-manager" {
+    return "read,write,edit"
+  }
+
   if role == "eval-worker" {
     return "read,write,edit,bash"
   }

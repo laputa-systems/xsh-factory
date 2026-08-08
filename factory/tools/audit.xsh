@@ -118,19 +118,18 @@ proc organization_throughput(run_dir: Path, worker_reports: List[Path]) [fs, err
   var retained_phases: List[Path] = []
   let phases_dir = fp"${run_dir}/phases"
   if fs.exists(phases_dir)? {
-    retained_phases = [
-      entry.path
-      for entry in fs.children(phases_dir, stat: false, ordered: true)?
-      |> where .kind == "dir"
-      if entry.name.starts_with("01-reuse-")
-    ]
+    for entry in fs.children(phases_dir, stat: false, ordered: true)? {
+      continue when entry.kind != "dir"
+      let report = fp"${entry.path}/report.json"
+      if fs.exists(report)? and json.get(json.read(report)?, ["data", "fast_path"], false) == true {
+        retained_phases = retained_phases.push(entry.path)
+      }
+    }
   }
   var retained_fast_paths = 0
   for phase in retained_phases {
     let report = fp"${phase}/report.json"
-    if fs.exists(report)? and json.get(json.read(report)?, ["data", "fast_path"], false) == true {
-      retained_fast_paths += 1
-    }
+    if fs.exists(report)? { retained_fast_paths += 1 }
   }
   let handbook_quarantines = [
     entry

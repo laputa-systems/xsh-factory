@@ -1,0 +1,225 @@
+{
+  "artifacts": [
+    {
+      "kind": "phase-reports",
+      "path": "phases/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 56,
+      "budget_failures": 0,
+      "cost_usd": 0.062699166,
+      "tool_errors": 2,
+      "total_bucket_tokens": 1064270.0,
+      "unknown_costs": 0,
+      "workers": 4
+    },
+    "mode": "organization",
+    "outcomes": {
+      "cycle": "pass",
+      "evaluator": "pass",
+      "infrastructure": "pass",
+      "product": "pass"
+    },
+    "phases": [
+      {
+        "id": "01-ticket",
+        "path": "phases/01-ticket/report.json",
+        "result": "pass",
+        "valid": true
+      },
+      {
+        "id": "02-reeval-task-pathparts-003",
+        "path": "phases/02-reeval-task-pathparts-003/report.json",
+        "result": "pass",
+        "valid": true
+      },
+      {
+        "id": "03-eval",
+        "path": "phases/03-eval/report.json",
+        "result": "pass",
+        "valid": true
+      }
+    ],
+    "throughput": {
+      "admitted_tickets": 1,
+      "delivered_tickets": 1,
+      "delivery_conversion": 1.0,
+      "fresh_engineer_rows": 0,
+      "handbook_quarantines": 0,
+      "overlap_linked_replays": false,
+      "overlap_retained_fresh": false,
+      "reeval_dispatched": 1,
+      "reeval_passed": 1,
+      "retained_fast_paths": 0,
+      "retained_rows": 0
+    },
+    "tool_errors": [
+      {
+        "report": "phases/02-reeval-task-pathparts-003/workers/eval-worker/task-pathparts-1/report.json",
+        "summary": "err[check.standard-module-shadow]: name `path` shadows the standard module `path`\n  pathparts.xsh:2:3\n    let path = fp\"${argv[0]}\"\n    ^^^^^^^^^^^^^^^^^^^^^^^^^ name `path` shadows the standard module `path`\n\nerr[check.unknown-module-api]: unknown module API\n  pathparts.xsh:3:13\n    let dir = path.dirname().display()\n              ^^^^^^^^^^^^^^ unknown module API\n\nerr[check.unknown-module-api]: unknown module API\n  pathparts.xsh:4:14\n    let name = path.basename()\n               ^^^^^^^^^^^^^^^ unknown module API\n\nerr[check.unknown-module-api]: unknown module API\n  pathparts.xsh:5:13\n    let ext = path.ext_or(\"none\")\n              ^^^^^^^^^^^^^^^^^^^ unknown module API\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 9,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-pathparts-1"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-worker/task-pathparts-1/report.json",
+        "summary": "err[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  pathparts.xsh:6:16\n    print \"ext=\" ext\n                 ^^^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $ext\n=== run ===\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  pathparts.xsh:6:16\n    print \"ext=\" ext\n                 ^^^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $ext\n---\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  pathparts.xsh:6:16\n    print \"ext=\" ext\n                 ^^^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $ext\n---\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  pathparts.xsh:6:16\n    print \"ext=\" ext\n                 ^^^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $ext\n---\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  pathparts.xsh:6:16\n    print \"ext=\" ext\n                 ^^^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $ext\n---\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  pathparts.xsh:6:16\n    print \"ext=\" ext\n                 ^^^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $ext\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 11,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-pathparts-1"
+        }
+      }
+    ],
+    "workers": [
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-pathparts"
+        },
+        "path": "phases/02-reeval-task-pathparts-003/workers/eval-manager/task-pathparts/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 11,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.005239296,
+          "cache_read_tokens": 291072,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.021734136,
+          "input_cost_usd": 0.01354428,
+          "input_tokens": 150492,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0029505599999999996,
+          "output_tokens": 16392,
+          "provider_total_tokens": 457956,
+          "reasoning_tokens": 11219,
+          "thinking_blocks": 9,
+          "tool_calls": 22,
+          "tool_errors": 0,
+          "tool_results": 22,
+          "total_bucket_tokens": 457956,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-pathparts-1"
+        },
+        "path": "phases/02-reeval-task-pathparts-003/workers/eval-worker/task-pathparts-1/report.json",
+        "result": "pass",
+        "tool_errors": 1,
+        "usage": {
+          "assistant_turns": 17,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.001718784,
+          "cache_read_tokens": 95488,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.008335583999999998,
+          "input_cost_usd": 0.005820839999999999,
+          "input_tokens": 64676,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00079596,
+          "output_tokens": 4422,
+          "provider_total_tokens": 164586,
+          "reasoning_tokens": 2351,
+          "thinking_blocks": 10,
+          "tool_calls": 18,
+          "tool_errors": 1,
+          "tool_results": 18,
+          "total_bucket_tokens": 164586,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-pathparts"
+        },
+        "path": "phases/03-eval/workers/eval-manager/task-pathparts/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 11,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.0011105279999999995,
+          "cache_read_tokens": 61696,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.021698838,
+          "input_cost_usd": 0.01818567,
+          "input_tokens": 202063,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00240264,
+          "output_tokens": 13348,
+          "provider_total_tokens": 277107,
+          "reasoning_tokens": 6981,
+          "thinking_blocks": 7,
+          "tool_calls": 19,
+          "tool_errors": 0,
+          "tool_results": 19,
+          "total_bucket_tokens": 277107,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-pathparts-1"
+        },
+        "path": "phases/03-eval/workers/eval-worker/task-pathparts-1/report.json",
+        "result": "pass",
+        "tool_errors": 1,
+        "usage": {
+          "assistant_turns": 17,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.001064448,
+          "cache_read_tokens": 59136,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.010930608,
+          "input_cost_usd": 0.00912114,
+          "input_tokens": 101346,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0007450200000000001,
+          "output_tokens": 4139,
+          "provider_total_tokens": 164621,
+          "reasoning_tokens": 1845,
+          "thinking_blocks": 10,
+          "tool_calls": 18,
+          "tool_errors": 1,
+          "tool_results": 18,
+          "total_bucket_tokens": 164621,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "f697fa2453f676f686c685171f5a8a9d514f871e"
+  },
+  "findings": [],
+  "identity": {
+    "mode": "organization",
+    "run_id": "run-1786180918894"
+  },
+  "kind": "run",
+  "result": "pass",
+  "schema_version": 1,
+  "state": "completed"
+}

@@ -10,6 +10,8 @@ Throughput is a contract: use the structured evidence packet, begin filling the
 staged report immediately, and finish within the bounded session. Do not spend
 turns rediscovering controller state or reading raw session history unless a
 specific structured discrepancy requires proof.
+The launcher exposes only `read`, `write`, and `edit` for this role; use those
+tools for the bounded evidence review and report, not shell discovery.
 The controller runs `factory/entrypoints/eval-executor.xsh` before your session. It is
 not another agent or role. Treat it as a black box: inspect the phase
 `report.json` and each worker `report.json` first, then

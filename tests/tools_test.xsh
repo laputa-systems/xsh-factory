@@ -1735,14 +1735,14 @@ proc test_organization_audit_only_admits_direct_phase_children(ctx: TestContext)
 proc test_organization_audit_projects_throughput_from_existing_evidence(ctx: TestContext) [fs, process, error] {
   let root = test.temp_dir(ctx, name: "audit-organization-throughput")?
   let factory = fs.cwd()?
-  fs.mkdir(fp"${root}/phases/01-reuse-task-a")?
+  fs.mkdir(fp"${root}/phases/01-ticket")?
   fs.mkdir(fp"${root}/workers/engineer/task-b")?
   json.write(
-    fp"${root}/phases/01-reuse-task-a/report.json",
+    fp"${root}/phases/01-ticket/report.json",
     {
       schema_version: 1,
       kind: "phase",
-      identity: {run_id: "01-reuse-task-a", mode: "ticket-reuse", ticket_id: "task-a"},
+      identity: {run_id: "01-ticket", mode: "ticket-reuse", ticket_id: "task-a"},
       state: "completed",
       result: "pass",
       data: {fast_path: true},

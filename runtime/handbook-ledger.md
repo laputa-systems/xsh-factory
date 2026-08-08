@@ -619,6 +619,19 @@ candidate, and the linked histogram manager was stopped by the wall watcher.
 Do not promote any handbook change from this cycle; replay the deferred
 pathparts lesson only after a complete manager lineage packet exists.
 
+## Explicit CTO disposition — run-1786180918894
+
+| Candidate SHA-256 | Disposition |
+| --- | --- |
+| `4d43dc1d483ede35e7b99fc771700a0a8066d8e2119e0f4473574ecc1143b831` | deferred pending cross-eval replay; not promoted |
+| `7df4f918df0304b27efa970705989de02599145902a0c965ffdba71696f6149c` | deferred pending cross-eval replay; not promoted |
+
+The linked replay supplied a concise rule to avoid binding a Path value to the
+standard module name `path`; the independent pathparts eval supplied structural
+`Path.dirname`, `Path.basename`, and `Path.ext_or(default)` guidance. Both are
+single-eval candidates. Keep the approved handbook unchanged until a later
+path-consuming replay and a second nearby eval confirm generalization.
+
 ## Explicit CTO disposition — run-1786174072800
 
 | Candidate SHA-256 | Disposition |
