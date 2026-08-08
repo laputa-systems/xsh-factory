@@ -537,9 +537,10 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   var independent_eval_requests: List[Path] = []
   var independent_eval_stdout: List[Path] = []
   var independent_eval_stderr: List[Path] = []
-  if selected_ticket != "" {
-    # Ticket cycles still dispatch one independent eval; create its phase
-    # boundary before the child controller attempts its own lock and report.
+  if selected_ticket != "" and independent_eval_requested {
+    # An explicitly requested independent eval gets its own phase boundary.
+    # The default ticket cycle leaves this lane empty so it cannot consume
+    # delivery capacity or turn a passing product path into an eval failure.
     fs.mkdir(fp"${phases_dir}/03-eval")?
     independent_eval_ids = independent_eval_ids.push(requested_eval)
     independent_eval_phases = independent_eval_phases.push(fp"${phases_dir}/03-eval")

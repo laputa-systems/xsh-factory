@@ -2787,6 +2787,7 @@ proc test_ticket_cycle_bounds_concurrent_engineers() [fs, error] {
   test.contains(organization, "linked replay failed; branch retained for review")?
   test.contains(organization, "fresh_first_ticket_order(fresh_tickets, reuse_tickets)")?
   test.contains(organization, "Wait and merge fresh rows before retained replays")?
+  test.contains(organization, "selected_ticket != \"\" and independent_eval_requested")?
 }
 
 proc test_organization_reports_ticket_api_gate_failures() [fs, error] {
