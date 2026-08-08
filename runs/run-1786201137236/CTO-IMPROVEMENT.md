@@ -2,7 +2,14 @@
 
 ## Status
 
-pending-validation
+validated
+
+Validated before cycle-23 admission: `factory/control.xsh` and
+`factory/tools/run-status.xsh` check successfully; all 30
+`tests/factory_control_test.xsh` tests pass; and
+`tests/tools_test.xsh::test_run_status_inspects_live_and_completed_evidence`
+passes exactly. The acceptance wording and zombie-process regressions are
+therefore active for the next cycle.
 
 ## Change
 
