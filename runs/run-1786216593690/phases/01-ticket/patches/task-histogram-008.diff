@@ -1,0 +1,155 @@
+diff --git a/crates/xsht/tests/lint.rs b/crates/xsht/tests/lint.rs
+index 5d4a9f8..6c70371 100644
+--- a/crates/xsht/tests/lint.rs
++++ b/crates/xsht/tests/lint.rs
+@@ -572,6 +572,20 @@ pure values(items: List[Str]) -> List[Str] {
+     );
+ }
+ 
++#[test]
++fn linter_counts_a_record_type_annotation_as_a_type_use() {
++    let source = "type Accum = {total: Int, out: List[Str]}\nlet initial: Accum = {total: 0, out: []}\n";
++    let parsed = parse_lint_source(source);
++    assert!(parsed.diagnostics.is_empty(), "{:?}", parsed.diagnostics);
++    let checked = Checker::check_arena(&parsed.arena, source);
++    assert!(checked.diagnostics.is_empty(), "{:?}", checked.diagnostics);
++
++    let diagnostics = lint_and_assert_fmt_stable(&parsed.arena, source, LintOptions::default());
++    assert!(!diagnostics.iter().any(|diagnostic| {
++        diagnostic.code.as_deref() == Some("lint.unused-type")
++    }), "record annotation must use its declared type: {diagnostics:?}");
++}
++
+ #[test]
+ fn linter_does_not_suggest_unparseable_tail_return_for_typed_records() {
+     let source = "\
+diff --git a/docs/SPEC.md b/docs/SPEC.md
+index 978494c..b975712 100644
+--- a/docs/SPEC.md
++++ b/docs/SPEC.md
+@@ -458,6 +458,11 @@ type_def     = "type" IDENT "=" type_body terminator ;
+ type_body    = type_expr | record_schema | module_contract ;
+ record_schema = "{" schema_field ("," schema_field)* ","? "}" ;
+ schema_field = IDENT ":" type_expr ;
++
++Record schema and literal field names are normally identifiers. A reserved word
++used as a field name is rejected with a diagnostic that names the word. Use a
++non-reserved field name in schemas; quoted string keys remain available for
++untyped record literals.
+ module_contract = "module" "{" module_contract_entry* "}" ;
+ module_contract_entry = "export" "optional"? module_contract_kind terminator? ","? ;
+ module_contract_kind = ("let")? IDENT ":" type_expr
+@@ -746,6 +751,9 @@ list_body    = (expr ("," expr)* ","?)?
+              | expr "for" binding_target "in" expr ("if" expr)? ;
+ record_lit   = "{" (record_field ("," record_field)* ","?)? "}" ;
+ record_field = IDENT ":" expr | STRING ":" expr | IDENT ;
++
++A reserved word cannot be used as an unquoted record field name. Use a quoted
++string field name, such as `{"run": 0}`, when the record must retain that key.
+ map_comp     = "{" field_path ":" expr "for" binding_target "in" expr
+                ("if" expr)? "}" ;
+ field_path   = IDENT ("." IDENT)* ;
+diff --git a/src/syntax/parser/expr.rs b/src/syntax/parser/expr.rs
+index 181c915..c17a4f7 100644
+--- a/src/syntax/parser/expr.rs
++++ b/src/syntax/parser/expr.rs
+@@ -964,6 +964,21 @@ impl<'a> Parser<'a> {
+             }
+             let name = match self.current_tag() {
+                 TokenTag::Ident => self.current_name().expect("record key token has payload"),
++                TokenTag::Keyword => {
++                    let name = self
++                        .current_keyword()
++                        .expect("keyword record key token has payload")
++                        .as_str();
++                    self.diagnostics.push(
++                        Diagnostic::error(format!("record field `{name}` is reserved"))
++                            .with_code("parse.reserved-record-field")
++                            .with_label(Label::primary(
++                                self.current_span(),
++                                "use a non-reserved field name",
++                            )),
++                    );
++                    Name::intern(name)
++                }
+                 TokenTag::String => {
+                     let flags = self
+                         .token_table
+diff --git a/src/syntax/parser/stmt.rs b/src/syntax/parser/stmt.rs
+index dfa5295..fe8ff41 100644
+--- a/src/syntax/parser/stmt.rs
++++ b/src/syntax/parser/stmt.rs
+@@ -1,8 +1,8 @@
+ #![allow(clippy::single_call_fn)]
+ 
+ use super::{
+-    AssignOp, BlockParam, DurationLiteral, Effect, IntLiteral, Keyword, Name, Parser,
+-    SignalHookOptions, TokenKindMatch, TokenTag, result_unit_type_expr, unknown_type_expr,
++    AssignOp, BlockParam, Diagnostic, DurationLiteral, Effect, IntLiteral, Keyword, Label, Name,
++    Parser, SignalHookOptions, TokenKindMatch, TokenTag, result_unit_type_expr, unknown_type_expr,
+ };
+ use crate::syntax::arena::{
+     ArenaBuilderEntryKind, ArenaExprOrRun, ArenaModuleContractEntryKind, ArenaProgramBuilder,
+@@ -214,7 +214,24 @@ impl<'a> Parser<'a> {
+         let mut fields = Vec::new();
+         while !self.at(TokenKindMatch::RBrace) && !self.at(TokenKindMatch::Eof) {
+             let start = self.current_start();
+-            let name = self.expect_ident("expected schema field name")?;
++            let name = if self.current_tag() == TokenTag::Keyword {
++                let name = self
++                    .current_keyword()
++                    .expect("keyword schema field token has payload")
++                    .as_str();
++                self.diagnostics.push(
++                    Diagnostic::error(format!("schema field `{name}` is reserved"))
++                        .with_code("parse.reserved-schema-field")
++                        .with_label(Label::primary(
++                            self.current_span(),
++                            "use a non-reserved field name",
++                        )),
++                );
++                self.bump();
++                Name::intern(name)
++            } else {
++                self.expect_ident("expected schema field name")?
++            };
+             self.expect(TokenKindMatch::Colon, "expected `:` after schema field");
+             let ty_id = self.parse_type_expr(arena)?;
+             let ty_end = self.previous_end();
+diff --git a/tests/syntax.rs b/tests/syntax.rs
+index 432e613..db91f53 100644
+--- a/tests/syntax.rs
++++ b/tests/syntax.rs
+@@ -371,6 +371,32 @@ fn parser_rejects_bracketed_map_comprehension_keys() {
+     );
+ }
+ 
++#[test]
++fn parser_reports_reserved_record_fields_by_name_without_cascade() {
++    let source = "type Accum = {run: Int, lines: List[Str]}\nlet rec: Accum = {run: 0, lines: []}\n";
++    let output = Parser::parse_source_arena_only(SourceId::new(0), source);
++
++    assert_eq!(output.diagnostics.len(), 2, "{:?}", output.diagnostics);
++    assert_eq!(
++        output.diagnostics[0].code.as_deref(),
++        Some("parse.reserved-schema-field")
++    );
++    assert!(output.diagnostics[0].message.contains("`run`"));
++    assert_eq!(
++        output.diagnostics[1].code.as_deref(),
++        Some("parse.reserved-record-field")
++    );
++    assert!(output.diagnostics[1].message.contains("`run`"));
++}
++
++#[test]
++fn parser_accepts_quoted_reserved_record_fields() {
++    let source = "let rec = {\"run\": 0, \"lines\": []}\n";
++    let output = Parser::parse_source_arena_only(SourceId::new(0), source);
++
++    assert!(output.diagnostics.is_empty(), "{:?}", output.diagnostics);
++}
++
+ #[test]
+ fn parser_reports_unsupported_c_style_boolean_operators_constructively() {
+     // Unsupported C-style boolean operators and the `then` keyword must be

@@ -963,7 +963,13 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
       ) == true
       let reeval_report_ok = phase_run_pass(reeval_phase, "report.json")? and reeval_required_ok
       let reeval_pass = reeval_report_ok
-      reeval_pass_for_result = reeval_pass_for_result and reeval_pass
+      let retained_replay = reuse_existing_branch and ticket_id == reuse_ticket
+      # A retained replay is quality evidence for an already-existing branch.
+      # If its bounded manager closeout defers, keep the branch available for a
+      # later replay without allowing that old row to block fresh delivery.
+      let retained_replay_deferred = retained_replay and ! reeval_pass
+      let effective_reeval_pass = reeval_pass or retained_replay
+      reeval_pass_for_result = reeval_pass_for_result and effective_reeval_pass
       let delivery = if reeval_pass {
         runtime.merge_validated_ticket(
           xsh_repo,
@@ -979,22 +985,32 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
           implementation_commit: "",
         }
       }
-      delivery_ok = delivery_ok and delivery.merged
+      delivery_ok = delivery_ok and (delivery.merged or retained_replay)
       runtime.emit_structured_event(
         event_template,
         run_dir,
         if delivery.merged {
           f"86-ticket-${ticket_id}-delivered"
+        } else if retained_replay_deferred {
+          f"86-ticket-${ticket_id}-retained-replay-deferred"
         } else {
           f"86-ticket-${ticket_id}-delivery-failed"
         },
         ticket_id,
         {
-          status: if delivery.merged { "delivered" } else { "delivery-failed" },
+          status: if delivery.merged {
+            "delivered"
+          } else if retained_replay_deferred {
+            "retained-validation-deferred"
+          } else {
+            "delivery-failed"
+          },
           branch: delivery.branch,
           implementation_commit: delivery.implementation_commit,
           detail: if delivery.merged {
             f"${delivery.implementation_commit} is now reachable from XSH HEAD"
+          } else if retained_replay_deferred {
+            "retained replay deferred within bounded policy; branch retained for review"
           } else {
             "linked replay failed; branch retained for review"
           },
@@ -1023,10 +1039,16 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
         if reeval_pass { "completed" } else { "failed" },
         1,
         "controller",
-        if reeval_process_ok {
-          "candidate re-evaluation returned with a passing phase report"
+        if reeval_pass {
+          if reeval_process_ok {
+            "candidate re-evaluation returned with a passing phase report"
+          } else {
+            "candidate re-evaluation phase report passed; nonzero controller status retained"
+          }
+        } else if retained_replay {
+          "retained replay deferred; bounded phase evidence preserved"
         } else {
-          "candidate re-evaluation phase report passed; nonzero controller status retained"
+          "fresh candidate re-evaluation did not produce a passing phase report"
         },
       )?
       if reeval_pass {
@@ -1042,8 +1064,12 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
         )?
       }
 
+      # Fresh delivery requires a portable patch before its worktree can be
+      # removed. A retained timeout may have no patch, but its detached
+      # worktree is still safe to remove when clean; the Git branch remains.
       let patch_ready = fs.exists(reeval_ticket_patches[reeval_wait_index])?
-      let cleaned = patch_ready and reeval_pass and runtime.remove_clean_worktree(
+      let cleanup_allowed = (patch_ready and reeval_pass) or retained_replay
+      let cleaned = cleanup_allowed and runtime.remove_clean_worktree(
         xsh_repo,
         reeval_ticket_worktrees[reeval_wait_index],
       )?

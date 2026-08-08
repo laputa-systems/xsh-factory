@@ -1,0 +1,96 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786216593690/phases/02-reeval-task-histogram-008/workers/eval-manager/task-histogram/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_process": "pass",
+    "dispatch_claim": "22ba6f673a101f297133ba978829d43287f5530b3aceb38d9f503e22f1515368",
+    "dispatch_id": "eval-manager-task-histogram",
+    "factory_source": "unchanged",
+    "message_sha256": "22ba6f673a101f297133ba978829d43287f5530b3aceb38d9f503e22f1515368",
+    "reporting": "pass",
+    "required_report": "present",
+    "session_limit_watcher": "pass",
+    "system_prompt_sha256": "0cbd51d0d0de63f2dab115a7f43a633f7cd615689ffabd407aab8304bc4efe11",
+    "watcher": "pass"
+  },
+  "findings": [],
+  "identity": {
+    "role": "eval-manager",
+    "worker_id": "task-histogram"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "provider_telemetry": {
+    "event_turns": 13,
+    "events_path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786216593690/phases/02-reeval-task-histogram-008/workers/eval-manager/task-histogram/session.jsonl.events.jsonl",
+    "output_tokens_per_second": 0,
+    "present": true,
+    "provider_errors": [],
+    "response_elapsed_ms": 0,
+    "retry_count": 0,
+    "retry_delay_ms": 0,
+    "retry_errors": [],
+    "retry_failures": 0,
+    "retry_successes": 0
+  },
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786216593690/phases/02-reeval-task-histogram-008/workers/eval-manager/task-histogram/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 12,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 316267
+  },
+  "tool_errors": [],
+  "tools": [
+    {
+      "count": 1,
+      "name": "edit"
+    },
+    {
+      "count": 21,
+      "name": "read"
+    },
+    {
+      "count": 2,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 13,
+    "budget_usd": 0.15,
+    "cache_read_cost_usd": 0.012525696,
+    "cache_read_tokens": 695872,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.024894846,
+    "input_cost_usd": 0.00907389,
+    "input_tokens": 100821,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.0032952599999999995,
+    "output_tokens": 18307,
+    "provider_total_tokens": 815000,
+    "reasoning_tokens": 11950,
+    "thinking_blocks": 9,
+    "tool_calls": 24,
+    "tool_errors": 0,
+    "tool_results": 24,
+    "total_bucket_tokens": 815000,
+    "user_messages": 1
+  }
+}

@@ -1,0 +1,284 @@
+{
+  "artifacts": [
+    {
+      "kind": "session-directory",
+      "path": "workers/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 60,
+      "budget_failures": 0,
+      "cost_usd": 0.091358307,
+      "tool_errors": 8,
+      "total_bucket_tokens": 4670932.0,
+      "unknown_costs": 0,
+      "workers": 2
+    },
+    "designer": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786216593690/phases/01-ticket/workers/eval-designer/proposal-1/REPORT.md",
+      "present": false,
+      "result": "not-requested",
+      "role": "eval-designer",
+      "valid": true
+    },
+    "director": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786216593690/phases/01-ticket/workers/director/director/REPORT.md",
+      "present": true,
+      "result": "pass",
+      "role": "director",
+      "valid": true
+    },
+    "engineer": [
+      {
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786216593690/phases/01-ticket/workers/director/director/REPORT.md",
+        "present": true,
+        "result": "pass",
+        "role": "director",
+        "valid": true
+      },
+      {
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786216593690/phases/01-ticket/workers/engineer/task-histogram-008/REPORT.md",
+        "present": true,
+        "result": "ready-for-review",
+        "role": "engineer",
+        "valid": true
+      }
+    ],
+    "handbook_lineage": {
+      "approved": "lineage/handbook-approved.md",
+      "candidate": "lineage/handbook-candidate.md"
+    },
+    "manager": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786216593690/phases/01-ticket/workers/eval-manager/task-histogram/REPORT.md",
+      "present": false,
+      "result": "missing",
+      "role": "eval-manager",
+      "valid": false
+    },
+    "mode": "ticket-implementation",
+    "narratives": [
+      {
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786216593690/phases/01-ticket/workers/director/director/REPORT.md",
+        "present": true,
+        "result": "pass",
+        "role": "director",
+        "valid": true
+      },
+      {
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786216593690/phases/01-ticket/workers/engineer/task-histogram-008/REPORT.md",
+        "present": true,
+        "result": "ready-for-review",
+        "role": "engineer",
+        "valid": true
+      }
+    ],
+    "open_tickets": [
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-005",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-005.md",
+        "status": "Approved."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-006",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-006.md",
+        "status": "Approved."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-007",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-007.md",
+        "status": "Approved."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-008",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-008.md",
+        "status": "Approved."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-009",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-009.md",
+        "status": "Open."
+      }
+    ],
+    "outcomes": {
+      "cycle": "pass",
+      "evaluator": "pass",
+      "infrastructure": "pass",
+      "product": "pass"
+    },
+    "required_outputs": null,
+    "sessions": [
+      "workers/director/director/session.jsonl.bz2",
+      "workers/engineer/task-histogram-008/session.jsonl.bz2"
+    ],
+    "tool_errors": [
+      {
+        "report": "workers/engineer/task-histogram-008/report.json",
+        "summary": "ENOENT: no such file or directory, access '/Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786216593690/task-histogram-008/src/syntax/parser/parser.rs'",
+        "tool": "read",
+        "turn": 7,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-histogram-008"
+        }
+      },
+      {
+        "report": "workers/engineer/task-histogram-008/report.json",
+        "summary": "error: no test target named `lint` in `xsht` package\nhelp: available test targets:\n    api\n    integration\n\n\nCommand exited with code 101",
+        "tool": "bash",
+        "turn": 11,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-histogram-008"
+        }
+      },
+      {
+        "report": "workers/engineer/task-histogram-008/report.json",
+        "summary": "err[parse.expected-ident]: expected schema field name\n  /tmp/record-reserved.xsh:1:15\n  type Accum = {run: Int, lines: List[Str]}\n                ^^^ expected schema field name\n\nerr[parse.expected-record-field]: expected record field\n  /tmp/record-reserved.xsh:2:12\n  let rec = {run: 0, lines: []}\n             ^^^ expected record field\n\nerr[parse.expected-token]: expected `}` after record\n  /tmp/record-reserved.xsh:2:12\n  let rec = {run: 0, lines: []}\n             ^^^ expected `}` after record\n\nerr[parse.expected-terminator]: expected statement terminator\n  /tmp/record-reserved.xsh:2:12\n  let rec = {run: 0, lines: []}\n             ^^^ expected statement terminator\n\nerr[parse.expected-expression]: expected expression\n  /tmp/record-reserved.xsh:2:29\n  let rec = {run: 0, lines: []}\n                              ^ expected expression\nerr[parse.expected-ident]: expected schema field name\n  /tmp/record-reserved.xsh:1:15\n  type Accum = {run: Int, lines: List[Str]}\n                ^^^ expected schema field name\nerr[parse.expected-record-field]: expected record field\n  /tmp/record-reserved.xsh:2:12\n  let rec = {run: 0, lines: []}\n             ^^^ expected record field\nerr[parse.expected-token]: expected `}` after record\n  /tmp/record-reserved.xsh:2:12\n  let rec = {run: 0, lines: []}\n             ^^^ expected `}` after record\nerr[parse.expected-terminator]: expected statement terminator\n  /tmp/record-reserved.xsh:2:12\n  let rec = {run: 0, lines: []}\n             ^^^ expected statement terminator\nerr[parse.expected-expression]: expected expression\n  /tmp/record-reserved.xsh:2:29\n  let rec = {run: 0, lines: []}\n                              ^ expected expression\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 13,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-histogram-008"
+        }
+      },
+      {
+        "report": "workers/engineer/task-histogram-008/report.json",
+        "summary": "   Compiling xsh v0.0.1 (/Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786216593690/task-histogram-008)\n   Compiling proc-macro2 v1.0.106\n   Compiling quote v1.0.46\nerror[E0433]: cannot find type `Diagnostic` in this scope\n   --> src/syntax/parser/stmt.rs:223:21\n    |\n223 |                     Diagnostic::error(format!(\"schema field `{name}` is reserved\"))\n    |                     ^^^^^^^^^^ use of undeclared type `Diagnostic`\n    |\nhelp: a tool attribute with a similar name exists\n    |\n223 -                     Diagnostic::error(format!(\"schema field `{name}` is reserved\"))\n223 +                     diagnostic::error(format!(\"schema field `{name}` is reserved\"))\n    |\nhelp: consider importing this struct through its public re-export\n    |\n  3 + use crate::syntax::parser::Diagnostic;\n    |\n\nerror[E0433]: cannot find type `Label` in this scope\n   --> src/syntax/parser/stmt.rs:225:37\n    |\n225 |                         .with_label(Label::primary(\n    |                                     ^^^^^ use of undeclared type `Label`\n    |\nhelp: consider importing this struct through its public re-export\n    |\n  3 + use crate::syntax::parser::Label;\n    |\n\n   Compiling syn v2.0.118\nFor more information about this error, try `rustc --explain E0433`.\nerror: could not compile `xsh` (lib) due to 2 previous errors\n\n\nCommand exited with code 101",
+        "tool": "bash",
+        "turn": 22,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-histogram-008"
+        }
+      },
+      {
+        "report": "workers/engineer/task-histogram-008/report.json",
+        "summary": "err[parse.expected-ident]: expected schema field name\n  /tmp/record-reserved.xsh:1:15\n  type Accum = {run: Int, lines: List[Str]}\n                ^^^ expected schema field name\n\nerr[parse.expected-record-field]: expected record field\n  /tmp/record-reserved.xsh:2:12\n  let rec = {run: 0, lines: []}\n             ^^^ expected record field\n\nerr[parse.expected-token]: expected `}` after record\n  /tmp/record-reserved.xsh:2:12\n  let rec = {run: 0, lines: []}\n             ^^^ expected `}` after record\n\nerr[parse.expected-terminator]: expected statement terminator\n  /tmp/record-reserved.xsh:2:12\n  let rec = {run: 0, lines: []}\n             ^^^ expected statement terminator\n\nerr[parse.expected-expression]: expected expression\n  /tmp/record-reserved.xsh:2:29\n  let rec = {run: 0, lines: []}\n                              ^ expected expression\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 25,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-histogram-008"
+        }
+      },
+      {
+        "report": "workers/engineer/task-histogram-008/report.json",
+        "summary": "error: no test target named `syntax` in default-run packages\nhelp: available test targets:\n    integration\n    linux_priv\n\n\nCommand exited with code 101",
+        "tool": "bash",
+        "turn": 27,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-histogram-008"
+        }
+      },
+      {
+        "report": "workers/engineer/task-histogram-008/report.json",
+        "summary": "   Compiling xsh v0.0.1 (/Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786216593690/task-histogram-008)\n    Finished `test` profile [unoptimized] target(s) in 1.97s\n     Running tests/integration.rs (target/debug/deps/integration-4d74d0805adc1abb)\n\nrunning 1 test\ntest syntax::parser_reports_reserved_record_fields_by_name_without_cascade ... FAILED\n\nfailures:\n\n---- syntax::parser_reports_reserved_record_fields_by_name_without_cascade stdout ----\n\nthread 'syntax::parser_reports_reserved_record_fields_by_name_without_cascade' (16979236) panicked at tests/syntax.rs:379:5:\nassertion `left == right` failed: [Diagnostic { severity: Error, code: Some(\"parse.reserved-schema-field\"), message: \"schema field `run` is reserved\", span: None, labels: [Label { style: Primary, span: Span { source_id: SourceId(0), start: 14, len: 3 }, message: Some(\"use a non-reserved field name\") }], notes: [], fix_hints: [] }, Diagnostic { severity: Error, code: Some(\"parse.reserved-record-field\"), message: \"record field `run` is reserved\", span: None, labels: [Label { style: Primary, span: Span { source_id: SourceId(0), start: 60, len: 3 }, message: Some(\"use a non-reserved field name\") }], notes: [], fix_hints: [] }]\n  left: 2\n right: 4\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\n\nfailures:\n    syntax::parser_reports_reserved_record_fields_by_name_without_cascade\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 496 filtered out; finished in 0.00s\n\nerror: test failed, to rerun pass `--test integration`\n\n\nCommand exited with code 101",
+        "tool": "bash",
+        "turn": 28,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-histogram-008"
+        }
+      },
+      {
+        "report": "workers/engineer/task-histogram-008/report.json",
+        "summary": "error: unexpected argument 'syntax::parser_accepts_quoted_reserved_record_fields' found\n\nUsage: cargo test [OPTIONS] [TESTNAME] [-- [ARGS]...]\n\nFor more information, try '--help'.\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 30,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-histogram-008"
+        }
+      }
+    ],
+    "trials": [],
+    "workers": [
+      {
+        "identity": {
+          "role": "director",
+          "worker_id": "director"
+        },
+        "path": "workers/director/director/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 12,
+          "budget_usd": 0.06,
+          "cache_read_cost_usd": 0.004470912,
+          "cache_read_tokens": 248384,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.009706122,
+          "input_cost_usd": 0.00407889,
+          "input_tokens": 45321,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00115632,
+          "output_tokens": 6424,
+          "provider_total_tokens": 300129,
+          "reasoning_tokens": 2673,
+          "thinking_blocks": 11,
+          "tool_calls": 27,
+          "tool_errors": 0,
+          "tool_results": 27,
+          "total_bucket_tokens": 300129,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "engineer",
+          "worker_id": "task-histogram-008"
+        },
+        "path": "workers/engineer/task-histogram-008/report.json",
+        "result": "pass",
+        "tool_errors": 8,
+        "usage": {
+          "assistant_turns": 48,
+          "budget_usd": 0.35,
+          "cache_read_cost_usd": 0.04143121,
+          "cache_read_tokens": 4143121,
+          "cache_write_cost_usd": 0.025346374999999987,
+          "cache_write_tokens": 202771,
+          "cost_usd": 0.081652185,
+          "input_cost_usd": 0.000014400000000000008,
+          "input_tokens": 144,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.014860199999999995,
+          "output_tokens": 24767,
+          "provider_total_tokens": 4370803,
+          "reasoning_tokens": 16535,
+          "thinking_blocks": 20,
+          "tool_calls": 86,
+          "tool_errors": 8,
+          "tool_results": 86,
+          "total_bucket_tokens": 4370803,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "5e6f7b0292e0853eb04705f9266218748f1ef7c5"
+  },
+  "findings": [],
+  "identity": {
+    "eval_id": "task-histogram",
+    "mode": "ticket-implementation",
+    "run_id": "01-ticket"
+  },
+  "kind": "phase",
+  "result": "pass",
+  "schema_version": 1,
+  "state": "completed"
+}

@@ -1884,6 +1884,59 @@ proc test_organization_audit_fails_delivery_event(ctx: TestContext) [fs, process
   test.eq(json.get(report, ["data", "outcomes", "product"], ""), "fail")?
 }
 
+proc test_organization_audit_tolerates_retained_replay_defer(ctx: TestContext) [fs, process, error] {
+  let root = test.temp_dir(ctx, name: "audit-organization-retained-defer")?
+  let factory = fs.cwd()?
+  fs.mkdir(fp"${root}/phases/01-ticket")?
+  fs.mkdir(fp"${root}/phases/02-reeval-task-a")?
+  let passing_phase = {
+    schema_version: 1,
+    kind: "phase",
+    identity: {run_id: "phase", mode: "organization"},
+    state: "completed",
+    result: "pass",
+    data: {outcomes: {product: "pass", evaluator: "pass", infrastructure: "pass"}},
+    findings: [],
+    artifacts: [],
+  }
+  json.write(fp"${root}/phases/01-ticket/report.json", passing_phase, pretty: true)?
+  json.write(
+    fp"${root}/phases/02-reeval-task-a/report.json",
+    {
+      schema_version: 1,
+      kind: "phase",
+      identity: {run_id: "phase", mode: "eval"},
+      state: "completed",
+      result: "fail",
+      data: {outcomes: {product: "fail", evaluator: "fail", infrastructure: "fail"}},
+      findings: [],
+      artifacts: [],
+    },
+    pretty: true,
+  )?
+  fs.write(
+    fp"${root}/events.jsonl",
+    """{"event_id":"86-ticket-task-a-retained-replay-deferred","subject":"task-a","payload":{"status":"retained-validation-deferred"}}
+{"event_id":"90-cycle-failed","detail":"product=pass; evaluator=pass; infrastructure=pass"}
+""",
+  )?
+  let status = process.run(
+    process.command_argv(
+      process.which("xsh")?,
+      ["xsh", fp"${factory}/factory/tools/audit.xsh", "--", root.display(), "organization"],
+      cwd: factory,
+      env: {FACTORY_DIR: factory.display(), XSH_MODULE_PATH: factory.display(), FACTORY_XSH_COMMIT: "fixture"},
+    ),
+  )?
+  test.ok(status.ok, "organization audit should tolerate a bounded retained defer")?
+  let report = json.read(fp"${root}/report.json")?
+  test.eq(json.get(report, ["result"], ""), "pass")?
+  test.eq(json.get(report, ["data", "outcomes", "product"], ""), "pass")?
+  test.eq(json.get(report, ["data", "outcomes", "evaluator"], ""), "pass")?
+  test.eq(json.get(report, ["data", "outcomes", "infrastructure"], ""), "pass")?
+  test.eq(json.get(report, ["findings", 0, "kind"], ""), "retained-replay-deferred")?
+}
+
 proc test_reconciliation_ignores_retired_branch_reference(ctx: TestContext) [fs, process, error] {
   let root = test.temp_dir(ctx, name: "retired-branch-reconciliation")?
   let factory = fs.cwd()?
@@ -2601,11 +2654,16 @@ proc test_organization_batches_retained_and_fresh_tickets() [fs, error] {
   test.contains(organization, "runtime.merge_validated_ticket")?
   test.contains(organization, "reeval_handles: List[ProcessHandle] = []")?
   test.contains(organization, "FACTORY_RETAINED_REPLAY")?
+  test.contains(organization, "retained-replay-deferred")?
+  test.contains(organization, "effective_reeval_pass")?
+  test.contains(organization, "cleanup_allowed")?
   test.contains(fs.read_text(fp"${fs.cwd()?}/factory/controllers/eval.xsh")?, "retained_replay_manager_wall_seconds()")?
   test.contains(fs.read_text(fp"${fs.cwd()?}/factory/control.xsh")?, "retained_replay_manager_wall_seconds")?
   let audit = fs.read_text(fp"${fs.cwd()?}/factory/tools/audit.xsh")?
   test.contains(audit, "organization_throughput")?
   test.contains(audit, "overlap_linked_replays")?
+  test.contains(audit, "organization_retained_deferred_tickets")?
+  test.contains(audit, "retained-replay-deferred")?
 }
 
 proc test_organization_starts_independent_eval_before_primary_wait() [fs, error] {
@@ -2678,7 +2736,7 @@ proc test_organization_delivery_is_a_success_gate() [fs, error] {
   test.contains(organization, "runtime.merge_validated_ticket")?
   test.contains(organization, "var delivery_ok")?
   test.contains(organization, "var delivery_ok = selected_tickets.len() == 0")?
-  test.contains(organization, "delivery_ok = delivery_ok and delivery.merged")?
+  test.contains(organization, "delivery_ok = delivery_ok and (delivery.merged or retained_replay)")?
   test.contains(organization, "runtime.reconcile_tickets(factory_dir, xsh_repo, delivered_xsh_commit.trim())")?
   test.contains(runtime, "export proc merge_validated_ticket")?
   test.contains(runtime, "--ff-only")?

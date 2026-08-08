@@ -1,0 +1,163 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786216593690/phases/01-ticket/workers/engineer/task-histogram-008/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_process": "pass",
+    "dispatch_claim": "4db11b4cc6079e556d3f4554355193172d4ce065cc5ffdb98066fc6b90eca626",
+    "dispatch_id": "engineer-task-histogram-008",
+    "factory_source": "unchanged",
+    "message_sha256": "4db11b4cc6079e556d3f4554355193172d4ce065cc5ffdb98066fc6b90eca626",
+    "reporting": "pass",
+    "required_report": "present",
+    "session_limit_watcher": "pass",
+    "system_prompt_sha256": "ecc8835d632066a0a401be64bdc2acccf83f2a112ec06d394e08b82713fdaae3",
+    "watcher": "pass"
+  },
+  "findings": [
+    {
+      "count": 8,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "role": "engineer",
+    "worker_id": "task-histogram-008"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/openai/gpt-5.6-luna"
+  ],
+  "provider_telemetry": {
+    "event_turns": 48,
+    "events_path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786216593690/phases/01-ticket/workers/engineer/task-histogram-008/session.jsonl.events.jsonl",
+    "output_tokens_per_second": 0,
+    "present": true,
+    "provider_errors": [],
+    "response_elapsed_ms": 0,
+    "retry_count": 0,
+    "retry_delay_ms": 0,
+    "retry_errors": [],
+    "retry_failures": 0,
+    "retry_successes": 0
+  },
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786216593690/phases/01-ticket/workers/engineer/task-histogram-008/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 47,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 352669
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786216593690/phases/01-ticket/workers/engineer/task-histogram-008/session.jsonl.bz2",
+      "summary": "ENOENT: no such file or directory, access '/Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786216593690/task-histogram-008/src/syntax/parser/parser.rs'",
+      "tool": "read",
+      "turn": 7
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786216593690/phases/01-ticket/workers/engineer/task-histogram-008/session.jsonl.bz2",
+      "summary": "error: no test target named `lint` in `xsht` package\nhelp: available test targets:\n    api\n    integration\n\n\nCommand exited with code 101",
+      "tool": "bash",
+      "turn": 11
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786216593690/phases/01-ticket/workers/engineer/task-histogram-008/session.jsonl.bz2",
+      "summary": "err[parse.expected-ident]: expected schema field name\n  /tmp/record-reserved.xsh:1:15\n  type Accum = {run: Int, lines: List[Str]}\n                ^^^ expected schema field name\n\nerr[parse.expected-record-field]: expected record field\n  /tmp/record-reserved.xsh:2:12\n  let rec = {run: 0, lines: []}\n             ^^^ expected record field\n\nerr[parse.expected-token]: expected `}` after record\n  /tmp/record-reserved.xsh:2:12\n  let rec = {run: 0, lines: []}\n             ^^^ expected `}` after record\n\nerr[parse.expected-terminator]: expected statement terminator\n  /tmp/record-reserved.xsh:2:12\n  let rec = {run: 0, lines: []}\n             ^^^ expected statement terminator\n\nerr[parse.expected-expression]: expected expression\n  /tmp/record-reserved.xsh:2:29\n  let rec = {run: 0, lines: []}\n                              ^ expected expression\nerr[parse.expected-ident]: expected schema field name\n  /tmp/record-reserved.xsh:1:15\n  type Accum = {run: Int, lines: List[Str]}\n                ^^^ expected schema field name\nerr[parse.expected-record-field]: expected record field\n  /tmp/record-reserved.xsh:2:12\n  let rec = {run: 0, lines: []}\n             ^^^ expected record field\nerr[parse.expected-token]: expected `}` after record\n  /tmp/record-reserved.xsh:2:12\n  let rec = {run: 0, lines: []}\n             ^^^ expected `}` after record\nerr[parse.expected-terminator]: expected statement terminator\n  /tmp/record-reserved.xsh:2:12\n  let rec = {run: 0, lines: []}\n             ^^^ expected statement terminator\nerr[parse.expected-expression]: expected expression\n  /tmp/record-reserved.xsh:2:29\n  let rec = {run: 0, lines: []}\n                              ^ expected expression\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 13
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786216593690/phases/01-ticket/workers/engineer/task-histogram-008/session.jsonl.bz2",
+      "summary": "   Compiling xsh v0.0.1 (/Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786216593690/task-histogram-008)\n   Compiling proc-macro2 v1.0.106\n   Compiling quote v1.0.46\nerror[E0433]: cannot find type `Diagnostic` in this scope\n   --> src/syntax/parser/stmt.rs:223:21\n    |\n223 |                     Diagnostic::error(format!(\"schema field `{name}` is reserved\"))\n    |                     ^^^^^^^^^^ use of undeclared type `Diagnostic`\n    |\nhelp: a tool attribute with a similar name exists\n    |\n223 -                     Diagnostic::error(format!(\"schema field `{name}` is reserved\"))\n223 +                     diagnostic::error(format!(\"schema field `{name}` is reserved\"))\n    |\nhelp: consider importing this struct through its public re-export\n    |\n  3 + use crate::syntax::parser::Diagnostic;\n    |\n\nerror[E0433]: cannot find type `Label` in this scope\n   --> src/syntax/parser/stmt.rs:225:37\n    |\n225 |                         .with_label(Label::primary(\n    |                                     ^^^^^ use of undeclared type `Label`\n    |\nhelp: consider importing this struct through its public re-export\n    |\n  3 + use crate::syntax::parser::Label;\n    |\n\n   Compiling syn v2.0.118\nFor more information about this error, try `rustc --explain E0433`.\nerror: could not compile `xsh` (lib) due to 2 previous errors\n\n\nCommand exited with code 101",
+      "tool": "bash",
+      "turn": 22
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786216593690/phases/01-ticket/workers/engineer/task-histogram-008/session.jsonl.bz2",
+      "summary": "err[parse.expected-ident]: expected schema field name\n  /tmp/record-reserved.xsh:1:15\n  type Accum = {run: Int, lines: List[Str]}\n                ^^^ expected schema field name\n\nerr[parse.expected-record-field]: expected record field\n  /tmp/record-reserved.xsh:2:12\n  let rec = {run: 0, lines: []}\n             ^^^ expected record field\n\nerr[parse.expected-token]: expected `}` after record\n  /tmp/record-reserved.xsh:2:12\n  let rec = {run: 0, lines: []}\n             ^^^ expected `}` after record\n\nerr[parse.expected-terminator]: expected statement terminator\n  /tmp/record-reserved.xsh:2:12\n  let rec = {run: 0, lines: []}\n             ^^^ expected statement terminator\n\nerr[parse.expected-expression]: expected expression\n  /tmp/record-reserved.xsh:2:29\n  let rec = {run: 0, lines: []}\n                              ^ expected expression\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 25
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786216593690/phases/01-ticket/workers/engineer/task-histogram-008/session.jsonl.bz2",
+      "summary": "error: no test target named `syntax` in default-run packages\nhelp: available test targets:\n    integration\n    linux_priv\n\n\nCommand exited with code 101",
+      "tool": "bash",
+      "turn": 27
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786216593690/phases/01-ticket/workers/engineer/task-histogram-008/session.jsonl.bz2",
+      "summary": "   Compiling xsh v0.0.1 (/Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786216593690/task-histogram-008)\n    Finished `test` profile [unoptimized] target(s) in 1.97s\n     Running tests/integration.rs (target/debug/deps/integration-4d74d0805adc1abb)\n\nrunning 1 test\ntest syntax::parser_reports_reserved_record_fields_by_name_without_cascade ... FAILED\n\nfailures:\n\n---- syntax::parser_reports_reserved_record_fields_by_name_without_cascade stdout ----\n\nthread 'syntax::parser_reports_reserved_record_fields_by_name_without_cascade' (16979236) panicked at tests/syntax.rs:379:5:\nassertion `left == right` failed: [Diagnostic { severity: Error, code: Some(\"parse.reserved-schema-field\"), message: \"schema field `run` is reserved\", span: None, labels: [Label { style: Primary, span: Span { source_id: SourceId(0), start: 14, len: 3 }, message: Some(\"use a non-reserved field name\") }], notes: [], fix_hints: [] }, Diagnostic { severity: Error, code: Some(\"parse.reserved-record-field\"), message: \"record field `run` is reserved\", span: None, labels: [Label { style: Primary, span: Span { source_id: SourceId(0), start: 60, len: 3 }, message: Some(\"use a non-reserved field name\") }], notes: [], fix_hints: [] }]\n  left: 2\n right: 4\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\n\nfailures:\n    syntax::parser_reports_reserved_record_fields_by_name_without_cascade\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 496 filtered out; finished in 0.00s\n\nerror: test failed, to rerun pass `--test integration`\n\n\nCommand exited with code 101",
+      "tool": "bash",
+      "turn": 28
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786216593690/phases/01-ticket/workers/engineer/task-histogram-008/session.jsonl.bz2",
+      "summary": "error: unexpected argument 'syntax::parser_accepts_quoted_reserved_record_fields' found\n\nUsage: cargo test [OPTIONS] [TESTNAME] [-- [ARGS]...]\n\nFor more information, try '--help'.\n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 30
+    }
+  ],
+  "tools": [
+    {
+      "count": 29,
+      "name": "bash"
+    },
+    {
+      "count": 10,
+      "name": "edit"
+    },
+    {
+      "count": 2,
+      "name": "find"
+    },
+    {
+      "count": 17,
+      "name": "grep"
+    },
+    {
+      "count": 27,
+      "name": "read"
+    },
+    {
+      "count": 1,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 48,
+    "budget_usd": 0.35,
+    "cache_read_cost_usd": 0.04143121,
+    "cache_read_tokens": 4143121,
+    "cache_write_cost_usd": 0.025346374999999987,
+    "cache_write_tokens": 202771,
+    "cost_usd": 0.081652185,
+    "input_cost_usd": 0.000014400000000000008,
+    "input_tokens": 144,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.014860199999999995,
+    "output_tokens": 24767,
+    "provider_total_tokens": 4370803,
+    "reasoning_tokens": 16535,
+    "thinking_blocks": 20,
+    "tool_calls": 86,
+    "tool_errors": 8,
+    "tool_results": 86,
+    "total_bucket_tokens": 4370803,
+    "user_messages": 1
+  }
+}

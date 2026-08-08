@@ -2,7 +2,25 @@
 
 ## Status
 
-Open.
+Approved.
+
+## CTO review — cycle 28 close
+
+- Decision: Approved for controlled implementation in the next fresh engineer
+  slot.
+- Basis: The positive-exclusive bound remains reproducible after the
+  `task-histogram-008` implementation replay: the eval's nine cases remain
+  byte-exact, but the task contract still has no typed `> 0` rejection. The
+  independent `task-bigfiles` eval also exercises the same numeric parsing
+  family, providing a second signal that this is a language ergonomics gap,
+  not a histogram-only workaround.
+- Scope guard: Implement the smallest additive typed positive parse surface
+  and preserve existing `parse_int`/`parse_uint` behavior. The linked replay
+  remains mandatory for this fresh implementation.
+- Evidence: cycle 28 fresh replay at
+  `../runs/run-1786216593690/phases/02-reeval-task-histogram-008/`, independent
+  eval at `../runs/run-1786216593690/phases/03-eval/`, and the retained replay
+  evidence at `../runs/run-1786216593690/phases/02-reeval-task-histogram-005/`.
 
 ## CTO review — cycle 26 close
 

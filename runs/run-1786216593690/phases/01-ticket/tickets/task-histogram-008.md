@@ -2,7 +2,7 @@
 
 ## Status
 
-Merged.
+Approved.
 
 ## CTO review — cycle 27 close
 
@@ -45,10 +45,10 @@ None.
 
 ## Merge record
 
-- Implementation branch: `factory/task-histogram-008/1786216602930`
-- Implementation commit: `df60bdbf1a722daca096175c9473a79f99f78999`
-- Detected at XSH commit: `df60bdbf1a722daca096175c9473a79f99f78999`
-- Implementation run: `/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786216593690/phases/01-ticket`
+- Implementation branch: `{{IMPLEMENTATION_BRANCH}}`
+- Implementation commit: `{{IMPLEMENTATION_COMMIT}}`
+- Detected at XSH commit: `{{DETECTED_XSH_COMMIT}}`
+- Implementation run: `{{IMPLEMENTATION_RUN}}`
 
 ## Source eval and manager
 
@@ -87,7 +87,7 @@ non-reserved-name spelling it needed for the cumulative-fold accumulator.
 
 ## Evidence
 
-- Session: `/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786126514242/phases/01-eval/workers/eval-worker/task-histogram-1/session.jsonl`
+- Session: `/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786126514242/phases/01-eval/workers/eval-worker/task-histogram-1/session.jsonl.bz2`
   (turns 42-48): probe outputs — `{ run: 0, lines: [] }` and
   `type Accum = {run: Int, lines: List[Str]}` both fail with
   `parse.expected-record-field` / `parse.expected-ident` pointing at `run`;
