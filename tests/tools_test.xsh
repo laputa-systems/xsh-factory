@@ -2771,6 +2771,7 @@ proc test_task_bigfiles_evaluator_is_package_owned() [fs, error] {
   test.contains(evaluator, "run.json")?
   test.contains(evaluator, "task-bigfiles")?
   test.contains(evaluator, "sort -k1,1rn")?
+  test.contains(evaluator, "rel: \".hidden-note\"")?
 }
 
 proc test_eval_dispatch_is_package_owned() [fs, error] {

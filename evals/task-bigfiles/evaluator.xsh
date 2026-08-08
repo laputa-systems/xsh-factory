@@ -189,6 +189,10 @@ done | sort -k1,1rn | head -n "$n"
             rel: "g",
             data: "ggggggg",
           },
+          {
+            rel: ".hidden-note",
+            data: "hidden-file-is-largest",
+          },
         ],
         expect_fail: false,
       },

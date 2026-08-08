@@ -618,6 +618,17 @@ word forms `and`/`or`. This candidate is identical to the approved handbook
 with that concise rule added. Promote it for every subsequent eval; the
 linked replay and independent trial both completed successfully.
 
+## Explicit CTO disposition — run-1786193695508
+
+| Candidate SHA-256 | Disposition |
+| --- | --- |
+| `3ba258861d97043a6a52135c472ce9b15f4b2fcfcc47fc2f5b243961f027495b` | deferred pending strict-decimal replay; not promoted |
+
+The linked `task-bigfiles` manager observed that `Str.parse_int()` accepts
+non-decimal spellings and staged a concise strict-decimal validation lesson.
+This is useful but single-trial evidence. Preserve the candidate and require
+the named strict-decimal replay before changing the approved handbook.
+
 ## Explicit CTO disposition — run-1786177505335
 
 | Candidate SHA-256 | Disposition |

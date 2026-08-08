@@ -99,7 +99,9 @@ writes the comparison evidence plus timings to the run manifest. Public and
 hidden cases:
 
 - `public`: a 4-file tree, no `N` (default 5) — prints all 4;
-- `hidden_default`: a 7-file tree, no `N` — top 5;
+- `hidden_default`: an 8-file tree including a dot-prefixed regular file, no
+  `N` — top 5; this case makes the documented `hidden: true` selection
+  observable rather than allowing the default omission to pass silently;
 - `hidden_n2`: a 5-file tree, `N=2` — top 2;
 - `hidden_single`: a 1-file tree, `N=5` — prints that one;
 - `hidden_deep`: files three levels deep;
