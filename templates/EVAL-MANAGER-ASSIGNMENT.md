@@ -55,6 +55,13 @@ Include the exact sentence `Candidate acceptance: pass.` when the candidate is
 accepted, or `Candidate acceptance: fail.` when it is not. Do not rely on
 implicit wording for this delivery decision.
 
+This exact sentence is the machine decision token. Use only one of those two
+sentences, once, under `## Post-merge decisions`; prose such as `accepted for
+merge`, `decision: accept`, or `candidate surface exercised` cannot replace it.
+Do not attempt a second evidence search after the structured packet is
+complete. A missing path, contradictory evaluator gate, or incomplete report
+is a bounded failure to record, not a reason to explore the filesystem.
+
 Keep evidence ownership separate. The engineer's primary report owns native
 compiler, checker, and unit/API test execution; the linked replay owns the
 ticket's externally observable defining behavior and restriction/protocol

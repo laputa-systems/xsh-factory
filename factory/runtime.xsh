@@ -1113,11 +1113,15 @@ export proc adaptive_approved_tickets(factory_dir: Path, xsh_repo: Path, limit: 
   }
 
   var selected: List[Str] = []
-  for ticket_id in fresh {
-    selected = selected.push(ticket_id)
-    if selected.len() >= limit {
-      return selected
-    }
+  # Reserve exactly one fresh delivery row. The second organization slot is
+  # for one retained replay, never for another fresh engineer whose merge
+  # could create an avoidable closeout queue.
+  if fresh.len() > 0 {
+    selected = selected.push(fresh[0])
+  }
+
+  if selected.len() >= limit {
+    return selected
   }
 
   # A batch has capacity for one retained replay. If no fresh row exists this

@@ -123,7 +123,11 @@ proc preflight(
     [0, control.max_concurrent_engineers()]
   }
   let approved_count = queue_counts.get(1, 0)
-  let engineer_target = control.engineer_target(approved_count)
+  let engineer_target = if mode == "organization" {
+    control.organization_ticket_target(approved_count)
+  } else {
+    control.engineer_target(approved_count)
+  }
   let discovery_target = if engineer_target > 0 { 1 } else { control.max_concurrent_discovery_evals() }
   let requested_tickets = typed_request.ticket_values(request_text)?
   let eval_contracts = fs.files(fp"${factory_dir}/evals", gitignore: false, hidden: true)?
@@ -231,12 +235,12 @@ proc preflight(
       eprint f"ticketless organization discovery requires one to ${control.max_concurrent_discovery_evals()} active evals"
       return false
     }
-    if mode == "organization" and candidate_tickets.len() > 0 and eval_values.len() != 1 {
-      eprint "ticket organization cycles require exactly one independent eval"
+    if mode == "organization" and candidate_tickets.len() > 0 and eval_values.len() > 1 {
+      eprint "ticket organization cycles allow at most one independent eval"
       return false
     }
 
-    if mode == "organization" and ! typed_request.measured_reuse_value(request_text)? {
+    if mode == "organization" and eval_values.len() > 0 and ! typed_request.measured_reuse_value(request_text)? {
       let next_untried = if candidate_tickets.len() == 0 {
         runtime.next_untried_approved_evals(factory_dir, eval_values.len())?
       } else {

@@ -1,95 +1,310 @@
-# Factory throughput
+# Factory throughput contract
 
-This is the current CTO plan for keeping the XSH improvement factory supplied
-with useful work while preserving the factory's admission, evidence, and budget
-contracts. The goal is a steady stream of independently judged product work,
-not more concurrent work for its own sake.
+This document is the CTO operating contract for predictable product delivery.
+It describes the machinery that turns an approved product observation into a
+reviewable engineer commit on XSH `HEAD`, the work that may run beside that
+transaction, and the evidence required before throughput is called sustained.
 
-## Evidence and operating target
+The factory exists to improve XSH, not to maximize agent activity. A passing
+eval without a product change is useful evidence, but it is not product
+throughput when an approved implementation ticket is ready. Conversely, a
+cheap product merge that bypasses its linked replay is not throughput; it is an
+untrusted mutation. The contract below keeps those two truths together.
 
-- The checked-in portfolio is at the coded limit of 30 eval contracts: 24 are
-  `Approved.` and 6 are `Draft.`.
-- The current queue has seven reviewed Open product tickets, but each is deferred
-  until a named eval replay or cross-eval confirmation.
-- Recent eval work can finish without producing a product ticket; the latest
-  `task-ecount` cycle produced a handbook candidate that needs replay before
-  promotion.
-- The short-term target is two approved, evidence-backed tickets available for
-  implementation and at least one engineer commit in every cycle that has a
-  ready ticket.
+## The operating target
 
-## Recommendations
+An **eligible delivery cycle** has at least one approved, product-targeted,
+branchless ticket whose linked eval is approved and whose CTO review is
+recorded. The controller must then reserve one fresh delivery slot and dispatch
+one fresh engineer row.
 
-### 1. Run up to four independent discovery evals in no-ticket organization cycles
+The target for every eligible cycle is:
 
-When no approved ticket is admitted, select the next one to four distinct
-untried approved evals and run them concurrently. Keep one eval worker and one
-manager per eval, and retain the aggregate cycle budget as the hard ceiling.
-This increases discovery throughput without increasing engineer concurrency or
-asking agents to choose work.
+```text
+fresh engineer row >= 1
+fresh engineer commit delivered to XSH HEAD >= 1
+linked replay correctness = pass
+linked replay restrictions = pass
+linked replay protocol = pass
+linked replay manager decision = accept
+provenance and cleanup = pass
+```
 
-The controller must validate every ID, create separate phase directories and
-reports, and fail closed if the request is not the deterministic next batch
-(unless measured reuse is explicitly allowed). A cycle passes only when every
-eval phase passes and infrastructure evidence remains valid.
+The target is measured from existing `report.json` and `events.jsonl` data.
+There is deliberately no `throughput.json` projection. The run report remains
+the one machine report envelope; the productivity and CTO Markdown reports are
+navigation views over that evidence.
 
-### 2. Tier ticket admission by risk
+Three consecutive eligible cycles satisfying the target, with no hand-edited
+reports or CTO bypass, establish sustained throughput. One successful cycle is
+only a smoke test. A cycle with no approved branchless ticket is not a failed
+delivery cycle, but it must be admitted as an eval/discovery cycle before paid
+work and must not claim an engineer-throughput result.
 
-Allow a narrow, deterministic bugfix with no new API, syntax, handbook, or
-semantic contract to qualify after one strong eval. Keep the two-eval replay
-gate for API, syntax, handbook, and semantic changes.
+The controller cannot manufacture an approved ticket from an empty queue. CTO
+inventory should therefore keep two or three evidence-backed product tickets
+approved and branchless. The queue is a supply buffer, not permission for
+workers to discover or promote work.
 
-### 3. Replace weak draft evals with harder evals
+## The delivery transaction
 
-Do not raise the 30-contract cap. Retire or replace low-yield draft packages
-with difficult composition, filesystem, parsing, and failure-recovery tasks
-that can discriminate between plausible but incorrect XSH improvements.
+The product-critical path is intentionally narrow:
 
-### 4. Track eval yield and retire low-value packages
+```text
+CTO inventory
+  -> reserve one fresh approved ticket
+  -> fresh engineer in an isolated XSH worktree
+  -> report, branch, clean-worktree, patch, and provenance checks
+  -> linked replay of the exact candidate behavior
+  -> correctness/restriction/protocol/manager gates
+  -> validated merge into XSH HEAD
+  -> ticket reconciliation and durable delivery event
+```
 
-Record, per eval, trial count, actionable finding count, ticket conversion,
-replay confirmation, and cost. Review packages with repeated no-finding runs
-and either sharpen their oracle or retire them.
+The owners are explicit:
 
-### 5. Maintain a bounded work queue
+- `factory/tools/cto.xsh` and `factory/runtime.xsh` own deterministic ticket
+  inventory, readiness, ordering, and reservation facts.
+- `factory/controllers/organization.xsh` owns lane admission, process handles,
+  waits, phase boundaries, and the fresh-before-retained merge order.
+- `factory/controllers/ticket.xsh` owns the engineer worktree, immutable
+  assignment, report/branch/patch/provenance checks, and commit amendment.
+- `factory/controllers/eval.xsh` owns linked replay admission and evaluator
+  execution. It does not let a manager override a failed package gate.
+- `factory/runtime.xsh::merge_validated_ticket` owns the final product-side
+  fast-forward or merge decision.
+- `factory/tools/audit.xsh` projects admission, delivery, replay, and lane
+  metrics into the existing run report.
 
-Keep two approved tickets ready for engineers and schedule enough discovery and
-replay work that an engineer is not idle for more than one cycle. Queue depth
-must remain bounded by the coded engineer ceiling and the aggregate budget.
+Fresh delivery is reserved before optional work is admitted. Selection is
+deterministic by ticket path, with fresh branchless tickets before retained
+branches. An organization batch may contain one fresh ticket and at most one
+retained ticket. It must never contain two fresh engineers merely because the
+queue is large: the goal is a predictable delivered commit, not a larger
+unfinished batch.
 
-## Implementation status
+When a fresh ticket exists, retained work is secondary. A retained replay may
+run for evidence, but its timeout, stale-base merge conflict, or report
+deferral cannot delay or relabel a passing fresh delivery. If no fresh ticket
+exists, one retained branch may be replayed; that is useful reconciliation but
+does not satisfy the fresh-engineer target.
 
-The current throughput package is implemented and covered by native tests:
+## Queue-pressure allocation
 
-- `factory/entrypoints/run-agent.xsh` snapshots the approved handbook for each
-  run-scoped worker and quarantines an accidental live handbook edit as
-  evidence, while non-handbook factory mutation still fails closed.
-- `factory/controllers/organization.xsh` starts a retained-branch validation
-  before waiting on fresh primary work, admits all passing ticket rows before
-  waiting on linked replays, and merges validated branches serially.
-- A failed primary row is salvaged independently: sibling rows still receive
-  their linked replay and delivery decision. `reuse.xsh` records its
-  deterministic retained-branch validation as a fast path without launching
-  Pi.
-- `factory/tools/audit.xsh` projects admitted rows, replay counts, delivery
-  conversion, fast-path use, handbook quarantines, and overlap indicators into
-  the existing run `report.json`; no second throughput artifact or schema is
-  introduced.
-- `run.xsh` and `factory/controllers/organization.xsh` apply queue pressure
-  deterministically: the approved ready queue selects up to two engineer rows;
-  every passing row retains its hard linked replay, while the optional
-  independent-eval lane is reduced to zero under heavy pressure, one at
-  moderate pressure, and expands to the four-eval ceiling when the ready queue
-  is empty. Open tickets are reported as pressure but are never promoted
-  without CTO approval.
-- `factory/tools/run-status.xsh` gives the CTO a single read-only view of live
-  process state, lifecycle progress, adaptive allocation, worker effort, and
-  budget markers. The eval controller also snapshots ticket identities around
-  manager sessions and fails closed if a pre-existing ticket is overwritten.
+Queue pressure is calculated from deterministic CTO inventory. `Open.` tickets
+are pressure evidence only; they are never promoted by a controller. The
+dispatchable queue is approved product tickets, split into branchless fresh
+rows and retained implementation branches.
 
-The coded bounds remain unchanged: at most two engineer rows, one retained
-branch per batch, one linked replay per passing row, and the aggregate budget
-remain hard gates. Queue pressure is evaluated after each CTO inventory: a
-crowded Open queue cuts optional discovery so delivery gets capacity; an empty
-ready queue expands discovery. The next cycle validates these changes against
-the next approved implementation and its linked replay.
+The policy is:
+
+| Ready product state | Fresh engineers | Retained rows | Independent discovery evals |
+| --- | ---: | ---: | ---: |
+| One or more branchless approved tickets | exactly 1 | at most 1 | 0 by default |
+| No branchless ticket, one retained branch | 0 | at most 1 | up to the no-ticket bound |
+| No approved implementation row | 0 | 0 | 1–4, according to Open-ticket pressure and the eval cap |
+
+The independent lane is optional evidence. It is allocated only when the
+fresh delivery slot is not available, unless a request explicitly opts into a
+single corroborating eval and the controller proves that the eval cannot block
+the delivery transaction. The default product cycle therefore spends its
+paid capacity on the fresh engineer and linked replay rather than forcing an
+unrelated manager review into the critical path.
+
+The existing coded bounds remain hard:
+
+- at most two rows in a ticket-implementation request;
+- one fresh row plus at most one retained row in an organization batch;
+- one linked replay for every passing engineer row;
+- no more than four independent discovery evals in a ticketless organization
+  cycle;
+- no more than 30 checked-in eval packages; and
+- the aggregate cycle budget remains the top-level shutdown boundary.
+
+If admission finds no fresh row, it records that fact in the queue event and
+the run report before paid work. If it finds a fresh row, an eval-only primary
+phase is an admission error, not an alternative success mode.
+
+## Lane isolation and outcome semantics
+
+`factory/controllers/organization.xsh` treats the organization as four lanes:
+
+1. **Fresh implementation:** mandatory whenever a ready row exists.
+2. **Fresh linked replay:** mandatory hard gate for that implementation.
+3. **Retained replay:** bounded, best-effort evidence for an existing branch.
+4. **Independent eval:** optional discovery or corroboration.
+
+The fresh implementation and its linked replay are the only lanes that can
+produce fresh product delivery. Independent and retained results remain
+visible in `report.json`, but their outcomes are separate from product
+outcome. The report must preserve the split:
+
+```text
+product        = fresh implementation/replay/merge result
+evaluator      = independent eval and design result
+infrastructure = reports, budgets, paths, lifecycle, provenance, cleanup
+cycle          = product AND evaluator AND infrastructure
+```
+
+This split is important. A retained timeout must not convert a passing fresh
+delivery into an infrastructure failure. A fresh linked replay failure must
+remain a product-quality failure even when an independent eval passes. A
+manager provider stall must be recorded as bounded closeout evidence, not
+silently counted as agent judgment.
+
+The run report should expose at least these throughput facts in its existing
+`data.throughput` object:
+
+- admitted ticket identities;
+- fresh engineer target and fresh rows actually dispatched;
+- retained rows and retained fast paths;
+- linked replays dispatched and passed;
+- fresh deliveries and total deliveries;
+- delivery conversion;
+- whether the fresh delivery target was met;
+- retained deferrals; and
+- handbook quarantines.
+
+Admission events must be written before worker dispatch, so a worker failure is
+not incorrectly reported as if no ticket had been admitted. Delivery events
+must identify whether the delivered row was fresh or retained. Reconciliation
+must remain idempotent after interruption.
+
+## Manager closeout contract
+
+The eval-manager is a bounded interpreter of a controller-prepared evidence
+packet, not an open-ended investigator. The packet is the phase `report.json`,
+the evaluator's exact `run.json`, the artifact and review paths named by that
+manifest, the immutable assignment, and the staged report skeleton.
+
+The manager must:
+
+- use only the assigned `read`, `write`, and `edit` tools;
+- read the exact handbook lineage path first;
+- inspect the exact manifest paths and never guess an `artifacts/` directory;
+- account for every structured worker and manager tool error;
+- consult raw session JSONL only for a named structured discrepancy;
+- write the staged report before optional investigation; and
+- finish with one exact machine-readable decision line in the existing report:
+  `Candidate acceptance: pass.` or `Candidate acceptance: fail.`
+
+The controller owns the semantic gates. The manager may explain evidence, but
+cannot override evaluator correctness, restriction, or protocol failure. A
+missing or contradictory acceptance line fails closed. Fuzzy synonyms such as
+“accepted for merge” are narrative evidence only and cannot advance delivery.
+
+Manager timing is bounded in two ways:
+
+- normal eval-manager closeout: 300 seconds and the coded turn ceiling;
+- one report-recovery attempt: 180 seconds, using the same evidence packet.
+
+The session watcher also applies a 60-second inactivity bound to the
+eval-manager. Inactivity is measured from the controller session file's last
+modification, not from a guessed provider state. A timeout terminates the
+manager, preserves its report/session attempt, and emits a structured reason.
+There is never a second unrestricted 600-second window.
+
+For a fresh linked replay, an exhausted manager recovery means the candidate is
+retained and delivery is rejected. For retained or independent work, the same
+condition emits explicit deferred evidence and cannot block a fresh delivery.
+
+## Replay quality contract
+
+Every product ticket names the defining behavior that distinguishes its fix
+from a plausible workaround. The linked package-owned evaluator must contain
+at least one discriminating case for that behavior, plus its restriction and
+protocol checks. Passing ordinary cases is insufficient when the changed
+surface was not exercised.
+
+The replay owns externally observable behavior and the restriction/protocol
+boundary. The engineer phase owns native compiler, checker, unit, and API tests.
+The manager must not demand that the sandbox redundantly rerun primary-phase
+tests, but it must verify that the primary evidence exists and that the replay
+tests the distinct behavior that would fail without the fix.
+
+The evaluator's machine results remain authoritative:
+
+```text
+correctness = pass/fail
+restrictions = pass/fail
+protocol = pass/fail
+manager acceptance = pass/fail
+```
+
+The product controller delivers only when all four are passing and the
+provenance/patch/clean-worktree checks independently pass.
+
+## Failure matrix
+
+| Failure | Fresh lane | Retained lane | Independent lane |
+| --- | --- | --- | --- |
+| No approved branchless ticket | no delivery expectation; preflight records eval mode | may replay one branch | may run discovery |
+| Engineer report/branch/patch failure | retain branch; no delivery | not applicable | unaffected |
+| Linked correctness/restriction/protocol failure | retain candidate; no delivery | retain branch; defer if applicable | unaffected |
+| Fresh manager timeout after retry | retain candidate; no delivery | not applicable | not applicable |
+| Retained timeout or stale merge | fresh delivery remains valid | emit retained-deferred evidence | unaffected |
+| Independent eval failure | fresh delivery remains independently classified | unaffected | evaluator outcome fails |
+| Budget breach or source mutation | stop the owning cycle, preserve evidence, write postmortem | same | same |
+
+No failure class is repaired by relaunching the same paid request. Deterministic
+machinery failures get a native regression test and a later explicit request.
+
+## Native validation matrix
+
+The machinery is validated without Pi using `xsht` tests, synthetic sessions,
+fake child controllers, and harmless process doubles. The required cases are:
+
+1. one ready ticket reserves one fresh row;
+2. a second fresh ticket cannot displace the reserved first row;
+3. one retained row may accompany the fresh row but cannot replace it;
+4. a ticket cycle may omit the independent eval lane;
+5. a ticketless cycle still receives the adaptive discovery target;
+6. admission events count a ticket before worker dispatch;
+7. fresh and retained delivery events are counted separately;
+8. independent failure does not block a passing fresh delivery;
+9. retained timeout emits a nonblocking deferral;
+10. fresh replay timeout preserves the branch and blocks delivery;
+11. the manager retry reuses the exact evidence packet;
+12. no manager attempt exceeds its normal or recovery wall bound;
+13. inactivity is detected independently of total wall time;
+14. exact acceptance lines pass and vague acceptance language fails;
+15. evaluator gates cannot be overridden by manager prose;
+16. controller interruption/reconciliation is idempotent; and
+17. product, evaluator, infrastructure, and overall outcomes remain distinct.
+
+The nearest hard judge is:
+
+```sh
+xsht test
+```
+
+Before paid qualification, also run deterministic preflight and inspect
+`factory/tools/cto.xsh` output for unresolved handbook candidates, stale
+factory branches, the eval cap, root/phase path boundaries, and a clean product
+checkout.
+
+## Qualification and closeout
+
+After the implementation tranche is committed, qualification consists of
+three consecutive eligible organization cycles. Each cycle is closed with its
+durable run evidence, productivity report, and CTO report. The qualification
+ledger is:
+
+```text
+cycle N:   fresh row 1, fresh delivery 1, linked replay pass
+cycle N+1: fresh row 1, fresh delivery 1, linked replay pass
+cycle N+2: fresh row 1, fresh delivery 1, linked replay pass
+```
+
+Independent evals may be absent from these cycles when the approved queue is
+under pressure. That is expected: quality is preserved by the linked replay,
+while discovery resumes when no delivery row is available.
+
+Qualification fails if any cycle uses a retained commit to satisfy a fresh
+target, if a non-product lane blocks delivery, if a manager consumes an
+unbounded retry, or if a passing report is not accompanied by a reachable XSH
+commit and provenance event. A failure preserves the branch and evidence and
+identifies the exact lane for the next deterministic repair.
+
+The CTO closes the implementation and each qualification run with one scoped
+commit. Do not push to a remote, merge unrelated work, or delete evidence.

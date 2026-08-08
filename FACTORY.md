@@ -34,12 +34,12 @@ engineer never chooses a ticket. There is one process launcher,
 `factory/entrypoints/run-agent.xsh`, and one top-level dispatcher, `run.xsh`.
 
 Organization admission applies queue pressure deterministically after CTO
-inventory: approved product tickets are the ready queue, so the controller
-dispatches up to the two-engineer bound. Every passing engineer row keeps its
-linked replay; the optional independent-eval lane is zero under heavy Open
-ticket pressure, one at moderate pressure, and expands to the coded eval bound
-when the queue is empty. Open tickets inform the pressure calculation but are
-never promoted by the controller.
+inventory: an eligible ready queue reserves exactly one fresh branchless
+product ticket and may attach at most one retained branch replay. Every fresh
+engineer row keeps its hard linked replay. The optional independent-eval lane
+is zero while a fresh delivery slot exists and expands to the coded discovery
+bound only when no fresh row is available. Open tickets inform pressure but
+are never promoted by the controller.
 
 ## Engineering rules
 

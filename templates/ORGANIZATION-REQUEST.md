@@ -9,10 +9,12 @@ top level.
 ## Objective
 
 Run one bounded organization cycle. The controller applies the queue-pressure
-policy after deterministic CTO inventory: it dispatches up to two already
-approved product tickets when the ready queue supports them, keeps every
-engineer's linked replay hard, and allocates the optional independent-eval lane
-from queue pressure. It never promotes an `Open.` ticket.
+policy after deterministic CTO inventory: when a branchless approved product
+ticket exists, it reserves exactly one fresh engineer row and may attach one
+retained replay. Every fresh row keeps its linked replay hard. The optional
+independent-eval lane is omitted by default while the fresh delivery slot is
+available and expands only when no fresh row is ready. It never promotes an
+`Open.` ticket.
 
 ## Bottleneck review
 
@@ -51,7 +53,7 @@ is available; discovery expands only when the ready queue is empty.
 ## Ticket policy
 
 - Review all open tickets before selection: `yes`
-- Select the first two approved tickets after review when available.
+- Select one fresh approved ticket first, then at most one retained branch.
 - Admission invariant: every selected ticket was already `Approved.` before
   invoking `run.xsh`; `Open.` tickets are never promoted by the controller.
 - Quality gate: do not dispatch a ticket whose proposed API addition lacks the
@@ -65,9 +67,10 @@ invocation with a role-specific setting.
 
 ## Required outputs
 
-- one engineer implementation row for every selected approved ticket;
-- the adaptive independent-eval lane alongside product work, or the adaptive
-  discovery batch when no approved ticket is ready;
+- one fresh engineer implementation row whenever a branchless approved ticket
+  is ready;
+- the linked replay for every fresh row, plus the adaptive discovery batch only
+  when no fresh ticket is ready;
 - structured worker reports and raw Pi sessions;
 - a run-level `report.json` covering every worker;
 - a `## North-star impact` section in each narrative role report;

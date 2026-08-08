@@ -51,9 +51,18 @@ proc parse_positive(value: Str) [error] -> Result[Int] {
   parsed
 }
 
+proc parse_nonnegative(value: Str) [error] -> Result[Int] {
+  let parsed = value.parse_int()?
+  if parsed < 0 {
+    return Ok(0)
+  }
+
+  parsed
+}
+
 proc main(...argv: List[Str]) [fs, process, time, error, io] {
   if argv.len() < 12 {
-    eprint "usage: session-watch.xsh --session PATH --pid PID --max-turns N --max-seconds N --marker PATH"
+    eprint "usage: session-watch.xsh --session PATH --pid PID --max-turns N --max-seconds N --marker PATH --role ROLE [--max-idle-seconds N]"
     abort(2)
   }
 
@@ -63,6 +72,7 @@ proc main(...argv: List[Str]) [fs, process, time, error, io] {
   let max_seconds = parse_positive(argv[7])?
   let marker = fp"${argv[9]}"
   let role = if argv.len() > 11 { argv[11] } else { "worker" }
+  let max_idle_seconds = if argv.len() > 13 { parse_nonnegative(argv[13])? } else { 0 }
   let started = time.now()
   while process_live(pid)? {
     let turns = assistant_turns(session)?
@@ -93,6 +103,28 @@ proc main(...argv: List[Str]) [fs, process, time, error, io] {
       }
 
       abort(3)
+    }
+
+    if max_idle_seconds > 0 {
+      let last_activity = if fs.exists(session)? {
+        fs.metadata(session)?.modified
+      } else {
+        started
+      }
+      let idle = time.now() - last_activity
+      if idle >= max_idle_seconds * 1000 {
+        fs.write_atomic(
+          marker,
+          f"""${role} session idle limit exceeded: ${idle}ms >= ${max_idle_seconds}s
+""",
+        )?
+        match process.kill(pid, signal: "TERM") {
+          Ok(_) => {}
+          Err(_) => {}
+        }
+
+        abort(4)
+      }
     }
 
     time.sleep(100ms)?

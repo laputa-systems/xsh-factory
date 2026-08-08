@@ -20,6 +20,9 @@ proc role_assignments() [env, error] -> Result[List[Str]] {
     assignments = assignments.push(
       f"FACTORY_${prefix}_MAX_WALL_SECONDS=${control.configured_role_setting(role, "MAX_WALL_SECONDS")?}",
     )
+    assignments = assignments.push(
+      f"FACTORY_${prefix}_MAX_IDLE_SECONDS=${control.configured_role_setting(role, "MAX_IDLE_SECONDS")?}",
+    )
     assignments = assignments.push(f"FACTORY_${prefix}_TOOLS=${control.configured_role_setting(role, "TOOLS")?}")
   }
 
@@ -974,7 +977,10 @@ wall-ms=${build_elapsed}
   var manager_process_ok = manager_status.ok
   let initial_manager_narrative = if fs.exists(manager_report)? { fs.read_text(manager_report)? } else { "" }
   let manager_report_ready = fs.exists(manager_report)? and control.report_section(initial_manager_narrative, "Result") != "not-ready" and control.manager_report_contract_ok(initial_manager_narrative)
-  if ! manager_report_ready {
+  # A process failure is not made successful by a syntactically complete
+  # narrative. Retry both incomplete reports and failed manager processes so
+  # the normal bounded recovery path can repair transient harness failures.
+  if ! manager_status.ok or ! manager_report_ready {
     let retry_worker_id = f"${eval_id}-retry-1"
     let retry_message = fp"${messages_dir}/${retry_worker_id}.md"
     let retry_stdout = fp"${run_dir}/${retry_worker_id}.stdout"
@@ -1205,7 +1211,7 @@ wall-ms=${build_elapsed}
       fs.read_text(designer_report)?,
     )
   }
-  if manager_report_ok and lineage_ok {
+  if manager_ok and manager_report_ok and lineage_ok {
     runtime.emit_event(
       event_template,
       run_dir,

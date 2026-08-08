@@ -52,6 +52,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   let budget = control.configured_role_setting(role, "BUDGET_USD")?
   let max_turns = control.configured_role_setting(role, "MAX_TURNS")?
   let max_wall_seconds = control.configured_role_setting(role, "MAX_WALL_SECONDS")?
+  let max_idle_seconds = control.configured_role_setting(role, "MAX_IDLE_SECONDS")?
   let provider = control.configured_role_setting(role, "PROVIDER")?
   let model = control.configured_role_setting(role, "MODEL")?
   let thinking = control.configured_role_setting(role, "THINKING")?
@@ -244,6 +245,10 @@ ${dispatch_claim_token}
       value: max_wall_seconds,
     },
     {
+      key: "MAX_IDLE_SECONDS",
+      value: max_idle_seconds,
+    },
+    {
       key: "REQUIRED_REPORT",
       value: required_report,
     },
@@ -396,6 +401,8 @@ ${dispatch_claim_token}
       fp"${worker_dir}/SESSION-LIMIT".display(),
       "--role",
       role,
+      "--max-idle-seconds",
+      max_idle_seconds,
     ],
   )?
   fs.write(

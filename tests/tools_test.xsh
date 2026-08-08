@@ -1779,9 +1779,10 @@ proc test_organization_audit_projects_throughput_from_existing_evidence(ctx: Tes
   )?
   fs.write(
     fp"${root}/events.jsonl",
-    """{"event_id":"10-reeval-started","subject":"task-a-reevaluation"}
+    """{"event_id":"06-ticket-admitted","subject":"task-a","payload":{"fresh":true,"retained":false}}
+{"event_id":"10-reeval-started","subject":"task-a-reevaluation"}
 {"event_id":"80-reeval-completed","subject":"task-a-reevaluation","state":"completed"}
-{"event_id":"86-ticket-task-a-delivered","subject":"task-a","payload":{"status":"delivered"}}
+{"event_id":"86-ticket-task-a-delivered","subject":"task-a","payload":{"status":"delivered","fresh":true,"retained":false}}
 """,
   )?
   let xsh = process.which("xsh")?
@@ -1800,6 +1801,9 @@ proc test_organization_audit_projects_throughput_from_existing_evidence(ctx: Tes
   test.eq(json.get(throughput, ["retained_fast_paths"], -1), 1)?
   test.eq(json.get(throughput, ["reeval_passed"], -1), 1)?
   test.eq(json.get(throughput, ["delivered_tickets"], -1), 1)?
+  test.eq(json.get(throughput, ["fresh_engineer_target"], -1), 1)?
+  test.eq(json.get(throughput, ["fresh_delivered_tickets"], -1), 1)?
+  test.ok(json.get(throughput, ["delivery_target_met"], false))?
   test.ok(json.get(throughput, ["overlap_retained_fresh"], false))?
 }
 
@@ -2663,6 +2667,8 @@ proc test_organization_batches_retained_and_fresh_tickets() [fs, error] {
   test.contains(organization, "cleanup_allowed")?
   test.contains(fs.read_text(fp"${fs.cwd()?}/factory/controllers/eval.xsh")?, "retained_replay_manager_wall_seconds()")?
   test.contains(fs.read_text(fp"${fs.cwd()?}/factory/control.xsh")?, "retained_replay_manager_wall_seconds")?
+  test.contains(fs.read_text(fp"${fs.cwd()?}/factory/controllers/eval.xsh")?, "MAX_IDLE_SECONDS")?
+  test.contains(fs.read_text(fp"${fs.cwd()?}/factory/tools/session-watch.xsh")?, "max-idle-seconds")?
   let audit = fs.read_text(fp"${fs.cwd()?}/factory/tools/audit.xsh")?
   test.contains(audit, "organization_throughput")?
   test.contains(audit, "overlap_linked_replays")?

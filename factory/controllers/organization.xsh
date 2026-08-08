@@ -310,7 +310,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   let _ = runtime.reconcile_tickets(factory_dir, xsh_repo, xsh_commit.trim())?
   let queue_counts = runtime.organization_ticket_counts(factory_dir, xsh_repo)?
   let approved_count = queue_counts.get(1, 0)
-  let engineer_target = control.engineer_target(approved_count)
+  let engineer_target = control.organization_ticket_target(approved_count)
   let ticket_policy = typed_request.ticket_policy_value(request_text)?
   let selected_tickets = if requested_tickets.len() > 0 {
     requested_tickets
@@ -585,6 +585,22 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     "controller",
     f"open=${queue_counts.get(0, 0)}; approved=${queue_counts.get(1, 0)}; engineers=${engineer_target}; independent_eval_target=${adaptive_eval_limit}; independent_evals=${request_evals.len()}; linked_replay=mandatory",
   )?
+
+  for ticket_id in selected_tickets {
+    let retained = ticket_id in reuse_tickets
+    runtime.emit_structured_event(
+      event_template,
+      run_dir,
+      "06-ticket-admitted",
+      ticket_id,
+      {
+        status: "admitted",
+        fresh: ! retained,
+        retained: retained,
+        delivery_target: ! retained,
+      },
+    )?
+  }
 
   var ticket_value = "None."
   if fresh_tickets.len() > 0 {
@@ -1019,6 +1035,8 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
           },
           branch: delivery.branch,
           implementation_commit: delivery.implementation_commit,
+          fresh: ! retained_replay,
+          retained: retained_replay,
           detail: if delivery.merged {
             f"${delivery.implementation_commit} is now reachable from XSH HEAD"
           } else if retained_delivery_deferred {

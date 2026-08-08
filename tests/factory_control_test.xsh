@@ -175,10 +175,21 @@ proc test_organization_eval_target_follows_queue_pressure() [error] {
   test.eq(control.organization_eval_target(1, 0), 2)?
   test.eq(control.organization_eval_target(2, 0), 2)?
   test.eq(control.organization_eval_target(3, 0), 1)?
-  test.eq(control.organization_eval_target(0, 1), 1)?
-  test.eq(control.organization_eval_target(2, 1), 1)?
+  test.eq(control.organization_eval_target(0, 1), 0)?
+  test.eq(control.organization_eval_target(2, 1), 0)?
   test.eq(control.organization_eval_target(3, 1), 0)?
   test.eq(control.organization_eval_target(3, 2), 0)?
+}
+
+proc test_organization_delivery_slot_is_single_fresh_row() [error] {
+  test.eq(control.organization_ticket_target(0), 0)?
+  test.eq(control.organization_ticket_target(1), 2)?
+  test.eq(control.organization_ticket_target(8), 2)?
+  test.eq(control.default_max_idle_seconds("eval-manager"), "60")?
+  test.eq(control.default_max_idle_seconds("engineer"), "0")?
+  test.eq(control.clamp_idle_limit("eval-manager", "600")?, "60")?
+  test.eq(control.clamp_idle_limit("eval-manager", "30")?, "30")?
+  test.eq(control.clamp_idle_limit("engineer", "30")?, "0")?
 }
 
 proc test_cto_inventory_surfaces_ticket_state() [error] {
@@ -334,6 +345,7 @@ proc test_role_defaults_are_coded_and_capped() [env, error] {
   test.eq(control.default_max_wall_seconds("eval-worker"), "1800")?
   test.eq(control.default_max_wall_seconds("engineer"), "1800")?
   test.eq(control.retained_replay_manager_wall_seconds(), "300")?
+  test.eq(control.configured_role_setting("eval-manager", "MAX_IDLE_SECONDS")?, "60")?
   env FACTORY_ENGINEER_BUDGET_USD="2" {
     test.eq(control.configured_role_setting("engineer", "BUDGET_USD")?, control.default_budget("engineer"))?
   }
@@ -592,15 +604,15 @@ None.
 fixture
 """
   test.ok(control.manager_report_gate_ok(manager_report, true, false))?
-  test.ok(control.reeval_manager_acceptance_gate("Candidate acceptance: pass; no replay required."))?
-  test.ok(control.reeval_manager_acceptance_gate("Candidate acceptance surface exercised; the linked candidate passed."))?
-  test.ok(control.reeval_manager_acceptance_gate("The worker actually exercised the candidate surface and it was accepted for merge."))?
-  test.ok(control.reeval_manager_acceptance_gate("Candidate re-evaluation of task-histogram-006 accepted; all acceptance criteria passed."))?
-  test.ok(control.reeval_manager_acceptance_gate("Accept-for-merge decision recorded after the candidate surface was exercised."))?
-  test.ok(control.reeval_manager_acceptance_gate("Controller decision in conference: retain/accept the candidate branch."))?
+  test.ok(control.reeval_manager_acceptance_gate("Candidate acceptance: pass."))?
+  test.ok(control.reeval_manager_acceptance_gate("Candidate acceptance: pass. The worker exercised the candidate surface."))?
+  test.ok(! control.reeval_manager_acceptance_gate("Candidate acceptance surface exercised; the linked candidate passed."))?
+  test.ok(! control.reeval_manager_acceptance_gate("Candidate re-evaluation accepted for merge."))?
+  test.ok(! control.reeval_manager_acceptance_gate("Candidate acceptance: pass. Decision: needs-replay."))?
+  test.ok(! control.reeval_manager_acceptance_gate("Candidate acceptance: fail."))?
   test.ok(! control.reeval_manager_acceptance_gate("Result pass, but needs-replay: acceptance was not exercised."))?
   test.ok(! control.reeval_manager_acceptance_gate("Candidate re-evaluation was not accepted; needs-replay."))?
-  test.ok(control.reeval_manager_acceptance_gate("""## Post-merge decisions
+  test.ok(! control.reeval_manager_acceptance_gate("""## Post-merge decisions
 
 None. The reconciler reported accept/reject/needs-replay as possible decisions.
 
@@ -1057,9 +1069,10 @@ proc test_standard_cycle_uses_diverse_active_eval(ctx: TestContext) [fs, error] 
   test.ok("admit at most one ticket" not in organization)?
   test.contains(runtime_source, "passing engineer report")?
   test.ok("git branch provenance" not in runtime_source)?
-  test.contains(throughput, "## Recommendations")?
-  test.contains(throughput, "up to four independent discovery evals")?
-  test.contains(throughput, "Tier ticket admission by risk")?
+  test.contains(throughput, "## The operating target")?
+  test.contains(throughput, "Three consecutive eligible cycles")?
+  test.contains(throughput, "one fresh row plus at most one retained row")?
+  test.contains(throughput, "Candidate acceptance: pass.")?
   test.eq(control.max_concurrent_discovery_evals(), 4)?
 }
 

@@ -86,7 +86,11 @@ proc narrative_paths(run_dir: Path) [fs, error] -> Result[List[Path]] {
 # projection of lifecycle and phase evidence, not another persisted schema.
 proc organization_throughput(run_dir: Path, worker_reports: List[Path]) [fs, error] -> Result[Any] {
   var admitted_tickets: List[Str] = []
+  var fresh_admitted_tickets: List[Str] = []
+  var retained_admitted_tickets: List[Str] = []
   var delivered_tickets = 0
+  var fresh_delivered_tickets = 0
+  var retained_delivered_tickets = 0
   var reeval_dispatched = 0
   var reeval_passed = 0
   let events_path = fp"${run_dir}/events.jsonl"
@@ -97,7 +101,18 @@ proc organization_throughput(run_dir: Path, worker_reports: List[Path]) [fs, err
           let event_id = text(json.get(event, ["event_id"], ""))
           let subject = text(json.get(event, ["subject"], ""))
           let state = text(json.get(event, ["state"], ""))
-          if event_id == "10-reeval-started" {
+          if event_id == "06-ticket-admitted" {
+            if !(subject in admitted_tickets) {
+              admitted_tickets = admitted_tickets.push(subject)
+            }
+            let fresh = boolean(json.get(event, ["payload", "fresh"], false))
+            if fresh and !(subject in fresh_admitted_tickets) {
+              fresh_admitted_tickets = fresh_admitted_tickets.push(subject)
+            }
+            if ! fresh and !(subject in retained_admitted_tickets) {
+              retained_admitted_tickets = retained_admitted_tickets.push(subject)
+            }
+          } else if event_id == "10-reeval-started" {
             reeval_dispatched += 1
           } else if event_id == "80-reeval-completed" and state == "completed" {
             reeval_passed += 1
@@ -107,6 +122,12 @@ proc organization_throughput(run_dir: Path, worker_reports: List[Path]) [fs, err
             }
             if event_id.ends_with("-delivered") {
               delivered_tickets += 1
+              let fresh = boolean(json.get(event, ["payload", "fresh"], false))
+              if fresh {
+                fresh_delivered_tickets += 1
+              } else {
+                retained_delivered_tickets += 1
+              }
             }
           }
         }
@@ -137,6 +158,7 @@ proc organization_throughput(run_dir: Path, worker_reports: List[Path]) [fs, err
     if entry.name == "FACTORY-HANDBOOK-QUARANTINED"
   ].len()
   let admitted_count = admitted_tickets.len()
+  let fresh_target = if fresh_admitted_tickets.len() > 0 { 1 } else { 0 }
   let delivery_conversion = if admitted_count == 0 {
     0.0
   } else {
@@ -149,7 +171,11 @@ proc organization_throughput(run_dir: Path, worker_reports: List[Path]) [fs, err
   ].len()
   return {
     admitted_tickets: admitted_count,
+    fresh_engineer_target: fresh_target,
     fresh_engineer_rows: fresh_engineer_rows,
+    fresh_delivered_tickets: fresh_delivered_tickets,
+    retained_delivered_tickets: retained_delivered_tickets,
+    delivery_target_met: fresh_target == 0 or fresh_delivered_tickets > 0,
     retained_rows: retained_phases.len(),
     reeval_dispatched: reeval_dispatched,
     reeval_passed: reeval_passed,

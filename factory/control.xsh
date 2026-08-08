@@ -283,6 +283,14 @@ export pure engineer_target(approved_count: Int) -> Int {
   }
 }
 
+## Organization cycles reserve one fresh implementation row and may attach
+## one retained replay row. Ticket-implementation mode keeps the wider
+## two-engineer ceiling, but the delivery lane has a single deterministic
+## fresh target.
+export pure organization_ticket_target(approved_count: Int) -> Int {
+  return if approved_count > 0 { max_concurrent_engineers() } else { 0 }
+}
+
 ## Allocates the optional independent-eval lane from queue pressure. Linked
 ## replays are not included here: every passing engineer row still requires its
 ## own linked replay before delivery. A crowded product queue spends the paid
@@ -291,7 +299,9 @@ export pure organization_eval_target(open_count: Int, selected_ticket_count: Int
   let open = if open_count < 0 { 0 } else { open_count }
   let selected = if selected_ticket_count < 0 { 0 } else { selected_ticket_count }
   if selected > 0 {
-    return if open >= 3 { 0 } else { 1 }
+    # A product cycle already has a mandatory linked replay. Independent
+    # discovery is optional evidence and must not consume the delivery lane.
+    return 0
   }
 
   return if open == 0 {
@@ -309,6 +319,32 @@ export pure organization_eval_target(open_count: Int, selected_ticket_count: Int
 ## delaying an otherwise validated fresh delivery.
 export pure fresh_first_ticket_order(fresh: List[Str], retained: List[Str]) -> List[Str] {
   fresh.extend(retained)
+}
+
+## The manager reads a controller-prepared evidence packet. A short inactivity
+## bound catches provider/harness stalls before the full closeout wall bound.
+export pure default_max_idle_seconds(role: Str) -> Str {
+  if role == "eval-manager" {
+    return "60"
+  }
+
+  return "0"
+}
+
+## Clamps inactivity to the role's bounded idle policy; zero disables it.
+export pure clamp_idle_limit(role: Str, configured: Str) -> Result[Str] {
+  let ceiling_text = default_max_idle_seconds(role)
+  if ceiling_text == "0" {
+    return Ok("0")
+  }
+
+  let requested = configured.parse_int()?
+  let ceiling = ceiling_text.parse_int()?
+  if requested <= 0 or requested > ceiling {
+    return Ok(ceiling_text)
+  }
+
+  configured
 }
 
 ## Clamps an operator-supplied budget to the role's hard ceiling.
@@ -375,6 +411,8 @@ export proc configured_role_setting(role: Str, key: Str) [env, error] -> Result[
     default_max_turns(role)
   } else if key == "MAX_WALL_SECONDS" {
     default_max_wall_seconds(role)
+  } else if key == "MAX_IDLE_SECONDS" {
+    default_max_idle_seconds(role)
   } else if key == "TOOLS" {
     default_tools(role)
   } else {
@@ -387,6 +425,10 @@ export proc configured_role_setting(role: Str, key: Str) [env, error] -> Result[
 
   if key == "MAX_TURNS" or key == "MAX_WALL_SECONDS" {
     return clamp_session_limit(role, key, configured)
+  }
+
+  if key == "MAX_IDLE_SECONDS" {
+    return clamp_idle_limit(role, configured)
   }
 
   configured
@@ -1125,24 +1167,17 @@ export pure manager_report_gate_ok(report: Str, worker_tool_errors: Bool, manage
 ## manager explicitly says was not exercised or needs another replay.
 export pure reeval_manager_acceptance_gate(report: Str) -> Bool {
   let lower = report.lower()
-  let explicit_rejection = lower.contains("decision: **needs-replay**") or lower.contains(
-    "decision: needs-replay",
-  ) or lower.contains("but needs-replay") or lower.contains("decision: **reject**") or lower.contains("decision: reject") or lower.contains(
-    "candidate acceptance: fail",
-  ) or lower.contains("acceptance was not exercised") or lower.contains("not supported") or lower.contains(
-    "not accepted",
-  ) or lower.contains("candidate re-evaluation rejected")
-  let explicit_acceptance = lower.contains("candidate acceptance: pass") or lower.contains(
-    "decision: **accept**",
-  ) or lower.contains("decision: accept") or lower.contains("candidate acceptance exercised")
-    or lower.contains("candidate acceptance surface exercised")
-    or lower.contains("actually exercised the candidate surface")
-    or (lower.contains("candidate re-evaluation") and lower.contains("accepted"))
-    or lower.contains("accepted for merge")
-    or lower.contains("accept-for-merge")
-    or lower.contains("decision in conference: retain/accept") or lower.contains(
-      "controller decision in conference: retain/accept",
-    )
+  # The manager owns the explanation, but delivery needs one exact decision
+  # token. Fuzzy acceptance synonyms caused repeated false positives and
+  # false negatives across otherwise valid replay reports.
+  let explicit_rejection = lower.contains("candidate acceptance: fail.") or lower.contains(
+    "decision: **needs-replay**",
+  ) or lower.contains("decision: needs-replay") or lower.contains("but needs-replay") or lower.contains(
+    "decision: **reject**",
+  ) or lower.contains("decision: reject") or lower.contains("acceptance was not exercised") or lower.contains(
+    "not supported",
+  ) or lower.contains("not accepted") or lower.contains("candidate re-evaluation rejected")
+  let explicit_acceptance = lower.contains("candidate acceptance: pass.")
   return explicit_acceptance and ! explicit_rejection
 }
 
