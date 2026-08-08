@@ -2630,6 +2630,9 @@ proc test_eval_manager_assignment_proves_exact_handbook_read() [fs, error] {
   let assignment = fs.read_text(fp"${fs.cwd()?}/templates/EVAL-MANAGER-ASSIGNMENT.md")?
   test.contains(assignment, "Use the `read` tool, not `bash`, `cat`, or `grep`")?
   test.contains(assignment, "{{RUN_DIR}}/lineage/handbook-approved.md")?
+  test.contains(assignment, "controller-owned metadata, not manager evidence")?
+  test.contains(assignment, "Do not read it or any path beneath")?
+  test.contains(assignment, "portable patch")?
 }
 
 proc test_organization_delivery_is_a_success_gate() [fs, error] {
@@ -2696,6 +2699,7 @@ proc test_eval_gate_diagnostics_are_persisted() [fs, error] {
   test.contains(evaluator, "81-manager-retry-started")?
   test.contains(evaluator, "retry_assignment")?
   test.contains(evaluator, r"workers/eval-manager/${retry_worker_id}")?
+  test.contains(evaluator, "controller-managed; do not read")?
   test.contains(evaluator, "REPORT.attempt-1.md")?
   test.contains(evaluator, "manager-retry-recovered")?
 }

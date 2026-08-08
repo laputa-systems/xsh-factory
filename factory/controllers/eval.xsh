@@ -920,7 +920,11 @@ wall-ms=${build_elapsed}
     },
     {
       key: "CANDIDATE_WORKTREE",
-      value: candidate_worktree,
+      value: if candidate_worktree == "not-reevaluation" {
+        "not-reevaluation"
+      } else {
+        "controller-managed; do not read"
+      },
     },
     {
       key: "XSH_COMMIT",

@@ -1,0 +1,23 @@
+{
+  "classification": "worker_missing_artifact",
+  "correctness": {
+    "all_exact": false,
+    "cases": [],
+    "passed": false
+  },
+  "eval_id": "task-bigfiles",
+  "image_id": "sha256:cc7435b3b10d4bc368bf76c9eb8cc331f4f22c0f16ec3869cc8318c939c4e6fb",
+  "platform": "linux/arm64",
+  "protocol": {
+    "artifact_present": false,
+    "review_ok": true
+  },
+  "restrictions": {
+    "passed": false
+  },
+  "result": "fail",
+  "timings": {
+    "passed": true
+  },
+  "trial_id": "1"
+}

@@ -2,7 +2,23 @@
 
 ## Status
 
-Open.
+Approved.
+
+## CTO decision — cycle-17 close
+
+- Decision: Approved for implementation in cycle 18.
+- Basis: The original `task-dupcheck` trial produced a reproducible,
+  cross-probe mismatch between `xsht api` defaulted-parameter signatures and
+  positional-only call syntax. The ticket has a narrow documentation/reference
+  remedy, an explicit API-surface justification, and a linked acceptance
+  replay. The evidence is present in the checked-in run, and the queue has no
+  other fresh approved product row.
+- Scope: Implement the smallest honest `xsht api` signature/contract wording
+  change; do not add named-argument grammar. The linked replay must confirm
+  existing positional calls and the independent histogram eval must remain
+  green.
+- Evidence: `runs/run-1786128115649/phases/03-eval/workers/eval-manager/task-dupcheck/REPORT.md`
+  and `runs/run-1786128115649/phases/03-eval/workers/eval-worker/task-dupcheck-1/run.json`.
 
 ## CTO review
 
