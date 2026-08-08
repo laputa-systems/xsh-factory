@@ -143,6 +143,22 @@ candidate snapshots are represented by the same hash and need no second entry.
 Future candidates require a new explicit CTO disposition and must not be
 auto-promoted merely because a lineage file exists.
 
+## Explicit CTO disposition — run-1786202908216
+
+| Candidate SHA-256 | Disposition |
+| --- | --- |
+| `9a683bc9770057097246e88f1c1036f4eef3a09b910054cd8ee334e513363ec5` | deferred pending cross-eval integer-division replay; not promoted |
+| `acab1b87ac6fa5d9d4e371398fff5f2d84b40b0efa02fc99a53885198a51a147` | deferred pending linked replay and a second defaulted-parameter eval; not promoted |
+| `197a6e23782e2cf359be5e14d9ba680c157b5d9c7a2315038a3814088561f5d8` | deferred pending cross-eval integer-division replay; not promoted |
+
+The ticket-cycle and linked histogram managers staged the same general
+integer-division guidance in two slightly different snapshots. The linked
+histogram worker exercised the diagnostic and passed 9/9, but its manager
+explicitly requires a second division/bin eval before handbook promotion. The
+dupcheck candidate records positional-only calls and is useful, but also needs
+the named replay before promotion. Preserve the approved handbook unchanged;
+these are explicit deferred dispositions, not invisible backlog.
+
 ## Explicit CTO disposition — 2026-08-03
 
 | Candidate SHA-256 | Disposition |
