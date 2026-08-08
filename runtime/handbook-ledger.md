@@ -143,6 +143,21 @@ candidate snapshots are represented by the same hash and need no second entry.
 Future candidates require a new explicit CTO disposition and must not be
 auto-promoted merely because a lineage file exists.
 
+## Explicit CTO disposition — run-1786220380763 replay repair
+
+| Candidate SHA-256 | Disposition |
+| --- | --- |
+| `d8553abfb4007f4716f4a80a3bbdc96354ba34a72e10095e5a3b5b7c71dbc90a` | deferred pending the named fresh histogram and second numeric-parsing replay; not promoted |
+| `59c90f8d872502e25af2412cf8fc3008f4d3f3338b0238284a4215ee05452edf` | deferred pending the repaired discriminating histogram replay; not promoted |
+
+The retained histogram candidate restates the typed unsigned-decimal guidance,
+but its manager explicitly requested a fresh histogram replay and another
+numeric-parsing eval before promotion. The parser-family candidate is useful
+and the engineer recorded native checks, but cycle 30's linked replay did not
+exercise the padded-width behavior. Preserve both candidate snapshots, keep
+the approved handbook unchanged, and let the repaired replay decide whether
+the parser-family lesson has enough evidence for promotion.
+
 ## Explicit CTO disposition — run-1786216593690
 
 | Candidate SHA-256 | Disposition |
