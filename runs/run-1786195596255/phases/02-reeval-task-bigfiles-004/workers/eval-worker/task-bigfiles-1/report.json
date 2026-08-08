@@ -1,0 +1,122 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786195596255/phases/02-reeval-task-bigfiles-004/workers/eval-worker/task-bigfiles-1/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_state": "pass",
+    "agent_wall_ms": 509305,
+    "artifact": {
+      "name": "bigfiles.xsh",
+      "state": "present"
+    },
+    "budget_state": "pass",
+    "classification": "evaluator_failed",
+    "evaluator_manifest": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786195596255/phases/02-reeval-task-bigfiles-004/workers/eval-worker/task-bigfiles-1/run.json",
+    "evaluator_state": "fail",
+    "reporting_state": "pass",
+    "result": "fail",
+    "review": {
+      "state": "present"
+    }
+  },
+  "findings": [
+    {
+      "count": 2,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "eval_id": "task-bigfiles",
+    "role": "eval-worker",
+    "run_id": "02-reeval-task-bigfiles-004",
+    "worker_id": "task-bigfiles-1"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "provider_telemetry": {
+    "event_turns": 19,
+    "events_path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786195596255/phases/02-reeval-task-bigfiles-004/workers/eval-worker/task-bigfiles-1/session.jsonl.events.jsonl",
+    "output_tokens_per_second": 0,
+    "present": true,
+    "provider_errors": [],
+    "response_elapsed_ms": 0,
+    "retry_count": 0,
+    "retry_delay_ms": 0,
+    "retry_errors": [],
+    "retry_failures": 0,
+    "retry_successes": 0
+  },
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786195596255/phases/02-reeval-task-bigfiles-004/workers/eval-worker/task-bigfiles-1/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 18,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 508112
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786195596255/phases/02-reeval-task-bigfiles-004/workers/eval-worker/task-bigfiles-1/session.jsonl.bz2",
+      "summary": "xsht api: invalid API query 'language.effect.error'; expected KIND:VALUE\n==postfix==\nxsht api: invalid API query 'language.core.postfix-question'; expected KIND:VALUE\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 7
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786195596255/phases/02-reeval-task-bigfiles-004/workers/eval-worker/task-bigfiles-1/session.jsonl.bz2",
+      "summary": "sh: syntax error: unexpected \"(\"\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 7
+    }
+  ],
+  "tools": [
+    {
+      "count": 25,
+      "name": "bash"
+    },
+    {
+      "count": 3,
+      "name": "read"
+    },
+    {
+      "count": 2,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 19,
+    "budget_usd": 0.5,
+    "cache_read_cost_usd": 0.0024192,
+    "cache_read_tokens": 134400,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.01284867,
+    "input_cost_usd": 0.00954135,
+    "input_tokens": 106015,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.0008881199999999998,
+    "output_tokens": 4934,
+    "provider_total_tokens": 245349,
+    "reasoning_tokens": 2195,
+    "thinking_blocks": 17,
+    "tool_calls": 30,
+    "tool_errors": 2,
+    "tool_results": 30,
+    "total_bucket_tokens": 245349,
+    "user_messages": 1
+  }
+}

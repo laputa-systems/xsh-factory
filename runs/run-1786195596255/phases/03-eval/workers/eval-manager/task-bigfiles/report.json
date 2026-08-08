@@ -1,0 +1,109 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786195596255/phases/03-eval/workers/eval-manager/task-bigfiles/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_process": "pass",
+    "dispatch_claim": "087dd81e166e957ee713cad6239a45f1b473614ebba58c65948764ef021259c9",
+    "dispatch_id": "eval-manager-task-bigfiles",
+    "factory_source": "unchanged",
+    "message_sha256": "087dd81e166e957ee713cad6239a45f1b473614ebba58c65948764ef021259c9",
+    "reporting": "pass",
+    "required_report": "present",
+    "session_limit_watcher": "pass",
+    "system_prompt_sha256": "dcc7697c0a5a0136550a54a072d38bfd766fa8357453aa03c356a5e812d0e829",
+    "watcher": "pass"
+  },
+  "findings": [
+    {
+      "count": 1,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "role": "eval-manager",
+    "worker_id": "task-bigfiles"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "provider_telemetry": {
+    "event_turns": 10,
+    "events_path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786195596255/phases/03-eval/workers/eval-manager/task-bigfiles/session.jsonl.events.jsonl",
+    "output_tokens_per_second": 0,
+    "present": true,
+    "provider_errors": [],
+    "response_elapsed_ms": 0,
+    "retry_count": 0,
+    "retry_delay_ms": 0,
+    "retry_errors": [],
+    "retry_failures": 0,
+    "retry_successes": 0
+  },
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786195596255/phases/03-eval/workers/eval-manager/task-bigfiles/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 9,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 802507
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786195596255/phases/03-eval/workers/eval-manager/task-bigfiles/session.jsonl.bz2",
+      "summary": "ENOENT: no such file or directory, access '/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786195596255/phases/03-eval/workers/eval-worker/task-bigfiles-1/session.jsonl.events.jsonl'",
+      "tool": "read",
+      "turn": 5
+    }
+  ],
+  "tools": [
+    {
+      "count": 1,
+      "name": "edit"
+    },
+    {
+      "count": 13,
+      "name": "read"
+    },
+    {
+      "count": 2,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 10,
+    "budget_usd": 0.15,
+    "cache_read_cost_usd": 0.002203776,
+    "cache_read_tokens": 122432,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.026322696,
+    "input_cost_usd": 0.022146479999999996,
+    "input_tokens": 246072,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.00197244,
+    "output_tokens": 10958,
+    "provider_total_tokens": 379462,
+    "reasoning_tokens": 3798,
+    "thinking_blocks": 8,
+    "tool_calls": 16,
+    "tool_errors": 1,
+    "tool_results": 16,
+    "total_bucket_tokens": 379462,
+    "user_messages": 1
+  }
+}

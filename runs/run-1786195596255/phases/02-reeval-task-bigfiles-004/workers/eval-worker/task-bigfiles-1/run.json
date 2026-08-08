@@ -1,0 +1,96 @@
+{
+  "classification": "candidate_failed",
+  "correctness": {
+    "all_exact": false,
+    "cases": [
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 11713089,
+        "exact": true,
+        "name": "public",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 11594463
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 12105591,
+        "exact": false,
+        "name": "hidden_default",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 14795601
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 15637355,
+        "exact": true,
+        "name": "hidden_n2",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 11637422
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 12044257,
+        "exact": true,
+        "name": "hidden_single",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 15318562
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 12302133,
+        "exact": true,
+        "name": "hidden_deep",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 12037007
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 14582558,
+        "exact": true,
+        "name": "hidden_spaces",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 12335717
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 14766643,
+        "exact": true,
+        "name": "hidden_utf8",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 12348049
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 12295758,
+        "exact": true,
+        "name": "hidden_empty",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 14833518
+      },
+      {
+        "candidate_exit": 3,
+        "candidate_wall_ns": 11656464,
+        "exact": true,
+        "name": "hidden_bad_n",
+        "oracle_exit": 1,
+        "oracle_wall_ns": 14992394
+      }
+    ],
+    "passed": false
+  },
+  "eval_id": "task-bigfiles",
+  "image_id": "sha256:cc7435b3b10d4bc368bf76c9eb8cc331f4f22c0f16ec3869cc8318c939c4e6fb",
+  "platform": "linux/arm64",
+  "protocol": {
+    "artifact_present": true,
+    "review_ok": true
+  },
+  "restrictions": {
+    "passed": true
+  },
+  "result": "fail",
+  "timings": {
+    "passed": true
+  },
+  "trial_id": "1"
+}

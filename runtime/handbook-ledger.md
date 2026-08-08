@@ -606,6 +606,18 @@ positional-only API guidance candidate, but it is single-eval evidence. Keep
 the approved handbook unchanged until `task-dupcheck` and a second
 defaulted-parameter eval confirm the guidance generalizes.
 
+## Explicit CTO disposition — run-1786195596255
+
+| Candidate SHA-256 | Disposition |
+| --- | --- |
+| `100f31a8317586a097c8fc3e0381ccbf83005a4ab28a4b77e80de366e0b773a7` | deferred pending directed discovery replay; not promoted |
+| `0dbed10e9498664adcc49a1007561584ef473178e6fbfeffbe92b442b67f2a9e` | deferred pending directed discovery replay; not promoted |
+
+Both `task-bigfiles` managers independently observed that recursive discovery
+still omitted dot entries and staged a general `hidden: true` lesson. The
+evidence is strong but the same single cycle; defer both lineage variants
+pending the directed replay and a nearby discovery eval before promotion.
+
 ## Explicit CTO promotion — run-1786191275308
 
 | Candidate SHA-256 | Disposition |

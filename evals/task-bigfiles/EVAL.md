@@ -49,7 +49,8 @@ Create `bigfiles.xsh`. It accepts a root directory path and an optional count:
 
     bigfiles.xsh ROOT [N]
 
-It recursively finds the regular files under `ROOT` and prints the `N`
+It recursively finds every regular file under `ROOT`, including files below
+dot-prefixed directories and dot-prefixed regular files, and prints the `N`
 largest by byte size (default `N` = 5), from largest to smallest, exactly one
 line per file:
 
