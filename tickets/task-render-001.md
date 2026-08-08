@@ -2,7 +2,20 @@
 
 ## Status
 
-Open.
+Approved.
+
+## CTO decision — throughput validation cycle 2026-08-07
+
+- Decision: Approved for one bounded implementation and linked-replay cycle.
+- Basis: The source `task-render` trial passed correctness and restrictions,
+  and the independent `task-dupcheck` evidence corroborates the same Map
+  construction discoverability gap. The cycle's independent `task-dupcheck`
+  eval supplies the required second map-building signal while the linked
+  `task-render` replay gates delivery.
+- Scope: API-reference indexing/documentation only; no new Map syntax or
+  runtime semantics.
+- Evidence: `runs/run-1786141413750/phases/03-eval/workers/eval-worker/task-render-1/run.json`
+  and `runs/run-1786128115649/phases/03-eval/workers/eval-worker/task-dupcheck-1/run.json`.
 
 ## CTO review
 

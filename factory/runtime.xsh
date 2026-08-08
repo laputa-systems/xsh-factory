@@ -1704,6 +1704,54 @@ export proc verify_factory_source(factory_dir: Path, expected_sha: Str) [fs, err
   return expected_sha != "" and factory_source_fingerprint(factory_dir)? == expected_sha
 }
 
+## Snapshots the approved handbook before a worker starts. The snapshot is
+## run-local evidence, not a promotion: a worker may contribute a candidate,
+## but the approved live handbook remains controller-owned.
+export proc stage_factory_source_snapshot(factory_dir: Path, run_dir: Path) [fs, error] -> Result[Unit] {
+  let snapshot_dir = fp"${run_dir}/factory-source"
+  let snapshot = fp"${snapshot_dir}/handbook-approved.md"
+  fs.mkdir(snapshot_dir)?
+  let _ = fs.lock(fp"${snapshot_dir}/snapshot.lock", nonblocking: true)?
+  if ! fs.exists(snapshot)? {
+    fs.copy(fp"${factory_dir}/runtime/handbook.md", snapshot, overwrite: true)?
+  }
+}
+
+## Converts an accidental live handbook edit into run evidence and restores the
+## approved baseline. Only a handbook-only mutation is recoverable; any other
+## source mutation remains fail-closed for the next controller boundary.
+export proc quarantine_factory_handbook(
+  factory_dir: Path,
+  run_dir: Path,
+  expected_sha: Str,
+) [fs, error] -> Result[Str] {
+  if expected_sha == "" or verify_factory_source(factory_dir, expected_sha)? {
+    return "unchanged"
+  }
+
+  let snapshot = fp"${run_dir}/factory-source/handbook-approved.md"
+  let handbook = fp"${factory_dir}/runtime/handbook.md"
+  if ! fs.exists(snapshot)? or ! fs.exists(handbook)? {
+    return "source-changed"
+  }
+
+  let snapshot_sha = hash.sha256(snapshot)?.hex()
+  let handbook_sha = hash.sha256(handbook)?.hex()
+  if snapshot_sha == handbook_sha {
+    return "source-changed"
+  }
+
+  let candidate = fp"${run_dir}/factory-source/handbook-candidate.md"
+  let _ = fs.lock(fp"${run_dir}/factory-source/quarantine.lock", nonblocking: true)?
+  fs.copy(handbook, candidate, overwrite: true)?
+  fs.copy(snapshot, handbook, overwrite: true)?
+  if verify_factory_source(factory_dir, expected_sha)? {
+    return "handbook-quarantined"
+  }
+
+  return "source-changed"
+}
+
 ## Counts historical candidate snapshots with no explicit ledger disposition.
 ## A nonzero result blocks the next paid cycle until the CTO promotes or
 ## rejects the candidate; lineage files must never become invisible backlog.

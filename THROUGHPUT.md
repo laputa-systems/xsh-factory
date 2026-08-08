@@ -58,10 +58,24 @@ must remain bounded by the coded engineer ceiling and the aggregate budget.
 
 ## Implementation status
 
-Recommendation 1 is implemented first. The organization request may name up to
-four active evals for a no-ticket discovery cycle. `run.xsh` admits only the
-next deterministic untried approved evals, and
-`factory/controllers/organization.xsh` runs every additional eval in a
-separate independent phase concurrently with the primary eval. The remaining
-recommendations are intentionally proposals until their contracts, metrics,
-and tests are separately defined.
+The current throughput package is implemented and covered by native tests:
+
+- `factory/entrypoints/run-agent.xsh` snapshots the approved handbook for each
+  run-scoped worker and quarantines an accidental live handbook edit as
+  evidence, while non-handbook factory mutation still fails closed.
+- `factory/controllers/organization.xsh` starts a retained-branch validation
+  before waiting on fresh primary work, admits all passing ticket rows before
+  waiting on linked replays, and merges validated branches serially.
+- A failed primary row is salvaged independently: sibling rows still receive
+  their linked replay and delivery decision. `reuse.xsh` records its
+  deterministic retained-branch validation as a fast path without launching
+  Pi.
+- `factory/tools/audit.xsh` projects admitted rows, replay counts, delivery
+  conversion, fast-path use, handbook quarantines, and overlap indicators into
+  the existing run `report.json`; no second throughput artifact or schema is
+  introduced.
+
+The coded bounds remain unchanged: at most two engineer rows, one retained
+branch per batch, one linked replay per passing row, and the aggregate budget
+remain hard gates. The next cycle validates these changes against the approved
+`task-render-001` implementation and its independent `task-dupcheck` eval.

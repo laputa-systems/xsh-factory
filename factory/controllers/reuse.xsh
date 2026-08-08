@@ -84,6 +84,8 @@ proc write_report(phase_dir: Path, ticket_id: Str, branch: Str, base_commit: Str
       result: result,
       data: {
         mode: "ticket-reuse",
+        fast_path: true,
+        fast_path_kind: "deterministic-retained-branch-validation",
         ticket_id: ticket_id,
         branch: branch,
         base_commit: base_commit.trim(),

@@ -155,14 +155,14 @@ proc ticket_worker_pass(phase_dir: Path, ticket_id: Str) [fs, error] -> Result[B
   return schema.value_text(json.get(json.read(report)?, ["result"], "unknown")) == "pass"
 }
 
-proc run_reuse_phase(
+proc spawn_reuse_phase(
   phase_dir: Path,
   factory_dir: Path,
   xsh_repo: Path,
   ticket_id: Str,
   branch: Str,
   base_commit: Str,
-) [fs, process, env, error] -> Result[Bool] {
+) [fs, process, env, error] -> Result[ProcessHandle] {
   let xsh = process.which("xsh")?
   let env_path = process.which("env")?
   let assignments = [
@@ -174,17 +174,14 @@ proc run_reuse_phase(
     f"FACTORY_TICKET_BRANCH=${branch}",
     f"XSH_MODULE_PATH=${factory_dir.display()}",
   ]
-  let status = process.run(
-    process.command_argv(
-      env_path,
-      [env_path.display()].extend(assignments)
-        .extend([xsh.display(), fp"${factory_dir}/factory/controllers/reuse.xsh", "--"]),
-      cwd: factory_dir,
-      stdout: fp"${phase_dir}/reuse.stdout",
-      stderr: fp"${phase_dir}/reuse.stderr",
-    ),
-  )?
-  return status.ok
+  return spawn process.command_argv(
+    env_path,
+    [env_path.display()].extend(assignments)
+      .extend([xsh.display(), fp"${factory_dir}/factory/controllers/reuse.xsh", "--"]),
+    cwd: factory_dir,
+    stdout: fp"${phase_dir}/reuse.stdout",
+    stderr: fp"${phase_dir}/reuse.stderr",
+  )
 }
 
 proc phase_request(
@@ -694,6 +691,32 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     independent_eval_spawn_index += 1
   }
 
+  # Start the deterministic retained-branch validation before waiting on the
+  # fresh primary. The retained phase does not consume Pi budget, but keeping
+  # both process handles live makes the overlap observable and leaves the
+  # merge/delivery boundary serialized below.
+  var reuse_primary_handle: ProcessHandle? = null
+  if reuse_existing_branch {
+    let reuse_branch = runtime.open_ticket_branch(xsh_repo, reuse_ticket)?
+    runtime.emit_event(
+      event_template,
+      run_dir,
+      "10-reuse-started",
+      reuse_ticket,
+      "started",
+      1,
+      "organization",
+      "retained branch fast path started before fresh primary wait",
+    )?
+    reuse_primary_handle = spawn_reuse_phase(
+      reuse_phase,
+      factory_dir,
+      xsh_repo,
+      reuse_ticket,
+      reuse_branch,
+      xsh_commit.trim(),
+    )?
+  }
   var fresh_primary_ok = ! primary_dispatch_requested
   if primary_dispatch_requested {
     let primary_handle = spawn_child(
@@ -724,15 +747,17 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     fresh_primary_ok = wait_child(primary_handle)?
   }
   var reuse_primary_ok = true
-  if reuse_existing_branch {
-    let reuse_branch = runtime.open_ticket_branch(xsh_repo, reuse_ticket)?
-    reuse_primary_ok = run_reuse_phase(
-      reuse_phase,
-      factory_dir,
-      xsh_repo,
+  if reuse_primary_handle != null {
+    reuse_primary_ok = wait_child(reuse_primary_handle)?
+    runtime.emit_event(
+      event_template,
+      run_dir,
+      "80-reuse-completed",
       reuse_ticket,
-      reuse_branch,
-      xsh_commit.trim(),
+      if reuse_primary_ok { "completed" } else { "failed" },
+      1,
+      "controller",
+      "retained branch fast path returned",
     )?
   }
 
@@ -776,12 +801,20 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     )?
   }
 
+  # Admit every ticket whose own primary evidence passed before waiting for
+  # any linked replay. The replay processes may overlap in isolated worktrees;
+  # only the merge step below is serialized on XSH main.
   var reeval_pass_for_result = selected_ticket == ""
   var worktree_cleanup_ok = true
   var delivery_ok = selected_tickets.len() == 0
+  var reeval_ticket_ids: List[Str] = []
+  var reeval_ticket_phases: List[Path] = []
+  var reeval_ticket_worktrees: List[Path] = []
+  var reeval_ticket_patches: List[Path] = []
+  var reeval_handles: List[ProcessHandle] = []
   if selected_ticket != "" {
-    reeval_pass_for_result = primary_pass
-    worktree_cleanup_ok = primary_pass
+    reeval_pass_for_result = true
+    delivery_ok = true
     for ticket_id in selected_tickets {
       let ticket_path = fp"${factory_dir}/tickets/${ticket_id}.md"
       let ticket_eval_id = control.ticket_eval(ticket_path.read_text()?)
@@ -802,6 +835,35 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
         f"`${ticket_id}`",
         f"Validate the ${ticket_id} implementation against the linked ${ticket_eval_id} eval before merge.",
       )?
+
+      # In reuse mode no engineer worker report exists (the branch is reused,
+      # not re-implemented), so the validated reuse report is the precondition
+      # for the linked candidate replay. Fresh rows use their own worker report
+      # so one failed ticket does not suppress another ticket's replay.
+      let ticket_primary_pass = if ticket_is_reused {
+        phase_run_pass(ticket_phase, "report.json")?
+      } else {
+        ticket_worker_pass(primary_phase, ticket_id)?
+      }
+      if ! ticket_primary_pass {
+        reeval_pass_for_result = false
+        delivery_ok = false
+        worktree_cleanup_ok = false
+        runtime.emit_structured_event(
+          event_template,
+          run_dir,
+          f"86-ticket-${ticket_id}-delivery-failed",
+          ticket_id,
+          {
+            status: "delivery-failed",
+            branch: "",
+            implementation_commit: "",
+            detail: "primary evidence failed; linked replay was not admitted and branch retained",
+          },
+        )?
+        continue
+      }
+
       let ticket_candidate = ticket_worktree.display()
       runtime.emit_event(
         event_template,
@@ -811,20 +873,9 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
         "started",
         1,
         "organization",
-        "validated engineer worktree is available",
+        "linked replay admitted before waiting on sibling replays",
       )?
-
-      # In reuse mode no engineer worker report exists (the branch is reused,
-      # not re-implemented), so the validated phase report is the precondition
-      # for the linked candidate replay; otherwise require the engineer worker
-      # report. Without this, reuse mode short-circuited the replay child and
-      # the linked re-evaluation was never dispatched.
-      let ticket_primary_pass = if ticket_is_reused {
-        phase_run_pass(ticket_phase, "report.json")?
-      } else {
-        ticket_worker_pass(primary_phase, ticket_id)?
-      }
-      let reeval_ok = ticket_primary_pass and run_child(
+      let reeval_handle = spawn_child(
         reeval_controller,
         ticket_reeval_request,
         ticket_reeval_phase,
@@ -848,11 +899,27 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
         fp"${run_dir}/reeval-${ticket_id}.stdout",
         fp"${run_dir}/reeval-${ticket_id}.stderr",
       )?
-      let reeval_report_ok = phase_run_pass(ticket_reeval_phase, "report.json")?
+      reeval_ticket_ids = reeval_ticket_ids.push(ticket_id)
+      reeval_ticket_phases = reeval_ticket_phases.push(ticket_phase)
+      reeval_ticket_worktrees = reeval_ticket_worktrees.push(ticket_worktree)
+      reeval_ticket_patches = reeval_ticket_patches.push(ticket_patch)
+      reeval_handles = reeval_handles.push(reeval_handle)
+    }
+
+    var reeval_wait_index = 0
+    for ticket_id in reeval_ticket_ids {
+      let reeval_phase = fp"${phases_dir}/02-reeval-${ticket_id}"
+      let reeval_ok = wait_child(reeval_handles[reeval_wait_index])?
+      let reeval_report_ok = phase_run_pass(reeval_phase, "report.json")?
       let reeval_pass = reeval_ok and reeval_report_ok
       reeval_pass_for_result = reeval_pass_for_result and reeval_pass
-      let delivery = if ticket_primary_pass and reeval_pass {
-        runtime.merge_validated_ticket(xsh_repo, ticket_phase, ticket_id, xsh_commit.trim())?
+      let delivery = if reeval_pass {
+        runtime.merge_validated_ticket(
+          xsh_repo,
+          reeval_ticket_phases[reeval_wait_index],
+          ticket_id,
+          xsh_commit.trim(),
+        )?
       } else {
         {
           merged: false,
@@ -862,9 +929,6 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
         }
       }
       delivery_ok = delivery_ok and delivery.merged
-      # Delivery is an outcome annotation, not a lifecycle transition. The
-      # ticket subject is already validated; recording a synthetic
-      # `validated -> delivered` state would violate the lifecycle contract.
       runtime.emit_structured_event(
         event_template,
         run_dir,
@@ -881,7 +945,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
           detail: if delivery.merged {
             f"${delivery.implementation_commit} is now reachable from XSH HEAD"
           } else {
-            "validated implementation was not delivered; branch retained for review"
+            "linked replay failed; branch retained for review"
           },
         },
       )?
@@ -905,11 +969,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
         run_dir,
         "80-reeval-completed",
         f"${ticket_id}-reevaluation",
-        if reeval_pass {
-          "completed"
-        } else {
-          "failed"
-        },
+        if reeval_pass { "completed" } else { "failed" },
         1,
         "controller",
         "candidate re-evaluation returned",
@@ -927,9 +987,13 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
         )?
       }
 
-      let patch_ready = ticket_primary_pass and fs.exists(ticket_patch)?
-      let cleaned = patch_ready and reeval_pass and runtime.remove_clean_worktree(xsh_repo, ticket_worktree)?
+      let patch_ready = fs.exists(reeval_ticket_patches[reeval_wait_index])?
+      let cleaned = patch_ready and reeval_pass and runtime.remove_clean_worktree(
+        xsh_repo,
+        reeval_ticket_worktrees[reeval_wait_index],
+      )?
       worktree_cleanup_ok = worktree_cleanup_ok and cleaned
+      reeval_wait_index += 1
     }
   }
 

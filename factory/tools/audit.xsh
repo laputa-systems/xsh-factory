@@ -82,6 +82,87 @@ proc narrative_paths(run_dir: Path) [fs, error] -> Result[List[Path]] {
   return reports |> sort-by .display()
 }
 
+# Derives organization throughput in the existing run report. This is a
+# projection of lifecycle and phase evidence, not another persisted schema.
+proc organization_throughput(run_dir: Path, worker_reports: List[Path]) [fs, error] -> Result[Any] {
+  var admitted_tickets: List[Str] = []
+  var delivered_tickets = 0
+  var reeval_dispatched = 0
+  var reeval_passed = 0
+  let events_path = fp"${run_dir}/events.jsonl"
+  if fs.exists(events_path)? {
+    for line in fs.read_text(events_path)?.lines() {
+      match json.decode(line) {
+        Ok(event) => {
+          let event_id = text(json.get(event, ["event_id"], ""))
+          let subject = text(json.get(event, ["subject"], ""))
+          let state = text(json.get(event, ["state"], ""))
+          if event_id == "10-reeval-started" {
+            reeval_dispatched += 1
+          } else if event_id == "80-reeval-completed" and state == "completed" {
+            reeval_passed += 1
+          } else if event_id.starts_with("86-ticket-") {
+            if !(subject in admitted_tickets) {
+              admitted_tickets = admitted_tickets.push(subject)
+            }
+            if event_id.ends_with("-delivered") {
+              delivered_tickets += 1
+            }
+          }
+        }
+        Err(_) => {}
+      }
+    }
+  }
+
+  var retained_phases: List[Path] = []
+  let phases_dir = fp"${run_dir}/phases"
+  if fs.exists(phases_dir)? {
+    retained_phases = [
+      entry.path
+      for entry in fs.children(phases_dir, stat: false, ordered: true)?
+      |> where .kind == "dir"
+      if entry.name.starts_with("01-reuse-")
+    ]
+  }
+  var retained_fast_paths = 0
+  for phase in retained_phases {
+    let report = fp"${phase}/report.json"
+    if fs.exists(report)? and json.get(json.read(report)?, ["data", "fast_path"], false) == true {
+      retained_fast_paths += 1
+    }
+  }
+  let handbook_quarantines = [
+    entry
+    for entry in fs.files(run_dir, gitignore: false, hidden: true)?
+    if entry.name == "FACTORY-HANDBOOK-QUARANTINED"
+  ].len()
+  let admitted_count = admitted_tickets.len()
+  let delivery_conversion = if admitted_count == 0 {
+    0.0
+  } else {
+    delivered_tickets.float() / admitted_count.float()
+  }
+  let fresh_engineer_rows = [
+    report
+    for report in worker_reports
+    if "/workers/engineer/" in report.display()
+  ].len()
+  return {
+    admitted_tickets: admitted_count,
+    fresh_engineer_rows: fresh_engineer_rows,
+    retained_rows: retained_phases.len(),
+    reeval_dispatched: reeval_dispatched,
+    reeval_passed: reeval_passed,
+    delivered_tickets: delivered_tickets,
+    delivery_conversion: delivery_conversion,
+    retained_fast_paths: retained_fast_paths,
+    handbook_quarantines: handbook_quarantines,
+    overlap_retained_fresh: retained_phases.len() > 0 and fresh_engineer_rows > 0,
+    overlap_linked_replays: reeval_dispatched > 1,
+  }
+}
+
 proc open_ticket_snapshot(factory_dir: Path) [fs, error] -> Result[List[Any]] {
   var tickets: List[Any] = []
   let ticket_dir = fp"${factory_dir}/tickets"
@@ -489,6 +570,7 @@ proc audit_organization(run_dir: Path, factory_dir: Path) [fs, process, env, err
 
   let worker_reports = worker_report_paths(run_dir)?
   let workers = worker_data(run_dir, worker_reports)?
+  let throughput = organization_throughput(run_dir, worker_reports)?
   let product_ok = phases.len() > 0 and all_pass
   let evaluator_ok = all_pass
   let infrastructure_ok = workers.usage.budget_failures == 0 and workers.usage.unknown_costs == 0
@@ -511,6 +593,7 @@ proc audit_organization(run_dir: Path, factory_dir: Path) [fs, process, env, err
       workers: workers.workers,
       cost: workers.usage,
       tool_errors: workers.tool_errors,
+      throughput: throughput,
     },
     findings: findings.extend(workers.findings),
     artifacts: [

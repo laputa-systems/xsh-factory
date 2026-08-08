@@ -914,10 +914,10 @@ proc test_standard_cycle_uses_diverse_active_eval() [fs, error] {
     request,
     """## Active evals
 
-- `task-bigfiles`""",
+- `task-dupcheck`""",
   )?
   test.contains(request, "Allow measured eval reuse")?
-  test.contains(request, "- None.")?
+  test.contains(request, "- `task-render-001`")?
   test.contains(fs.read_text(fp"${fs.cwd()?}/factory/tools/eval-trends.xsh")?, "median_turns")?
   test.contains(request, "## Bottleneck review")?
   test.ok("`task-tags`" not in request)?
@@ -949,7 +949,7 @@ proc test_standard_cycle_uses_diverse_active_eval() [fs, error] {
   test.contains(improvement, "## Throughput requirement")?
   test.contains(productivity, "## Assembly-line bottleneck")?
   test.contains(request, "No `cycle-*.md` files are kept")?
-  test.contains(request, "Admission invariant: approve eligible Open tickets before invoking `run.xsh`")?
+  test.contains(request, "Admission invariant: `task-render-001` was approved before invoking `run.xsh`")?
   let cycle_template = fs.read_text(fp"${fs.cwd()?}/templates/cycle-request.md")?
   test.contains(cycle_template, "Require at least one engineer implementation commit")?
   test.contains(cycle_template, "Approve eligible Open tickets before controller invocation")?

@@ -28,6 +28,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     abort(2)
   }
   let run_dir = env.path("FACTORY_RUN_DIR")?.resolve()?
+  runtime.stage_factory_source_snapshot(factory_dir, run_dir)?
   let handbook_file = env.path("FACTORY_HANDBOOK_FILE", fp"${factory_dir}/runtime/handbook.md")?
   let handbook_candidate_file = env.path(
     "FACTORY_HANDBOOK_CANDIDATE_FILE",
@@ -432,6 +433,22 @@ ${limit_watcher.pid}
     ),
   )?
   fs.remove(provider_events, missing_ok: true)?
+  let factory_source_state = runtime.quarantine_factory_handbook(
+    factory_dir,
+    run_dir,
+    expected_source_sha,
+  )?
+  if factory_source_state == "handbook-quarantined" {
+    fs.write_atomic(
+      fp"${worker_dir}/FACTORY-HANDBOOK-QUARANTINED",
+      "live handbook edit captured as a run-scoped candidate\n",
+    )?
+  } else if factory_source_state == "source-changed" {
+    fs.write_atomic(
+      fp"${worker_dir}/FACTORY-SOURCE-MUTATED",
+      "non-handbook factory source changed during the worker session\n",
+    )?
+  }
   if required_report != "" and ! fs.exists(fp"${required_report}")? {
     fs.write(
       fp"${worker_dir}/REPORT-MISSING",
@@ -451,6 +468,7 @@ ${limit_watcher.pid}
         watcher: if watcher_status.ok { "pass" } else { "failed" },
         session_limit_watcher: if limit_status.ok { "pass" } else { "failed" },
         reporting: if report_status.ok { "pass" } else { "failed" },
+        factory_source: factory_source_state,
         required_report: if required_report_ok { "present" } else { "missing" },
         dispatch_id: dispatch_id,
         dispatch_claim: dispatch_claim_token,
@@ -469,7 +487,9 @@ ${limit_watcher.pid}
     }
   }
 
-  let code = if control.agent_completion_ok(
+  let code = if factory_source_state == "source-changed" {
+    1
+  } else if control.agent_completion_ok(
     watcher_status.ok,
     limit_status.ok,
     report_status.ok,

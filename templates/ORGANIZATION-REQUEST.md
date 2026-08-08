@@ -9,22 +9,18 @@ top level.
 ## Objective
 
 Run one bounded organization cycle. Before invoking `run.xsh`, the CTO
-reviews every remaining `Open.` ticket for evidence, duplication, scope,
-acceptance criteria, linked-eval availability, and resolved deferral
-conditions. Eligible tickets are approved in their checked-in records before
-admission. When no ticket passes the gate, record the blocking reason for every
-Open ticket and run the selected eval. The controller must not infer work from
-prose.
+reviewed every remaining `Open.` ticket and approved `task-render-001` in its
+checked-in record. The linked replay and independent corroborating eval remain
+the delivery gates. The controller must not infer work from prose.
 
 ## Bottleneck review
 
-The clean-slate checkout has no persisted run evidence, so the current
-assembly-line bottleneck is eval signal -> reproducible ticket. The five Open
-histogram tickets were reviewed and each remains deferred pending the fresh
-controlled or cross-eval replay recorded in its ticket. This cycle therefore
-uses the first untried Approved eval, `task-bigfiles`, to restore current
-evidence; the target is one evaluator-backed observation that can either
-qualify a ticket for the next cycle or falsify the existing hypotheses.
+The current assembly-line bottleneck is approval -> reviewable engineer
+commit -> linked replay. The Map-construction observation in `task-render-001`
+has a passing source trial and corroborating `task-dupcheck` evidence. This
+cycle targets one reviewable API-reference implementation commit, one passing
+independent corroboration, and one passing linked replay with delivery into
+XSH `HEAD`.
 
 ## Mode
 
@@ -32,13 +28,13 @@ qualify a ticket for the next cycle or falsify the existing hypotheses.
 
 ## Eval admission
 
-- Allow measured eval reuse: `no`
-- The controller must select the lexicographically first untried Approved eval
-  when one exists.
+- Allow measured eval reuse: `yes`
+- `task-dupcheck` is selected deliberately as the named map-building
+  corroboration for the approved `task-render-001` ticket.
 
 ## Active evals
 
-- `task-bigfiles`
+- `task-dupcheck`
 
 ## Trial plan
 
@@ -52,15 +48,14 @@ qualify a ticket for the next cycle or falsify the existing hypotheses.
 
 ## Approved tickets
 
-- None.
+- `task-render-001`
 
 ## Ticket policy
 
 - Review all open tickets before selection: `yes`
-- Select the first two approved tickets after review: no eligible tickets in
-  this clean-slate pass.
-- Admission invariant: approve eligible Open tickets before invoking `run.xsh`;
-  this cycle records explicit deferrals and intentionally runs eval-only.
+- Select the first two approved tickets after review: one approved ticket is
+  admitted in this narrow validation cycle.
+- Admission invariant: `task-render-001` was approved before invoking `run.xsh`.
 - Quality gate: do not dispatch a ticket whose proposed API addition lacks the
   `## API-surface justification` section and CTO approval.
 
@@ -72,7 +67,8 @@ invocation with a role-specific setting.
 
 ## Required outputs
 
-- one independent active eval; no ticket replay because no ticket was admitted;
+- one fresh engineer implementation row for `task-render-001`;
+- one independent `task-dupcheck` eval and one linked `task-render` replay;
 - structured worker reports and raw Pi sessions;
 - a run-level `report.json` covering every worker;
 - a `## North-star impact` section in each narrative role report;
