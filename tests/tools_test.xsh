@@ -2318,6 +2318,7 @@ proc test_organization_delivery_is_a_success_gate() [fs, error] {
   let delivery = organization.split("let delivery =").get(1, "").split("let reeval_exit").get(0, "")
   test.contains(organization, "runtime.merge_validated_ticket")?
   test.contains(organization, "var delivery_ok")?
+  test.contains(organization, "var delivery_ok = selected_tickets.len() == 0")?
   test.contains(organization, "delivery_ok = delivery_ok and delivery.merged")?
   test.contains(organization, "runtime.reconcile_tickets(factory_dir, xsh_repo, delivered_xsh_commit.trim())")?
   test.contains(runtime, "export proc merge_validated_ticket")?

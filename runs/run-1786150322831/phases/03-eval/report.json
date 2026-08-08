@@ -1,0 +1,273 @@
+{
+  "artifacts": [
+    {
+      "kind": "session-directory",
+      "path": "workers/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 38,
+      "budget_failures": 0,
+      "cost_usd": 0.017081118,
+      "tool_errors": 2,
+      "total_bucket_tokens": 592579.0,
+      "unknown_costs": 0,
+      "workers": 2
+    },
+    "designer": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786150322831/phases/03-eval/workers/eval-designer/proposal-1/REPORT.md",
+      "present": false,
+      "result": "not-requested",
+      "role": "eval-designer",
+      "valid": true
+    },
+    "director": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786150322831/phases/03-eval/workers/director/director/REPORT.md",
+      "present": false,
+      "result": "not-requested",
+      "role": "director",
+      "valid": true
+    },
+    "engineer": [],
+    "handbook_lineage": {
+      "approved": "lineage/handbook-approved.md",
+      "candidate": "lineage/handbook-candidate.md"
+    },
+    "manager": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786150322831/phases/03-eval/workers/eval-manager/task-setdiff/REPORT.md",
+      "present": true,
+      "result": "pass",
+      "role": "eval-manager",
+      "valid": true
+    },
+    "mode": "eval",
+    "narratives": [
+      {
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786150322831/phases/03-eval/workers/eval-manager/task-setdiff/REPORT.md",
+        "present": true,
+        "result": "pass",
+        "role": "eval-manager",
+        "valid": true
+      }
+    ],
+    "open_tickets": [
+      {
+        "eval_id": "task-dupcheck",
+        "id": "task-dupcheck-002",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-dupcheck-002.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-004",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-004.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-005",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-005.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-006",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-006.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-007",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-007.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-008",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-008.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-pathparts",
+        "id": "task-pathparts-001",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-pathparts-001.md",
+        "status": "Approved."
+      },
+      {
+        "eval_id": "task-pathparts",
+        "id": "task-pathparts-002",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-pathparts-002.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-render",
+        "id": "task-render-001",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-render-001.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-safepath",
+        "id": "task-safepath-002",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-safepath-002.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-trim",
+        "id": "task-trim-001",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-trim-001.md",
+        "status": "Approved."
+      }
+    ],
+    "outcomes": {
+      "cycle": "pass",
+      "evaluator": "pass",
+      "infrastructure": "pass",
+      "product": "pass"
+    },
+    "required_outputs": {
+      "audit": true,
+      "candidate_handbook": true,
+      "designer_handbook_read": true,
+      "designer_output": true,
+      "handbook_lineage": true,
+      "manager_evidence_read": true,
+      "manager_handbook_read": true,
+      "manager_report": true,
+      "manager_session": true,
+      "required": true,
+      "trial1_process": true,
+      "trial1_report": true,
+      "trial2_process": true,
+      "trial2_report": true,
+      "worker_handbook_read": true
+    },
+    "sessions": [
+      "workers/eval-manager/task-setdiff/session.jsonl.bz2",
+      "workers/eval-worker/task-setdiff-1/session.jsonl.bz2"
+    ],
+    "tool_errors": [
+      {
+        "report": "workers/eval-manager/task-setdiff/report.json",
+        "summary": "Traceback (most recent call last):\n  File \"<string>\", line 13, in <module>\n    print(i, 'ASSISTANT toolCall', c.get('name'), c.get('arguments','')[:180].replace(chr(10),' '))\n                                                  ~~~~~~~~~~~~~~~~~~~~~^^^^^^\nKeyError: slice(None, 180, None)\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 7,
+        "worker": {
+          "role": "eval-manager",
+          "worker_id": "task-setdiff"
+        }
+      },
+      {
+        "report": "workers/eval-worker/task-setdiff-1/report.json",
+        "summary": "---EXIT 0---\nwarn[lint.redundant-command-interpolation]: command args can use expression syntax directly\n  setdiff.xsh:15:11\n      print $result.join(\"\\n\")\n            ------------------ this interpolation is unnecessary\nhelp: use the expression directly -> result.join(\"\\n\")\nwarn[lint.unannotated-effects]: proc `main` has effects but no annotation\n  setdiff.xsh:1:1\n  proc main(fileA: Str, fileB: Str) {\n  ----------------------------------- suggest [fs, error]\nhelp: add effect annotation `[fs, error]` -> [fs, error] \n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 13,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-setdiff-1"
+        }
+      }
+    ],
+    "trials": [
+      {
+        "evidence": {
+          "candidate_sha256": "unknown",
+          "classification": "unknown",
+          "correctness": "pass",
+          "eval_id": "task-setdiff",
+          "handbook_sha256": "unknown",
+          "oracle_sha256": "unknown",
+          "passed": true,
+          "protocol": "pass",
+          "restrictions": "pass",
+          "result": "pass",
+          "timing": "pass",
+          "trial_id": "1",
+          "valid": true
+        },
+        "path": "workers/eval-worker/task-setdiff-1/run.json"
+      }
+    ],
+    "workers": [
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-setdiff"
+        },
+        "path": "workers/eval-manager/task-setdiff/report.json",
+        "result": "pass",
+        "tool_errors": 1,
+        "usage": {
+          "assistant_turns": 13,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.004807296,
+          "cache_read_tokens": 267072,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.009398016,
+          "input_cost_usd": 0.0034696800000000006,
+          "input_tokens": 38552,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0011210399999999998,
+          "output_tokens": 6228,
+          "provider_total_tokens": 311852,
+          "reasoning_tokens": 2400,
+          "thinking_blocks": 10,
+          "tool_calls": 19,
+          "tool_errors": 1,
+          "tool_results": 19,
+          "total_bucket_tokens": 311852,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-setdiff-1"
+        },
+        "path": "workers/eval-worker/task-setdiff-1/report.json",
+        "result": "pass",
+        "tool_errors": 1,
+        "usage": {
+          "assistant_turns": 25,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.0045630720000000005,
+          "cache_read_tokens": 253504,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.007683102,
+          "input_cost_usd": 0.00178011,
+          "input_tokens": 19779,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00133992,
+          "output_tokens": 7444,
+          "provider_total_tokens": 280727,
+          "reasoning_tokens": 3236,
+          "thinking_blocks": 21,
+          "tool_calls": 27,
+          "tool_errors": 1,
+          "tool_results": 27,
+          "total_bucket_tokens": 280727,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "630d14261ce5cf0160bf9809e79e2fca12922c70"
+  },
+  "findings": [],
+  "identity": {
+    "eval_id": "task-setdiff",
+    "mode": "eval",
+    "run_id": "03-eval"
+  },
+  "kind": "phase",
+  "result": "pass",
+  "schema_version": 1,
+  "state": "completed"
+}

@@ -1,0 +1,273 @@
+{
+  "artifacts": [
+    {
+      "kind": "session-directory",
+      "path": "workers/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 34,
+      "budget_failures": 0,
+      "cost_usd": 0.024446124,
+      "tool_errors": 2,
+      "total_bucket_tokens": 781704.0,
+      "unknown_costs": 0,
+      "workers": 2
+    },
+    "designer": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786150322831/phases/02-reeval-task-trim-001/workers/eval-designer/proposal-1/REPORT.md",
+      "present": false,
+      "result": "not-requested",
+      "role": "eval-designer",
+      "valid": true
+    },
+    "director": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786150322831/phases/02-reeval-task-trim-001/workers/director/director/REPORT.md",
+      "present": false,
+      "result": "not-requested",
+      "role": "director",
+      "valid": true
+    },
+    "engineer": [],
+    "handbook_lineage": {
+      "approved": "lineage/handbook-approved.md",
+      "candidate": "lineage/handbook-candidate.md"
+    },
+    "manager": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786150322831/phases/02-reeval-task-trim-001/workers/eval-manager/task-trim/REPORT.md",
+      "present": true,
+      "result": "pass",
+      "role": "eval-manager",
+      "valid": true
+    },
+    "mode": "eval",
+    "narratives": [
+      {
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786150322831/phases/02-reeval-task-trim-001/workers/eval-manager/task-trim/REPORT.md",
+        "present": true,
+        "result": "pass",
+        "role": "eval-manager",
+        "valid": true
+      }
+    ],
+    "open_tickets": [
+      {
+        "eval_id": "task-dupcheck",
+        "id": "task-dupcheck-002",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-dupcheck-002.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-004",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-004.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-005",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-005.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-006",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-006.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-007",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-007.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-008",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-008.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-pathparts",
+        "id": "task-pathparts-001",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-pathparts-001.md",
+        "status": "Approved."
+      },
+      {
+        "eval_id": "task-pathparts",
+        "id": "task-pathparts-002",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-pathparts-002.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-render",
+        "id": "task-render-001",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-render-001.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-safepath",
+        "id": "task-safepath-002",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-safepath-002.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-trim",
+        "id": "task-trim-001",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-trim-001.md",
+        "status": "Approved."
+      }
+    ],
+    "outcomes": {
+      "cycle": "pass",
+      "evaluator": "pass",
+      "infrastructure": "pass",
+      "product": "pass"
+    },
+    "required_outputs": {
+      "audit": true,
+      "candidate_handbook": true,
+      "designer_handbook_read": true,
+      "designer_output": true,
+      "handbook_lineage": true,
+      "manager_evidence_read": true,
+      "manager_handbook_read": true,
+      "manager_report": true,
+      "manager_session": true,
+      "required": true,
+      "trial1_process": true,
+      "trial1_report": true,
+      "trial2_process": true,
+      "trial2_report": true,
+      "worker_handbook_read": true
+    },
+    "sessions": [
+      "workers/eval-manager/task-trim/session.jsonl.bz2",
+      "workers/eval-worker/task-trim-1/session.jsonl.bz2"
+    ],
+    "tool_errors": [
+      {
+        "report": "workers/eval-manager/task-trim/report.json",
+        "summary": "total 552\ndrwxr-xr-x  13 josh  staff    416 Aug  7 18:03 .\ndrwxr-xr-x   3 josh  staff     96 Aug  7 18:02 ..\n-rw-r--r--@  1 josh  staff     64 Aug  7 18:02 agent.cid\n-rw-r--r--   1 josh  staff      0 Aug  7 18:02 container.stderr\n-rw-r--r--   1 josh  staff  73017 Aug  7 18:03 container.stdout\n-rw-r--r--@  1 josh  staff     64 Aug  7 18:03 evaluator.cid\n-rw-r--r--   1 josh  staff      0 Aug  7 18:03 evaluator.stderr\n-rw-r--r--   1 josh  staff      0 Aug  7 18:03 evaluator.stdout\n-rw-r--r--@  1 josh  staff      0 Aug  7 18:02 pi.stderr\n-rw-r--r--   1 josh  staff   2665 Aug  7 18:03 report.json\n-rw-r--r--@  1 josh  staff    226 Aug  7 18:03 run.json\n-rw-r--r--@  1 josh  staff  73017 Aug  7 18:03 session.jsonl.bz2\ndrwxr-xr-x   7 josh  staff    224 Aug  7 18:03 work\n---WORK---\ntotal 56\ndrwxr-xr-x   7 josh  staff    224 Aug  7 18:03 .\ndrwxr-xr-x  13 josh  staff    416 Aug  7 18:03 ..\n-rw-r--r--   1 josh  staff   3132 Aug  7 18:02 agents.md\n-rw-r--r--   1 josh  staff  10305 Aug  7 18:02 handbook.md\n-rw-r--r--@  1 josh  staff     58 Aug  7 18:03 review.md\n-rw-r--r--   1 josh  staff   1151 Aug  7 18:02 task.md\n-rw-r--r--@  1 josh  staff    384 Aug  7 18:03 trim.xsh\n---EVENTS---\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 3,
+        "worker": {
+          "role": "eval-manager",
+          "worker_id": "task-trim"
+        }
+      },
+      {
+        "report": "workers/eval-manager/task-trim/report.json",
+        "summary": "=== current HEAD (main) ===\ne283ba1 factory: pin controller source during cycles\n6ac63a9 factory: handle cached replay staging\n0480f59 factory: isolate concurrent eval staging\n4447ea3 cto: run throughput delivery cycles\n12c7e4c factory: preserve delivery lifecycle state\n09bf7ad factory: reuse keyed eval images across phases\ne65f4b4 cto: close four-way discovery cycle\n5770662 cto: close pathparts replay and render discovery\n=== is candidate commit reachable ===\nfatal: git cat-file: could not get object info\n=== is baseline reachable ===\nfatal: git cat-file: could not get object info\n\n\nCommand exited with code 128",
+        "tool": "bash",
+        "turn": 7,
+        "worker": {
+          "role": "eval-manager",
+          "worker_id": "task-trim"
+        }
+      }
+    ],
+    "trials": [
+      {
+        "evidence": {
+          "candidate_sha256": "unknown",
+          "classification": "unknown",
+          "correctness": "pass",
+          "eval_id": "task-trim",
+          "handbook_sha256": "unknown",
+          "oracle_sha256": "unknown",
+          "passed": true,
+          "protocol": "pass",
+          "restrictions": "pass",
+          "result": "pass",
+          "timing": "pass",
+          "trial_id": "1",
+          "valid": true
+        },
+        "path": "workers/eval-worker/task-trim-1/run.json"
+      }
+    ],
+    "workers": [
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-trim"
+        },
+        "path": "workers/eval-manager/task-trim/report.json",
+        "result": "pass",
+        "tool_errors": 2,
+        "usage": {
+          "assistant_turns": 13,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.0081792,
+          "cache_read_tokens": 454400,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.018009360000000002,
+          "input_cost_usd": 0.006025320000000001,
+          "input_tokens": 66948,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00380484,
+          "output_tokens": 21138,
+          "provider_total_tokens": 542486,
+          "reasoning_tokens": 17953,
+          "thinking_blocks": 13,
+          "tool_calls": 26,
+          "tool_errors": 2,
+          "tool_results": 26,
+          "total_bucket_tokens": 542486,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-trim-1"
+        },
+        "path": "workers/eval-worker/task-trim-1/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 21,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.003890304,
+          "cache_read_tokens": 216128,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.006436763999999999,
+          "input_cost_usd": 0.0016097400000000003,
+          "input_tokens": 17886,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00093672,
+          "output_tokens": 5204,
+          "provider_total_tokens": 239218,
+          "reasoning_tokens": 2825,
+          "thinking_blocks": 16,
+          "tool_calls": 27,
+          "tool_errors": 0,
+          "tool_results": 27,
+          "total_bucket_tokens": 239218,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "630d14261ce5cf0160bf9809e79e2fca12922c70"
+  },
+  "findings": [],
+  "identity": {
+    "eval_id": "task-trim",
+    "mode": "eval",
+    "run_id": "02-reeval-task-trim-001"
+  },
+  "kind": "phase",
+  "result": "pass",
+  "schema_version": 1,
+  "state": "completed"
+}

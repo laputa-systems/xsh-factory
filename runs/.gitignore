@@ -13,6 +13,7 @@
 !**/dry-run/*.cfg
 !**/dryrun/*.cfg
 !**/events.jsonl
+!**/factory-source.sha256
 
 # Preserve decisions and evidence, not controller plumbing or duplicate inputs.
 **/work/

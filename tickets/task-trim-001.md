@@ -2,7 +2,7 @@
 
 ## Status
 
-Approved.
+Merged.
 
 ## CTO decision — 2026-08-07
 
@@ -39,10 +39,10 @@ None.
 
 ## Merge record
 
-- Implementation branch: `{{IMPLEMENTATION_BRANCH}}`
-- Implementation commit: `{{IMPLEMENTATION_COMMIT}}`
-- Detected at XSH commit: `{{DETECTED_XSH_COMMIT}}`
-- Implementation run: `{{IMPLEMENTATION_RUN}}`
+- Implementation branch: `factory/task-trim-001/1786147173597`
+- Implementation commit: `2e244e4ac8c724c2e4720e8840405f8faaee1fb1`
+- Detected at XSH commit: `2e244e4ac8c724c2e4720e8840405f8faaee1fb1`
+- Implementation run: `/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786147170660/phases/01-ticket`
 
 ## Source eval and manager
 

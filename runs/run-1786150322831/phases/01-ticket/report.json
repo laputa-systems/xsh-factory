@@ -1,0 +1,29 @@
+{
+  "artifacts": [
+    {
+      "kind": "portable-patch",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786150322831/phases/01-ticket/patches/task-trim-001.diff"
+    }
+  ],
+  "data": {
+    "base_commit": "630d14261ce5cf0160bf9809e79e2fca12922c70",
+    "branch": "factory/task-trim-001/1786147173597",
+    "clean": true,
+    "implementation_commit": "2e244e4ac8c724c2e4720e8840405f8faaee1fb1",
+    "merge_base": "630d14261ce5cf0160bf9809e79e2fca12922c70",
+    "mode": "ticket-reuse",
+    "patch": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786150322831/phases/01-ticket/patches/task-trim-001.diff",
+    "ticket_id": "task-trim-001",
+    "worktree": "/Users/josh/d/laputa-systems/xsh-factory/../.xsh-factory-worktrees/run-1786150322831/task-trim-001"
+  },
+  "findings": [],
+  "identity": {
+    "mode": "ticket-reuse",
+    "run_id": "01-ticket",
+    "ticket_id": "task-trim-001"
+  },
+  "kind": "phase",
+  "result": "pass",
+  "schema_version": 1,
+  "state": "completed"
+}

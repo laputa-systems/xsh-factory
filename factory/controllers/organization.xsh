@@ -729,7 +729,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
 
   var reeval_pass_for_result = selected_ticket == ""
   var worktree_cleanup_ok = selected_ticket == ""
-  var delivery_ok = selected_ticket == ""
+  var delivery_ok = selected_tickets.len() == 0
   if selected_ticket != "" {
     reeval_pass_for_result = primary_pass
     worktree_cleanup_ok = primary_pass

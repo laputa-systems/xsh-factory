@@ -1,0 +1,114 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786150322831/phases/02-reeval-task-trim-001/workers/eval-manager/task-trim/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_process": "pass",
+    "dispatch_claim": "db0551a47f939e17711bd0137295e0dcc6fe2247b8afc9a506512d1ff835d5c2",
+    "dispatch_id": "eval-manager-task-trim",
+    "message_sha256": "db0551a47f939e17711bd0137295e0dcc6fe2247b8afc9a506512d1ff835d5c2",
+    "reporting": "pass",
+    "required_report": "present",
+    "session_limit_watcher": "pass",
+    "system_prompt_sha256": "a5ab31790989af39c06a7fec953a65b5b782b1be43779a76401f77f02f7995f3",
+    "watcher": "pass"
+  },
+  "findings": [
+    {
+      "count": 2,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "role": "eval-manager",
+    "worker_id": "task-trim"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "provider_telemetry": {
+    "event_turns": 13,
+    "events_path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786150322831/phases/02-reeval-task-trim-001/workers/eval-manager/task-trim/session.jsonl.events.jsonl",
+    "output_tokens_per_second": 0,
+    "present": true,
+    "provider_errors": [],
+    "response_elapsed_ms": 0,
+    "retry_count": 0,
+    "retry_delay_ms": 0,
+    "retry_errors": [],
+    "retry_failures": 0,
+    "retry_successes": 0
+  },
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786150322831/phases/02-reeval-task-trim-001/workers/eval-manager/task-trim/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 12,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 297841
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786150322831/phases/02-reeval-task-trim-001/workers/eval-manager/task-trim/session.jsonl.bz2",
+      "summary": "total 552\ndrwxr-xr-x  13 josh  staff    416 Aug  7 18:03 .\ndrwxr-xr-x   3 josh  staff     96 Aug  7 18:02 ..\n-rw-r--r--@  1 josh  staff     64 Aug  7 18:02 agent.cid\n-rw-r--r--   1 josh  staff      0 Aug  7 18:02 container.stderr\n-rw-r--r--   1 josh  staff  73017 Aug  7 18:03 container.stdout\n-rw-r--r--@  1 josh  staff     64 Aug  7 18:03 evaluator.cid\n-rw-r--r--   1 josh  staff      0 Aug  7 18:03 evaluator.stderr\n-rw-r--r--   1 josh  staff      0 Aug  7 18:03 evaluator.stdout\n-rw-r--r--@  1 josh  staff      0 Aug  7 18:02 pi.stderr\n-rw-r--r--   1 josh  staff   2665 Aug  7 18:03 report.json\n-rw-r--r--@  1 josh  staff    226 Aug  7 18:03 run.json\n-rw-r--r--@  1 josh  staff  73017 Aug  7 18:03 session.jsonl.bz2\ndrwxr-xr-x   7 josh  staff    224 Aug  7 18:03 work\n---WORK---\ntotal 56\ndrwxr-xr-x   7 josh  staff    224 Aug  7 18:03 .\ndrwxr-xr-x  13 josh  staff    416 Aug  7 18:03 ..\n-rw-r--r--   1 josh  staff   3132 Aug  7 18:02 agents.md\n-rw-r--r--   1 josh  staff  10305 Aug  7 18:02 handbook.md\n-rw-r--r--@  1 josh  staff     58 Aug  7 18:03 review.md\n-rw-r--r--   1 josh  staff   1151 Aug  7 18:02 task.md\n-rw-r--r--@  1 josh  staff    384 Aug  7 18:03 trim.xsh\n---EVENTS---\n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 3
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786150322831/phases/02-reeval-task-trim-001/workers/eval-manager/task-trim/session.jsonl.bz2",
+      "summary": "=== current HEAD (main) ===\ne283ba1 factory: pin controller source during cycles\n6ac63a9 factory: handle cached replay staging\n0480f59 factory: isolate concurrent eval staging\n4447ea3 cto: run throughput delivery cycles\n12c7e4c factory: preserve delivery lifecycle state\n09bf7ad factory: reuse keyed eval images across phases\ne65f4b4 cto: close four-way discovery cycle\n5770662 cto: close pathparts replay and render discovery\n=== is candidate commit reachable ===\nfatal: git cat-file: could not get object info\n=== is baseline reachable ===\nfatal: git cat-file: could not get object info\n\n\nCommand exited with code 128",
+      "tool": "bash",
+      "turn": 7
+    }
+  ],
+  "tools": [
+    {
+      "count": 7,
+      "name": "bash"
+    },
+    {
+      "count": 18,
+      "name": "read"
+    },
+    {
+      "count": 1,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 13,
+    "budget_usd": 0.15,
+    "cache_read_cost_usd": 0.0081792,
+    "cache_read_tokens": 454400,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.018009360000000002,
+    "input_cost_usd": 0.006025320000000001,
+    "input_tokens": 66948,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.00380484,
+    "output_tokens": 21138,
+    "provider_total_tokens": 542486,
+    "reasoning_tokens": 17953,
+    "thinking_blocks": 13,
+    "tool_calls": 26,
+    "tool_errors": 2,
+    "tool_results": 26,
+    "total_bucket_tokens": 542486,
+    "user_messages": 1
+  }
+}

@@ -1,0 +1,103 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786150322831/phases/02-reeval-task-trim-001/workers/eval-worker/task-trim-1/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_state": "pass",
+    "agent_wall_ms": 62908,
+    "artifact": {
+      "name": "trim.xsh",
+      "state": "present"
+    },
+    "budget_state": "pass",
+    "classification": "pass",
+    "evaluator_manifest": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786150322831/phases/02-reeval-task-trim-001/workers/eval-worker/task-trim-1/run.json",
+    "evaluator_state": "pass",
+    "reporting_state": "pass",
+    "result": "pass",
+    "review": {
+      "state": "present"
+    }
+  },
+  "findings": [],
+  "identity": {
+    "eval_id": "task-trim",
+    "role": "eval-worker",
+    "run_id": "02-reeval-task-trim-001",
+    "worker_id": "task-trim-1"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "provider_telemetry": {
+    "event_turns": 21,
+    "events_path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786150322831/phases/02-reeval-task-trim-001/workers/eval-worker/task-trim-1/session.jsonl.events.jsonl",
+    "output_tokens_per_second": 0,
+    "present": true,
+    "provider_errors": [],
+    "response_elapsed_ms": 0,
+    "retry_count": 0,
+    "retry_delay_ms": 0,
+    "retry_errors": [],
+    "retry_failures": 0,
+    "retry_successes": 0
+  },
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786150322831/phases/02-reeval-task-trim-001/workers/eval-worker/task-trim-1/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 20,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 61749
+  },
+  "tool_errors": [],
+  "tools": [
+    {
+      "count": 21,
+      "name": "bash"
+    },
+    {
+      "count": 3,
+      "name": "read"
+    },
+    {
+      "count": 3,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 21,
+    "budget_usd": 0.5,
+    "cache_read_cost_usd": 0.003890304,
+    "cache_read_tokens": 216128,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.006436763999999999,
+    "input_cost_usd": 0.0016097400000000003,
+    "input_tokens": 17886,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.00093672,
+    "output_tokens": 5204,
+    "provider_total_tokens": 239218,
+    "reasoning_tokens": 2825,
+    "thinking_blocks": 16,
+    "tool_calls": 27,
+    "tool_errors": 0,
+    "tool_results": 27,
+    "total_bucket_tokens": 239218,
+    "user_messages": 1
+  }
+}

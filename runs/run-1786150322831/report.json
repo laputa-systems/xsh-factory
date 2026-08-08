@@ -1,0 +1,232 @@
+{
+  "artifacts": [
+    {
+      "kind": "phase-reports",
+      "path": "phases/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 72,
+      "budget_failures": 0,
+      "cost_usd": 0.041527242,
+      "tool_errors": 4,
+      "total_bucket_tokens": 1374283.0,
+      "unknown_costs": 0,
+      "workers": 4
+    },
+    "mode": "organization",
+    "outcomes": {
+      "cycle": "pass",
+      "evaluator": "pass",
+      "infrastructure": "pass",
+      "product": "pass"
+    },
+    "phases": [
+      {
+        "id": "01-ticket",
+        "path": "phases/01-ticket/report.json",
+        "result": "pass",
+        "valid": true
+      },
+      {
+        "id": "02-reeval-task-trim-001",
+        "path": "phases/02-reeval-task-trim-001/report.json",
+        "result": "pass",
+        "valid": true
+      },
+      {
+        "id": "03-eval",
+        "path": "phases/03-eval/report.json",
+        "result": "pass",
+        "valid": true
+      }
+    ],
+    "tool_errors": [
+      {
+        "report": "phases/02-reeval-task-trim-001/workers/eval-manager/task-trim/report.json",
+        "summary": "total 552\ndrwxr-xr-x  13 josh  staff    416 Aug  7 18:03 .\ndrwxr-xr-x   3 josh  staff     96 Aug  7 18:02 ..\n-rw-r--r--@  1 josh  staff     64 Aug  7 18:02 agent.cid\n-rw-r--r--   1 josh  staff      0 Aug  7 18:02 container.stderr\n-rw-r--r--   1 josh  staff  73017 Aug  7 18:03 container.stdout\n-rw-r--r--@  1 josh  staff     64 Aug  7 18:03 evaluator.cid\n-rw-r--r--   1 josh  staff      0 Aug  7 18:03 evaluator.stderr\n-rw-r--r--   1 josh  staff      0 Aug  7 18:03 evaluator.stdout\n-rw-r--r--@  1 josh  staff      0 Aug  7 18:02 pi.stderr\n-rw-r--r--   1 josh  staff   2665 Aug  7 18:03 report.json\n-rw-r--r--@  1 josh  staff    226 Aug  7 18:03 run.json\n-rw-r--r--@  1 josh  staff  73017 Aug  7 18:03 session.jsonl.bz2\ndrwxr-xr-x   7 josh  staff    224 Aug  7 18:03 work\n---WORK---\ntotal 56\ndrwxr-xr-x   7 josh  staff    224 Aug  7 18:03 .\ndrwxr-xr-x  13 josh  staff    416 Aug  7 18:03 ..\n-rw-r--r--   1 josh  staff   3132 Aug  7 18:02 agents.md\n-rw-r--r--   1 josh  staff  10305 Aug  7 18:02 handbook.md\n-rw-r--r--@  1 josh  staff     58 Aug  7 18:03 review.md\n-rw-r--r--   1 josh  staff   1151 Aug  7 18:02 task.md\n-rw-r--r--@  1 josh  staff    384 Aug  7 18:03 trim.xsh\n---EVENTS---\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 3,
+        "worker": {
+          "role": "eval-manager",
+          "worker_id": "task-trim"
+        }
+      },
+      {
+        "report": "phases/02-reeval-task-trim-001/workers/eval-manager/task-trim/report.json",
+        "summary": "=== current HEAD (main) ===\ne283ba1 factory: pin controller source during cycles\n6ac63a9 factory: handle cached replay staging\n0480f59 factory: isolate concurrent eval staging\n4447ea3 cto: run throughput delivery cycles\n12c7e4c factory: preserve delivery lifecycle state\n09bf7ad factory: reuse keyed eval images across phases\ne65f4b4 cto: close four-way discovery cycle\n5770662 cto: close pathparts replay and render discovery\n=== is candidate commit reachable ===\nfatal: git cat-file: could not get object info\n=== is baseline reachable ===\nfatal: git cat-file: could not get object info\n\n\nCommand exited with code 128",
+        "tool": "bash",
+        "turn": 7,
+        "worker": {
+          "role": "eval-manager",
+          "worker_id": "task-trim"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-manager/task-setdiff/report.json",
+        "summary": "Traceback (most recent call last):\n  File \"<string>\", line 13, in <module>\n    print(i, 'ASSISTANT toolCall', c.get('name'), c.get('arguments','')[:180].replace(chr(10),' '))\n                                                  ~~~~~~~~~~~~~~~~~~~~~^^^^^^\nKeyError: slice(None, 180, None)\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 7,
+        "worker": {
+          "role": "eval-manager",
+          "worker_id": "task-setdiff"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-worker/task-setdiff-1/report.json",
+        "summary": "---EXIT 0---\nwarn[lint.redundant-command-interpolation]: command args can use expression syntax directly\n  setdiff.xsh:15:11\n      print $result.join(\"\\n\")\n            ------------------ this interpolation is unnecessary\nhelp: use the expression directly -> result.join(\"\\n\")\nwarn[lint.unannotated-effects]: proc `main` has effects but no annotation\n  setdiff.xsh:1:1\n  proc main(fileA: Str, fileB: Str) {\n  ----------------------------------- suggest [fs, error]\nhelp: add effect annotation `[fs, error]` -> [fs, error] \n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 13,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-setdiff-1"
+        }
+      }
+    ],
+    "workers": [
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-trim"
+        },
+        "path": "phases/02-reeval-task-trim-001/workers/eval-manager/task-trim/report.json",
+        "result": "pass",
+        "tool_errors": 2,
+        "usage": {
+          "assistant_turns": 13,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.0081792,
+          "cache_read_tokens": 454400,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.018009360000000002,
+          "input_cost_usd": 0.006025320000000001,
+          "input_tokens": 66948,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00380484,
+          "output_tokens": 21138,
+          "provider_total_tokens": 542486,
+          "reasoning_tokens": 17953,
+          "thinking_blocks": 13,
+          "tool_calls": 26,
+          "tool_errors": 2,
+          "tool_results": 26,
+          "total_bucket_tokens": 542486,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-trim-1"
+        },
+        "path": "phases/02-reeval-task-trim-001/workers/eval-worker/task-trim-1/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 21,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.003890304,
+          "cache_read_tokens": 216128,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.006436763999999999,
+          "input_cost_usd": 0.0016097400000000003,
+          "input_tokens": 17886,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00093672,
+          "output_tokens": 5204,
+          "provider_total_tokens": 239218,
+          "reasoning_tokens": 2825,
+          "thinking_blocks": 16,
+          "tool_calls": 27,
+          "tool_errors": 0,
+          "tool_results": 27,
+          "total_bucket_tokens": 239218,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-setdiff"
+        },
+        "path": "phases/03-eval/workers/eval-manager/task-setdiff/report.json",
+        "result": "pass",
+        "tool_errors": 1,
+        "usage": {
+          "assistant_turns": 13,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.004807296,
+          "cache_read_tokens": 267072,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.009398016,
+          "input_cost_usd": 0.0034696800000000006,
+          "input_tokens": 38552,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0011210399999999998,
+          "output_tokens": 6228,
+          "provider_total_tokens": 311852,
+          "reasoning_tokens": 2400,
+          "thinking_blocks": 10,
+          "tool_calls": 19,
+          "tool_errors": 1,
+          "tool_results": 19,
+          "total_bucket_tokens": 311852,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-setdiff-1"
+        },
+        "path": "phases/03-eval/workers/eval-worker/task-setdiff-1/report.json",
+        "result": "pass",
+        "tool_errors": 1,
+        "usage": {
+          "assistant_turns": 25,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.0045630720000000005,
+          "cache_read_tokens": 253504,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.007683102,
+          "input_cost_usd": 0.00178011,
+          "input_tokens": 19779,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00133992,
+          "output_tokens": 7444,
+          "provider_total_tokens": 280727,
+          "reasoning_tokens": 3236,
+          "thinking_blocks": 21,
+          "tool_calls": 27,
+          "tool_errors": 1,
+          "tool_results": 27,
+          "total_bucket_tokens": 280727,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "2e244e4ac8c724c2e4720e8840405f8faaee1fb1"
+  },
+  "findings": [],
+  "identity": {
+    "mode": "organization",
+    "run_id": "run-1786150322831"
+  },
+  "kind": "run",
+  "result": "pass",
+  "schema_version": 1,
+  "state": "completed"
+}
