@@ -4,6 +4,17 @@
 
 Open.
 
+## CTO review — cycle 26 close
+
+- Decision: Deferred; do not approve or dispatch yet.
+- Basis: The positive-bound observation is strong and reproducible, but it is
+  a single-eval language proposal. Preserve it for a directed replay after a
+  typed positive parser or explicit failure surface is available; do not spend
+  the next implementation slot on a workaround that intentionally raises
+  SIGFPE.
+- Evidence: the cycle-26 `task-histogram` worker and manager reports linked
+  below, including all nine byte-exact cases and the width-zero signal path.
+
 ## Change target
 
 - `product`
