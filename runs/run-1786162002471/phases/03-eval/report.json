@@ -1,0 +1,255 @@
+{
+  "artifacts": [
+    {
+      "kind": "session-directory",
+      "path": "workers/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 36,
+      "budget_failures": 0,
+      "cost_usd": 0.01808964,
+      "tool_errors": 2,
+      "total_bucket_tokens": 654142.0,
+      "unknown_costs": 0,
+      "workers": 2
+    },
+    "designer": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786162002471/phases/03-eval/workers/eval-designer/proposal-1/REPORT.md",
+      "present": false,
+      "result": "not-requested",
+      "role": "eval-designer",
+      "valid": true
+    },
+    "director": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786162002471/phases/03-eval/workers/director/director/REPORT.md",
+      "present": false,
+      "result": "not-requested",
+      "role": "director",
+      "valid": true
+    },
+    "engineer": [],
+    "handbook_lineage": {
+      "approved": "lineage/handbook-approved.md",
+      "candidate": "lineage/handbook-candidate.md"
+    },
+    "manager": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786162002471/phases/03-eval/workers/eval-manager/task-bigfiles/REPORT.md",
+      "present": true,
+      "result": "pass",
+      "role": "eval-manager",
+      "valid": true
+    },
+    "mode": "eval",
+    "narratives": [
+      {
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786162002471/phases/03-eval/workers/eval-manager/task-bigfiles/REPORT.md",
+        "present": true,
+        "result": "pass",
+        "role": "eval-manager",
+        "valid": true
+      }
+    ],
+    "open_tickets": [
+      {
+        "eval_id": "task-dupcheck",
+        "id": "task-dupcheck-002",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-dupcheck-002.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-004",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-004.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-005",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-005.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-006",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-006.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-007",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-007.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-008",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-008.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-pathparts",
+        "id": "task-pathparts-002",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-pathparts-002.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-safepath",
+        "id": "task-safepath-002",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-safepath-002.md",
+        "status": "Approved."
+      }
+    ],
+    "outcomes": {
+      "cycle": "pass",
+      "evaluator": "pass",
+      "infrastructure": "pass",
+      "product": "pass"
+    },
+    "required_outputs": {
+      "audit": true,
+      "candidate_handbook": true,
+      "designer_handbook_read": true,
+      "designer_output": true,
+      "handbook_lineage": true,
+      "manager_evidence_read": true,
+      "manager_handbook_read": true,
+      "manager_report": true,
+      "manager_session": true,
+      "required": true,
+      "trial1_process": true,
+      "trial1_report": true,
+      "trial2_process": true,
+      "trial2_report": true,
+      "worker_handbook_read": true
+    },
+    "sessions": [
+      "workers/eval-manager/task-bigfiles/session.jsonl.bz2",
+      "workers/eval-worker/task-bigfiles-1/session.jsonl.bz2"
+    ],
+    "tool_errors": [
+      {
+        "report": "workers/eval-worker/task-bigfiles-1/report.json",
+        "summary": "query: search:main\nstatus: matches\n\napi: language.cli.xsh-SCRIPT\nkind: language\npurpose: Runs an XSH script with explicit positional arguments.\n\napi: language.core.command-interpolation\nkind: language\npurpose: Defines explicit command and argv interpolation.\n\napi: language.core.comments\nkind: language\npurpose: Defines XSH comments and documentation comments.\n\napi: language.core.results\nkind: language\npurpose: Defines Result values and error families.\n\napi: language.run.bytes\nkind: language\npurpose: Runs a command and captures stdout as Bytes.\n\napi: language.run.capture---bytes\nkind: language\npurpose: Captures command status, stdout, and stderr as Bytes.\n\napi: language.run.stream---bytes\nkind: language\npurpose: Streams command stdout as byte chunks.\n\napi: language.stream.bytes-chunks\nkind: language\npurpose: Adapts bytes into fixed-size chunks.\n\napi: language.stream.drop\nkind: language\npurpose: Skips an initial number of stream items.\n\napi: language.stream.first\nkind: language\npurpose: Returns the first stream item.\n\napi: language.stream.json-stream\nkind: language\npurpose: Adapts a JSON array or document stream into values.\n\napi: language.stream.text-lines\nkind: language\npurpose: Adapts text into a lazy line stream.\n\napi: language.stream.where\nkind: language\npurpose: Filters stream items with a predicate block.\n\napi: method.Bytes.chunks\nkind: method\npurpose: Splits bytes into fixed-size chunks.\n\napi: method.Bytes.lines\nkind: method\npurpose: Splits bytes into line-oriented chunks.\n\napi: method.Bytes.lower\nkind: method\npurpose: Lowercases ASCII-compatible bytes.\n\napi: method.Float.abs\nkind: method\npurpose: Computes a floating-point mathematical function.\n\napi: method.Float.cos\nkind: method\npurpose: Computes a floating-point mathematical function.\n\napi: method.Float.exp\nkind: method\npurpose: Computes a floating-point mathematical function.\n\napi: method.Float.ln\nkind: method\npurpose: Computes a floating-point mathematical function.\n\napi: method.Float.log\nkind: method\npurpose: Computes a floating-point mathematical function.\n\napi: method.Float.pow\nkind: method\npurpose: Computes a floating-point mathematical function.\n\napi: method.Float.sin\nkind: method\npurpose: Computes a floating-point mathematical function.\n\napi: method.Float.sqrt\nkind: method\npurpose: Computes a floating-point mathematical function.\n\napi: method.Float.tan\nkind: method\npurpose: Computes a floating-point mathematical function.\n\napi: method.List.extend\nkind: method\npurpose: Returns a list with another list appended.\n\napi: method.Path.bytes_lines\nkind: method\npurpose: Streams file lines as Bytes.\n\napi: method.Path.copy\nkind: method\npurpose: Copies a path to an explicit destination.\n\napi: method.Path.executable\nkind: method\npurpose: Checks a filesystem property for a path.\n\napi: method.Path.exists\nkind: method\npurpose: Checks a filesystem property for a path.\n\napi: method.Path.hardlink\nkind: method\npurpose: Creates a hard link to a path.\n\napi: method.Path.lines\nkind: method\npurpose: Streams UTF-8 file lines.\n\napi: method.Path.mkdir\nkind: method\npurpose: Creates a directory at a path.\n\napi: method.Path.remove_dir\nkind: method\npurpose: Removes an empty directory.\n\napi: method.Path.truncate\nkind: method\npurpose: Changes a file's length.\n\napi: method.ProcessHandle.cancel\nkind: method\npurpose: Requests cancellation of an owned process handle.\n\napi: method.Regex.captures\nkind: method\npurpose: Extracts regex capture groups.\n\napi: method.Result.context\nkind: method\npurpose: Adds a domain-specific error context before propagation.\n\napi: method.Status.exited_with\nkind: method\npurpose: Checks a process exit code.\n\napi: method.Str.find\nkind: method\npurpose: Finds a text substring position.\n\napi: method.Str.trim\nkind: method\npurpose: Removes surrounding Unicode whitespace.\n\napi: module.applet\nkind: module\npurpose: Internal primitives for shipped core applet scripts.\n\napi: module.applet.mdev\nkind: module-function\npurpose: Runs the maintained mdev device-management applet.\n\napi: module.bytes.copy_file\nkind: module-function\npurpose: Copies bytes between files with explicit range options.\n\napi: module.bytes.zero\nkind: module-function\npurpose: Allocates a zero-filled byte buffer.\n\napi: module.cli.parse_full\nkind: module-function\npurpose: Parses the complete script argument schema including help and usage policy.\n\napi: module.cli.usage\nkind: module-function\npurpose: Renders usage text from a command-line descriptor.\n\napi: module.dns\nkind: module\npurpose: DNS lookup and name resolution helpers.\n\napi: module.dns.lookup\nkind: module-function\npurpose: Looks up one DNS record type for a name.\n\napi: module.env.get\nkind: module-function\npurpose: Reads one environment variable as text.\n\napi: module.fs.exists\nkind: module-function\npurpose: Checks whether a filesystem path exists.\n\napi: module.fs.mkdir\nkind: module-function\npurpose: Creates a directory with an explicit parent policy.\n\napi: module.fs.root_path\nkind: module-function\npurpose: Returns the host path represented by a rooted filesystem capability.\n\napi: module.group\nkind: module\npurpose: Unix group lookup records.\n\napi: module.group.by_gid\nkind: module-function\npurpose: Looks up a Unix group by name or numeric ID.\n\napi: module.group.lookup\nkind: module-function\npurpose: Looks up a Unix group by name or numeric ID.\n\napi: module.hash.parse_check_line\nkind: module-function\npurpose: Parses one checksum-file verification line.\n\napi: module.hash.verify_file\nkind: module-function\npurpose: Verifies a file against a named digest.\n\napi: module.ini.read\nkind: module-function\npurpose: Reads and parses an INI file.\n\napi: module.io.stdin_line\nkind: module-function\npurpose: Reads one line from standard input.\n\napi: module.linux.sysctl_get\nkind: module-function\npurpose: Reads Linux sysctl configuration values.\n\napi: module.linux.sysctl_load_dirs\nkind: module-function\npurpose: Reads Linux sysctl configuration values.\n\napi: module.net\nkind: module\npurpose: HTTP request, transfer, and connection-pool helpers.\n\napi: module.net.request\nkind: module-function\npurpose: Performs one structured HTTP request.\n\napi: module.net.upload\nkind: module-function\npurpose: Uploads a path or byte source in one structured HTTP request.\n\napi: module.process.command_argv\nkind: module-function\npurpose: Builds a command plan from an executable and argv list.\n\napi: module.process.run\nkind: module-function\npurpose: Runs a typed command and returns its process status.\n\napi: module.shlex.join\nkind: module-function\npurpose: Renders argv values as a shell-safe command string.\n\napi: module.system.os_release\nkind: module-function\npurpose: Reads the host operating-system release record.\n\napi: module.test.run_script\nkind: module-function\npurpose: Runs a nested XSH or tracing fixture from a native test.\n\napi: module.test.run_xsh\nkind: module-function\npurpose: Runs a nested XSH or tracing fixture from a native test.\n\napi: module.test.run_xsht_trace\nkind: module-function\npurpose: Runs a nested XSH or tracing fixture from a native test.\n\napi: module.unix.exec\nkind: module-function\npurpose: Replaces the current Unix process with a typed command.\n\napi: module.unix.kill_all\nkind: module-function\npurpose: Sends a signal to a Unix process group or selected process set.\n\napi: module.unix.kill_process_group\nkind: module-function\npurpose: Sends a signal to a Unix process group or selected process set.\n\napi: module.user\nkind: module\npurpose: Unix user lookup records.\n\napi: module.user.by_uid\nkind: module-function\npurpose: Looks up a Unix user by name or numeric ID.\n\napi: module.user.lookup\nkind: module-function\npurpose: Looks up a Unix user by name or numeric ID.\n\napi: record.ElfInfo\nkind: record\npurpose: Describes ELF headers and dynamic dependencies.\n\napi: record.LinuxFsck\nkind: record\npurpose: Reports a Linux filesystem check result.\n\napi: record.LinuxLoopDevice\nkind: record\npurpose: Describes one Linux loop device.\n\napi: record.NetHeader\nkind: record\npurpose: Describes one HTTP header.\n\napi: record.SystemOsRelease\nkind: record\npurpose: Describes host operating-system release metadata.\n\napi: record.UnixTtyAttrs\nkind: record\npurpose: Describes Unix terminal attributes.\n---\nxsht api: invalid API query 'language.core.main'; expected KIND:VALUE\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 4,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-bigfiles-1"
+        }
+      },
+      {
+        "report": "workers/eval-worker/task-bigfiles-1/report.json",
+        "summary": "warn[lint.path-constructor]: prefer p-string interpolation over `Path(...)`\n  bigfiles.xsh:2:16\n      let root = Path(argv.get(0)?)\n                 ------------------ use path string syntax instead\nnote: `Path(...)` remains a cast, but p-strings are the preferred path syntax\nhelp: replace with path string -> fp\"${argv.get(0)?}\"\nwarn[lint.redundant-command-interpolation]: command args can use expression syntax directly\n  bigfiles.xsh:8:35\n        |> each { |e| print $e.size $e.path.display() }\n                                    ----------------- this interpolation is unnecessary\nhelp: use the expression directly -> e.path.display()\nwarn[lint.redundant-path-display]: redundant `.display()` on a Path value\n  bigfiles.xsh:8:35\n        |> each { |e| print $e.size $e.path.display() }\n                                    ----------------- Path values display automatically in command arguments\nhelp: remove `.display()` -> $e.path\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 13,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-bigfiles-1"
+        }
+      }
+    ],
+    "trials": [
+      {
+        "evidence": {
+          "candidate_sha256": "unknown",
+          "classification": "pass",
+          "correctness": "pass",
+          "eval_id": "task-bigfiles",
+          "handbook_sha256": "unknown",
+          "oracle_sha256": "unknown",
+          "passed": true,
+          "protocol": "pass",
+          "restrictions": "pass",
+          "result": "pass",
+          "timing": "pass",
+          "trial_id": "1",
+          "valid": true
+        },
+        "path": "workers/eval-worker/task-bigfiles-1/run.json"
+      }
+    ],
+    "workers": [
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-bigfiles"
+        },
+        "path": "workers/eval-manager/task-bigfiles/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 14,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.006266879999999999,
+          "cache_read_tokens": 348160,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.011440350000000002,
+          "input_cost_usd": 0.0034082099999999996,
+          "input_tokens": 37869,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00176526,
+          "output_tokens": 9807,
+          "provider_total_tokens": 395836,
+          "reasoning_tokens": 4841,
+          "thinking_blocks": 11,
+          "tool_calls": 21,
+          "tool_errors": 0,
+          "tool_results": 21,
+          "total_bucket_tokens": 395836,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-bigfiles-1"
+        },
+        "path": "workers/eval-worker/task-bigfiles-1/report.json",
+        "result": "pass",
+        "tool_errors": 2,
+        "usage": {
+          "assistant_turns": 22,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.00424512,
+          "cache_read_tokens": 235840,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.0066492899999999995,
+          "input_cost_usd": 0.0016397100000000004,
+          "input_tokens": 18219,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0007644600000000002,
+          "output_tokens": 4247,
+          "provider_total_tokens": 258306,
+          "reasoning_tokens": 1752,
+          "thinking_blocks": 12,
+          "tool_calls": 28,
+          "tool_errors": 2,
+          "tool_results": 28,
+          "total_bucket_tokens": 258306,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "461fe36bfd0d1ca5670777e2ea1531f902e88558"
+  },
+  "findings": [],
+  "identity": {
+    "eval_id": "task-bigfiles",
+    "mode": "eval",
+    "run_id": "03-eval"
+  },
+  "kind": "phase",
+  "result": "pass",
+  "schema_version": 1,
+  "state": "completed"
+}

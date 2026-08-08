@@ -2,7 +2,7 @@
 
 ## Status
 
-Merged.
+Approved.
 
 ## CTO decision — throughput cycle 2026-08-07
 
@@ -42,10 +42,10 @@ None.
 
 ## Merge record
 
-- Implementation branch: `factory/task-safepath-002/1786162005661`
-- Implementation commit: `95878384b9d6bb66f5631d630dca4d306f95a3a0`
-- Detected at XSH commit: `95878384b9d6bb66f5631d630dca4d306f95a3a0`
-- Implementation run: `/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786162002471/phases/01-ticket`
+- Implementation branch: `{{IMPLEMENTATION_BRANCH}}`
+- Implementation commit: `{{IMPLEMENTATION_COMMIT}}`
+- Detected at XSH commit: `{{DETECTED_XSH_COMMIT}}`
+- Implementation run: `{{IMPLEMENTATION_RUN}}`
 
 ## Source eval and manager
 
@@ -83,7 +83,7 @@ was confirmed again in a further tiny script during the session.
 ## Evidence
 
 - Worker session:
-  `runs/run-1786144485305/phases/02-reeval-task-safepath-001/workers/eval-worker/task-safepath-1/session.jsonl`
+  `runs/run-1786144485305/phases/02-reeval-task-safepath-001/workers/eval-worker/task-safepath-1/session.jsonl.bz2`
   — structured tool error `err[compact.indexed-build] ... full_ir_function_blocker`
   at worker turn 23 (safepath.xsh) and again in the minimal repro turn (t4.xsh).
 - Artifact `.../task-safepath-1/safepath.xsh` uses the workaround
