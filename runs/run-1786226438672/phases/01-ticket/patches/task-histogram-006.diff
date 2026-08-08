@@ -1,0 +1,88 @@
+diff --git a/docs/SPEC.md b/docs/SPEC.md
+index 37dbc06..2d6a23b 100644
+--- a/docs/SPEC.md
++++ b/docs/SPEC.md
+@@ -2806,7 +2806,8 @@ handling. The unwrapped value may be used inline as a receiver in the same
+ expression, for example `map { |s| (s.split(".") |> last())?.lower() }`.
+ 
+ `where`, `any`, and `all` require `Bool` or `Result[Bool]`. `min()` and
+-`max()` return `Result[T]`. `first()` and `last()` return `Result[T]`.
++`max()` return `Result[T]`. `first()` and `last()` return `Result[T]`. The
++filtering stage is named `where`; `filter` is not a stream-stage alias.
+ `count()` returns `Int`. `table.print(...)` is a structured stream sink for
+ record streams. It renders terminal-width UTF-8 tables by default and wraps
+ long cell contents vertically instead of truncating with ellipses.
+diff --git a/src/syntax/parser/expr.rs b/src/syntax/parser/expr.rs
+index 181c915..90155d7 100644
+--- a/src/syntax/parser/expr.rs
++++ b/src/syntax/parser/expr.rs
+@@ -1156,7 +1156,14 @@ impl<'a> Parser<'a> {
+             None
+         };
+         let kind = stream_stage_kind_from_names(name, member).unwrap_or_else(|| {
+-            self.diagnostic_previous("unknown stream stage", "parse.unknown-stream-stage");
++            let stage_name = member
++                .map(|member| format!("{}.{}", name.as_str(), member.as_str()))
++                .unwrap_or_else(|| name.as_str().to_string());
++            let message = format!(
++                "unknown stream stage `{stage_name}`; use `where` for filtering"
++            );
++            let span = self.span(start, self.previous_end());
++            self.diagnostic_at(span, &message, "parse.unknown-stream-stage");
+             StreamStageKind::Map
+         });
+         let options = self.parse_stream_stage_options_arena_only(arena)?;
+@@ -1311,10 +1318,12 @@ impl<'a> Parser<'a> {
+         let Some(name) = self.stage_name_at(self.index) else {
+             return true;
+         };
+-        if let Some((namespace, member, _)) = self.dotted_stage_name_at(self.index) {
+-            return stream_stage_kind_from_names(namespace, Some(member)).is_none();
++        if let Some((namespace, member, end)) = self.dotted_stage_name_at(self.index) {
++            return stream_stage_kind_from_names(namespace, Some(member)).is_none()
++                && self.token_table.tag_at(end) != Some(TokenTag::LBrace);
+         }
+         stream_stage_kind_from_names(name, None).is_none()
++            && self.token_table.tag_at(self.index + 1) != Some(TokenTag::LBrace)
+     }
+ 
+     pub(super) fn stage_name_at(&self, index: usize) -> Option<Name> {
+diff --git a/tests/syntax.rs b/tests/syntax.rs
+index 432e613..b5eff71 100644
+--- a/tests/syntax.rs
++++ b/tests/syntax.rs
+@@ -898,6 +898,34 @@ proc dotted() -> Result[Unit] {
+     assert!(matches!(arena.stmt(b3[0]).kind, ArenaStmtKind::Expr(_)));
+ }
+ 
++#[test]
++fn parser_reports_unknown_block_stream_stage_with_filtering_guidance() {
++    let output = Parser::parse_source_arena_only(
++        SourceId::new(0),
++        "[\"x\"] |> filter { |item| item != \"\" }\n",
++    );
++
++    let diagnostic = output
++        .diagnostics
++        .iter()
++        .find(|diagnostic| diagnostic.code.as_deref() == Some("parse.unknown-stream-stage"))
++        .expect("unknown stream stage diagnostic");
++    assert!(diagnostic.message.contains("filter"), "{diagnostic:?}");
++    assert!(diagnostic.message.contains("where"), "{diagnostic:?}");
++    assert!(
++        output.diagnostics.iter().all(|diagnostic| {
++            !matches!(
++                diagnostic.code.as_deref(),
++                Some("parse.expected-record-field")
++                    | Some("parse.expected-terminator")
++                    | Some("parse.unsupported-operator")
++            )
++        }),
++        "unexpected parse cascade: {:?}",
++        output.diagnostics
++    );
++}
++
+ #[test]
+ fn parser_accepts_structured_pipeline_stages() {
+     let output = Parser::parse_source_arena_only(

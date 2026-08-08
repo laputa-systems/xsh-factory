@@ -325,7 +325,7 @@ export pure fresh_first_ticket_order(fresh: List[Str], retained: List[Str]) -> L
 ## bound catches provider/harness stalls before the full closeout wall bound.
 export pure default_max_idle_seconds(role: Str) -> Str {
   if role == "eval-manager" {
-    return "60"
+    return "120"
   }
 
   return "0"

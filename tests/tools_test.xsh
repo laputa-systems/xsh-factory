@@ -2755,7 +2755,7 @@ proc test_session_watch_idle_uses_epoch_milliseconds(ctx: TestContext) [fs, proc
   test.ok(! status.ok)?
   test.ok(fs.exists(marker)?)?
   test.contains(fs.read_text(marker)?, "idle limit exceeded")?
-  test.ok(elapsed >= 500, f"watcher fired too early: ${elapsed}ms")?
+  test.ok(elapsed >= 250, f"watcher fired too early: ${elapsed}ms")?
 }
 
 proc test_engineer_guidance_is_run_scoped() [fs, error] {

@@ -198,11 +198,14 @@ Manager timing is bounded in two ways:
 - normal eval-manager closeout: 300 seconds and the coded turn ceiling;
 - one report-recovery attempt: 180 seconds, using the same evidence packet.
 
-The session watcher also applies a 60-second inactivity bound to the
-eval-manager. Inactivity is measured from the controller session file's last
-modification, not from a guessed provider state. A timeout terminates the
-manager, preserves its report/session attempt, and emits a structured reason.
-There is never a second unrestricted 600-second window.
+The session watcher also applies a 120-second inactivity bound to the
+eval-manager. This is shorter than the normal 300-second wall bound and the
+180-second recovery bound, while allowing one provider turn to spend a minute
+reading the controller-prepared packet without being mistaken for a stall.
+Inactivity is measured from the controller session file's last modification,
+not from a guessed provider state. A timeout terminates the manager, preserves
+its report/session attempt, and emits a structured reason. There is never a
+second unrestricted full wall-clock window.
 
 For a fresh linked replay, an exhausted manager recovery means the candidate is
 retained and delivery is rejected. For retained or independent work, the same

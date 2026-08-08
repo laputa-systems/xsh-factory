@@ -185,9 +185,9 @@ proc test_organization_delivery_slot_is_single_fresh_row() [error] {
   test.eq(control.organization_ticket_target(0), 0)?
   test.eq(control.organization_ticket_target(1), 2)?
   test.eq(control.organization_ticket_target(8), 2)?
-  test.eq(control.default_max_idle_seconds("eval-manager"), "60")?
+  test.eq(control.default_max_idle_seconds("eval-manager"), "120")?
   test.eq(control.default_max_idle_seconds("engineer"), "0")?
-  test.eq(control.clamp_idle_limit("eval-manager", "600")?, "60")?
+  test.eq(control.clamp_idle_limit("eval-manager", "600")?, "120")?
   test.eq(control.clamp_idle_limit("eval-manager", "30")?, "30")?
   test.eq(control.clamp_idle_limit("engineer", "30")?, "0")?
 }
@@ -345,7 +345,7 @@ proc test_role_defaults_are_coded_and_capped() [env, error] {
   test.eq(control.default_max_wall_seconds("eval-worker"), "1800")?
   test.eq(control.default_max_wall_seconds("engineer"), "1800")?
   test.eq(control.retained_replay_manager_wall_seconds(), "300")?
-  test.eq(control.configured_role_setting("eval-manager", "MAX_IDLE_SECONDS")?, "60")?
+  test.eq(control.configured_role_setting("eval-manager", "MAX_IDLE_SECONDS")?, "120")?
   env FACTORY_ENGINEER_BUDGET_USD="2" {
     test.eq(control.configured_role_setting("engineer", "BUDGET_USD")?, control.default_budget("engineer"))?
   }

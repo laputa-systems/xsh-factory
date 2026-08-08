@@ -1,0 +1,126 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786226438672/phases/02-reeval-task-histogram-006/workers/eval-worker/task-histogram-1/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_state": "pass",
+    "agent_wall_ms": 230525,
+    "artifact": {
+      "name": "histogram.xsh",
+      "state": "present"
+    },
+    "budget_state": "pass",
+    "classification": "pass",
+    "evaluator_manifest": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786226438672/phases/02-reeval-task-histogram-006/workers/eval-worker/task-histogram-1/run.json",
+    "evaluator_state": "pass",
+    "reporting_state": "pass",
+    "result": "pass",
+    "review": {
+      "state": "present"
+    }
+  },
+  "findings": [
+    {
+      "count": 2,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "eval_id": "task-histogram",
+    "role": "eval-worker",
+    "run_id": "02-reeval-task-histogram-006",
+    "worker_id": "task-histogram-1"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "provider_telemetry": {
+    "event_turns": 30,
+    "events_path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786226438672/phases/02-reeval-task-histogram-006/workers/eval-worker/task-histogram-1/session.jsonl.events.jsonl",
+    "output_tokens_per_second": 0,
+    "present": true,
+    "provider_errors": [],
+    "response_elapsed_ms": 0,
+    "retry_count": 0,
+    "retry_delay_ms": 0,
+    "retry_errors": [],
+    "retry_failures": 0,
+    "retry_successes": 0
+  },
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786226438672/phases/02-reeval-task-histogram-006/workers/eval-worker/task-histogram-1/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 29,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 229222
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786226438672/phases/02-reeval-task-histogram-006/workers/eval-worker/task-histogram-1/session.jsonl.bz2",
+      "summary": "err[check.display-conversion]: value cannot be displayed by print\n  /tmp/t1.xsh:4:19\n    print \"parsed=\" $parsed\n                    ^^^^^^^ value cannot be displayed by print\n---empty---\nerr[check.display-conversion]: value cannot be displayed by print\n  /tmp/t1.xsh:4:19\n    print \"parsed=\" $parsed\n                    ^^^^^^^ value cannot be displayed by print\n---neg---\nerr[check.display-conversion]: value cannot be displayed by print\n  /tmp/t1.xsh:4:19\n    print \"parsed=\" $parsed\n                    ^^^^^^^ value cannot be displayed by print\n---plus---\nerr[check.display-conversion]: value cannot be displayed by print\n  /tmp/t1.xsh:4:19\n    print \"parsed=\" $parsed\n                    ^^^^^^^ value cannot be displayed by print\n---abc---\nerr[check.display-conversion]: value cannot be displayed by print\n  /tmp/t1.xsh:4:19\n    print \"parsed=\" $parsed\n                    ^^^^^^^ value cannot be displayed by print\n---zero---\nerr[check.display-conversion]: value cannot be displayed by print\n  /tmp/t1.xsh:4:19\n    print \"parsed=\" $parsed\n                    ^^^^^^^ value cannot be displayed by print\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 9
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786226438672/phases/02-reeval-task-histogram-006/workers/eval-worker/task-histogram-1/session.jsonl.bz2",
+      "summary": "total 0\ndrwxr-xr-x    1 root     root            30 Aug  7 22:53 .\ndrwxr-xr-x    1 root     root            10 Jun 13 16:39 ..\ndrwxr-xr-x    1 root     root             8 Jun 13 16:39 apk\ndrwxr-xr-x    1 root     root            14 Aug  7 22:53 ca-certificates\ndrwxr-xr-x    1 root     root             0 Jun 13 16:39 misc\ndrwxr-xr-x    1 root     root            28 Jun 13 16:39 udhcpc\n===\nls: /usr/share/hist-data.txt: No such file or directory\n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 26
+    }
+  ],
+  "tools": [
+    {
+      "count": 31,
+      "name": "bash"
+    },
+    {
+      "count": 1,
+      "name": "edit"
+    },
+    {
+      "count": 3,
+      "name": "read"
+    },
+    {
+      "count": 2,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 30,
+    "budget_usd": 0.5,
+    "cache_read_cost_usd": 0.011649024,
+    "cache_read_tokens": 647168,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.017259803999999997,
+    "input_cost_usd": 0.003366539999999999,
+    "input_tokens": 37406,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.00224424,
+    "output_tokens": 12468,
+    "provider_total_tokens": 697042,
+    "reasoning_tokens": 7285,
+    "thinking_blocks": 24,
+    "tool_calls": 37,
+    "tool_errors": 2,
+    "tool_results": 37,
+    "total_bucket_tokens": 697042,
+    "user_messages": 1
+  }
+}

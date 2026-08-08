@@ -2,7 +2,7 @@
 
 ## Status
 
-pending-validation
+validated
 
 ## Change
 
@@ -67,5 +67,8 @@ the prior comparison only after measuring both clocks in the same fixture.
 
 ## Next-cycle disposition
 
-The next CTO must replace `pending-validation` with `validated` or `reverted`
-after linking the timed native test and next-run manager evidence.
+Validated by the next retained replay's manager markers: the prior enormous
+epoch-unit error is gone. The manager now recorded a normal
+`60010ms >= 60s` idle timeout and a bounded `180026ms` recovery timeout. The
+remaining issue was the 60-second threshold itself, which is addressed by the
+next pending improvement.
