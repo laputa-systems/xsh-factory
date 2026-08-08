@@ -209,11 +209,11 @@ newlines. Do not add explanatory output.
 
 ## Numbers and arithmetic
 
-There is no `//` or `div` integer-division operator. Integer division on `Int`
+There is no `//` or `div` integer-division operator. Integer division on Int
 uses the `/` operator, which truncates for non-negative operands; the spelling
 `7 // 2` or `7 div 2` is rejected with a check-time diagnostic naming `/` on
-`Int`. Prefer `/` on `Int` operands, and rely on the operand types rather than
-a special operator marker.
+Int. Prefer `/` on Int operands, and rely on the operand types rather than a
+special operator marker.
 
 ## Process boundary
 

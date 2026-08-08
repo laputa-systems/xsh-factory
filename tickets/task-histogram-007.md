@@ -2,7 +2,7 @@
 
 ## Status
 
-Approved.
+Merged.
 
 ## CTO decision — cycle-22 queue
 
@@ -46,10 +46,10 @@ None.
 
 ## Merge record
 
-- Implementation branch: `{{IMPLEMENTATION_BRANCH}}`
-- Implementation commit: `{{IMPLEMENTATION_COMMIT}}`
-- Detected at XSH commit: `{{DETECTED_XSH_COMMIT}}`
-- Implementation run: `{{IMPLEMENTATION_RUN}}`
+- Implementation branch: `factory/task-histogram-007/1786202910274`
+- Implementation commit: `fdd33b69fb70b2e8ecb2038cd1ff5561f5c99cfc`
+- Detected at XSH commit: `aef5ddb3396ab78783dd76516d5fdcc25a17df29`
+- Implementation run: `/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786202908216/phases/01-ticket`
 
 ## Source eval and manager
 

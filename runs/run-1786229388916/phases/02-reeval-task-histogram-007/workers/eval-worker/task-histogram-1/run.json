@@ -1,0 +1,104 @@
+{
+  "classification": "pass",
+  "correctness": {
+    "all_exact": true,
+    "cases": [
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 11596727,
+        "exact": true,
+        "name": "public",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 11961228
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 12500104,
+        "exact": true,
+        "name": "hidden_width",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 13328105
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 12933980,
+        "exact": true,
+        "name": "hidden_padded_width",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 11311519
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 13331022,
+        "exact": true,
+        "name": "hidden_many",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 12368353
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 10888893,
+        "exact": true,
+        "name": "hidden_sparse",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 13555189
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 11887269,
+        "exact": true,
+        "name": "hidden_single",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 13614689
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 10960518,
+        "exact": true,
+        "name": "hidden_ties",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 11982478
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 11124268,
+        "exact": true,
+        "name": "hidden_empty",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 11510268
+      },
+      {
+        "candidate_exit": 1,
+        "candidate_wall_ns": 13741648,
+        "exact": true,
+        "name": "hidden_bad_width",
+        "oracle_exit": 1,
+        "oracle_wall_ns": 11317727
+      },
+      {
+        "candidate_exit": 1,
+        "candidate_wall_ns": 11516519,
+        "exact": true,
+        "name": "hidden_bad_value",
+        "oracle_exit": 2,
+        "oracle_wall_ns": 11981353
+      }
+    ],
+    "passed": true
+  },
+  "eval_id": "task-histogram",
+  "image_id": "sha256:6cdc45f28d720dbb0ff09debaec512ad5f90b663b9e7025f7631739ddca9ef72",
+  "platform": "linux/arm64",
+  "protocol": {
+    "artifact_present": true,
+    "review_ok": true
+  },
+  "restrictions": {
+    "passed": true
+  },
+  "result": "pass",
+  "timings": {
+    "passed": true
+  },
+  "trial_id": "1"
+}

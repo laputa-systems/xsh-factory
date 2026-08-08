@@ -677,6 +677,19 @@ positional-only API guidance candidate, but it is single-eval evidence. Keep
 the approved handbook unchanged until `task-dupcheck` and a second
 defaulted-parameter eval confirm the guidance generalizes.
 
+## Explicit CTO disposition — run-1786229388916
+
+| Candidate SHA-256 | Disposition |
+| --- | --- |
+| `63fc2207b9c8611ff1b0ee11adab47e37e989d3dc15f4b613e4c17f5e150c204` | promoted |
+
+The retained `task-histogram-007` replay exercised the proposed diagnostic:
+the worker tried `//`, received the readable check-time message to use `/` on
+`Int`, then delivered the diagnostic-only product change while all ten
+histogram cases, restrictions, and protocol checks passed. This is the
+matched replay and CTO approval required for the concise division guidance;
+the section is now incorporated into `runtime/handbook.md` for future evals.
+
 ## Explicit CTO disposition — run-1786227317528
 
 | Candidate SHA-256 | Disposition |

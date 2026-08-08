@@ -207,14 +207,6 @@ text, including multi-line file content, then write it with `fs.write`.
 For an exact-output task, preserve required spaces, leading padding, and final
 newlines. Do not add explanatory output.
 
-## Numbers and arithmetic
-
-There is no `//` or `div` integer-division operator. Integer division on `Int`
-uses the `/` operator, which truncates for non-negative operands; the spelling
-`7 // 2` or `7 div 2` is rejected with a check-time diagnostic naming `/` on
-`Int`. Prefer `/` on `Int` operands, and rely on the operand types rather than
-a special operator marker.
-
 ## Process boundary
 
 XSH has explicit process APIs, but a task may forbid subprocesses. When it

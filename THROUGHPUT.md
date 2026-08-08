@@ -358,6 +358,23 @@ stage-level error naming `filter` and recommending `where`, and then rerun the
 nine histogram cases. Adaptive selection may proceed to the next retained
 Approved branch while that evidence is prepared.
 
+Run 7 (`run-1786229388916`) is the first post-hardening delivery result. The
+queue selected retained `task-histogram-007`; its evaluator exercised the
+unsupported `//` spelling and observed the new readable `/`-on-`Int`
+diagnostic, then passed all ten cases, restrictions, and protocol. The manager
+completed with an explicit acceptance, and the controller delivered the
+amended commit `fdd33b69fb70b2e8ecb2038cd1ff5561f5c99cfc` to XSH `HEAD`
+`aef5ddb3396ab78783dd76516d5fdcc25a17df29`. Cost was `$0.026925`, with 2
+workers and 45 turns. This satisfies retained-delivery throughput, but not the
+fresh eligible-cycle target because no branchless ticket was available.
+
+Run 7 also provided the matched evidence for the concise integer-division
+handbook lesson. The CTO promoted candidate
+`63fc2207b9c8611ff1b0ee11adab47e37e989d3dc15f4b613e4c17f5e150c204` into the
+approved handbook. Promotion is deliberately based on the product diagnostic
+being exercised and the merged replay passing, not on a manager suggestion
+alone.
+
 The current queue contains one deferred Open ticket (`task-histogram-005`) and
 two retained Approved branches (`task-histogram-006` and
 `task-histogram-007`). After Run 5, `task-histogram-006` is Open pending its
