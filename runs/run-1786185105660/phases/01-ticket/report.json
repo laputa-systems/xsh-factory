@@ -1,0 +1,220 @@
+{
+  "artifacts": [
+    {
+      "kind": "session-directory",
+      "path": "workers/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 43,
+      "budget_failures": 0,
+      "cost_usd": 0.030526400999999995,
+      "tool_errors": 1,
+      "total_bucket_tokens": 1470671.0,
+      "unknown_costs": 0,
+      "workers": 2
+    },
+    "designer": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786185105660/phases/01-ticket/workers/eval-designer/proposal-1/REPORT.md",
+      "present": false,
+      "result": "not-requested",
+      "role": "eval-designer",
+      "valid": true
+    },
+    "director": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786185105660/phases/01-ticket/workers/director/director/REPORT.md",
+      "present": true,
+      "result": "pass",
+      "role": "director",
+      "valid": true
+    },
+    "engineer": [
+      {
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786185105660/phases/01-ticket/workers/director/director/REPORT.md",
+        "present": true,
+        "result": "pass",
+        "role": "director",
+        "valid": true
+      },
+      {
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786185105660/phases/01-ticket/workers/engineer/task-bigfiles-002/REPORT.md",
+        "present": true,
+        "result": "ready-for-review",
+        "role": "engineer",
+        "valid": true
+      }
+    ],
+    "handbook_lineage": {
+      "approved": "lineage/handbook-approved.md",
+      "candidate": "lineage/handbook-candidate.md"
+    },
+    "manager": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786185105660/phases/01-ticket/workers/eval-manager/task-bigfiles/REPORT.md",
+      "present": false,
+      "result": "missing",
+      "role": "eval-manager",
+      "valid": false
+    },
+    "mode": "ticket-implementation",
+    "narratives": [
+      {
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786185105660/phases/01-ticket/workers/director/director/REPORT.md",
+        "present": true,
+        "result": "pass",
+        "role": "director",
+        "valid": true
+      },
+      {
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786185105660/phases/01-ticket/workers/engineer/task-bigfiles-002/REPORT.md",
+        "present": true,
+        "result": "ready-for-review",
+        "role": "engineer",
+        "valid": true
+      }
+    ],
+    "open_tickets": [
+      {
+        "eval_id": "task-bigfiles",
+        "id": "task-bigfiles-002",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-bigfiles-002.md",
+        "status": "Approved."
+      },
+      {
+        "eval_id": "task-dupcheck",
+        "id": "task-dupcheck-002",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-dupcheck-002.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-005",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-005.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-006",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-006.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-007",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-007.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-008",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-008.md",
+        "status": "Open."
+      }
+    ],
+    "outcomes": {
+      "cycle": "pass",
+      "evaluator": "pass",
+      "infrastructure": "pass",
+      "product": "pass"
+    },
+    "required_outputs": null,
+    "sessions": [
+      "workers/director/director/session.jsonl.bz2",
+      "workers/engineer/task-bigfiles-002/session.jsonl.bz2"
+    ],
+    "tool_errors": [
+      {
+        "report": "workers/engineer/task-bigfiles-002/report.json",
+        "summary": "error: unexpected argument 'api_stream_stages_carry_a_signature_in_jsonl' found\n\nUsage: cargo test [OPTIONS] [TESTNAME] [-- [ARGS]...]\n\nFor more information, try '--help'.\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 21,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-bigfiles-002"
+        }
+      }
+    ],
+    "trials": [],
+    "workers": [
+      {
+        "identity": {
+          "role": "director",
+          "worker_id": "director"
+        },
+        "path": "workers/director/director/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 12,
+          "budget_usd": 0.06,
+          "cache_read_cost_usd": 0.003332736,
+          "cache_read_tokens": 185152,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.007474086,
+          "input_cost_usd": 0.0031619700000000005,
+          "input_tokens": 35133,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00097938,
+          "output_tokens": 5441,
+          "provider_total_tokens": 225726,
+          "reasoning_tokens": 2237,
+          "thinking_blocks": 11,
+          "tool_calls": 20,
+          "tool_errors": 0,
+          "tool_results": 20,
+          "total_bucket_tokens": 225726,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "engineer",
+          "worker_id": "task-bigfiles-002"
+        },
+        "path": "workers/engineer/task-bigfiles-002/report.json",
+        "result": "pass",
+        "tool_errors": 1,
+        "usage": {
+          "assistant_turns": 31,
+          "budget_usd": 0.35,
+          "cache_read_cost_usd": 0.011857239999999998,
+          "cache_read_tokens": 1185724,
+          "cache_write_cost_usd": 0.0063923750000000005,
+          "cache_write_tokens": 51139,
+          "cost_usd": 0.023052314999999993,
+          "input_cost_usd": 9.3e-6,
+          "input_tokens": 93,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.004793399999999999,
+          "output_tokens": 7989,
+          "provider_total_tokens": 1244945,
+          "reasoning_tokens": 2839,
+          "thinking_blocks": 11,
+          "tool_calls": 58,
+          "tool_errors": 1,
+          "tool_results": 58,
+          "total_bucket_tokens": 1244945,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "fdeee37e911f820865dc617a14d61ec8e111c603"
+  },
+  "findings": [],
+  "identity": {
+    "eval_id": "task-bigfiles",
+    "mode": "ticket-implementation",
+    "run_id": "01-ticket"
+  },
+  "kind": "phase",
+  "result": "pass",
+  "schema_version": 1,
+  "state": "completed"
+}

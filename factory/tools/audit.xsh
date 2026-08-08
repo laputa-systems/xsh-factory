@@ -202,15 +202,19 @@ proc organization_event_outcomes(
     }
   }
 
+  var delivery_failed = false
   for line in fs.read_text(events_path)?.lines() {
     match json.decode(line) {
       Ok(event) => {
         let event_id = text(json.get(event, ["event_id"], ""))
+        if event_id.starts_with("86-ticket-") and event_id.ends_with("-delivery-failed") {
+          delivery_failed = true
+        }
         continue unless event_id == "90-cycle-completed" or event_id == "90-cycle-failed"
         let detail = text(json.get(event, ["detail"], ""), "")
         if detail != "" {
           return {
-            product: detail_outcome(detail, "product", fallback_product),
+            product: ! delivery_failed and detail_outcome(detail, "product", fallback_product),
             evaluator: detail_outcome(detail, "evaluator", fallback_evaluator),
             infrastructure: detail_outcome(detail, "infrastructure", fallback_infrastructure),
           }
@@ -221,7 +225,7 @@ proc organization_event_outcomes(
   }
 
   {
-    product: fallback_product,
+    product: ! delivery_failed and fallback_product,
     evaluator: fallback_evaluator,
     infrastructure: fallback_infrastructure,
   }

@@ -46,9 +46,10 @@ fills them after the CTO merges the implementation branch.
 fills them after the CTO merges the implementation branch.
 
 Ticket files are append-only by identity: never overwrite or repurpose an existing
-ticket filename, especially one marked `Merged.` or `Closed.`. If an observation
-recurs, choose the next unused suffix (for example `task-bigfiles-002.md`) and
-preserve the existing ticket and its merge record exactly. The controller verifies
+ticket filename, especially one marked `Merged.` or `Closed.`. The assignment
+lists every pre-manager ticket path; treat each as immutable. If an observation
+recurs, choose the next unused suffix (for example `task-bigfiles-004.md`) and
+preserve every existing ticket and merge record exactly. The controller verifies
 this boundary after the manager session and fails closed if a pre-existing ticket
 was changed.
 

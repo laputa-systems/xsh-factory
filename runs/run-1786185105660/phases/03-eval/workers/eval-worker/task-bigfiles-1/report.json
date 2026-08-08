@@ -1,0 +1,132 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786185105660/phases/03-eval/workers/eval-worker/task-bigfiles-1/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_state": "pass",
+    "agent_wall_ms": 273723,
+    "artifact": {
+      "name": "bigfiles.xsh",
+      "state": "present"
+    },
+    "budget_state": "pass",
+    "classification": "pass",
+    "evaluator_manifest": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786185105660/phases/03-eval/workers/eval-worker/task-bigfiles-1/run.json",
+    "evaluator_state": "pass",
+    "reporting_state": "pass",
+    "result": "pass",
+    "review": {
+      "state": "present"
+    }
+  },
+  "findings": [
+    {
+      "count": 3,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "eval_id": "task-bigfiles",
+    "role": "eval-worker",
+    "run_id": "03-eval",
+    "worker_id": "task-bigfiles-1"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "provider_telemetry": {
+    "event_turns": 39,
+    "events_path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786185105660/phases/03-eval/workers/eval-worker/task-bigfiles-1/session.jsonl.events.jsonl",
+    "output_tokens_per_second": 0,
+    "present": true,
+    "provider_errors": [],
+    "response_elapsed_ms": 0,
+    "retry_count": 0,
+    "retry_delay_ms": 0,
+    "retry_errors": [],
+    "retry_failures": 0,
+    "retry_successes": 0
+  },
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786185105660/phases/03-eval/workers/eval-worker/task-bigfiles-1/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 38,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 272431
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786185105660/phases/03-eval/workers/eval-worker/task-bigfiles-1/session.jsonl.bz2",
+      "summary": "---run---\n4010 /usr/share/udhcpc/default.script\n2772 /usr/share/ca-certificates/mozilla/ACCVRAIZ1.crt\n2264 /usr/share/ca-certificates/mozilla/Certigna_Root_CA.crt\nsh: syntax error: bad substitution\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 23
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786185105660/phases/03-eval/workers/eval-worker/task-bigfiles-1/session.jsonl.bz2",
+      "summary": "---run---\n4010 /usr/share/udhcpc/default.script\n2772 /usr/share/ca-certificates/mozilla/ACCVRAIZ1.crt\n2264 /usr/share/ca-certificates/mozilla/Certigna_Root_CA.crt\n2167 /usr/share/ca-certificates/mozilla/Autoridad_de_Certificacion_Firmaprofesional_CIF_A62634068.crt\n2155 /usr/share/ca-certificates/mozilla/Hellenic_Academic_and_Research_Institutions_RootCA_2015.crt\nsh: syntax error: bad substitution\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 24
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786185105660/phases/03-eval/workers/eval-worker/task-bigfiles-1/session.jsonl.bz2",
+      "summary": "Could not find the exact text in /work/bigfiles.xsh. The old text must match exactly including all whitespace and newlines.",
+      "tool": "edit",
+      "turn": 29
+    }
+  ],
+  "tools": [
+    {
+      "count": 32,
+      "name": "bash"
+    },
+    {
+      "count": 2,
+      "name": "edit"
+    },
+    {
+      "count": 4,
+      "name": "read"
+    },
+    {
+      "count": 2,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 39,
+    "budget_usd": 0.5,
+    "cache_read_cost_usd": 0.008448768000000002,
+    "cache_read_tokens": 469376,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.016227648,
+    "input_cost_usd": 0.00589896,
+    "input_tokens": 65544,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.00187992,
+    "output_tokens": 10444,
+    "provider_total_tokens": 545364,
+    "reasoning_tokens": 5973,
+    "thinking_blocks": 25,
+    "tool_calls": 40,
+    "tool_errors": 3,
+    "tool_results": 40,
+    "total_bucket_tokens": 545364,
+    "user_messages": 1
+  }
+}

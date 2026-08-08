@@ -17,6 +17,16 @@ pure run_id(run_dir: Path) -> Str {
   return run_dir.name()
 }
 
+pure terminal_result(event_id: Str, fallback: Str) -> Str {
+  if event_id == "90-cycle-completed" or event_id == "95-cycle-validated" {
+    return "pass"
+  }
+  if event_id == "90-cycle-failed" {
+    return "fail"
+  }
+  return fallback
+}
+
 pure phase_id(path_value: Path) -> Str {
   let parts = path_value.display().split("/")
   var after_phases = false
@@ -199,7 +209,11 @@ proc main(...argv: List[Str]) [fs, process, env, error, io] {
   let active = active_processes(selected)?
   let budget = budget_state(selected, root)?
   let state = if root_exists { text(json.get(root, ["state"], "reported")) } else { "running" }
-  let result = if root_exists { text(json.get(root, ["result"], "pending")) } else { "pending" }
+  let report_result = if root_exists { text(json.get(root, ["result"], "pending")) } else { "pending" }
+  let result = terminal_result(
+    text(json.get(latest, ["event_id"], ""), ""),
+    report_result,
+  )
   let data = {
     run_id: run_id(selected),
     run_dir: selected.display(),

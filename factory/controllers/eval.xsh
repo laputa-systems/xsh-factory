@@ -868,6 +868,17 @@ wall-ms=${build_elapsed}
     ),
   )?
   let pre_manager_ticket_snapshot = runtime.ticket_snapshot(factory_dir)?
+  var existing_ticket_paths = "none"
+  for ticket in pre_manager_ticket_snapshot {
+    let ticket_name = schema.value_text(json.get(ticket, ["name"], ""))
+    continue when ticket_name == ""
+    let ticket_path = fp"${factory_dir}/tickets/${ticket_name}"
+    existing_ticket_paths = if existing_ticket_paths == "none" {
+      ticket_path.display()
+    } else {
+      existing_ticket_paths + ", " + ticket_path.display()
+    }
+  }
   let manager_message = fp"${messages_dir}/${eval_id}-manager.md"
   let manager_template = fp"${factory_dir}/templates/EVAL-MANAGER-ASSIGNMENT.md"
   let manager_values = [
@@ -898,6 +909,10 @@ wall-ms=${build_elapsed}
     {
       key: "MERGED_TICKET_PATHS",
       value: merged_ticket_paths,
+    },
+    {
+      key: "EXISTING_TICKET_PATHS",
+      value: existing_ticket_paths,
     },
     {
       key: "CANDIDATE_TICKET",

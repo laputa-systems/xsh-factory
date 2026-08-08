@@ -1,0 +1,52 @@
+diff --git a/crates/xsh-registry/src/examples.rs b/crates/xsh-registry/src/examples.rs
+index 848dcfb..ef5094f 100644
+--- a/crates/xsh-registry/src/examples.rs
++++ b/crates/xsh-registry/src/examples.rs
+@@ -67,6 +67,9 @@ pub(crate) fn source(id: &str) -> Option<String> {
+             include_str!("../../../docs/snippets/api/stream-par-map.xsh")
+         }
+         "language.stream.where" => include_str!("../../../docs/snippets/api/stream-where.xsh"),
++        "language.stream.sort-by" => {
++            include_str!("../../../docs/snippets/api/stream-sort-by.xsh")
++        }
+         "language.stream.fold" => include_str!("../../../docs/snippets/api/stream-fold.xsh"),
+         "language.stream.reduce" => include_str!("../../../docs/snippets/api/stream-reduce.xsh"),
+         "language.core.procs" => include_str!("../../../docs/snippets/api/core-procs.xsh"),
+diff --git a/crates/xsh-registry/src/reference.rs b/crates/xsh-registry/src/reference.rs
+index aa9e792..5115062 100644
+--- a/crates/xsh-registry/src/reference.rs
++++ b/crates/xsh-registry/src/reference.rs
+@@ -446,7 +446,7 @@ fn stream_doc(stage: &str) -> ReferenceDoc {
+         ),
+         "sort-by" => (
+             "Sorts stream items by a projected key.",
+-            "The key projection controls ordering and the stage materializes the input before emitting results. Supported key types are Int, Str, Bool, Path, and Records whose fields are themselves supported keys; records compare field by field in sorted field-name order. The default order is ascending and --desc reverses it. The sort is stable, so items with equal keys keep their source order and the two-pass idiom (sort by the secondary key first, then by the primary key) produces a reliable compound ordering. Other key types are rejected at check time and fail with a runtime diagnostic that names the stage and key type.",
++            "The key projection controls ordering and the stage materializes the input before emitting results. Supported key types are Int, Str, Bool, Path, and Records whose fields are themselves supported keys; records compare field by field in sorted field-name order. The default order is ascending and --desc reverses it. The sort is stable, so items with equal keys keep their source order and the two-pass idiom (sort by the secondary key first, then by the primary key) produces a reliable compound ordering. Other key types are rejected at check time and fail with a runtime diagnostic that names the stage and key type. A block is supplied as a command argument, so put the named flag before the block without parentheses: `|> sort-by --desc { |e| e.size }`.",
+             &["stream", "sorting", "projection", "stable"],
+             "sort-by(--desc: Bool = false, block) -> Stream[T]",
+         ),
+diff --git a/crates/xsht/tests/api.rs b/crates/xsht/tests/api.rs
+index b1fb92a..6e9f6a0 100644
+--- a/crates/xsht/tests/api.rs
++++ b/crates/xsht/tests/api.rs
+@@ -419,6 +419,11 @@ fn api_stream_sort_by_shows_options_before_block() {
+         stdout.contains("signature: sort-by(--desc: Bool = false, block) -> Stream[T]"),
+         "{stdout}"
+     );
++    assert!(
++        stdout.contains("|> sort-by --desc { |e| e.size }"),
++        "{stdout}"
++    );
++    assert!(!stdout.contains("sort-by(--desc, { |e| e.size })"), "{stdout}");
+     assert_eq!(String::from_utf8(output.stderr).unwrap(), "");
+ }
+ 
+diff --git a/docs/snippets/api/stream-sort-by.xsh b/docs/snippets/api/stream-sort-by.xsh
+new file mode 100644
+index 0000000..5bd9b52
+--- /dev/null
++++ b/docs/snippets/api/stream-sort-by.xsh
+@@ -0,0 +1,3 @@
++let entries = [{ size: 1 }, { size: 3 }]
++let largest = entries
++  |> sort-by --desc { |e| e.size }

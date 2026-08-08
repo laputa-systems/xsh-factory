@@ -1841,6 +1841,44 @@ proc test_organization_audit_preserves_phase_outcome_dimensions(ctx: TestContext
   test.eq(json.get(report, ["data", "outcomes", "infrastructure"], ""), "fail")?
 }
 
+proc test_organization_audit_fails_delivery_event(ctx: TestContext) [fs, process, error] {
+  let root = test.temp_dir(ctx, name: "audit-organization-delivery-failure")?
+  let factory = fs.cwd()?
+  fs.mkdir(fp"${root}/phases/01-ticket")?
+  json.write(
+    fp"${root}/phases/01-ticket/report.json",
+    {
+      schema_version: 1,
+      kind: "phase",
+      identity: {run_id: "01-ticket", mode: "ticket-implementation"},
+      state: "completed",
+      result: "pass",
+      data: {outcomes: {product: "pass", evaluator: "pass", infrastructure: "pass"}},
+      findings: [],
+      artifacts: [],
+    },
+    pretty: true,
+  )?
+  fs.write(
+    fp"${root}/events.jsonl",
+    """{"event_id":"86-ticket-task-a-delivery-failed","subject":"task-a","payload":{"status":"delivery-failed"}}
+{"event_id":"90-cycle-failed","detail":"product=pass; evaluator=pass; infrastructure=pass"}
+""",
+  )?
+  let status = process.run(
+    process.command_argv(
+      process.which("xsh")?,
+      ["xsh", fp"${factory}/factory/tools/audit.xsh", "--", root.display(), "organization"],
+      cwd: factory,
+      env: {FACTORY_DIR: factory.display(), XSH_MODULE_PATH: factory.display(), FACTORY_XSH_COMMIT: "fixture"},
+    ),
+  )?
+  test.ok(status.ok, "organization audit should compile delivery failure evidence")?
+  let report = json.read(fp"${root}/report.json")?
+  test.eq(json.get(report, ["result"], ""), "fail")?
+  test.eq(json.get(report, ["data", "outcomes", "product"], ""), "fail")?
+}
+
 proc test_reconciliation_ignores_retired_branch_reference(ctx: TestContext) [fs, process, error] {
   let root = test.temp_dir(ctx, name: "retired-branch-reconciliation")?
   let factory = fs.cwd()?
@@ -2603,6 +2641,10 @@ proc test_organization_delivery_is_a_success_gate() [fs, error] {
   test.contains(runtime, "--no-ff")?
   test.contains(delivery, "runtime.emit_structured_event")?
   test.ok("runtime.emit_event(" not in delivery, "delivery metadata must not advance ticket lifecycle state")?
+  test.contains(organization, "let reeval_process_ok = wait_child")?
+  test.contains(organization, "let reeval_required_ok = fs.exists")?
+  test.contains(organization, "let reeval_pass = reeval_report_ok")?
+  test.contains(organization, "nonzero controller status retained")?
 }
 
 proc test_ticket_cycle_bounds_concurrent_engineers() [fs, error] {
@@ -3182,6 +3224,30 @@ proc test_run_status_inspects_live_and_completed_evidence(ctx: TestContext) [fs,
   test.contains(report, f"processes/phase-worker pid=${child.pid}")?
   test.contains(report, "01-ticket completed pass")?
   test.contains(report, "engineer/task-a pass turns=7 cost=0.040000 errors=1")?
+
+  fs.write(
+    fp"${run_dir}/events.jsonl",
+    """{"event_id":"90-cycle-failed","state":"failed","subject":"organization","detail":"product=fail; evaluator=pass; infrastructure=pass"}
+""",
+  )?
+  let failed_output = fp"${root}/status-failed.txt"
+  let failed_status = process.run(
+    process.command_argv(
+      xsh,
+      [
+        xsh.display(),
+        fp"${factory}/factory/tools/run-status.xsh",
+        "--",
+        "--run-dir",
+        run_dir.display(),
+      ],
+      cwd: factory,
+      env: {FACTORY_DIR: factory.display(), XSH_MODULE_PATH: factory.display()},
+      stdout: failed_output,
+    ),
+  )?
+  test.ok(failed_status.ok)?
+  test.contains(fs.read_text(failed_output)?, "RUN run-1 STATE completed RESULT fail")?
 
   let missing = process.run(
     process.command_argv(

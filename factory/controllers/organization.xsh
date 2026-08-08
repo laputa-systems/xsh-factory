@@ -929,9 +929,19 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     var reeval_wait_index = 0
     for ticket_id in reeval_ticket_ids {
       let reeval_phase = fp"${phases_dir}/02-reeval-${ticket_id}"
-      let reeval_ok = wait_child(reeval_handles[reeval_wait_index])?
-      let reeval_report_ok = phase_run_pass(reeval_phase, "report.json")?
-      let reeval_pass = reeval_ok and reeval_report_ok
+      # A controller may return nonzero after writing a complete, passing
+      # phase report (for example, a recoverable image/tool subprocess error).
+      # Preserve that process status as evidence, but let the validated phase
+      # report remain the delivery gate.
+      let reeval_process_ok = wait_child(reeval_handles[reeval_wait_index])?
+      let reeval_required_outputs = fp"${reeval_phase}/required-outputs.json"
+      let reeval_required_ok = fs.exists(reeval_required_outputs)? and json.get(
+        json.read(reeval_required_outputs)?,
+        ["required"],
+        false,
+      ) == true
+      let reeval_report_ok = phase_run_pass(reeval_phase, "report.json")? and reeval_required_ok
+      let reeval_pass = reeval_report_ok
       reeval_pass_for_result = reeval_pass_for_result and reeval_pass
       let delivery = if reeval_pass {
         runtime.merge_validated_ticket(
@@ -969,7 +979,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
           },
         },
       )?
-      let reeval_exit = if reeval_pass { 0 } else { 1 }
+      let reeval_exit = if reeval_process_ok { 0 } else { 1 }
       runtime.emit_process_output(
         run_dir,
         f"reeval-${ticket_id}",
@@ -992,7 +1002,11 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
         if reeval_pass { "completed" } else { "failed" },
         1,
         "controller",
-        "candidate re-evaluation returned",
+        if reeval_process_ok {
+          "candidate re-evaluation returned with a passing phase report"
+        } else {
+          "candidate re-evaluation phase report passed; nonzero controller status retained"
+        },
       )?
       if reeval_pass {
         runtime.emit_event(
