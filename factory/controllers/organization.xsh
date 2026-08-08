@@ -400,7 +400,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   let requested_evals = typed_request.eval_values(request_text)?
   let adaptive_eval_limit = if selected_tickets.len() > 0 { 1 } else { discovery_target }
   let request_evals = if requested_evals.len() == 0 {
-    runtime.next_untried_approved_evals(factory_dir, adaptive_eval_limit)?
+    runtime.adaptive_approved_evals(factory_dir, adaptive_eval_limit)?
   } else {
     requested_evals
   }

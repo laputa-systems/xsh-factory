@@ -1192,6 +1192,29 @@ Draft.
   test.eq(runtime.untried_approved_evals(root)?, ["task-a"])?
   test.eq(runtime.next_untried_approved_evals(root, 2)?, ["task-a"])?
   test.eq(runtime.next_untried_approved_eval(root)?, "task-a")?
+  test.eq(runtime.adaptive_approved_evals(root, 2)?, ["task-a", "task-b"])?
+
+  fs.mkdir(fp"${root}/runs/run-2/workers/eval-worker/task-a-1")?
+  json.write(
+    fp"${root}/runs/run-2/workers/eval-worker/task-a-1/report.json",
+    {
+      schema_version: 1,
+      kind: "worker",
+      identity: {
+        role: "eval-worker",
+        worker_id: "task-a-1",
+        eval_id: "task-a",
+        run_id: "run-2",
+      },
+      state: "completed",
+      result: "pass",
+      findings: [],
+      artifacts: [],
+    },
+    pretty: true,
+  )?
+  test.eq(runtime.untried_approved_evals(root)?, [])?
+  test.eq(runtime.adaptive_approved_evals(root, 2)?, ["task-a", "task-b"])?
 }
 
 proc test_eval_trends_aggregates_historical_worker_reports(ctx: TestContext) [fs, process, error] {

@@ -216,7 +216,7 @@ proc preflight(
       discovery_target
     }
     let eval_values = if mode == "organization" and requested_eval_values.len() == 0 {
-      runtime.next_untried_approved_evals(factory_dir, adaptive_eval_limit)?
+      runtime.adaptive_approved_evals(factory_dir, adaptive_eval_limit)?
     } else {
       requested_eval_values
     }

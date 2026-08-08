@@ -960,6 +960,45 @@ export proc next_untried_approved_eval(factory_dir: Path) [fs, error] -> Result[
   return if next.len() == 0 { "" } else { next[0] }
 }
 
+## Selects approved evals for adaptive organization admission. Prefer evals
+## without a persisted trial, then reuse the deterministic approved queue when
+## the portfolio has been fully exercised.
+export proc adaptive_approved_evals(factory_dir: Path, limit: Int) [fs, error] -> Result[List[Str]] {
+  if limit <= 0 {
+    return []
+  }
+
+  var selected: List[Str] = []
+  let untried = untried_approved_evals(factory_dir)?
+  for eval_id in untried {
+    selected = selected.push(eval_id)
+    if selected.len() >= limit {
+      return selected
+    }
+  }
+
+  let eval_dir = fp"${factory_dir}/evals"
+  if ! fs.exists(eval_dir)? {
+    return selected
+  }
+
+  let contracts = fs.files(eval_dir, gitignore: false, hidden: true)
+    |> where .name == "EVAL.md"
+    |> sort-by .path.display()
+    |> collect()
+  for contract in contracts {
+    let eval_id = contract.path.parent().name()
+    continue when eval_id in selected
+    continue when control.ticket_status(contract.path.read_text()?) != "Approved."
+    selected = selected.push(eval_id)
+    if selected.len() >= limit {
+      return selected
+    }
+  }
+
+  return selected
+}
+
 ## Selects the first explicitly approved tickets for an organization cycle.
 export proc first_approved_tickets(factory_dir: Path, limit: Int) [fs, error] -> Result[List[Str]] {
   let ticket_dir = fp"${factory_dir}/tickets"
