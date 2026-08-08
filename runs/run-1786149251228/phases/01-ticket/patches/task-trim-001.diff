@@ -1,0 +1,73 @@
+diff --git a/docs/SPEC.md b/docs/SPEC.md
+index b853041..ac8a3c5 100644
+--- a/docs/SPEC.md
++++ b/docs/SPEC.md
+@@ -964,7 +964,7 @@ specific effects when a proc does not need stdin/stdout.
+ **Enforcement rules.**
+ - A restricted proc (`Some([E])`) may only call procs whose declared effects are
+   a subset of `E`, plus `pure` functions.
+-- Calling an unrestricted proc from a restricted proc is a checker error.
++- Calling an unrestricted proc from a restricted proc is a checker error. The diagnostic points at the fix: declare the callee with an empty effect list `[]` when it is side-effect-free.
+ - Direct calls to standard-module functions (e.g. `fs.read_text`) and standard
+   methods (e.g. `path.read_text()`) are checked against `E`; the `io` effect
+   covers `fs`, `net`, `process`, and `env` but not `time` or `error`.
+diff --git a/src/sema/check.rs b/src/sema/check.rs
+index af8af63..edc40b5 100644
+--- a/src/sema/check.rs
++++ b/src/sema/check.rs
+@@ -571,7 +571,9 @@ impl Checker {
+             None => {
+                 self.error(
+                     span,
+-                    &format!("proc `{callee_name}` is unrestricted — cannot call from a proc with declared effects"),
++                    &format!(
++                        "proc `{callee_name}` is unrestricted — if it is side-effect-free, declare it with an empty effect list `[]` before calling it from a proc with declared effects",
++                    ),
+                     "check.effect-violation",
+                 );
+             }
+diff --git a/tests/sema.rs b/tests/sema.rs
+index 02351ed..55b7279 100644
+--- a/tests/sema.rs
++++ b/tests/sema.rs
+@@ -1096,6 +1096,40 @@ fn checker_rejects_process_time_system_identity_calls_in_pure_functions() {
+     }
+ }
+ 
++#[test]
++fn checker_suggests_empty_effect_list_for_unrestricted_callee() {
++    let messages = check_messages(
++        r#"
++proc trim_line(value: Str) -> Str {
++  return value
++}
++
++proc main() [fs, error] -> Result[Str] {
++  return Ok(trim_line("hello"))
++}
++"#,
++    );
++    assert!(
++        messages.iter().any(|message| message.contains(
++            "if it is side-effect-free, declare it with an empty effect list `[]`"
++        )),
++        "expected actionable unrestricted-proc diagnostic, got {messages:?}"
++    );
++
++    let accepted = check(
++        r#"
++proc trim_line(value: Str) [] -> Str {
++  return value
++}
++
++proc main() [fs, error] -> Result[Str] {
++  return Ok(trim_line("hello"))
++}
++"#,
++    );
++    assert_no_codes(&accepted, &["check.effect-violation"]);
++}
++
+ #[test]
+ fn checker_enforces_method_call_effects() {
+     let missing = check(

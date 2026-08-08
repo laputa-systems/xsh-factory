@@ -458,50 +458,54 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
 
   let base_context = fp"${run_dir}/base-context"
   let staged_dir = fp"${base_context}/.dist"
-  fs.mkdir(base_context)?
-  fs.mkdir(staged_dir)?
-  fs.mkdir(fp"${staged_dir}/factory")?
-  fs.copy(
-    fp"${factory_dir}/evals/Dockerfile.base",
-    fp"${base_context}/Dockerfile.base",
-    overwrite: true,
-  )?
-  fs.copy(
-    fp"${factory_dir}/evals/eval-worker.xsh",
-    fp"${base_context}/eval-worker.xsh",
-    overwrite: true,
-  )?
-  let stage_xsh = process.run(
-    process.command_argv(
-      "cp",
-      ["cp", "-fL", dist_xsh.display(), fp"${staged_dir}/xsh".display()],
-    ),
-  )?
-  let stage_xsht = process.run(
-    process.command_argv(
-      "cp",
-      ["cp", "-fL", dist_xsht.display(), fp"${staged_dir}/xsht".display()],
-    ),
-  )?
-  let stage_control = process.run(
-    process.command_argv(
-      "cp",
-      ["cp", "-fL", fp"${factory_dir}/factory/control.xsh".display(), fp"${staged_dir}/factory/control.xsh".display()],
-    ),
-  )?
-  let stage_runtime = process.run(
-    process.command_argv(
-      "cp",
-      ["cp", "-fL", fp"${factory_dir}/factory/runtime.xsh".display(), fp"${staged_dir}/factory/runtime.xsh".display()],
-    ),
-  )?
-  let stage_schema = process.run(
-    process.command_argv(
-      "cp",
-      ["cp", "-fL", fp"${factory_dir}/factory/schema.xsh".display(), fp"${staged_dir}/factory/schema.xsh".display()],
-    ),
-  )?
-  if ! stage_xsh.ok or ! stage_xsht.ok or ! stage_control.ok or ! stage_runtime.ok or ! stage_schema.ok {
+  var staging_ok = shared_base_image_cache_hit
+  if ! shared_base_image_cache_hit {
+    fs.mkdir(base_context)?
+    fs.mkdir(staged_dir)?
+    fs.mkdir(fp"${staged_dir}/factory")?
+    fs.copy(
+      fp"${factory_dir}/evals/Dockerfile.base",
+      fp"${base_context}/Dockerfile.base",
+      overwrite: true,
+    )?
+    fs.copy(
+      fp"${factory_dir}/evals/eval-worker.xsh",
+      fp"${base_context}/eval-worker.xsh",
+      overwrite: true,
+    )?
+    let stage_xsh = process.run(
+      process.command_argv(
+        "cp",
+        ["cp", "-fL", dist_xsh.display(), fp"${staged_dir}/xsh".display()],
+      ),
+    )?
+    let stage_xsht = process.run(
+      process.command_argv(
+        "cp",
+        ["cp", "-fL", dist_xsht.display(), fp"${staged_dir}/xsht".display()],
+      ),
+    )?
+    let stage_control = process.run(
+      process.command_argv(
+        "cp",
+        ["cp", "-fL", fp"${factory_dir}/factory/control.xsh".display(), fp"${staged_dir}/factory/control.xsh".display()],
+      ),
+    )?
+    let stage_runtime = process.run(
+      process.command_argv(
+        "cp",
+        ["cp", "-fL", fp"${factory_dir}/factory/runtime.xsh".display(), fp"${staged_dir}/factory/runtime.xsh".display()],
+      ),
+    )?
+    let stage_schema = process.run(
+      process.command_argv(
+        "cp",
+        ["cp", "-fL", fp"${factory_dir}/factory/schema.xsh".display(), fp"${staged_dir}/factory/schema.xsh".display()],
+      ),
+    )?
+    staging_ok = stage_xsh.ok and stage_xsht.ok and stage_control.ok and stage_runtime.ok and stage_schema.ok
+  }
+  if ! staging_ok {
     write_preflight_failure_report(
       run_dir,
       eval_id,
@@ -512,9 +516,11 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     abort(1)
   }
 
-  let staged_binaries_ok = valid_staged_binary(fp"${staged_dir}/xsh")? and valid_staged_binary(
-    fp"${staged_dir}/xsht",
-  )?
+  let staged_binaries_ok = if shared_base_image_cache_hit {
+    true
+  } else {
+    valid_staged_binary(fp"${staged_dir}/xsh")? and valid_staged_binary(fp"${staged_dir}/xsht")?
+  }
   if ! staged_binaries_ok {
     write_preflight_failure_report(
       run_dir,

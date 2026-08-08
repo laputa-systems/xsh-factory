@@ -16,6 +16,16 @@ The independent `task-setdiff` eval staged a general predicate-negation
 lesson, but it is single-trial evidence. Defer it pending the named replay
 and a nearby predicate eval; keep the approved handbook unchanged.
 
+## Explicit CTO disposition — run-1786149251228
+
+| Candidate SHA-256 | Disposition |
+| --- | --- |
+| `67c6fcca59214dbe53ec7734c2905c677d9592a4cd5659f9b9ab368cbcb06757` | deferred pending cross-eval replay; not promoted |
+
+The independent `task-setdiff` eval again staged boolean-negation guidance,
+but it remains single-trial evidence. Defer it pending the named replay and a
+nearby predicate eval; keep the approved handbook unchanged.
+
 ## Explicit CTO disposition — run-1786147170660
 
 | Candidate SHA-256 | Disposition |

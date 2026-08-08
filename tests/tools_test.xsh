@@ -2377,6 +2377,8 @@ proc test_eval_staging_context_is_run_scoped() [fs, error] {
   let evaluator = fs.read_text(fp"${fs.cwd()?}/factory/controllers/eval.xsh")?
   test.contains(evaluator, r"""let base_context = fp"${run_dir}/base-context""" )?
   test.contains(evaluator, "base_context.display()")?
+  test.contains(evaluator, "if shared_base_image_cache_hit")?
+  test.contains(evaluator, "shared_base_image_cache_hit or")?
   test.ok(r"""fp"${factory_dir}/evals/.dist""" not in evaluator)?
 }
 

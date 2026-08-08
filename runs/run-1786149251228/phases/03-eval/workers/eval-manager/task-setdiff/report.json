@@ -1,0 +1,116 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786149251228/phases/03-eval/workers/eval-manager/task-setdiff/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_process": "pass",
+    "dispatch_claim": "6772cdd65ca64bc3fe55a652e2ef02e7e91b98612deb49713a9738e35259f616",
+    "dispatch_id": "eval-manager-task-setdiff",
+    "message_sha256": "6772cdd65ca64bc3fe55a652e2ef02e7e91b98612deb49713a9738e35259f616",
+    "reporting": "pass",
+    "required_report": "present",
+    "session_limit_watcher": "pass",
+    "system_prompt_sha256": "a5ab31790989af39c06a7fec953a65b5b782b1be43779a76401f77f02f7995f3",
+    "watcher": "pass"
+  },
+  "findings": [
+    {
+      "count": 1,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "role": "eval-manager",
+    "worker_id": "task-setdiff"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "provider_telemetry": {
+    "event_turns": 13,
+    "events_path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786149251228/phases/03-eval/workers/eval-manager/task-setdiff/session.jsonl.events.jsonl",
+    "output_tokens_per_second": 0,
+    "present": true,
+    "provider_errors": [],
+    "response_elapsed_ms": 0,
+    "retry_count": 0,
+    "retry_delay_ms": 0,
+    "retry_errors": [],
+    "retry_failures": 0,
+    "retry_successes": 0
+  },
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786149251228/phases/03-eval/workers/eval-manager/task-setdiff/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 12,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 159986
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786149251228/phases/03-eval/workers/eval-manager/task-setdiff/session.jsonl.bz2",
+      "summary": "=== approved ===\n3b56a781606faa1ae0eb811af09d10094080152dae78d9f057cca7de101e126b  handbook-approved.md\n=== candidate ===\n67c6fcca59214dbe53ec7734c2905c677d9592a4cd5659f9b9ab368cbcb06757  handbook-candidate.md\n=== diff (approved vs candidate) ===\n68a69,75\n> \n> Boolean negation is the prefix operator `!`. The keyword `not` is not\n> accepted by the parser (a `where`/`if`/block expression using `not` raises\n> `parse.expected-expression` at the operand), so negate a condition with\n> `!`:\n> \n>     |> where { |k| ! set.has(setB, k) }\n69a77,79\n> That is, write `! cond` (for example `! flag`, `! set.has(s, k)`), not\n> `not cond`.\n> \n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 12
+    }
+  ],
+  "tools": [
+    {
+      "count": 4,
+      "name": "bash"
+    },
+    {
+      "count": 1,
+      "name": "grep"
+    },
+    {
+      "count": 2,
+      "name": "ls"
+    },
+    {
+      "count": 14,
+      "name": "read"
+    },
+    {
+      "count": 2,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 13,
+    "budget_usd": 0.15,
+    "cache_read_cost_usd": 0.00384768,
+    "cache_read_tokens": 213760,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.01090962,
+    "input_cost_usd": 0.00502542,
+    "input_tokens": 55838,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.00203652,
+    "output_tokens": 11314,
+    "provider_total_tokens": 280912,
+    "reasoning_tokens": 4597,
+    "thinking_blocks": 12,
+    "tool_calls": 23,
+    "tool_errors": 1,
+    "tool_results": 23,
+    "total_bucket_tokens": 280912,
+    "user_messages": 1
+  }
+}
