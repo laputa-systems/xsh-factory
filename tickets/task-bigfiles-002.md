@@ -4,6 +4,17 @@
 
 Open.
 
+## CTO review
+
+- Review cycle: pre-cycle-3.
+- Decision: Deferred; do not approve or dispatch in this cycle.
+- Basis: The observation is a useful general API-documentation candidate, but
+  it has not yet received a matched replay after the cycle-2 manager collision
+  was repaired. Preserve it for a future `task-bigfiles` replay.
+- Next evidence: Require a fresh manager reproduction using a new ticket
+  identity and confirm the proposed documentation guidance generalizes beyond
+  the one `sort-by` spelling.
+
 ## Change target
 
 - `product`

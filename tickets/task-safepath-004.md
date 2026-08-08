@@ -18,6 +18,15 @@ Approved.
 - Admission: One engineer row is required; linked `task-safepath` replay and
   one independent eval remain the delivery gates.
 
+## CTO review
+
+- Review cycle: pre-cycle-3.
+- Decision: Approved for one bounded implementation and linked replay.
+- Basis: The replay provides a minimal, reproducible compiler/type-lowering
+  defect with no new API or syntax surface and explicit acceptance criteria.
+- Admission: Dispatch one engineer; require the linked replay and one
+  independent eval before delivery.
+
 ## Change target
 
 - `product`
