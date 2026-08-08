@@ -950,6 +950,7 @@ proc test_standard_cycle_uses_diverse_active_eval() [fs, error] {
   test.contains(productivity, "## Assembly-line bottleneck")?
   test.contains(request, "No `cycle-*.md` files are kept")?
   test.contains(request, "Admission invariant: `task-render-001` was approved before invoking `run.xsh`")?
+  test.ok(runtime.accepted_ticket(fp"${fs.cwd()?}/tickets/task-render-001.md")?)?
   let cycle_template = fs.read_text(fp"${fs.cwd()?}/templates/cycle-request.md")?
   test.contains(cycle_template, "Require at least one engineer implementation commit")?
   test.contains(cycle_template, "Approve eligible Open tickets before controller invocation")?

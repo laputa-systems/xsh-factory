@@ -119,7 +119,7 @@ Map is created with `map.empty()` and grown with `Map.set`.
 
 ## API-surface justification
 
-- Semantic capability existing XSH cannot express: none — `map.empty()` already
+- semantic capability existing XSH cannot express: none — `map.empty()` already
   constructs an empty string-keyed Map. The gap is discoverability/ergonomics,
   not missing capability.
 - Closest existing spelling and why it is insufficient: `{}` compiles but yields
@@ -134,7 +134,7 @@ Map is created with `map.empty()` and grown with `Map.set`.
 - Implementation/maintenance cost: API-registry index entry plus canonical
   documentation for `map.empty` and the Record-vs-Map `{}` distinction; runtime
   and checker are unchanged for the minimal option.
-- Evidence and falsification replay: `task-render` replay plus a second
+- evidence and falsification replay: `task-render` replay plus a second
   map-building eval must construct their Map on the first attempt (no
   `grep summary | map.empty` detour) after the fix; otherwise the indexing
   change did not generalize.
