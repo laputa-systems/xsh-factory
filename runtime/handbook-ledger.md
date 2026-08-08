@@ -12,11 +12,18 @@ not silently discard it.
 | Candidate SHA-256 | Disposition |
 | --- | --- |
 | `2953f932b3a4d428f0186922307de44ebfa50daaa947e274dfc924ea4b3a3bed` | deferred pending cross-eval replay; not promoted |
+| `00fea96931894c4f041af17ec2f6618c22b57dcb0403cd4871060b0ca3c367b6` | deferred pending delivered-product validation; not promoted |
+| `54caada53ec2aab8e738c604bd185d4536c2aaca589c920c410f56360e35e3cc` | deferred pending matched metadata/decimal replay; not promoted |
 
 The task-pathparts replay supplied a general standard-module-shadowing rule,
 but it is one fresh trial and repeats the already-deferred lesson recorded
 under `dbb77ccc...`. Preserve the candidate and require a second path/stream
 or environment construction replay before promoting it.
+
+The ticket candidate updates the Path lint wording alongside the unmerged
+product change; validate it only after the candidate is delivered. The
+task-bigfiles candidate records a silent metadata-zero trap and strict decimal
+parsing guidance; preserve both until the named matched replays are available.
 
 ## Explicit CTO disposition — run-1786159268557
 
