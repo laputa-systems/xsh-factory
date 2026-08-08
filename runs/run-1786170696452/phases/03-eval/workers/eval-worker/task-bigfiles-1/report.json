@@ -1,0 +1,130 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786170696452/phases/03-eval/workers/eval-worker/task-bigfiles-1/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_state": "pass",
+    "agent_wall_ms": 513313,
+    "artifact": {
+      "name": "bigfiles.xsh",
+      "state": "present"
+    },
+    "budget_state": "pass",
+    "classification": "pass",
+    "evaluator_manifest": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786170696452/phases/03-eval/workers/eval-worker/task-bigfiles-1/run.json",
+    "evaluator_state": "pass",
+    "reporting_state": "pass",
+    "result": "pass",
+    "review": {
+      "state": "present"
+    }
+  },
+  "findings": [
+    {
+      "count": 4,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "eval_id": "task-bigfiles",
+    "role": "eval-worker",
+    "run_id": "03-eval",
+    "worker_id": "task-bigfiles-1"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "provider_telemetry": {
+    "event_turns": 40,
+    "events_path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786170696452/phases/03-eval/workers/eval-worker/task-bigfiles-1/session.jsonl.events.jsonl",
+    "output_tokens_per_second": 0,
+    "present": true,
+    "provider_errors": [],
+    "response_elapsed_ms": 0,
+    "retry_count": 0,
+    "retry_delay_ms": 0,
+    "retry_errors": [],
+    "retry_failures": 0,
+    "retry_successes": 0
+  },
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786170696452/phases/03-eval/workers/eval-worker/task-bigfiles-1/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 39,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 511938
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786170696452/phases/03-eval/workers/eval-worker/task-bigfiles-1/session.jsonl.bz2",
+      "summary": "err[parse.expected-ident]: expected binding name\n  /tmp/probe.xsh:2:7\n    let stream = fs.files(p\"/tmp/t\")?\n        ^^^^^^ expected binding name\n\nerr[parse.expected-expression]: expected expression\n  /tmp/probe.xsh:3:11\n    let _ = stream |> each { |e| print $e.kind $e.path.display() $e.size }\n            ^^^^^^ expected expression\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 5
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786170696452/phases/03-eval/workers/eval-worker/task-bigfiles-1/session.jsonl.bz2",
+      "summary": "err[parse.expected-ident]: expected binding name\n  /tmp/probe.xsh:2:7\n    let stream = fs.files(p\"/tmp/t\")?\n        ^^^^^^ expected binding name\n\nerr[parse.expected-expression]: expected expression\n  /tmp/probe.xsh:3:13\n    let out = stream |> map { |e| e.kind + \" \" + e.path.display() + \" \" + e.size.to_str() } |> collect()\n              ^^^^^^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  /tmp/probe.xsh:3:91\n    let out = stream |> map { |e| e.kind + \" \" + e.path.display() + \" \" + e.size.to_str() } |> collect()\n                                                                                            ^^ expected expression\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 6
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786170696452/phases/03-eval/workers/eval-worker/task-bigfiles-1/session.jsonl.bz2",
+      "summary": "err[check.unknown-method]: unknown method `to_str` on Int\n  /tmp/probe.xsh:3:74\n    let out = entries |> map { |e| e.kind + \" \" + e.path.display() + \" \" + e.size.to_str() } |> collect()\n                                                                           ^^^^^^^^^^^^^^^ `to_str` is not defined for Int\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 7
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786170696452/phases/03-eval/workers/eval-worker/task-bigfiles-1/session.jsonl.bz2",
+      "summary": "(no output)\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 8
+    }
+  ],
+  "tools": [
+    {
+      "count": 41,
+      "name": "bash"
+    },
+    {
+      "count": 3,
+      "name": "read"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 40,
+    "budget_usd": 0.5,
+    "cache_read_cost_usd": 0.006748416000000001,
+    "cache_read_tokens": 374912,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.02089056600000001,
+    "input_cost_usd": 0.01252989,
+    "input_tokens": 139221,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.0016122599999999997,
+    "output_tokens": 8957,
+    "provider_total_tokens": 523090,
+    "reasoning_tokens": 4421,
+    "thinking_blocks": 32,
+    "tool_calls": 44,
+    "tool_errors": 4,
+    "tool_results": 44,
+    "total_bucket_tokens": 523090,
+    "user_messages": 1
+  }
+}

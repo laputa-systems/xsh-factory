@@ -284,11 +284,3 @@ but empty. Write text with `fs.write(path, text)` and declare the `env` and
 `fs` effects. The typed `env.int` and `env.bool` helpers are convenience
 readers, not strict format validators, so byte-exact decimal or boolean
 contracts must be checked explicitly.
-
-## Filesystem metadata boundaries
-
-`fs.walk`, `fs.files`, `fs.dirs`, `fs.ls`, and `fs.children` accept `stat: false`
-for cheaper discovery, but stat-derived fields such as `size`, `mode`, and
-permission flags are unavailable in those records. Read those fields only when
-`stat` is true; XSH reports `metadata-unavailable` instead of treating an
-unknown value as a real zero or false.

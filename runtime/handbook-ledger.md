@@ -606,6 +606,18 @@ positional-only API guidance candidate, but it is single-eval evidence. Keep
 the approved handbook unchanged until `task-dupcheck` and a second
 defaulted-parameter eval confirm the guidance generalizes.
 
+## Explicit CTO disposition — run-1786170696452
+
+| Candidate SHA-256 | Disposition |
+| --- | --- |
+| `44d8ba3d8a0edb2fa823023b55a95ffa4388dd195ce77987804983cc255a832c` | promoted |
+
+The `task-bigfiles-003` engineer supplied a general filesystem-metadata
+boundary lesson. The candidate was validated by the committed runtime
+regression tests and the linked `task-bigfiles` replay at XSH commit
+`e4059a21ae8942fa07a0e8e61bac971ed703237c`, which passed all nine cases. The
+lesson is now part of the approved handbook for future workers.
+
 ## Explicit CTO disposition — run-1786151585420
 
 | Candidate SHA-256 | Disposition |

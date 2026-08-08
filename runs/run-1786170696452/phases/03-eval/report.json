@@ -1,0 +1,282 @@
+{
+  "artifacts": [
+    {
+      "kind": "session-directory",
+      "path": "workers/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 51,
+      "budget_failures": 0,
+      "cost_usd": 0.04802421600000001,
+      "tool_errors": 4,
+      "total_bucket_tokens": 926762.0,
+      "unknown_costs": 0,
+      "workers": 2
+    },
+    "designer": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786170696452/phases/03-eval/workers/eval-designer/proposal-1/REPORT.md",
+      "present": false,
+      "result": "not-requested",
+      "role": "eval-designer",
+      "valid": true
+    },
+    "director": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786170696452/phases/03-eval/workers/director/director/REPORT.md",
+      "present": false,
+      "result": "not-requested",
+      "role": "director",
+      "valid": true
+    },
+    "engineer": [],
+    "handbook_lineage": {
+      "approved": "lineage/handbook-approved.md",
+      "candidate": "lineage/handbook-candidate.md"
+    },
+    "manager": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786170696452/phases/03-eval/workers/eval-manager/task-bigfiles/REPORT.md",
+      "present": true,
+      "result": "pass",
+      "role": "eval-manager",
+      "valid": true
+    },
+    "mode": "eval",
+    "narratives": [
+      {
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786170696452/phases/03-eval/workers/eval-manager/task-bigfiles/REPORT.md",
+        "present": true,
+        "result": "pass",
+        "role": "eval-manager",
+        "valid": true
+      }
+    ],
+    "open_tickets": [
+      {
+        "eval_id": "task-bigfiles",
+        "id": "task-bigfiles-002",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-bigfiles-002.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-bigfiles",
+        "id": "task-bigfiles-003",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-bigfiles-003.md",
+        "status": "Approved."
+      },
+      {
+        "eval_id": "task-dupcheck",
+        "id": "task-dupcheck-002",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-dupcheck-002.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-004",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-004.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-005",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-005.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-006",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-006.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-007",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-007.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-008",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-008.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-pathparts",
+        "id": "task-pathparts-003",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-pathparts-003.md",
+        "status": "Open."
+      }
+    ],
+    "outcomes": {
+      "cycle": "pass",
+      "evaluator": "pass",
+      "infrastructure": "pass",
+      "product": "pass"
+    },
+    "required_outputs": {
+      "audit": true,
+      "candidate_handbook": true,
+      "designer_handbook_read": true,
+      "designer_output": true,
+      "handbook_lineage": true,
+      "manager_evidence_read": true,
+      "manager_handbook_read": true,
+      "manager_report": true,
+      "manager_session": true,
+      "required": true,
+      "ticket_snapshot_unchanged": true,
+      "trial1_process": true,
+      "trial1_report": true,
+      "trial2_process": true,
+      "trial2_report": true,
+      "worker_handbook_read": true
+    },
+    "sessions": [
+      "workers/eval-manager/task-bigfiles/session.jsonl.bz2",
+      "workers/eval-worker/task-bigfiles-1/session.jsonl.bz2"
+    ],
+    "tool_errors": [
+      {
+        "report": "workers/eval-worker/task-bigfiles-1/report.json",
+        "summary": "err[parse.expected-ident]: expected binding name\n  /tmp/probe.xsh:2:7\n    let stream = fs.files(p\"/tmp/t\")?\n        ^^^^^^ expected binding name\n\nerr[parse.expected-expression]: expected expression\n  /tmp/probe.xsh:3:11\n    let _ = stream |> each { |e| print $e.kind $e.path.display() $e.size }\n            ^^^^^^ expected expression\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 5,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-bigfiles-1"
+        }
+      },
+      {
+        "report": "workers/eval-worker/task-bigfiles-1/report.json",
+        "summary": "err[parse.expected-ident]: expected binding name\n  /tmp/probe.xsh:2:7\n    let stream = fs.files(p\"/tmp/t\")?\n        ^^^^^^ expected binding name\n\nerr[parse.expected-expression]: expected expression\n  /tmp/probe.xsh:3:13\n    let out = stream |> map { |e| e.kind + \" \" + e.path.display() + \" \" + e.size.to_str() } |> collect()\n              ^^^^^^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  /tmp/probe.xsh:3:91\n    let out = stream |> map { |e| e.kind + \" \" + e.path.display() + \" \" + e.size.to_str() } |> collect()\n                                                                                            ^^ expected expression\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 6,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-bigfiles-1"
+        }
+      },
+      {
+        "report": "workers/eval-worker/task-bigfiles-1/report.json",
+        "summary": "err[check.unknown-method]: unknown method `to_str` on Int\n  /tmp/probe.xsh:3:74\n    let out = entries |> map { |e| e.kind + \" \" + e.path.display() + \" \" + e.size.to_str() } |> collect()\n                                                                           ^^^^^^^^^^^^^^^ `to_str` is not defined for Int\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 7,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-bigfiles-1"
+        }
+      },
+      {
+        "report": "workers/eval-worker/task-bigfiles-1/report.json",
+        "summary": "(no output)\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 8,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-bigfiles-1"
+        }
+      }
+    ],
+    "trials": [
+      {
+        "evidence": {
+          "candidate_sha256": "unknown",
+          "classification": "pass",
+          "correctness": "pass",
+          "eval_id": "task-bigfiles",
+          "handbook_sha256": "unknown",
+          "oracle_sha256": "unknown",
+          "passed": true,
+          "protocol": "pass",
+          "restrictions": "pass",
+          "result": "pass",
+          "timing": "pass",
+          "trial_id": "1",
+          "valid": true
+        },
+        "path": "workers/eval-worker/task-bigfiles-1/run.json"
+      }
+    ],
+    "workers": [
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-bigfiles"
+        },
+        "path": "workers/eval-manager/task-bigfiles/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 11,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.0024883199999999996,
+          "cache_read_tokens": 138240,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.02713365,
+          "input_cost_usd": 0.02313243,
+          "input_tokens": 257027,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0015129,
+          "output_tokens": 8405,
+          "provider_total_tokens": 403672,
+          "reasoning_tokens": 4289,
+          "thinking_blocks": 11,
+          "tool_calls": 19,
+          "tool_errors": 0,
+          "tool_results": 19,
+          "total_bucket_tokens": 403672,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-bigfiles-1"
+        },
+        "path": "workers/eval-worker/task-bigfiles-1/report.json",
+        "result": "pass",
+        "tool_errors": 4,
+        "usage": {
+          "assistant_turns": 40,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.006748416000000001,
+          "cache_read_tokens": 374912,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.02089056600000001,
+          "input_cost_usd": 0.01252989,
+          "input_tokens": 139221,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0016122599999999997,
+          "output_tokens": 8957,
+          "provider_total_tokens": 523090,
+          "reasoning_tokens": 4421,
+          "thinking_blocks": 32,
+          "tool_calls": 44,
+          "tool_errors": 4,
+          "tool_results": 44,
+          "total_bucket_tokens": 523090,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "a652116f9cb91eb4a6d432731c9902c34007b172"
+  },
+  "findings": [],
+  "identity": {
+    "eval_id": "task-bigfiles",
+    "mode": "eval",
+    "run_id": "03-eval"
+  },
+  "kind": "phase",
+  "result": "pass",
+  "schema_version": 1,
+  "state": "completed"
+}

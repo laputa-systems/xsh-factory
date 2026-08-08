@@ -1,0 +1,429 @@
+{
+  "artifacts": [
+    {
+      "kind": "phase-reports",
+      "path": "phases/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 144,
+      "budget_failures": 0,
+      "cost_usd": 0.17262473600000003,
+      "tool_errors": 16,
+      "total_bucket_tokens": 6290169.0,
+      "unknown_costs": 0,
+      "workers": 6
+    },
+    "mode": "organization",
+    "outcomes": {
+      "cycle": "pass",
+      "evaluator": "pass",
+      "infrastructure": "pass",
+      "product": "pass"
+    },
+    "phases": [
+      {
+        "id": "01-ticket",
+        "path": "phases/01-ticket/report.json",
+        "result": "pass",
+        "valid": true
+      },
+      {
+        "id": "02-reeval-task-bigfiles-003",
+        "path": "phases/02-reeval-task-bigfiles-003/report.json",
+        "result": "pass",
+        "valid": true
+      },
+      {
+        "id": "03-eval",
+        "path": "phases/03-eval/report.json",
+        "result": "pass",
+        "valid": true
+      }
+    ],
+    "throughput": {
+      "admitted_tickets": 1,
+      "delivered_tickets": 1,
+      "delivery_conversion": 1.0,
+      "fresh_engineer_rows": 1,
+      "handbook_quarantines": 0,
+      "overlap_linked_replays": false,
+      "overlap_retained_fresh": false,
+      "reeval_dispatched": 1,
+      "reeval_passed": 1,
+      "retained_fast_paths": 0,
+      "retained_rows": 0
+    },
+    "tool_errors": [
+      {
+        "report": "phases/01-ticket/workers/engineer/task-bigfiles-003/report.json",
+        "summary": "Path not found: /Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786170696452/task-bigfiles-003/crates/xsh-runtime",
+        "tool": "grep",
+        "turn": 3,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-bigfiles-003"
+        }
+      },
+      {
+        "report": "phases/01-ticket/workers/engineer/task-bigfiles-003/report.json",
+        "summary": "Path not found: /Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786170696452/task-bigfiles-003/crates/xsh-runtime",
+        "tool": "grep",
+        "turn": 3,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-bigfiles-003"
+        }
+      },
+      {
+        "report": "phases/01-ticket/workers/engineer/task-bigfiles-003/report.json",
+        "summary": "ENOENT: no such file or directory, access '/Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786170696452/task-bigfiles-003/tests/xsh/stdlib/collections.xsh'",
+        "tool": "read",
+        "turn": 14,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-bigfiles-003"
+        }
+      },
+      {
+        "report": "phases/01-ticket/workers/engineer/task-bigfiles-003/report.json",
+        "summary": "running 1 tests\ntests/xsh/stdlib/fs.xsh::test_fs_tree_metadata_install_and_locking ... FAILED 1.1s\n\nfailures:\n\n---- tests/xsh/stdlib/fs.xsh::test_fs_tree_metadata_install_and_locking ----\nerr[runtime.error]: filesystem entry field `size` requires stat=true; this entry was created with stat=false\n  /Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786170696452/task-bigfiles-003/tests/xsh/stdlib/fs.xsh:49:20\n    test.error_kind((fs.children(nested, stat: false, ordered: false)? |> first())?.size, \"metadata-unavailable\")?\n                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nruntime traceback\nexecutable: /Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786170696452/task-bigfiles-003/target/debug/xsht\noperation: test.call\nerror: metadata-unavailable: filesystem entry field `size` requires stat=true; this entry was created with stat=false\n\ntest result: FAILED. 0 passed; 1 failed; 0 skipped\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 26,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-bigfiles-003"
+        }
+      },
+      {
+        "report": "phases/01-ticket/workers/engineer/task-bigfiles-003/report.json",
+        "summary": "    Finished `test` profile [unoptimized] target(s) in 0.19s\n     Running tests/integration.rs (target/debug/deps/integration-4d74d0805adc1abb)\n\nrunning 1 test\n    Finished `dev` profile [unoptimized] target(s) in 0.16s\ntest runtime::coverage::runnable_xsh_corpus_is_formatted_and_lints_without_warnings ... FAILED\n\nfailures:\n\n---- runtime::coverage::runnable_xsh_corpus_is_formatted_and_lints_without_warnings stdout ----\n\nthread 'runtime::coverage::runnable_xsh_corpus_is_formatted_and_lints_without_warnings' (14753937) panicked at tests/runtime/common.rs:541:5:\nstatus=Some(1)\nstdout:\ntests/xsh/stdlib/fs.xsh: needs formatting\ntests/xsh/stdlib/streams.xsh: needs formatting\n\nstderr:\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\n\nfailures:\n    runtime::coverage::runnable_xsh_corpus_is_formatted_and_lints_without_warnings\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 491 filtered out; finished in 0.60s\n\nerror: test failed, to rerun pass `--test integration`\n\n\nCommand exited with code 101",
+        "tool": "bash",
+        "turn": 28,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-bigfiles-003"
+        }
+      },
+      {
+        "report": "phases/01-ticket/workers/engineer/task-bigfiles-003/report.json",
+        "summary": "--- tests/xsh/stdlib/fs.xsh\t2026-08-07 23:41:37\n+++ /tmp/fs-bigfiles.xsh\t2026-08-07 23:41:44\n@@ -46,7 +46,12 @@\n   let listed = fs.ls(nested)? |> sort-by .name\n   test.eq(children.len(), listed.len())?\n   test.ok(fs.children(nested, stat: false, ordered: false)? |> any .name == \"data.txt\")?\n-  test.error_kind(fs.children(nested, stat: false, ordered: false)? |> map .size |> first(), \"metadata-unavailable\")?\n+  test.error_kind(\n+    fs.children(nested, stat: false, ordered: false)?\n+      |> map .size\n+      |> first(),\n+    \"metadata-unavailable\",\n+  )?\n   test.ok(fs.walk(src)? |> any .name == \"data.txt\")?\n   test.ok(fs.files(src)? |> any .name == \"data.txt\")?\n   test.ok(fs.dirs(src)? |> any .name == \"nested\")?\n@@ -402,9 +407,24 @@\n   test.eq(cheap_c.name, \"main.c\")?\n   test.eq(cheap_c.ext, \"c\")?\n   test.eq(cheap_c.kind, \"file\")?\n-  test.error_kind(fs.files(root, gitignore: false, stat: false, exts: [\"c\"]) |> map .size |> first(), \"metadata-unavailable\")?\n-  test.error_kind(fs.files(root, gitignore: false, stat: false, exts: [\"c\"]) |> map .mode |> first(), \"metadata-unavailable\")?\n-  test.error_kind(fs.files(root, gitignore: false, stat: false, exts: [\"c\"]) |> map .executable |> first(), \"metadata-unavailable\")?\n+  test.error_kind(\n+    fs.files(root, gitignore: false, stat: false, exts: [\"c\"])\n+      |> map .size\n+      |> first(),\n+    \"metadata-unavailable\",\n+  )?\n+  test.error_kind(\n+    fs.files(root, gitignore: false, stat: false, exts: [\"c\"])\n+      |> map .mode\n+      |> first(),\n+    \"metadata-unavailable\",\n+  )?\n+  test.error_kind(\n+    fs.files(root, gitignore: false, stat: false, exts: [\"c\"])\n+      |> map .executable\n+      |> first(),\n+    \"metadata-unavailable\",\n+  )?\n   test.eq(cheap_c.path.strip_prefix(root)?.display(), \"src/main.c\")?\n }\n \n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 29,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-bigfiles-003"
+        }
+      },
+      {
+        "report": "phases/01-ticket/workers/engineer/task-bigfiles-003/report.json",
+        "summary": "running 1 tests\ntests/xsh/stdlib/fs.xsh::test_fs_tree_metadata_install_and_locking ... FAILED 21ms\n\nfailures:\n\n---- tests/xsh/stdlib/fs.xsh::test_fs_tree_metadata_install_and_locking ----\nerr[runtime.error]: filesystem entry field `size` requires stat=true; this entry was created with stat=false\n  /Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786170696452/task-bigfiles-003/tests/xsh/stdlib/fs.xsh:50:5\n      fs.children(nested, stat: false, ordered: false)?\n      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nruntime traceback\nexecutable: /Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786170696452/task-bigfiles-003/target/debug/xsht\noperation: test.call\nerror: metadata-unavailable: filesystem entry field `size` requires stat=true; this entry was created with stat=false\n\ntest result: FAILED. 0 passed; 1 failed; 0 skipped\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 31,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-bigfiles-003"
+        }
+      },
+      {
+        "report": "phases/01-ticket/workers/engineer/task-bigfiles-003/report.json",
+        "summary": "Found 2 occurrences of edits[0] in /Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786170696452/task-bigfiles-003/tests/xsh/stdlib/fs.xsh. Each oldText must be unique. Please provide more context to make it unique.",
+        "tool": "edit",
+        "turn": 32,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-bigfiles-003"
+        }
+      },
+      {
+        "report": "phases/01-ticket/workers/engineer/task-bigfiles-003/report.json",
+        "summary": "ENOENT: no such file or directory, access '/Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786170696452/task-bigfiles-003/tests/xsh/stdlib/collections.xsh'",
+        "tool": "read",
+        "turn": 35,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-bigfiles-003"
+        }
+      },
+      {
+        "report": "phases/01-ticket/workers/engineer/task-bigfiles-003/report.json",
+        "summary": "Could not find edits[1] in /Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786170696452/task-bigfiles-003/tests/xsh/stdlib/fs.xsh. The oldText must match exactly including all whitespace and newlines.",
+        "tool": "edit",
+        "turn": 37,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-bigfiles-003"
+        }
+      },
+      {
+        "report": "phases/01-ticket/workers/engineer/task-bigfiles-003/report.json",
+        "summary": "running 1 tests\ntests/xsh/stdlib/fs.xsh::test_fs_tree_metadata_install_and_locking ... FAILED 17ms\n\nfailures:\n\n---- tests/xsh/stdlib/fs.xsh::test_fs_tree_metadata_install_and_locking ----\nerr[runtime.error]: filesystem entry field `size` requires stat=true; this entry was created with stat=false\n  /Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786170696452/task-bigfiles-003/tests/xsh/stdlib/fs.xsh:50:19\n    test.error_kind(unstat_children[0].size, \"metadata-unavailable\")?\n                    ^^^^^^^^^^^^^^^^^^^^^^^\nruntime traceback\nexecutable: /Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786170696452/task-bigfiles-003/target/debug/xsht\noperation: test.call\nerror: metadata-unavailable: filesystem entry field `size` requires stat=true; this entry was created with stat=false\n\ntest result: FAILED. 0 passed; 1 failed; 0 skipped\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 41,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-bigfiles-003"
+        }
+      },
+      {
+        "report": "phases/01-ticket/workers/engineer/task-bigfiles-003/report.json",
+        "summary": "    Finished `test` profile [unoptimized] target(s) in 0.23s\n     Running tests/integration.rs (target/debug/deps/integration-4d74d0805adc1abb)\n\nrunning 1 test\n    Finished `dev` profile [unoptimized] target(s) in 0.26s\ntest runtime::coverage::runnable_xsh_corpus_is_formatted_and_lints_without_warnings ... FAILED\n\nfailures:\n\n---- runtime::coverage::runnable_xsh_corpus_is_formatted_and_lints_without_warnings stdout ----\n\nthread 'runtime::coverage::runnable_xsh_corpus_is_formatted_and_lints_without_warnings' (14767010) panicked at tests/runtime/common.rs:541:5:\nstatus=Some(1)\nstdout:\ntests/xsh/stdlib/streams.xsh: needs formatting\n\nstderr:\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\n\nfailures:\n    runtime::coverage::runnable_xsh_corpus_is_formatted_and_lints_without_warnings\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 491 filtered out; finished in 0.71s\n\nerror: test failed, to rerun pass `--test integration`\n\n\nCommand exited with code 101",
+        "tool": "bash",
+        "turn": 46,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-bigfiles-003"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-worker/task-bigfiles-1/report.json",
+        "summary": "err[parse.expected-ident]: expected binding name\n  /tmp/probe.xsh:2:7\n    let stream = fs.files(p\"/tmp/t\")?\n        ^^^^^^ expected binding name\n\nerr[parse.expected-expression]: expected expression\n  /tmp/probe.xsh:3:11\n    let _ = stream |> each { |e| print $e.kind $e.path.display() $e.size }\n            ^^^^^^ expected expression\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 5,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-bigfiles-1"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-worker/task-bigfiles-1/report.json",
+        "summary": "err[parse.expected-ident]: expected binding name\n  /tmp/probe.xsh:2:7\n    let stream = fs.files(p\"/tmp/t\")?\n        ^^^^^^ expected binding name\n\nerr[parse.expected-expression]: expected expression\n  /tmp/probe.xsh:3:13\n    let out = stream |> map { |e| e.kind + \" \" + e.path.display() + \" \" + e.size.to_str() } |> collect()\n              ^^^^^^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  /tmp/probe.xsh:3:91\n    let out = stream |> map { |e| e.kind + \" \" + e.path.display() + \" \" + e.size.to_str() } |> collect()\n                                                                                            ^^ expected expression\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 6,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-bigfiles-1"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-worker/task-bigfiles-1/report.json",
+        "summary": "err[check.unknown-method]: unknown method `to_str` on Int\n  /tmp/probe.xsh:3:74\n    let out = entries |> map { |e| e.kind + \" \" + e.path.display() + \" \" + e.size.to_str() } |> collect()\n                                                                           ^^^^^^^^^^^^^^^ `to_str` is not defined for Int\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 7,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-bigfiles-1"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-worker/task-bigfiles-1/report.json",
+        "summary": "(no output)\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 8,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-bigfiles-1"
+        }
+      }
+    ],
+    "workers": [
+      {
+        "identity": {
+          "role": "director",
+          "worker_id": "director"
+        },
+        "path": "phases/01-ticket/workers/director/director/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 10,
+          "budget_usd": 0.06,
+          "cache_read_cost_usd": 0.00024883200000000005,
+          "cache_read_tokens": 13824,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.013080582000000002,
+          "input_cost_usd": 0.01191897,
+          "input_tokens": 132433,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00091278,
+          "output_tokens": 5071,
+          "provider_total_tokens": 151328,
+          "reasoning_tokens": 1666,
+          "thinking_blocks": 6,
+          "tool_calls": 23,
+          "tool_errors": 0,
+          "tool_results": 23,
+          "total_bucket_tokens": 151328,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "engineer",
+          "worker_id": "task-bigfiles-003"
+        },
+        "path": "phases/01-ticket/workers/engineer/task-bigfiles-003/report.json",
+        "result": "pass",
+        "tool_errors": 12,
+        "usage": {
+          "assistant_turns": 54,
+          "budget_usd": 0.35,
+          "cache_read_cost_usd": 0.04386634,
+          "cache_read_tokens": 4386634,
+          "cache_write_cost_usd": 0.039088,
+          "cache_write_tokens": 312704,
+          "cost_usd": 0.09378524,
+          "input_cost_usd": 0.00001590000000000001,
+          "input_tokens": 159,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.010815,
+          "output_tokens": 18025,
+          "provider_total_tokens": 4717522,
+          "reasoning_tokens": 7716,
+          "thinking_blocks": 14,
+          "tool_calls": 90,
+          "tool_errors": 12,
+          "tool_results": 89,
+          "total_bucket_tokens": 4717522,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-bigfiles"
+        },
+        "path": "phases/02-reeval-task-bigfiles-003/workers/eval-manager/task-bigfiles/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 14,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.005875199999999999,
+          "cache_read_tokens": 326400,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.011296439999999998,
+          "input_cost_usd": 0.0034446599999999996,
+          "input_tokens": 38274,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0019765800000000004,
+          "output_tokens": 10981,
+          "provider_total_tokens": 375655,
+          "reasoning_tokens": 6854,
+          "thinking_blocks": 13,
+          "tool_calls": 22,
+          "tool_errors": 0,
+          "tool_results": 22,
+          "total_bucket_tokens": 375655,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-bigfiles-1"
+        },
+        "path": "phases/02-reeval-task-bigfiles-003/workers/eval-worker/task-bigfiles-1/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 15,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.001133568,
+          "cache_read_tokens": 62976,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.006438257999999999,
+          "input_cost_usd": 0.00476199,
+          "input_tokens": 52911,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0005427,
+          "output_tokens": 3015,
+          "provider_total_tokens": 118902,
+          "reasoning_tokens": 1176,
+          "thinking_blocks": 13,
+          "tool_calls": 21,
+          "tool_errors": 0,
+          "tool_results": 19,
+          "total_bucket_tokens": 118902,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-bigfiles"
+        },
+        "path": "phases/03-eval/workers/eval-manager/task-bigfiles/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 11,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.0024883199999999996,
+          "cache_read_tokens": 138240,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.02713365,
+          "input_cost_usd": 0.02313243,
+          "input_tokens": 257027,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0015129,
+          "output_tokens": 8405,
+          "provider_total_tokens": 403672,
+          "reasoning_tokens": 4289,
+          "thinking_blocks": 11,
+          "tool_calls": 19,
+          "tool_errors": 0,
+          "tool_results": 19,
+          "total_bucket_tokens": 403672,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-bigfiles-1"
+        },
+        "path": "phases/03-eval/workers/eval-worker/task-bigfiles-1/report.json",
+        "result": "pass",
+        "tool_errors": 4,
+        "usage": {
+          "assistant_turns": 40,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.006748416000000001,
+          "cache_read_tokens": 374912,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.02089056600000001,
+          "input_cost_usd": 0.01252989,
+          "input_tokens": 139221,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0016122599999999997,
+          "output_tokens": 8957,
+          "provider_total_tokens": 523090,
+          "reasoning_tokens": 4421,
+          "thinking_blocks": 32,
+          "tool_calls": 44,
+          "tool_errors": 4,
+          "tool_results": 44,
+          "total_bucket_tokens": 523090,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "e4059a21ae8942fa07a0e8e61bac971ed703237c"
+  },
+  "findings": [],
+  "identity": {
+    "mode": "organization",
+    "run_id": "run-1786170696452"
+  },
+  "kind": "run",
+  "result": "pass",
+  "schema_version": 1,
+  "state": "completed"
+}

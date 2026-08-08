@@ -2,7 +2,7 @@
 
 ## Status
 
-Merged.
+Approved.
 
 ## CTO decision — pre-cycle-6
 
@@ -41,17 +41,17 @@ None.
 
 ## Merge record
 
-- Implementation branch: `factory/task-bigfiles-003/1786170697772`
-- Implementation commit: `e4059a21ae8942fa07a0e8e61bac971ed703237c`
-- Detected at XSH commit: `e4059a21ae8942fa07a0e8e61bac971ed703237c`
-- Implementation run: `/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786170696452/phases/01-ticket`
+- Implementation branch: `{{IMPLEMENTATION_BRANCH}}`
+- Implementation commit: `{{IMPLEMENTATION_COMMIT}}`
+- Detected at XSH commit: `9bbc473af32e20e7bb3fa9b967a51acd89eb5200`
+- Implementation run: `{{IMPLEMENTATION_RUN}}`
 
 ## Source eval and manager
 
 - Eval: `task-bigfiles`
 - Shared handbook lineage: `runs/run-1786167293099/phases/03-eval/lineage/handbook-approved.md`
 - Manager run: `runs/run-1786167293099/phases/03-eval/workers/eval-manager/task-bigfiles/REPORT.md`
-- Executor run: `runs/run-1786167293099/phases/03-eval/workers/eval-worker/task-bigfiles-1/session.jsonl`
+- Executor run: `runs/run-1786167293099/phases/03-eval/workers/eval-worker/task-bigfiles-1/session.jsonl.bz2`
 - XSH baseline commit: `9bbc473af32e20e7bb3fa9b967a51acd89eb5200`
 
 ## Observation
@@ -69,7 +69,7 @@ separate `stat` probe, costing several extra turns.
 
 ## Evidence
 
-- Worker session `session.jsonl`: the probe at message `089afa02`
+- Worker session `session.jsonl.bz2`: the probe at message `089afa02`
   (`fs.files(root)` vs `fs.files(root, false, true, [], true)` vs
   `fs.files(root, false, false, [], true)`) reports
   `default 451 statTrue 451 statFalse 0`, directly reproducing the silent
@@ -155,14 +155,3 @@ signature rendering is tracked separately in `task-bigfiles-002`.
 A `task-bigfiles` replay at the merged XSH commit, checking that the worker
 emits correct non-zero sizes on the first or second attempt (no all-zero
 silent phase) and that all nine cases still pass byte-for-byte.
-
-## Post-cycle-6 validation
-
-- Decision: Accepted and merged.
-- Validation run: `runs/run-1786170696452`.
-- Merged XSH commit: `e4059a21ae8942fa07a0e8e61bac971ed703237c`.
-- Linked replay: `phases/02-reeval-task-bigfiles-003/report.json` passed;
-  the worker passed all nine cases and the manager accepted the ticket.
-- Regression boundary: the committed `fs.xsh` tests assert
-  `metadata-unavailable` for stat-derived reads with `stat=false`; the replay
-  confirms the normal `stat=true` size-reporting path remains byte-exact.

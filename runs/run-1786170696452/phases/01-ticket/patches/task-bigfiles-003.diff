@@ -1,0 +1,133 @@
+diff --git a/docs/SPEC.md b/docs/SPEC.md
+index 18c5a43..d007e31 100644
+--- a/docs/SPEC.md
++++ b/docs/SPEC.md
+@@ -1872,8 +1872,9 @@ files are written through a temporary file in the destination directory.
+ - `fs.walk(path: Path, gitignore: Bool = true, stat: Bool = true, hidden: Bool = false) -> Result[Stream[Record]]`.
+   The walk is **parallel and unordered** (entries arrive in traversal completion
+   order, not sorted) using one worker per CPU. Use `|> sort-by .path` when a
+-  deterministic order matters. `stat: false` skips the per-entry `stat` (zeroes
+-  the size/mode/time fields) for a cheaper traversal. Hidden entries are skipped
++  deterministic order matters. `stat: false` skips the per-entry `stat` for a
++  cheaper traversal; stat-derived fields are unavailable and reading them
++  returns a `metadata-unavailable` runtime error. Hidden entries are skipped
+   by default; pass `hidden: true` to include dot-prefixed files and directories.
+ - `fs.files(path: Path, gitignore: Bool = true, stat: Bool = true, exts: List[Str] = [], hidden: Bool = false) -> Result[Stream[Record]]` —
+   equivalent to `fs.walk |> where .kind == "file"`. Preferred over the full
+@@ -1888,8 +1889,8 @@ files are written through a temporary file in the destination directory.
+   enumerates only the entries directly under `path`; it never recurses. With
+   `ordered: false`, the stream reads directory entries lazily in host order.
+   `ordered: true` materializes and sorts the entries by path before yielding
+-  them. `stat: false` uses the directory entry type and leaves stat-derived
+-  fields at their zero values.
++  them. `stat: false` uses the directory entry type; stat-derived fields are
++  unavailable and reading them returns a `metadata-unavailable` runtime error.
+ - `fs.children(path: Path, stat: Bool = true, ordered: Bool = true) -> Result[Stream[Record]]` —
+   an alias of `fs.ls` for scripts that want to emphasize direct children.
+ - `fs.metadata(path: Path) -> Result[Record]`.
+@@ -1970,9 +1971,10 @@ Filesystem entry records have `path: Path`, `name: Str`, `kind: Str`,
+ `other_executable: Bool`. `fs.walk` skips hidden entries and `.git` directories
+ and honors `.gitignore` files by default; pass `hidden: true` to include hidden
+ entries and `gitignore: false` to disable ignore-file rules. `ext` is the file
+-extension without a leading dot. When `stat: false`, stat-derived numeric and
+-permission fields are zero or false; `path`, `name`, `kind`, and `ext` remain
+-populated.
++extension without a leading dot. When `stat: false`, stat-derived fields are
++unavailable: reading a numeric or permission field returns a
++`metadata-unavailable` runtime error rather than a zero or false placeholder.
++`path`, `name`, `kind`, and `ext` remain populated.
+ Filesystem stats records have `blocks_1k: Int`, `used_1k: Int`,
+ `available_1k: Int`, and `capacity_percent: Int`.
+ Filesystem mount records have `filesystem: Str`, `mounted_on: Path`,
+diff --git a/docs/STREAMS.md b/docs/STREAMS.md
+index ba84bd3..3ce327d 100644
+--- a/docs/STREAMS.md
++++ b/docs/STREAMS.md
+@@ -97,7 +97,8 @@ plain reusable value; laziness only applies to consume-in-place. Live *sources*
+ (`src/modules/fs.rs`). `WalkEmit::{All,Files,Dirs}` gates which records leave the
+ producer; visible directories are descended by default, while dot-prefixed child
+ entries are skipped unless `hidden: true` is set. `stat: false` skips the
+-per-entry `stat` (zeroes size/mode/time). `fs.files(..., exts: [...])` filters
++per-entry `stat`; stat-derived fields are unavailable and reading them returns
++a `metadata-unavailable` runtime error. `fs.files(..., exts: [...])` filters
+ child files by raw extension before `stat` and record construction, while still
+ traversing directories so matching files deeper in the tree can be reached.
+ 
+diff --git a/src/runtime/value.rs b/src/runtime/value.rs
+index 433db56..10792f3 100644
+--- a/src/runtime/value.rs
++++ b/src/runtime/value.rs
+@@ -225,6 +225,14 @@ impl FsEntryValue {
+ 
+     pub fn field_value(&self, name: &str) -> Option<Result<Value, RuntimeError>> {
+         let value = match name {
++            "accessed" | "blocks_512" | "gid" | "mode" | "modified" | "size" | "uid" => {
++                return Some(Err(RuntimeError::new(
++                    "metadata-unavailable",
++                    format!(
++                        "filesystem entry field `{name}` requires stat=true; this entry was created with stat=false"
++                    ),
++                )));
++            }
+             "path" => PathValue::new(self.path.as_os_str().as_bytes().to_vec()).map(Value::Path),
+             "name" => Ok(Value::Str(
+                 self.path
+@@ -239,11 +247,15 @@ impl FsEntryValue {
+                     .unwrap_or_else(|| "".into()),
+             )),
+             "kind" => Ok(Value::Str(Arc::from(self.kind.as_str()))),
+-            "accessed" | "blocks_512" | "gid" | "mode" | "modified" | "size" | "uid" => {
+-                Ok(Value::Int(0))
+-            }
+             "executable" | "group_executable" | "other_executable" | "owner_executable"
+-            | "setgid" | "setuid" | "sticky" | "world_writable" => Ok(Value::Bool(false)),
++            | "setgid" | "setuid" | "sticky" | "world_writable" => {
++                return Some(Err(RuntimeError::new(
++                    "metadata-unavailable",
++                    format!(
++                        "filesystem entry field `{name}` requires stat=true; this entry was created with stat=false"
++                    ),
++                )));
++            }
+             _ => return None,
+         };
+         Some(value)
+diff --git a/tests/xsh/stdlib/fs.xsh b/tests/xsh/stdlib/fs.xsh
+index e06597d..904ba22 100644
+--- a/tests/xsh/stdlib/fs.xsh
++++ b/tests/xsh/stdlib/fs.xsh
+@@ -46,6 +46,15 @@ proc test_fs_tree_metadata_install_and_locking(ctx: TestContext) [fs, error] {
+   let listed = fs.ls(nested)? |> sort-by .name
+   test.eq(children.len(), listed.len())?
+   test.ok(fs.children(nested, stat: false, ordered: false)? |> any .name == "data.txt")?
++  let unstat_children = test.run_script(
++    ctx,
++    f"""
++let entry = (fs.children(fp"${nested}", stat: false, ordered: false)? |> first())?
++print $entry.size
++""",
++  )?
++  test.eq(unstat_children.status, 3)?
++  test.contains(unstat_children.stderr, "metadata-unavailable")?
+   test.ok(fs.walk(src)? |> any .name == "data.txt")?
+   test.ok(fs.files(src)? |> any .name == "data.txt")?
+   test.ok(fs.dirs(src)? |> any .name == "nested")?
+@@ -401,9 +410,15 @@ proc test_fs_files_recurses_with_raw_walk_and_preserves_entry_ext(ctx: TestConte
+   test.eq(cheap_c.name, "main.c")?
+   test.eq(cheap_c.ext, "c")?
+   test.eq(cheap_c.kind, "file")?
+-  test.eq(cheap_c.size, 0)?
+-  test.eq(cheap_c.mode, 0)?
+-  test.eq(cheap_c.executable, false)?
++  let unstat_files = test.run_script(
++    ctx,
++    f"""
++let entry = (fs.files(fp"${root}", false, false, [], true) |> first())?
++print $entry.size
++""",
++  )?
++  test.eq(unstat_files.status, 3)?
++  test.contains(unstat_files.stderr, "metadata-unavailable")?
+   test.eq(cheap_c.path.strip_prefix(root)?.display(), "src/main.c")?
+ }
+ 
