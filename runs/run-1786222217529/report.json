@@ -1,0 +1,257 @@
+{
+  "artifacts": [
+    {
+      "kind": "phase-reports",
+      "path": "phases/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 77,
+      "budget_failures": 0,
+      "cost_usd": 0.035790209999999996,
+      "tool_errors": 2,
+      "total_bucket_tokens": 1194725.0,
+      "unknown_costs": 0,
+      "workers": 5
+    },
+    "mode": "organization",
+    "outcomes": {
+      "cycle": "pass",
+      "evaluator": "pass",
+      "infrastructure": "pass",
+      "product": "pass"
+    },
+    "phases": [
+      {
+        "id": "01-ticket",
+        "path": "phases/01-ticket/report.json",
+        "result": "pass",
+        "valid": true
+      },
+      {
+        "id": "02-reeval-task-histogram-010",
+        "path": "phases/02-reeval-task-histogram-010/report.json",
+        "result": "pass",
+        "valid": true
+      },
+      {
+        "id": "03-eval",
+        "path": "phases/03-eval/report.json",
+        "result": "pass",
+        "valid": true
+      }
+    ],
+    "throughput": {
+      "admitted_tickets": 1,
+      "delivered_tickets": 1,
+      "delivery_conversion": 1.0,
+      "fresh_engineer_rows": 0,
+      "handbook_quarantines": 0,
+      "overlap_linked_replays": false,
+      "overlap_retained_fresh": false,
+      "reeval_dispatched": 1,
+      "reeval_passed": 1,
+      "retained_fast_paths": 1,
+      "retained_rows": 1
+    },
+    "tool_errors": [
+      {
+        "report": "phases/03-eval/workers/eval-worker/task-bigfiles-1/report.json",
+        "summary": "err[check.display-conversion]: value cannot be displayed by print\n  /tmp/t.xsh:5:20\n    print \"decimal:\" $a\n                     ^^ value cannot be displayed by print\n\nerr[check.display-conversion]: value cannot be displayed by print\n  /tmp/t.xsh:6:16\n    print \"int:\" $b\n                 ^^ value cannot be displayed by print\n---05---\nerr[check.display-conversion]: value cannot be displayed by print\n  /tmp/t.xsh:5:20\n    print \"decimal:\" $a\n                     ^^ value cannot be displayed by print\n\nerr[check.display-conversion]: value cannot be displayed by print\n  /tmp/t.xsh:6:16\n    print \"int:\" $b\n                 ^^ value cannot be displayed by print\n---abc---\nerr[check.display-conversion]: value cannot be displayed by print\n  /tmp/t.xsh:5:20\n    print \"decimal:\" $a\n                     ^^ value cannot be displayed by print\n\nerr[check.display-conversion]: value cannot be displayed by print\n  /tmp/t.xsh:6:16\n    print \"int:\" $b\n                 ^^ value cannot be displayed by print\n---empty---\nerr[check.display-conversion]: value cannot be displayed by print\n  /tmp/t.xsh:5:20\n    print \"decimal:\" $a\n                     ^^ value cannot be displayed by print\n\nerr[check.display-conversion]: value cannot be displayed by print\n  /tmp/t.xsh:6:16\n    print \"int:\" $b\n                 ^^ value cannot be displayed by print\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 8,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-bigfiles-1"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-worker/task-bigfiles-1/report.json",
+        "summary": "Could not find edits[1] in /work/bigfiles.xsh. The oldText must match exactly including all whitespace and newlines.",
+        "tool": "edit",
+        "turn": 15,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-bigfiles-1"
+        }
+      }
+    ],
+    "workers": [
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-histogram"
+        },
+        "path": "phases/02-reeval-task-histogram-010/workers/eval-manager/task-histogram/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 7,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.00214272,
+          "cache_read_tokens": 119040,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.0066530700000000005,
+          "input_cost_usd": 0.0027846900000000003,
+          "input_tokens": 30941,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0017256600000000002,
+          "output_tokens": 9587,
+          "provider_total_tokens": 159568,
+          "reasoning_tokens": 4442,
+          "thinking_blocks": 7,
+          "tool_calls": 14,
+          "tool_errors": 0,
+          "tool_results": 14,
+          "total_bucket_tokens": 159568,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-histogram-1"
+        },
+        "path": "phases/02-reeval-task-histogram-010/workers/eval-worker/task-histogram-1/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 35,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.008493695999999998,
+          "cache_read_tokens": 471872,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.011999105999999995,
+          "input_cost_usd": 0.00198405,
+          "input_tokens": 22045,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0015213599999999994,
+          "output_tokens": 8452,
+          "provider_total_tokens": 502369,
+          "reasoning_tokens": 3625,
+          "thinking_blocks": 25,
+          "tool_calls": 50,
+          "tool_errors": 0,
+          "tool_results": 50,
+          "total_bucket_tokens": 502369,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-bigfiles-retry-1"
+        },
+        "path": "phases/03-eval/workers/eval-manager/task-bigfiles-retry-1/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 6,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.00166464,
+          "cache_read_tokens": 92480,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.00491193,
+          "input_cost_usd": 0.00249021,
+          "input_tokens": 27669,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0007570799999999999,
+          "output_tokens": 4206,
+          "provider_total_tokens": 124355,
+          "reasoning_tokens": 1489,
+          "thinking_blocks": 5,
+          "tool_calls": 13,
+          "tool_errors": 0,
+          "tool_results": 13,
+          "total_bucket_tokens": 124355,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-bigfiles"
+        },
+        "path": "phases/03-eval/workers/eval-manager/task-bigfiles/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 6,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.00166464,
+          "cache_read_tokens": 92480,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.00491193,
+          "input_cost_usd": 0.00249021,
+          "input_tokens": 27669,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0007570799999999999,
+          "output_tokens": 4206,
+          "provider_total_tokens": 124355,
+          "reasoning_tokens": 1489,
+          "thinking_blocks": 5,
+          "tool_calls": 13,
+          "tool_errors": 0,
+          "tool_results": 13,
+          "total_bucket_tokens": 124355,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-bigfiles-1"
+        },
+        "path": "phases/03-eval/workers/eval-worker/task-bigfiles-1/report.json",
+        "result": "pass",
+        "tool_errors": 2,
+        "usage": {
+          "assistant_turns": 23,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.004713983999999999,
+          "cache_read_tokens": 261888,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.007314174000000001,
+          "input_cost_usd": 0.00139401,
+          "input_tokens": 15489,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0012061799999999996,
+          "output_tokens": 6701,
+          "provider_total_tokens": 284078,
+          "reasoning_tokens": 4129,
+          "thinking_blocks": 19,
+          "tool_calls": 24,
+          "tool_errors": 2,
+          "tool_results": 24,
+          "total_bucket_tokens": 284078,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "1231645ddce6a8aec37854109d57d3bbfd56691b"
+  },
+  "findings": [],
+  "identity": {
+    "mode": "organization",
+    "run_id": "run-1786222217529"
+  },
+  "kind": "run",
+  "result": "pass",
+  "schema_version": 1,
+  "state": "completed"
+}

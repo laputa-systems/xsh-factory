@@ -330,7 +330,7 @@ proc test_role_defaults_are_coded_and_capped() [env, error] {
   test.eq(control.default_max_wall_seconds("director"), "1800")?
   test.eq(control.default_max_wall_seconds("eval-designer"), "720")?
   test.eq(control.default_max_turns("eval-manager"), "24")?
-  test.eq(control.default_max_wall_seconds("eval-manager"), "600")?
+  test.eq(control.default_max_wall_seconds("eval-manager"), "300")?
   test.eq(control.default_max_wall_seconds("eval-worker"), "1800")?
   test.eq(control.default_max_wall_seconds("engineer"), "1800")?
   test.eq(control.retained_replay_manager_wall_seconds(), "300")?

@@ -2733,6 +2733,8 @@ proc test_eval_manager_assignment_proves_exact_handbook_read() [fs, error] {
   test.contains(assignment, "Candidate acceptance: fail.")?
   test.contains(assignment, "Keep evidence ownership separate")?
   test.contains(assignment, "do not require the evaluator sandbox to duplicate")?
+  test.contains(assignment, "exact artifact/review paths")?
+  test.contains(assignment, "Do not guess an `artifacts/`")?
 }
 
 proc test_organization_delivery_is_a_success_gate() [fs, error] {

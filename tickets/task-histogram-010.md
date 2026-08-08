@@ -2,7 +2,7 @@
 
 ## Status
 
-Approved.
+Merged.
 
 ## CTO review — cycle 29 close
 
@@ -48,10 +48,10 @@ None.
 
 ## Merge record
 
-- Implementation branch: `{{IMPLEMENTATION_BRANCH}}`
-- Implementation commit: `{{IMPLEMENTATION_COMMIT}}`
-- Detected at XSH commit: `{{DETECTED_XSH_COMMIT}}`
-- Implementation run: `{{IMPLEMENTATION_RUN}}`
+- Implementation branch: `factory/task-histogram-010/1786220391269`
+- Implementation commit: `1231645ddce6a8aec37854109d57d3bbfd56691b`
+- Detected at XSH commit: `1231645ddce6a8aec37854109d57d3bbfd56691b`
+- Implementation run: `/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786220380763/phases/01-ticket`
 
 ## Source eval and manager
 

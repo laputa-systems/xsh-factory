@@ -208,7 +208,7 @@ export pure default_max_wall_seconds(role: Str) -> Str {
   }
 
   if role == "eval-manager" {
-    return "600"
+    return "300"
   }
 
   if role == "eval-worker" {
@@ -222,9 +222,10 @@ export pure default_max_wall_seconds(role: Str) -> Str {
   return ""
 }
 
-## Retained replays are valuable quality evidence, but they must not consume
-## the same closeout budget as fresh delivery. The organization controller
-## applies this lower bound only to an already-retained branch.
+## Eval-manager closeout is bounded tightly because the manager reads a
+## controller-prepared packet, not an open-ended investigation. A failed
+## attempt receives one shorter report-recovery retry in eval.xsh. Retained
+## replays use the same 300-second bound.
 export pure retained_replay_manager_wall_seconds() -> Str {
   return "300"
 }
