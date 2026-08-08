@@ -1,0 +1,58 @@
+{
+  "classification": "restriction_failed",
+  "correctness": {
+    "hidden_deep": true,
+    "hidden_dotdir": true,
+    "hidden_dotfile": true,
+    "hidden_plain": true,
+    "hidden_rel": true,
+    "hidden_targz": true,
+    "public": true
+  },
+  "eval_id": "task-pathparts",
+  "image_id": "sha256:5fefbc2038c0db425118b61fe2afbf3b3717ceca8a98bfb14b95a884b76d6379",
+  "inputs": {
+    "agents_sha256": "1df8bf2bf3b49e3488a60b8c7086d4366bf730e1c05e6b2a0d32266f18b12bd3",
+    "handbook_sha256": "3b56a781606faa1ae0eb811af09d10094080152dae78d9f057cca7de101e126b",
+    "task_sha256": "dbd7c489972e81773faa2ad7a8f8507987216e42d6da94946a672b662c1c49fe"
+  },
+  "model": "deepseek/deepseek-v4-flash-0731",
+  "offline": "unknown",
+  "outputs": {
+    "candidate_sha256": "54ab1746ef6e90d4eb8d64f08a74b859eb33ad6f010602ec954fedd5574ad2e3",
+    "oracle_sha256": "54ab1746ef6e90d4eb8d64f08a74b859eb33ad6f010602ec954fedd5574ad2e3"
+  },
+  "platform": "linux/arm64",
+  "protocol": {
+    "artifact_present": true,
+    "review_ok": true
+  },
+  "provider": "openrouter",
+  "restrictions": {
+    "no_forbidden": true,
+    "passed": false,
+    "path_referenced": false
+  },
+  "result": "fail",
+  "session": "/session/session.jsonl",
+  "telemetry": "unknown",
+  "thinking": "high",
+  "timings": {
+    "hidden_deep_candidate_wall_ns": 11346607,
+    "hidden_deep_oracle_wall_ns": 13567737,
+    "hidden_dotdir_candidate_wall_ns": 11326065,
+    "hidden_dotdir_oracle_wall_ns": 10950397,
+    "hidden_dotfile_candidate_wall_ns": 13117777,
+    "hidden_dotfile_oracle_wall_ns": 13456862,
+    "hidden_plain_candidate_wall_ns": 13182611,
+    "hidden_plain_oracle_wall_ns": 11850775,
+    "hidden_rel_candidate_wall_ns": 11470316,
+    "hidden_rel_oracle_wall_ns": 11480273,
+    "hidden_targz_candidate_wall_ns": 13346986,
+    "hidden_targz_oracle_wall_ns": 13244236,
+    "public_candidate_wall_ns": 12755610,
+    "public_oracle_wall_ns": 11867233
+  },
+  "trial_id": "1",
+  "xsh_commit": "30fabd4e12181830d146615b978861bef0737f96"
+}

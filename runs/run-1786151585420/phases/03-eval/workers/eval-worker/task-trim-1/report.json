@@ -1,0 +1,134 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786151585420/phases/03-eval/workers/eval-worker/task-trim-1/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_state": "pass",
+    "agent_wall_ms": 95326,
+    "artifact": {
+      "name": "trim.xsh",
+      "state": "present"
+    },
+    "budget_state": "pass",
+    "classification": "pass",
+    "evaluator_manifest": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786151585420/phases/03-eval/workers/eval-worker/task-trim-1/run.json",
+    "evaluator_state": "pass",
+    "reporting_state": "pass",
+    "result": "pass",
+    "review": {
+      "state": "present"
+    }
+  },
+  "findings": [
+    {
+      "count": 4,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "eval_id": "task-trim",
+    "role": "eval-worker",
+    "run_id": "03-eval",
+    "worker_id": "task-trim-1"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "provider_telemetry": {
+    "event_turns": 21,
+    "events_path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786151585420/phases/03-eval/workers/eval-worker/task-trim-1/session.jsonl.events.jsonl",
+    "output_tokens_per_second": 0,
+    "present": true,
+    "provider_errors": [],
+    "response_elapsed_ms": 0,
+    "retry_count": 0,
+    "retry_delay_ms": 0,
+    "retry_errors": [],
+    "retry_failures": 0,
+    "retry_successes": 0
+  },
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786151585420/phases/03-eval/workers/eval-worker/task-trim-1/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 20,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 92602
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786151585420/phases/03-eval/workers/eval-worker/task-trim-1/session.jsonl.bz2",
+      "summary": "err[check.type-mismatch]: type mismatch\n  probe.xsh:2:19\n    let path = Path(argv.get(0))\n                    ^^^^^^^^^^^ expected Str, found Result[Str, Error]\n\nerr[check.standard-module-shadow]: name `path` shadows the standard module `path`\n  probe.xsh:2:3\n    let path = Path(argv.get(0))\n    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^ name `path` shadows the standard module `path`\n\nerr[check.effect-violation]: `?` requires the `error` effect\n  probe.xsh:3:13\n    let txt = fs.read_text(path)?\n              ^^^^^^^^^^^^^^^^^^^ `?` requires the `error` effect\n=== with blank and spaces ===\nerr[check.type-mismatch]: type mismatch\n  probe.xsh:2:19\n    let path = Path(argv.get(0))\n                    ^^^^^^^^^^^ expected Str, found Result[Str, Error]\n\nerr[check.standard-module-shadow]: name `path` shadows the standard module `path`\n  probe.xsh:2:3\n    let path = Path(argv.get(0))\n    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^ name `path` shadows the standard module `path`\n\nerr[check.effect-violation]: `?` requires the `error` effect\n  probe.xsh:3:13\n    let txt = fs.read_text(path)?\n              ^^^^^^^^^^^^^^^^^^^ `?` requires the `error` effect\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 7
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786151585420/phases/03-eval/workers/eval-worker/task-trim-1/session.jsonl.bz2",
+      "summary": "err[check.try-result]: `?` can be applied only to Result values\n  probe.xsh:2:18\n    let inp = Path(argv.get(0, \"in.txt\")?)\n                   ^^^^^^^^^^^^^^^^^^^^^^ `?` can be applied only to Result values\n=== with blank and spaces ===\nerr[check.try-result]: `?` can be applied only to Result values\n  probe.xsh:2:18\n    let inp = Path(argv.get(0, \"in.txt\")?)\n                   ^^^^^^^^^^^^^^^^^^^^^^ `?` can be applied only to Result values\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 8
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786151585420/phases/03-eval/workers/eval-worker/task-trim-1/session.jsonl.bz2",
+      "summary": "err[parse.unsupported-boolean-operator]: unsupported operator '||': XSH boolean operators are the word forms 'or'\n  trim.xsh:2:18\n    return b == 32 || b == 9\n                   ^^ use 'or' instead of '||'\n\nerr[parse.expected-terminator]: expected statement terminator\n  trim.xsh:2:18\n    return b == 32 || b == 9\n                   ^ expected statement terminator\n\nerr[parse.expected-expression]: expected expression\n  trim.xsh:2:18\n    return b == 32 || b == 9\n                   ^ expected expression\n\nerr[parse.unsupported-boolean-operator]: unsupported operator '&&': XSH boolean operators are the word forms 'and'\n  trim.xsh:8:19\n    while start < n && is_ws(line.byte_at(start, 0)) {\n                    ^^ use 'and' instead of '&&'\n\nerr[parse.expected-token]: expected `{` to start block\n  trim.xsh:8:19\n    while start < n && is_ws(line.byte_at(start, 0)) {\n                    ^ expected `{` to start block\n\nerr[parse.unsupported-boolean-operator]: unsupported operator '&&': XSH boolean operators are the word forms 'and'\n  trim.xsh:12:21\n    while end > start && is_ws(line.byte_at(end - 1, 0)) {\n                      ^^ use 'and' instead of '&&'\n\nerr[parse.expected-token]: expected `{` to start block\n  trim.xsh:12:21\n    while end > start && is_ws(line.byte_at(end - 1, 0)) {\n                      ^ expected `{` to start block\n\nerr[parse.expected-expression]: expected expression\n  trim.xsh:14:3\n    }\n    ^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  trim.xsh:16:1\n  }\n  ^ expected expression\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 11
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786151585420/phases/03-eval/workers/eval-worker/task-trim-1/session.jsonl.bz2",
+      "summary": "err[check.effect-violation]: proc `trim_line` is unrestricted — if it is side-effect-free, declare it with an empty effect list `[]` before calling it from a proc with declared effects\n  trim.xsh:23:18\n      |> map { |l| trim_line(l) }\n                   ^^^^^^^^^^^^ proc `trim_line` is unrestricted — if it is side-effect-free, declare it with an empty effect list `[]` before calling it from a proc with declared effects\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 12
+    }
+  ],
+  "tools": [
+    {
+      "count": 23,
+      "name": "bash"
+    },
+    {
+      "count": 3,
+      "name": "read"
+    },
+    {
+      "count": 1,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 21,
+    "budget_usd": 0.5,
+    "cache_read_cost_usd": 0.004377600000000001,
+    "cache_read_tokens": 243200,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.00740862,
+    "input_cost_usd": 0.0017665200000000002,
+    "input_tokens": 19628,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.0012645,
+    "output_tokens": 7025,
+    "provider_total_tokens": 269853,
+    "reasoning_tokens": 3295,
+    "thinking_blocks": 18,
+    "tool_calls": 27,
+    "tool_errors": 4,
+    "tool_results": 27,
+    "total_bucket_tokens": 269853,
+    "user_messages": 1
+  }
+}

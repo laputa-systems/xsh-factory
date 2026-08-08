@@ -1,0 +1,268 @@
+{
+  "artifacts": [
+    {
+      "kind": "phase-reports",
+      "path": "phases/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 71,
+      "budget_failures": 0,
+      "cost_usd": 0.048676625999999994,
+      "tool_errors": 7,
+      "total_bucket_tokens": 1591116.0,
+      "unknown_costs": 0,
+      "workers": 4
+    },
+    "mode": "organization",
+    "outcomes": {
+      "cycle": "fail",
+      "evaluator": "fail",
+      "infrastructure": "pass",
+      "product": "fail"
+    },
+    "phases": [
+      {
+        "id": "01-ticket",
+        "path": "phases/01-ticket/report.json",
+        "result": "pass",
+        "valid": true
+      },
+      {
+        "id": "02-reeval-task-pathparts-001",
+        "path": "phases/02-reeval-task-pathparts-001/report.json",
+        "result": "fail",
+        "valid": true
+      },
+      {
+        "id": "03-eval",
+        "path": "phases/03-eval/report.json",
+        "result": "pass",
+        "valid": true
+      }
+    ],
+    "tool_errors": [
+      {
+        "report": "phases/02-reeval-task-pathparts-001/workers/eval-worker/task-pathparts-1/report.json",
+        "summary": "err[check.standard-module-shadow]: name `path` shadows the standard module `path`\n  pathparts.xsh:2:3\n    let path = Path(argv[0])\n    ^^^^^^^^^^^^^^^^^^^^^^^^ name `path` shadows the standard module `path`\n\nerr[check.unknown-module-api]: unknown module API\n  pathparts.xsh:3:13\n    let ext = path.ext_or(\"none\")\n              ^^^^^^^^^^^^^^^^^^^ unknown module API\n\nerr[check.unknown-module-api]: unknown module API\n  pathparts.xsh:4:16\n    print \"dir=\" $path.dirname().display()\n                 ^^^^^^^^^^^^^^^ unknown module API\n\nerr[check.unknown-module-api]: unknown module API\n  pathparts.xsh:5:17\n    print \"name=\" $path.basename()\n                  ^^^^^^^^^^^^^^^^ unknown module API\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 6,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-pathparts-1"
+        }
+      },
+      {
+        "report": "phases/02-reeval-task-pathparts-001/workers/eval-worker/task-pathparts-1/report.json",
+        "summary": "err[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  pathparts.xsh:6:18\n    print \"ext=\" + ext\n                   ^^^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $ext\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  pathparts.xsh:6:18\n    print \"ext=\" + ext\n                   ^^^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $ext\nDIFF [/srv/app/server.cfg]\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  pathparts.xsh:6:18\n    print \"ext=\" + ext\n                   ^^^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $ext\n--- /dev/fd/64\n+++ /dev/fd/65\n@@ -0,0 +1,3 @@\n+dir=/srv/app\n+name=server.cfg\n+ext=cfg\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  pathparts.xsh:6:18\n    print \"ext=\" + ext\n                   ^^^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $ext\nDIFF [app.yaml]\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  pathparts.xsh:6:18\n    print \"ext=\" + ext\n                   ^^^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $ext\n--- /dev/fd/64\n+++ /dev/fd/65\n@@ -0,0 +1,3 @@\n+dir=.\n+name=app.yaml\n+ext=yaml\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  pathparts.xsh:6:18\n    print \"ext=\" + ext\n                   ^^^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $ext\nDIFF [pkg.tar.gz]\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  pathparts.xsh:6:18\n    print \"ext=\" + ext\n                   ^^^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $ext\n--- /dev/fd/64\n+++ /dev/fd/65\n@@ -0,0 +1,3 @@\n+dir=.\n+name=pkg.tar.gz\n+ext=gz\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  pathparts.xsh:6:18\n    print \"ext=\" + ext\n                   ^^^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $ext\nDIFF [.profile]\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  pathparts.xsh:6:18\n    print \"ext=\" + ext\n                   ^^^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $ext\n--- /dev/fd/64\n+++ /dev/fd/65\n@@ -0,0 +1,3 @@\n+dir=.\n+name=.profile\n+ext=none\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  pathparts.xsh:6:18\n    print \"ext=\" + ext\n                   ^^^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $ext\nDIFF [/tmp/]\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  pathparts.xsh:6:18\n    print \"ext=\" + ext\n                   ^^^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $ext\n--- /dev/fd/64\n+++ /dev/fd/65\n@@ -0,0 +1,3 @@\n+dir=/\n+name=tmp\n+ext=none\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  pathparts.xsh:6:18\n    print \"ext=\" + ext\n                   ^^^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $ext\nDIFF [/]\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  pathparts.xsh:6:18\n    print \"ext=\" + ext\n                   ^^^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $ext\n--- /dev/fd/64\n+++ /dev/fd/65\n@@ -0,0 +1,3 @@\n+dir=/\n+name=/\n+ext=none\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  pathparts.xsh:6:18\n    print \"ext=\" + ext\n                   ^^^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $ext\nDIFF [plain]\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  pathparts.xsh:6:18\n    print \"ext=\" + ext\n                   ^^^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $ext\n--- /dev/fd/64\n+++ /dev/fd/65\n@@ -0,0 +1,3 @@\n+dir=.\n+name=plain\n+ext=none\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  pathparts.xsh:6:18\n    print \"ext=\" + ext\n                   ^^^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $ext\nDIFF [noext.txt]\nerr[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  pathparts.xsh:6:18\n    print \"ext=\" + ext\n                   ^^^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $ext\n--- /dev/fd/64\n+++ /dev/fd/65\n@@ -0,0 +1,3 @@\n+dir=.\n+name=noext.txt\n+ext=txt\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 9,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-pathparts-1"
+        }
+      },
+      {
+        "report": "phases/02-reeval-task-pathparts-001/workers/eval-worker/task-pathparts-1/report.json",
+        "summary": "---FMT DONE---\nproc main(...argv: List[Str]) {\n  let p = Path(argv[0])\n  let ext = p.ext_or(\"none\")\n  print f\"dir=${p.dirname().display()}\"\n  print f\"name=${p.basename()}\"\n  print f\"ext=${ext}\"\n}\n---LINT---\nwarn[lint.path-constructor]: prefer p-string interpolation over `Path(...)`\n  pathparts.xsh:2:11\n    let p = Path(argv[0])\n            ------------- use path string syntax instead\nnote: `Path(...)` remains a cast, but p-strings are the preferred path syntax\nhelp: replace with path string -> fp\"${argv[0]}\"\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 12,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-pathparts-1"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-worker/task-trim-1/report.json",
+        "summary": "err[check.type-mismatch]: type mismatch\n  probe.xsh:2:19\n    let path = Path(argv.get(0))\n                    ^^^^^^^^^^^ expected Str, found Result[Str, Error]\n\nerr[check.standard-module-shadow]: name `path` shadows the standard module `path`\n  probe.xsh:2:3\n    let path = Path(argv.get(0))\n    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^ name `path` shadows the standard module `path`\n\nerr[check.effect-violation]: `?` requires the `error` effect\n  probe.xsh:3:13\n    let txt = fs.read_text(path)?\n              ^^^^^^^^^^^^^^^^^^^ `?` requires the `error` effect\n=== with blank and spaces ===\nerr[check.type-mismatch]: type mismatch\n  probe.xsh:2:19\n    let path = Path(argv.get(0))\n                    ^^^^^^^^^^^ expected Str, found Result[Str, Error]\n\nerr[check.standard-module-shadow]: name `path` shadows the standard module `path`\n  probe.xsh:2:3\n    let path = Path(argv.get(0))\n    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^ name `path` shadows the standard module `path`\n\nerr[check.effect-violation]: `?` requires the `error` effect\n  probe.xsh:3:13\n    let txt = fs.read_text(path)?\n              ^^^^^^^^^^^^^^^^^^^ `?` requires the `error` effect\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 7,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-trim-1"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-worker/task-trim-1/report.json",
+        "summary": "err[check.try-result]: `?` can be applied only to Result values\n  probe.xsh:2:18\n    let inp = Path(argv.get(0, \"in.txt\")?)\n                   ^^^^^^^^^^^^^^^^^^^^^^ `?` can be applied only to Result values\n=== with blank and spaces ===\nerr[check.try-result]: `?` can be applied only to Result values\n  probe.xsh:2:18\n    let inp = Path(argv.get(0, \"in.txt\")?)\n                   ^^^^^^^^^^^^^^^^^^^^^^ `?` can be applied only to Result values\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 8,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-trim-1"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-worker/task-trim-1/report.json",
+        "summary": "err[parse.unsupported-boolean-operator]: unsupported operator '||': XSH boolean operators are the word forms 'or'\n  trim.xsh:2:18\n    return b == 32 || b == 9\n                   ^^ use 'or' instead of '||'\n\nerr[parse.expected-terminator]: expected statement terminator\n  trim.xsh:2:18\n    return b == 32 || b == 9\n                   ^ expected statement terminator\n\nerr[parse.expected-expression]: expected expression\n  trim.xsh:2:18\n    return b == 32 || b == 9\n                   ^ expected expression\n\nerr[parse.unsupported-boolean-operator]: unsupported operator '&&': XSH boolean operators are the word forms 'and'\n  trim.xsh:8:19\n    while start < n && is_ws(line.byte_at(start, 0)) {\n                    ^^ use 'and' instead of '&&'\n\nerr[parse.expected-token]: expected `{` to start block\n  trim.xsh:8:19\n    while start < n && is_ws(line.byte_at(start, 0)) {\n                    ^ expected `{` to start block\n\nerr[parse.unsupported-boolean-operator]: unsupported operator '&&': XSH boolean operators are the word forms 'and'\n  trim.xsh:12:21\n    while end > start && is_ws(line.byte_at(end - 1, 0)) {\n                      ^^ use 'and' instead of '&&'\n\nerr[parse.expected-token]: expected `{` to start block\n  trim.xsh:12:21\n    while end > start && is_ws(line.byte_at(end - 1, 0)) {\n                      ^ expected `{` to start block\n\nerr[parse.expected-expression]: expected expression\n  trim.xsh:14:3\n    }\n    ^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  trim.xsh:16:1\n  }\n  ^ expected expression\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 11,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-trim-1"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-worker/task-trim-1/report.json",
+        "summary": "err[check.effect-violation]: proc `trim_line` is unrestricted — if it is side-effect-free, declare it with an empty effect list `[]` before calling it from a proc with declared effects\n  trim.xsh:23:18\n      |> map { |l| trim_line(l) }\n                   ^^^^^^^^^^^^ proc `trim_line` is unrestricted — if it is side-effect-free, declare it with an empty effect list `[]` before calling it from a proc with declared effects\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 12,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-trim-1"
+        }
+      }
+    ],
+    "workers": [
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-pathparts"
+        },
+        "path": "phases/02-reeval-task-pathparts-001/workers/eval-manager/task-pathparts/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 15,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.007410816,
+          "cache_read_tokens": 411712,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.017110475999999996,
+          "input_cost_usd": 0.00662886,
+          "input_tokens": 73654,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0030708000000000003,
+          "output_tokens": 17060,
+          "provider_total_tokens": 502426,
+          "reasoning_tokens": 12182,
+          "thinking_blocks": 13,
+          "tool_calls": 22,
+          "tool_errors": 0,
+          "tool_results": 22,
+          "total_bucket_tokens": 502426,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-pathparts-1"
+        },
+        "path": "phases/02-reeval-task-pathparts-001/workers/eval-worker/task-pathparts-1/report.json",
+        "result": "pass",
+        "tool_errors": 3,
+        "usage": {
+          "assistant_turns": 18,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.0031380479999999996,
+          "cache_read_tokens": 174336,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.005793318,
+          "input_cost_usd": 0.0014888700000000004,
+          "input_tokens": 16543,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0011664,
+          "output_tokens": 6480,
+          "provider_total_tokens": 197359,
+          "reasoning_tokens": 4214,
+          "thinking_blocks": 16,
+          "tool_calls": 18,
+          "tool_errors": 3,
+          "tool_results": 18,
+          "total_bucket_tokens": 197359,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-trim"
+        },
+        "path": "phases/03-eval/workers/eval-manager/task-trim/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 17,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.009810432,
+          "cache_read_tokens": 545024,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.018364212,
+          "input_cost_usd": 0.00520794,
+          "input_tokens": 57866,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0033458399999999997,
+          "output_tokens": 18588,
+          "provider_total_tokens": 621478,
+          "reasoning_tokens": 10240,
+          "thinking_blocks": 15,
+          "tool_calls": 24,
+          "tool_errors": 0,
+          "tool_results": 24,
+          "total_bucket_tokens": 621478,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-trim-1"
+        },
+        "path": "phases/03-eval/workers/eval-worker/task-trim-1/report.json",
+        "result": "pass",
+        "tool_errors": 4,
+        "usage": {
+          "assistant_turns": 21,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.004377600000000001,
+          "cache_read_tokens": 243200,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.00740862,
+          "input_cost_usd": 0.0017665200000000002,
+          "input_tokens": 19628,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0012645,
+          "output_tokens": 7025,
+          "provider_total_tokens": 269853,
+          "reasoning_tokens": 3295,
+          "thinking_blocks": 18,
+          "tool_calls": 27,
+          "tool_errors": 4,
+          "tool_results": 27,
+          "total_bucket_tokens": 269853,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "2e244e4ac8c724c2e4720e8840405f8faaee1fb1"
+  },
+  "findings": [
+    {
+      "id": "02-reeval-task-pathparts-001",
+      "kind": "phase",
+      "result": "fail"
+    }
+  ],
+  "identity": {
+    "mode": "organization",
+    "run_id": "run-1786151585420"
+  },
+  "kind": "run",
+  "result": "fail",
+  "schema_version": 1,
+  "state": "completed"
+}

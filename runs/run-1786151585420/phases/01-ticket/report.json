@@ -1,0 +1,29 @@
+{
+  "artifacts": [
+    {
+      "kind": "portable-patch",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786151585420/phases/01-ticket/patches/task-pathparts-001.diff"
+    }
+  ],
+  "data": {
+    "base_commit": "2e244e4ac8c724c2e4720e8840405f8faaee1fb1",
+    "branch": "factory/task-pathparts-001/1786138323873",
+    "clean": true,
+    "implementation_commit": "30fabd4e12181830d146615b978861bef0737f96",
+    "merge_base": "857154dfe505f0d01053c1b5311f44422070eb34",
+    "mode": "ticket-reuse",
+    "patch": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786151585420/phases/01-ticket/patches/task-pathparts-001.diff",
+    "ticket_id": "task-pathparts-001",
+    "worktree": "/Users/josh/d/laputa-systems/xsh-factory/../.xsh-factory-worktrees/run-1786151585420/task-pathparts-001"
+  },
+  "findings": [],
+  "identity": {
+    "mode": "ticket-reuse",
+    "run_id": "01-ticket",
+    "ticket_id": "task-pathparts-001"
+  },
+  "kind": "phase",
+  "result": "pass",
+  "schema_version": 1,
+  "state": "completed"
+}
