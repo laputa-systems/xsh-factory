@@ -18,6 +18,18 @@ cycle result or its zero-delivery throughput metric.
   `d917d6d84f7c8360d122b0c571d386a4db902211` documents the existing terminal
   newline behavior and adds the regression test. Its task fixture passed the
   byte-exact rewrite check.
+- `task-ecount-003` — resolved as superseded. The stale tip
+  `c2e1039d8856c04ad8466504d445dc93a341f720` was reviewed against the ticket
+  and current product. Its compound-key runtime/checker behavior and stream
+  documentation are already delivered through `51b035a`; the useful missing
+  runtime regression was carried forward into product commit `ac37f81`.
+  No duplicate merge was necessary.
+- `task-tags-002` — resolved as superseded. The stale tips
+  `004c9d7`, `830e188`, and `a2d2932` are alternate API implementations
+  already superseded by accepted commit `2886144`. The current API behavior
+  was re-tested; its `search:builtin` result is correctly `matches` because
+  both `abort` and `print` are indexed. That stale assertion was corrected in
+  product commit `ac37f81`.
 
 ## Verification
 
@@ -25,6 +37,8 @@ Both isolated branches passed:
 
 `cargo test --test integration runtime::coverage::xsh_native_tests --features native-tests -- --exact`
 
-The combined product checkout passed the same gate after each merge. The
-product `HEAD` is now `ebd2936ed65e044235fcc9c2ed94396b0272ae38`; the engineer
-branches remain as provenance refs and are no longer pending work.
+The combined product checkout passed the native gate after each merge and
+after the follow-up regression coverage. The focused checker gate and
+`cargo test -p xsht --test api` also passed (`29/29`). Product `HEAD` is now
+`ac37f81`; all seven stale refs are either ancestors of product `HEAD` or
+explicitly superseded, so no engineer commit remains pending delivery.

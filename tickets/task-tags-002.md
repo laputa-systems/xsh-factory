@@ -4,6 +4,15 @@
 
 Merged.
 
+## CTO post-cycle stale-attempt reconciliation — 2026-08-07
+
+- Stale tips `004c9d7`, `830e188`, and `a2d2932` were reviewed as alternate
+  implementations and are superseded by accepted commit `2886144`.
+- The current `xsht api search:builtin` contract returns `matches` because
+  both `abort` and `print` are indexed. The stale exact-match assertion was
+  corrected in XSH commit `ac37f81`; no duplicate API implementation was
+  merged.
+
 ## Change target
 
 - `product`

@@ -4,6 +4,13 @@
 
 Merged.
 
+## CTO post-cycle stale-attempt reconciliation — 2026-08-07
+
+- The stale branch tip `c2e1039d8856c04ad8466504d445dc93a341f720` was reviewed
+  and is superseded by the delivered compound-sort implementation
+  `51b035a`. Its useful runtime rejection regression was carried forward and
+  committed in XSH as `ac37f81`; the alternate branch was not duplicate-merged.
+
 ## Change target
 
 - `product`
