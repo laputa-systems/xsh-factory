@@ -671,6 +671,13 @@ content
 """),
     "task-plain",
   )?
+  test.eq(
+    control.ticket_eval("""## Source eval and manager
+
+- Eval: task-grep (evals/task-grep/EVAL.md, Approved)
+"""),
+    "task-grep",
+  )?
   test.eq(control.role_prefix("unknown"), "")?
   test.eq(control.default_provider("unknown"), "")?
   test.eq(control.default_model("unknown"), "")?

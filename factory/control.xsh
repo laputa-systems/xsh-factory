@@ -75,7 +75,10 @@ export pure ticket_eval(text: Str) -> Str {
         return parts[1]
       }
 
-      return trimmed.replace("- Eval:", "").trim()
+      # Manager-authored tickets may append source metadata after the
+      # canonical eval id. Admission owns the identity, so ignore annotations
+      # while retaining the first token as the exact eval selector.
+      return trimmed.replace("- Eval:", "").trim().split(" ").get(0, "")
     }
   }
 
