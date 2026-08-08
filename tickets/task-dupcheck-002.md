@@ -137,7 +137,8 @@ capability gap is a documentation/ergonomics mismatch at the `xsht api`
 surface, not a missing behavior. Option 1 adds no grammar surface and only
 changes how signatures/contracts are rendered; Option 2 adds named-argument
 syntax, which is a larger grammar/checker change and must be justified against
-the positional-only design. The manager proposes Option 1 as the
+the positional-only design. Evidence from the linked `task-dupcheck` trial
+supports the smaller reference-only remedy. The manager proposes Option 1 as the
 minimal-surface fix and recommends it for the ticket.
 
 ## Proposed XSH change

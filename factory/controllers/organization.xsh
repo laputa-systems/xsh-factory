@@ -335,9 +335,17 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     abort(2)
   }
 
-  if selected_ticket != "" and ! runtime.accepted_ticket(selected_ticket_path)? {
-    eprint f"selected ticket is missing or not Approved: ${selected_ticket}"
-    abort(2)
+  if selected_ticket != "" {
+    let selected_text = selected_ticket_path.read_text()?
+    if ! control.ticket_is_accepted(selected_text) {
+      eprint f"selected ticket is missing or not Approved: ${selected_ticket}"
+      abort(2)
+    }
+
+    if ! control.ticket_api_surface_gate_ok(selected_text) {
+      eprint f"selected ticket fails the API-surface gate: ${selected_ticket}"
+      abort(2)
+    }
   }
 
   # A bounded organization batch may contain one retained implementation and
@@ -374,8 +382,14 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
       abort(2)
     }
 
-    if ! control.valid_ticket_id(ticket_id) or ! runtime.accepted_ticket(ticket_path)? {
+    let ticket_text = ticket_path.read_text()?
+    if ! control.valid_ticket_id(ticket_id) or ! control.ticket_is_accepted(ticket_text) {
       eprint f"selected ticket is missing or not Approved: ${ticket_id}"
+      abort(2)
+    }
+
+    if ! control.ticket_api_surface_gate_ok(ticket_text) {
+      eprint f"selected ticket fails the API-surface gate: ${ticket_id}"
       abort(2)
     }
 

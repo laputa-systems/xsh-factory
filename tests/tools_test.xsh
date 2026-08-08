@@ -2679,6 +2679,12 @@ proc test_ticket_cycle_bounds_concurrent_engineers() [fs, error] {
   test.contains(organization, "linked replay failed; branch retained for review")?
 }
 
+proc test_organization_reports_ticket_api_gate_failures() [fs, error] {
+  let organization = fs.read_text(fp"${fs.cwd()?}/factory/controllers/organization.xsh")?
+  test.contains(organization, "fails the API-surface gate")?
+  test.contains(organization, "control.ticket_api_surface_gate_ok(ticket_text)")?
+}
+
 proc test_eval_mode_has_no_paid_director_review() [fs, error] {
   let evaluator = fs.read_text(fp"${fs.cwd()?}/factory/controllers/eval.xsh")?
   let auditor = fs.read_text(fp"${fs.cwd()?}/factory/tools/audit.xsh")?
