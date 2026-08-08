@@ -2,7 +2,7 @@
 
 ## Status
 
-pending-validation
+validated
 
 ## Change
 
@@ -64,5 +64,8 @@ previous capped value plus the same epoch-millisecond conversion.
 
 ## Next-cycle disposition
 
-The next CTO must replace `pending-validation` with `validated` or `reverted`
-after inspecting the next manager closeout evidence.
+The 120-second manager inactivity change is validated by
+`runs/run-1786228730949`: the manager completed its review at roughly 171
+seconds without an idle-limit termination, produced a complete narrative, and
+reached an explicit acceptance decision. The candidate was rejected for a
+quality reason, not lost to manager timeout.

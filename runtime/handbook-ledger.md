@@ -691,6 +691,19 @@ candidate explicitly so preflight can proceed, keep the approved handbook
 unchanged, and consume the candidate only in a future arithmetic or
 stream-fold replay that exercises the rule.
 
+## Explicit CTO disposition — run-1786228730949
+
+| Candidate SHA-256 | Disposition |
+| --- | --- |
+| `f83c445e5cc6bade0d7fed0f4e93caec37477bceff157de2253d5299ec3a2140` | deferred pending strict-decimal replay; not promoted |
+
+The retained histogram replay restaged the general rule that `Str.parse_int`
+accepts non-decimal spellings and that strict decimal contracts need explicit
+digit validation. This is a good handbook lesson, but it is single-eval
+evidence and overlaps the existing deferred strict-decimal candidates. Keep
+the approved handbook unchanged until a matched numeric or measurement eval
+consumes the candidate and confirms that the narrower advice generalizes.
+
 ## Explicit CTO disposition — run-1786209582303 candidates
 
 | Candidate SHA-256 | Disposition |

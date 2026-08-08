@@ -2,7 +2,23 @@
 
 ## Status
 
-Approved.
+Open.
+
+## CTO decision — directed replay required 2026-08-08
+
+- Decision: Deferred; return to `Open.` and do not dispatch this retained
+  branch again until the linked replay exercises the ticket's defining
+  `filter` diagnostic criterion.
+- Basis: Run `run-1786228730949` passed the histogram evaluator's nine cases,
+  restrictions, and protocol, but the worker used the documented `where`
+  stage and never compiled a `filter` pipeline. The manager therefore issued
+  `Candidate acceptance: fail.` The evaluator cannot establish the proposed
+  parser-diagnostic change without that discriminating probe.
+- Next evidence: repair or extend the package-owned replay to compile
+  `filter { |x| ... }`, require a readable error naming `filter` and
+  recommending `where`, and then rerun the nine existing histogram cases.
+- Branch disposition: preserve `factory/task-histogram-006/1786209590202`
+  unchanged for the directed replay; no merge record is written.
 
 ## CTO review — cycle 24 close
 

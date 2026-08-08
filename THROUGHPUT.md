@@ -333,9 +333,36 @@ delivery throughput. The evaluator cost was `$0.052622`, with 3 workers and 62
 assistant turns; the root report separated product pass, evaluator pass, and
 infrastructure fail. No engineer commit may be counted for this run.
 
+Run 5 (`run-1786228730949`) validated the next repair. The manager completed a
+contract-complete report in one attempt, without `81-manager-retry-started`,
+and emitted the exact `Candidate acceptance: fail.` decision. The evaluator
+passed all nine histogram cases plus restrictions and protocol. Delivery was
+still withheld correctly because the worker used the known-good `where` stage
+and never exercised `task-histogram-006`'s defining `filter` diagnostic. The
+run cost `$0.055660`, used 2 workers and 46 assistant turns, and produced zero
+fresh or retained deliveries. This is a factory-robustness success and a
+product-throughput non-delivery, not a false positive.
+
+The manager boundary therefore has two separate validated controls:
+
+1. the 120-second inactivity threshold prevents active evidence review from
+   being mistaken for a stall; and
+2. report-first closeout prevents a complete evaluator from being blocked by
+   a missing qualitative report, while the explicit acceptance gate still
+   prevents unexercised product changes from merging.
+
+The next quality action is not another blind replay of `task-histogram-006`.
+Its ticket is returned to `Open.` with its branch preserved. A directed
+package-owned replay must compile `filter { |x| ... }`, assert a readable
+stage-level error naming `filter` and recommending `where`, and then rerun the
+nine histogram cases. Adaptive selection may proceed to the next retained
+Approved branch while that evidence is prepared.
+
 The current queue contains one deferred Open ticket (`task-histogram-005`) and
 two retained Approved branches (`task-histogram-006` and
-`task-histogram-007`). Because there is no branchless Approved ticket, the
+`task-histogram-007`). After Run 5, `task-histogram-006` is Open pending its
+directed diagnostic replay, leaving `task-histogram-007` as the remaining
+retained Approved branch. Because there is no branchless Approved ticket, the
 three-cycle fresh-delivery qualification has not honestly started. Retained
 replays may drain pending engineer work, but their commits do not satisfy the
 fresh target. CTO inventory must obtain a new branchless Approved ticket before
