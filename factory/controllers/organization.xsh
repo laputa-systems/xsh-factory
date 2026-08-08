@@ -318,7 +318,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   } else if ticket_policy == "none" {
     []
   } else {
-    runtime.first_approved_tickets(factory_dir, engineer_target)?
+    runtime.adaptive_approved_tickets(factory_dir, xsh_repo, engineer_target)?
   }
   let selected_ticket = if selected_tickets.len() > 0 { selected_tickets[0] } else { "" }
   if selected_ticket != "" and ! control.valid_ticket_id(selected_ticket) {
@@ -850,7 +850,11 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   if selected_ticket != "" {
     reeval_pass_for_result = true
     delivery_ok = true
-    for ticket_id in selected_tickets {
+    # Wait and merge fresh rows before retained replays. Replay validation is
+    # still mandatory for each row, but an older branch must not hold a fresh
+    # product commit behind its own slow or failed manager closeout.
+    let replay_order = control.fresh_first_ticket_order(fresh_tickets, reuse_tickets)
+    for ticket_id in replay_order {
       let ticket_path = fp"${factory_dir}/tickets/${ticket_id}.md"
       let ticket_eval_id = control.ticket_eval(ticket_path.read_text()?)
       let ticket_reeval_phase = fp"${phases_dir}/02-reeval-${ticket_id}"

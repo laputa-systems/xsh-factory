@@ -2,7 +2,7 @@
 
 ## Status
 
-Approved.
+Merged.
 
 ## Change target
 
@@ -28,10 +28,10 @@ None.
 
 ## Merge record
 
-- Implementation branch: `{{IMPLEMENTATION_BRANCH}}`
-- Implementation commit: `{{IMPLEMENTATION_COMMIT}}`
-- Detected at XSH commit: `{{DETECTED_XSH_COMMIT}}`
-- Implementation run: `{{IMPLEMENTATION_RUN}}`
+- Implementation branch: `factory/task-grep-001/1786206303274`
+- Implementation commit: `26d59eb844b670365931d91ffb15ae8c109bae12`
+- Detected at XSH commit: `26d59eb844b670365931d91ffb15ae8c109bae12`
+- Implementation run: `/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786206296254/phases/01-ticket`
 
 ## Source eval and manager
 

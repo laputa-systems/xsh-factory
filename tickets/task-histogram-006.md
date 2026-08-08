@@ -2,7 +2,22 @@
 
 ## Status
 
-Open.
+Approved.
+
+## CTO review — cycle 24 close
+
+- Decision: Approved for implementation in the next organization cycle.
+- Basis: The observation has reproducible focused-eval evidence, a narrow
+  diagnostic-only product scope, explicit non-goals, and a falsification path
+  that preserves the existing `where` behavior. The prior deferral required a
+  controlled replay after dispatch repair; cycle 24 now provides that repaired
+  dispatch boundary and the linked replay remains a hard merge gate.
+- Scope: Improve the parser/check diagnostic for an unknown stream stage such
+  as `filter` so it names the stage and recommends `where`; do not add a
+  `filter` alias or change stream semantics.
+- Evidence: The existing task-histogram worker session, review, and evaluator
+  manifest linked in this ticket, plus the repaired organization/replay
+  machinery validated by cycle 24's `task-grep-001` delivery.
 
 ## CTO decision — clean-slate cycle 2026-08-07
 

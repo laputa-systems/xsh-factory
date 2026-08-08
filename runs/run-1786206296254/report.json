@@ -1,0 +1,515 @@
+{
+  "artifacts": [
+    {
+      "kind": "phase-reports",
+      "path": "phases/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 144,
+      "budget_failures": 0,
+      "cost_usd": 0.100755028,
+      "tool_errors": 10,
+      "total_bucket_tokens": 3204174.0,
+      "unknown_costs": 0,
+      "workers": 10
+    },
+    "mode": "organization",
+    "outcomes": {
+      "cycle": "fail",
+      "evaluator": "pass",
+      "infrastructure": "fail",
+      "product": "fail"
+    },
+    "phases": [
+      {
+        "id": "01-reuse-task-dupcheck-002",
+        "path": "phases/01-reuse-task-dupcheck-002/report.json",
+        "result": "pass",
+        "valid": true
+      },
+      {
+        "id": "01-ticket",
+        "path": "phases/01-ticket/report.json",
+        "result": "pass",
+        "valid": true
+      },
+      {
+        "id": "02-reeval-task-dupcheck-002",
+        "path": "phases/02-reeval-task-dupcheck-002/report.json",
+        "result": "fail",
+        "valid": true
+      },
+      {
+        "id": "02-reeval-task-grep-001",
+        "path": "phases/02-reeval-task-grep-001/report.json",
+        "result": "pass",
+        "valid": true
+      },
+      {
+        "id": "03-eval",
+        "path": "phases/03-eval/report.json",
+        "result": "pass",
+        "valid": true
+      }
+    ],
+    "throughput": {
+      "admitted_tickets": 2,
+      "delivered_tickets": 1,
+      "delivery_conversion": 0.5,
+      "fresh_engineer_rows": 1,
+      "handbook_quarantines": 0,
+      "overlap_linked_replays": true,
+      "overlap_retained_fresh": true,
+      "reeval_dispatched": 2,
+      "reeval_passed": 1,
+      "retained_fast_paths": 1,
+      "retained_rows": 1
+    },
+    "tool_errors": [
+      {
+        "report": "phases/01-ticket/workers/director/director/report.json",
+        "summary": "=== states ===\n--- states/director.state ---\nstarted\n--- states/task-grep-001.state ---\nstarted\n--- states/ticket-implementation.state ---\nstarted\n--- reports ---\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 3,
+        "worker": {
+          "role": "director",
+          "worker_id": "director"
+        }
+      },
+      {
+        "report": "phases/01-ticket/workers/engineer/task-grep-001/report.json",
+        "summary": "rg: regex parse error:\n    (?:lookup(name)\n    ^\nerror: unclosed group",
+        "tool": "grep",
+        "turn": 7,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-grep-001"
+        }
+      },
+      {
+        "report": "phases/02-reeval-task-grep-001/workers/eval-worker/task-grep-1/report.json",
+        "summary": "err[check.standard-module-shadow]: name `path` shadows the standard module `path`\n  grep.xsh:3:3\n    let path = argv[1]\n    ^^^^^^^^^^^^^^^^^^ name `path` shadows the standard module `path`\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 9,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-grep-1"
+        }
+      },
+      {
+        "report": "phases/02-reeval-task-grep-001/workers/eval-worker/task-grep-1/report.json",
+        "summary": "warn[lint.path-constructor]: prefer p-string interpolation over `Path(...)`\n  grep.xsh:4:27\n    let text = fs.read_text(Path(file))?\n                            ---------- use path string syntax instead\nnote: `Path(...)` remains a cast, but p-strings are the preferred path syntax\nhelp: replace with path string -> fp\"${file}\"\nwarn[lint.prefer-in]: prefer `in` over `.contains(...)`\n  grep.xsh:8:8\n      if line.contains(pattern) {\n         ---------------------- use membership syntax instead\nhelp: rewrite with membership syntax -> pattern in line\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 11,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-grep-1"
+        }
+      },
+      {
+        "report": "phases/02-reeval-task-grep-001/workers/eval-worker/task-grep-1/report.json",
+        "summary": "sh: python3: not found\nproc main(...argv: List[Str]) [fs, error] {\n  let pattern = argv[0]\n  let file = argv[1]\n  let text = fs.read_text(Path(file))?\n  let lines = text.lines() |> collect()\n  var number = 1\n  for line in lines {\n    if line.contains(pattern) {\n      print $number\":\"$line\n    }\n\n    number = number + 1\n  }\n}\n===\nwarn[lint.path-constructor]: prefer p-string interpolation over `Path(...)`\n  grep.xsh:4:27\n    let text = fs.read_text(Path(file))?\n                            ---------- use path string syntax instead\nnote: `Path(...)` remains a cast, but p-strings are the preferred path syntax\nhelp: replace with path string -> fp\"${file}\"\nwarn[lint.prefer-in]: prefer `in` over `.contains(...)`\n  grep.xsh:8:8\n      if line.contains(pattern) {\n         ---------------------- use membership syntax instead\nhelp: rewrite with membership syntax -> pattern in line\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 12,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-grep-1"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-manager/task-bigfiles/report.json",
+        "summary": "ENOENT: no such file or directory, access '/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786206296254/phases/03-eval/workers/eval-worker/task-bigfiles-1/artifact/bigfiles.xsh'",
+        "tool": "read",
+        "turn": 3,
+        "worker": {
+          "role": "eval-manager",
+          "worker_id": "task-bigfiles"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-manager/task-bigfiles/report.json",
+        "summary": "ENOENT: no such file or directory, access '/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786206296254/phases/03-eval/workers/eval-worker/task-bigfiles-1/thinking.md'",
+        "tool": "read",
+        "turn": 3,
+        "worker": {
+          "role": "eval-manager",
+          "worker_id": "task-bigfiles"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-manager/task-bigfiles/report.json",
+        "summary": "ENOENT: no such file or directory, access '/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786206296254/phases/03-eval/workers/eval-worker/task-bigfiles-1/session.jsonl.events.jsonl'",
+        "tool": "read",
+        "turn": 4,
+        "worker": {
+          "role": "eval-manager",
+          "worker_id": "task-bigfiles"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-worker/task-bigfiles-1/report.json",
+        "summary": "sh: can't create /tmp/t/a/f1.txt: nonexistent directory\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 8,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-bigfiles-1"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-worker/task-bigfiles-1/report.json",
+        "summary": "Could not find the exact text in /work/bigfiles.xsh. The old text must match exactly including all whitespace and newlines.",
+        "tool": "edit",
+        "turn": 15,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-bigfiles-1"
+        }
+      }
+    ],
+    "workers": [
+      {
+        "identity": {
+          "role": "director",
+          "worker_id": "director"
+        },
+        "path": "phases/01-ticket/workers/director/director/report.json",
+        "result": "pass",
+        "tool_errors": 1,
+        "usage": {
+          "assistant_turns": 14,
+          "budget_usd": 0.06,
+          "cache_read_cost_usd": 0.003621888,
+          "cache_read_tokens": 201216,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.008011908,
+          "input_cost_usd": 0.0030256199999999993,
+          "input_tokens": 33618,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0013643999999999998,
+          "output_tokens": 7580,
+          "provider_total_tokens": 242414,
+          "reasoning_tokens": 4258,
+          "thinking_blocks": 13,
+          "tool_calls": 24,
+          "tool_errors": 1,
+          "tool_results": 23,
+          "total_bucket_tokens": 242414,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "engineer",
+          "worker_id": "task-grep-001"
+        },
+        "path": "phases/01-ticket/workers/engineer/task-grep-001/report.json",
+        "result": "pass",
+        "tool_errors": 1,
+        "usage": {
+          "assistant_turns": 28,
+          "budget_usd": 0.35,
+          "cache_read_cost_usd": 0.01047921,
+          "cache_read_tokens": 1047921,
+          "cache_write_cost_usd": 0.012494500000000002,
+          "cache_write_tokens": 99956,
+          "cost_usd": 0.027857710000000004,
+          "input_cost_usd": 8.399999999999998e-6,
+          "input_tokens": 84,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.004875599999999999,
+          "output_tokens": 8126,
+          "provider_total_tokens": 1156087,
+          "reasoning_tokens": 4340,
+          "thinking_blocks": 10,
+          "tool_calls": 56,
+          "tool_errors": 1,
+          "tool_results": 56,
+          "total_bucket_tokens": 1156087,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-dupcheck-retry-1"
+        },
+        "path": "phases/02-reeval-task-dupcheck-002/workers/eval-manager/task-dupcheck-retry-1/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 5,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.001179648,
+          "cache_read_tokens": 65536,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.005462208,
+          "input_cost_usd": 0.00318366,
+          "input_tokens": 35374,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0010989,
+          "output_tokens": 6105,
+          "provider_total_tokens": 107015,
+          "reasoning_tokens": 5509,
+          "thinking_blocks": 5,
+          "tool_calls": 13,
+          "tool_errors": 0,
+          "tool_results": 13,
+          "total_bucket_tokens": 107015,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-dupcheck"
+        },
+        "path": "phases/02-reeval-task-dupcheck-002/workers/eval-manager/task-dupcheck/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 5,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.001161216,
+          "cache_read_tokens": 64512,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.005288256,
+          "input_cost_usd": 0.0032292,
+          "input_tokens": 35880,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0008978399999999999,
+          "output_tokens": 4988,
+          "provider_total_tokens": 105380,
+          "reasoning_tokens": 4219,
+          "thinking_blocks": 5,
+          "tool_calls": 14,
+          "tool_errors": 0,
+          "tool_results": 14,
+          "total_bucket_tokens": 105380,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-dupcheck-1"
+        },
+        "path": "phases/02-reeval-task-dupcheck-002/workers/eval-worker/task-dupcheck-1/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 20,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.004018176,
+          "cache_read_tokens": 223232,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.006728616,
+          "input_cost_usd": 0.0017571599999999998,
+          "input_tokens": 19524,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0009532799999999998,
+          "output_tokens": 5296,
+          "provider_total_tokens": 248052,
+          "reasoning_tokens": 3103,
+          "thinking_blocks": 16,
+          "tool_calls": 20,
+          "tool_errors": 0,
+          "tool_results": 20,
+          "total_bucket_tokens": 248052,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-grep-retry-1"
+        },
+        "path": "phases/02-reeval-task-grep-001/workers/eval-manager/task-grep-retry-1/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 9,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.0042623999999999995,
+          "cache_read_tokens": 236800,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.01214865,
+          "input_cost_usd": 0.00628515,
+          "input_tokens": 69835,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0016011000000000005,
+          "output_tokens": 8895,
+          "provider_total_tokens": 315530,
+          "reasoning_tokens": 5504,
+          "thinking_blocks": 8,
+          "tool_calls": 17,
+          "tool_errors": 0,
+          "tool_results": 17,
+          "total_bucket_tokens": 315530,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-grep"
+        },
+        "path": "phases/02-reeval-task-grep-001/workers/eval-manager/task-grep/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 9,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.0042623999999999995,
+          "cache_read_tokens": 236800,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.01214865,
+          "input_cost_usd": 0.00628515,
+          "input_tokens": 69835,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0016011000000000005,
+          "output_tokens": 8895,
+          "provider_total_tokens": 315530,
+          "reasoning_tokens": 5504,
+          "thinking_blocks": 8,
+          "tool_calls": 17,
+          "tool_errors": 0,
+          "tool_results": 17,
+          "total_bucket_tokens": 315530,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-grep-1"
+        },
+        "path": "phases/02-reeval-task-grep-001/workers/eval-worker/task-grep-1/report.json",
+        "result": "pass",
+        "tool_errors": 3,
+        "usage": {
+          "assistant_turns": 21,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.003475584,
+          "cache_read_tokens": 193088,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.006701094,
+          "input_cost_usd": 0.00234297,
+          "input_tokens": 26033,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00088254,
+          "output_tokens": 4903,
+          "provider_total_tokens": 224024,
+          "reasoning_tokens": 2195,
+          "thinking_blocks": 18,
+          "tool_calls": 26,
+          "tool_errors": 3,
+          "tool_results": 26,
+          "total_bucket_tokens": 224024,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-bigfiles"
+        },
+        "path": "phases/03-eval/workers/eval-manager/task-bigfiles/report.json",
+        "result": "pass",
+        "tool_errors": 3,
+        "usage": {
+          "assistant_turns": 9,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.002230272,
+          "cache_read_tokens": 123904,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.008388072,
+          "input_cost_usd": 0.004770720000000001,
+          "input_tokens": 53008,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00138708,
+          "output_tokens": 7706,
+          "provider_total_tokens": 184618,
+          "reasoning_tokens": 1665,
+          "thinking_blocks": 7,
+          "tool_calls": 16,
+          "tool_errors": 3,
+          "tool_results": 16,
+          "total_bucket_tokens": 184618,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-bigfiles-1"
+        },
+        "path": "phases/03-eval/workers/eval-worker/task-bigfiles-1/report.json",
+        "result": "pass",
+        "tool_errors": 2,
+        "usage": {
+          "assistant_turns": 24,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.005019264,
+          "cache_read_tokens": 278848,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.008019864,
+          "input_cost_usd": 0.0018010799999999998,
+          "input_tokens": 20012,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0011995200000000004,
+          "output_tokens": 6664,
+          "provider_total_tokens": 305524,
+          "reasoning_tokens": 3410,
+          "thinking_blocks": 17,
+          "tool_calls": 30,
+          "tool_errors": 2,
+          "tool_results": 30,
+          "total_bucket_tokens": 305524,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "26d59eb844b670365931d91ffb15ae8c109bae12"
+  },
+  "findings": [
+    {
+      "id": "02-reeval-task-dupcheck-002",
+      "kind": "phase",
+      "result": "fail"
+    }
+  ],
+  "identity": {
+    "mode": "organization",
+    "run_id": "run-1786206296254"
+  },
+  "kind": "run",
+  "result": "fail",
+  "schema_version": 1,
+  "state": "completed"
+}

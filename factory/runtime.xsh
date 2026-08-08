@@ -1082,6 +1082,54 @@ export proc first_approved_tickets(factory_dir: Path, limit: Int) [fs, error] ->
   return selected
 }
 
+## Selects approved product tickets with fresh rows first, then retained
+## branches. Fresh work is the throughput target; retained branches remain in
+## the same bounded batch so replay quality is still exercised when capacity
+## exists.
+export proc adaptive_approved_tickets(factory_dir: Path, xsh_repo: Path, limit: Int) [fs, process, error] -> Result[List[Str]] {
+  if limit <= 0 {
+    return []
+  }
+
+  let ticket_dir = fp"${factory_dir}/tickets"
+  if ! fs.exists(ticket_dir)? {
+    return []
+  }
+
+  var fresh: List[Str] = []
+  var retained: List[Str] = []
+  let entries = fs.files(ticket_dir, gitignore: false, hidden: true)
+    |> sort-by .path.display()
+    |> collect()
+  for entry in entries {
+    continue unless entry.name.ends_with(".md")
+    continue unless accepted_ticket(entry.path)?
+    let ticket_id = entry.name.replace(".md", "")
+    if open_ticket_branch(xsh_repo, ticket_id)? == "" {
+      fresh = fresh.push(ticket_id)
+    } else {
+      retained = retained.push(ticket_id)
+    }
+  }
+
+  var selected: List[Str] = []
+  for ticket_id in fresh {
+    selected = selected.push(ticket_id)
+    if selected.len() >= limit {
+      return selected
+    }
+  }
+
+  # A batch has capacity for one retained replay. If no fresh row exists this
+  # also turns a backlog of retained branches into one useful replay instead
+  # of an admission failure caused by the controller's overlap ceiling.
+  for ticket_id in retained {
+    selected = selected.push(ticket_id)
+    break
+  }
+  selected
+}
+
 ## Backward-compatible single-ticket selector for focused controllers.
 export proc first_approved_ticket(factory_dir: Path) [fs, error] -> Result[Str] {
   let selected = first_approved_tickets(factory_dir, 1)?

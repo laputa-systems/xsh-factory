@@ -1,0 +1,44 @@
+diff --git a/src/sema/check/call.rs b/src/sema/check/call.rs
+index 2024d9f..9ec7f17 100644
+--- a/src/sema/check/call.rs
++++ b/src/sema/check/call.rs
+@@ -290,7 +290,14 @@ impl Checker {
+                         "check.unknown-module-api",
+                     );
+                 }
+-                if api_spec().module(&module.as_str()).is_some() {
++                // A local binding takes precedence over a standard module name.
++                // Without this guard, `let path = ...; path.read_text()` is
++                // checked as the module call `path.read_text`, producing a
++                // misleading unknown-module-api diagnostic instead of checking
++                // the valid Path method.
++                if self.lookup(module.clone()).is_none()
++                    && api_spec().module(&module.as_str()).is_some()
++                {
+                     if let Some(caller_effs) = self.current_effects.clone()
+                         && let Some(required) =
+                             api_spec().module_required_effect(&module.as_str(), &name.as_str())
+diff --git a/tests/sema.rs b/tests/sema.rs
+index 32529df..6af5976 100644
+--- a/tests/sema.rs
++++ b/tests/sema.rs
+@@ -243,6 +243,19 @@ fn checker_rejects_stage_5_acceptance_cases() {
+     }
+ }
+ 
++#[test]
++fn checker_reports_shadowing_as_the_cause_of_module_like_method_calls() {
++    let output = check(
++        r#"
++let path = Path.parse_bytes(b"/tmp/input")?
++let text = path.read_text()?
++"#,
++    );
++
++    assert!(has_code(&output, "check.standard-module-shadow"));
++    assert_no_codes(&output, &["check.unknown-module-api"]);
++}
++
+ #[test]
+ fn checker_rejects_standard_module_shadowing() {
+     for source in [

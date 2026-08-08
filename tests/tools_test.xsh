@@ -1925,6 +1925,37 @@ proc main() [fs, process, env, error, io] { let repo = env.path("FACTORY_XSH_REP
   test.ok(status.ok, "reconciliation must ignore missing historical branches")?
 }
 
+proc test_adaptive_ticket_selection_prefers_fresh_rows(ctx: TestContext) [fs, process, error] {
+  let root = test.temp_dir(ctx, name: "adaptive-ticket-selection")?
+  let factory = fs.cwd()?
+  let product = fp"${root}/product"
+  let tickets = fp"${root}/tickets"
+  fs.mkdir(product)?
+  fs.mkdir(tickets)?
+  let ticket = fs.read_text(fp"${factory}/tickets/task-dupcheck-002.md")?
+  fs.write(fp"${tickets}/task-a.md", ticket.replace("task-dupcheck-002", "task-a"))?
+  fs.write(fp"${tickets}/task-b.md", ticket.replace("task-dupcheck-002", "task-b"))?
+
+  let git = process.which("git")?
+  test.ok(command_ok(git, ["git", "-C", product.display(), "init", "-q", "-b", "main"])?)?
+  test.ok(command_ok(git, ["git", "-C", product.display(), "config", "user.email", "factory@test"])?)?
+  test.ok(command_ok(git, ["git", "-C", product.display(), "config", "user.name", "Factory Test"])?)?
+  fs.write(fp"${product}/README", "base\n")?
+  test.ok(command_ok(git, ["git", "-C", product.display(), "add", "README"])?)?
+  test.ok(command_ok(git, ["git", "-C", product.display(), "commit", "-qm", "base"])?)?
+  test.ok(command_ok(git, ["git", "-C", product.display(), "branch", "factory/task-a/1"])?)?
+  test.ok(command_ok(git, ["git", "-C", product.display(), "checkout", "-q", "factory/task-a/1"])?)?
+  fs.write(fp"${product}/candidate", "retained\n")?
+  test.ok(command_ok(git, ["git", "-C", product.display(), "add", "candidate"])?)?
+  test.ok(command_ok(git, ["git", "-C", product.display(), "commit", "-qm", "retained"])?)?
+  test.ok(command_ok(git, ["git", "-C", product.display(), "checkout", "-q", "main"])?)?
+
+  let selected = runtime.adaptive_approved_tickets(root, product, 2)?
+  test.eq(selected.len(), 2)?
+  test.eq(selected[0], "task-b")?
+  test.eq(selected[1], "task-a")?
+}
+
 proc test_retired_eval_closes_and_archives_ticket(ctx: TestContext) [fs, process, error] {
   let root = test.temp_dir(ctx, name: "retired-eval-ticket-lifecycle")?
   let factory = fs.cwd()?
@@ -2677,6 +2708,8 @@ proc test_ticket_cycle_bounds_concurrent_engineers() [fs, error] {
   test.contains(organization, "remove_run_worktrees")?
   test.contains(organization, "reeval_ticket_ids = reeval_ticket_ids.push(ticket_id)")?
   test.contains(organization, "linked replay failed; branch retained for review")?
+  test.contains(organization, "fresh_first_ticket_order(fresh_tickets, reuse_tickets)")?
+  test.contains(organization, "Wait and merge fresh rows before retained replays")?
 }
 
 proc test_organization_reports_ticket_api_gate_failures() [fs, error] {
@@ -2710,6 +2743,7 @@ proc test_eval_gate_diagnostics_are_persisted() [fs, error] {
   test.contains(evaluator, "manager-retry-recovered")?
   test.contains(evaluator, "EVAL-MANAGER-RETRY.md")?
   test.contains(evaluator, "retry_guidance")?
+  test.contains(evaluator, "FACTORY_EVAL_MANAGER_MAX_WALL_SECONDS=180")?
 }
 
 proc test_process_run_status_contract_is_executable(ctx: TestContext) [fs, process, error] {

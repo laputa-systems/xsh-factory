@@ -159,6 +159,17 @@ Approved.
   test.ok(! runtime.accepted_ticket(fp"${tickets}/task-factory.md")?)?
 }
 
+proc test_fresh_ticket_order_preserves_replay_gates() [error] {
+  test.eq(
+    control.fresh_first_ticket_order(["task-fresh"], ["task-retained"]),
+    ["task-fresh", "task-retained"],
+  )?
+  test.eq(
+    control.fresh_first_ticket_order([], ["task-retained"]),
+    ["task-retained"],
+  )?
+}
+
 proc test_cto_inventory_surfaces_ticket_state() [error] {
   let markdown = runtime.cto_inventory_markdown(
     [
@@ -1015,7 +1026,7 @@ proc test_standard_cycle_uses_diverse_active_eval(ctx: TestContext) [fs, error] 
   test.contains(launcher, "cto_unreviewed_open_tickets")?
   test.contains(launcher, "unresolved_handbook_candidates")?
   test.contains(launcher, "factory/tools/cto.xsh")?
-  test.contains(organization, "first_approved_tickets")?
+  test.contains(organization, "adaptive_approved_tickets")?
   test.contains(organization, "max_concurrent_discovery_evals()")?
   test.contains(runtime_source, "organization_ticket_counts")?
   test.contains(fs.read_text(fp"${fs.cwd()?}/run.xsh")?, "next_untried_approved_eval")?

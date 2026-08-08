@@ -1005,7 +1005,7 @@ wall-ms=${build_elapsed}
       run_dir,
       xsh_path,
       run_agent,
-      common_assignments,
+      common_assignments.push("FACTORY_EVAL_MANAGER_MAX_WALL_SECONDS=180"),
       "eval-manager",
       retry_worker_id,
       eval_id,

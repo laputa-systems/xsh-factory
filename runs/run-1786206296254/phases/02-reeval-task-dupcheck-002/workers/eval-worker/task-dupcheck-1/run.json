@@ -1,0 +1,88 @@
+{
+  "classification": "pass",
+  "correctness": {
+    "all_exact": true,
+    "cases": [
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 11894398,
+        "exact": true,
+        "name": "public",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 12222023
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 10977979,
+        "exact": true,
+        "name": "hidden_empty",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 11704481
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 11980106,
+        "exact": true,
+        "name": "hidden_nested",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 13191901
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 12245441,
+        "exact": true,
+        "name": "hidden_three",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 13387359
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 13028775,
+        "exact": true,
+        "name": "hidden_spaces",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 13334443
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 13153026,
+        "exact": true,
+        "name": "hidden_many",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 11754148
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 12454607,
+        "exact": true,
+        "name": "hidden_none",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 14956279
+      },
+      {
+        "candidate_exit": 3,
+        "candidate_wall_ns": 11873731,
+        "exact": true,
+        "name": "hidden_missing",
+        "oracle_exit": 1,
+        "oracle_wall_ns": 12485732
+      }
+    ],
+    "passed": true
+  },
+  "eval_id": "task-dupcheck",
+  "image_id": "sha256:5d728eebbe9226f34047de1343c170088e5256a97198c8419182a6e6da02ada2",
+  "platform": "linux/arm64",
+  "protocol": {
+    "artifact_present": true,
+    "review_ok": true
+  },
+  "restrictions": {
+    "passed": true
+  },
+  "result": "pass",
+  "timings": {
+    "passed": true
+  },
+  "trial_id": "1"
+}

@@ -1,0 +1,117 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786206296254/phases/01-ticket/workers/engineer/task-grep-001/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_process": "pass",
+    "dispatch_claim": "00c009eee5e0b8efd2c449198514deefaa1d809b672ee8f7141e1767a93d837a",
+    "dispatch_id": "engineer-task-grep-001",
+    "factory_source": "unchanged",
+    "message_sha256": "00c009eee5e0b8efd2c449198514deefaa1d809b672ee8f7141e1767a93d837a",
+    "reporting": "pass",
+    "required_report": "present",
+    "session_limit_watcher": "pass",
+    "system_prompt_sha256": "ecc8835d632066a0a401be64bdc2acccf83f2a112ec06d394e08b82713fdaae3",
+    "watcher": "pass"
+  },
+  "findings": [
+    {
+      "count": 1,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "role": "engineer",
+    "worker_id": "task-grep-001"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/openai/gpt-5.6-luna"
+  ],
+  "provider_telemetry": {
+    "event_turns": 28,
+    "events_path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786206296254/phases/01-ticket/workers/engineer/task-grep-001/session.jsonl.events.jsonl",
+    "output_tokens_per_second": 0,
+    "present": true,
+    "provider_errors": [],
+    "response_elapsed_ms": 0,
+    "retry_count": 0,
+    "retry_delay_ms": 0,
+    "retry_errors": [],
+    "retry_failures": 0,
+    "retry_successes": 0
+  },
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786206296254/phases/01-ticket/workers/engineer/task-grep-001/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 27,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 151474
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786206296254/phases/01-ticket/workers/engineer/task-grep-001/session.jsonl.bz2",
+      "summary": "rg: regex parse error:\n    (?:lookup(name)\n    ^\nerror: unclosed group",
+      "tool": "grep",
+      "turn": 7
+    }
+  ],
+  "tools": [
+    {
+      "count": 10,
+      "name": "bash"
+    },
+    {
+      "count": 4,
+      "name": "edit"
+    },
+    {
+      "count": 15,
+      "name": "grep"
+    },
+    {
+      "count": 26,
+      "name": "read"
+    },
+    {
+      "count": 1,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 28,
+    "budget_usd": 0.35,
+    "cache_read_cost_usd": 0.01047921,
+    "cache_read_tokens": 1047921,
+    "cache_write_cost_usd": 0.012494500000000002,
+    "cache_write_tokens": 99956,
+    "cost_usd": 0.027857710000000004,
+    "input_cost_usd": 8.399999999999998e-6,
+    "input_tokens": 84,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.004875599999999999,
+    "output_tokens": 8126,
+    "provider_total_tokens": 1156087,
+    "reasoning_tokens": 4340,
+    "thinking_blocks": 10,
+    "tool_calls": 56,
+    "tool_errors": 1,
+    "tool_results": 56,
+    "total_bucket_tokens": 1156087,
+    "user_messages": 1
+  }
+}

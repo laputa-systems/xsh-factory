@@ -275,6 +275,14 @@ export pure engineer_target(approved_count: Int) -> Int {
   }
 }
 
+## Orders a mixed organization batch so fresh product work reaches the merge
+## boundary before a retained branch replay. Every row still keeps its own
+## replay and provenance gates; this only prevents an older branch from
+## delaying an otherwise validated fresh delivery.
+export pure fresh_first_ticket_order(fresh: List[Str], retained: List[Str]) -> List[Str] {
+  fresh.extend(retained)
+}
+
 ## Clamps an operator-supplied budget to the role's hard ceiling.
 export pure clamp_budget(role: Str, configured: Str) -> Result[Str] {
   let ceiling_text = default_budget(role)
