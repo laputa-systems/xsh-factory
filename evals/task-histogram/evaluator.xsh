@@ -215,7 +215,8 @@ awk -v w="$width" '
   }
 
   let source = if artifact_present { artifact.read_text()? } else { "" }
-  let restriction_ok = artifact_present and ("fs.read_text" in source or ".read_text" in source) and "parse_int" in source and "sort-by" in source and ! source_has_forbidden_subprocess(
+  let typed_integer_parse = "parse_int" in source or "parse_uint" in source
+  let restriction_ok = artifact_present and ("fs.read_text" in source or ".read_text" in source) and typed_integer_parse and "sort-by" in source and ! source_has_forbidden_subprocess(
     source,
   )
   let protocol_ok = review_ok()?

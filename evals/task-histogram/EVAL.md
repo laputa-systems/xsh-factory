@@ -130,10 +130,12 @@ and hidden cases:
 
 The evaluator checks the source does not contain the forbidden subprocess
 boundary, requires that the source references a typed file read
-(`fs.read_text` or `.read_text`), a typed integer parse (`parse_int`), and a
-`sort-by` stage so a hard-coded answer is classified as a restriction failure,
-and checks that `review.md` preserves both required headings and contains no
-template placeholders.
+(`fs.read_text` or `.read_text`), a typed integer parse (`parse_int` or
+`parse_uint`), and a `sort-by` stage so a hard-coded answer is classified as a
+restriction failure, and checks that `review.md` preserves both required
+headings and contains no template placeholders. The strict unsigned
+`parse_uint` surface is accepted when the candidate contract requires sign
+rejection.
 
 ## Metrics
 

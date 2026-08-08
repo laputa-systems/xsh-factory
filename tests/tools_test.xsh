@@ -2600,6 +2600,9 @@ proc test_organization_batches_retained_and_fresh_tickets() [fs, error] {
   test.contains(organization, "ticket_is_reused")?
   test.contains(organization, "runtime.merge_validated_ticket")?
   test.contains(organization, "reeval_handles: List[ProcessHandle] = []")?
+  test.contains(organization, "FACTORY_RETAINED_REPLAY")?
+  test.contains(fs.read_text(fp"${fs.cwd()?}/factory/controllers/eval.xsh")?, "retained_replay_manager_wall_seconds()")?
+  test.contains(fs.read_text(fp"${fs.cwd()?}/factory/control.xsh")?, "retained_replay_manager_wall_seconds")?
   let audit = fs.read_text(fp"${fs.cwd()?}/factory/tools/audit.xsh")?
   test.contains(audit, "organization_throughput")?
   test.contains(audit, "overlap_linked_replays")?
@@ -2784,6 +2787,15 @@ proc test_package_evaluators_use_direct_process_status(_: TestContext) [fs, erro
     test.ok(".status.ok" not in source, f"${eval_id} must use direct process status")?
     test.ok(".status.exit_code" not in source, f"${eval_id} must use direct process status")?
   }
+}
+
+proc test_task_histogram_restriction_accepts_typed_unsigned_parse() [fs, error] {
+  let evaluator = fs.read_text(fp"${fs.cwd()?}/evals/task-histogram/evaluator.xsh")?
+  let contract = fs.read_text(fp"${fs.cwd()?}/evals/task-histogram/EVAL.md")?
+  test.contains(evaluator, "let typed_integer_parse = \"parse_int\" in source or \"parse_uint\" in source")?
+  test.contains(evaluator, "typed_integer_parse and \"sort-by\" in source")?
+  test.contains(contract, "`parse_int` or\n`parse_uint`")?
+  test.contains(contract, "strict unsigned")?
 }
 
 proc test_task_trim_restriction_accepts_typed_path_io() [fs, error] {

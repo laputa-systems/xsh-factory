@@ -1,0 +1,256 @@
+{
+  "artifacts": [
+    {
+      "kind": "session-directory",
+      "path": "workers/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 41,
+      "budget_failures": 0,
+      "cost_usd": 0.025824347999999997,
+      "tool_errors": 2,
+      "total_bucket_tokens": 865500.0,
+      "unknown_costs": 0,
+      "workers": 2
+    },
+    "designer": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786212430316/phases/02-reeval-task-histogram-005/workers/eval-designer/proposal-1/REPORT.md",
+      "present": false,
+      "result": "not-requested",
+      "role": "eval-designer",
+      "valid": true
+    },
+    "director": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786212430316/phases/02-reeval-task-histogram-005/workers/director/director/REPORT.md",
+      "present": false,
+      "result": "not-requested",
+      "role": "director",
+      "valid": true
+    },
+    "engineer": [],
+    "handbook_lineage": {
+      "approved": "lineage/handbook-approved.md",
+      "candidate": "lineage/handbook-candidate.md"
+    },
+    "manager": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786212430316/phases/02-reeval-task-histogram-005/workers/eval-manager/task-histogram/REPORT.md",
+      "present": true,
+      "result": "fail",
+      "role": "eval-manager",
+      "valid": true
+    },
+    "mode": "eval",
+    "narratives": [
+      {
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786212430316/phases/02-reeval-task-histogram-005/workers/eval-manager/task-histogram/REPORT.md",
+        "present": true,
+        "result": "fail",
+        "role": "eval-manager",
+        "valid": true
+      }
+    ],
+    "open_tickets": [
+      {
+        "eval_id": "task-bigfiles",
+        "id": "task-bigfiles-005",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-bigfiles-005.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-dupcheck",
+        "id": "task-dupcheck-002",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-dupcheck-002.md",
+        "status": "Approved."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-005",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-005.md",
+        "status": "Approved."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-006",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-006.md",
+        "status": "Approved."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-007",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-007.md",
+        "status": "Approved."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-008",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-008.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-009",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-009.md",
+        "status": "Open."
+      }
+    ],
+    "outcomes": {
+      "cycle": "fail",
+      "evaluator": "fail",
+      "infrastructure": "fail",
+      "product": "fail"
+    },
+    "required_outputs": {
+      "audit": false,
+      "candidate_acceptance": false,
+      "candidate_handbook": true,
+      "designer_handbook_read": true,
+      "designer_output": true,
+      "handbook_lineage": true,
+      "manager_evidence_read": true,
+      "manager_handbook_read": true,
+      "manager_report": false,
+      "manager_session": true,
+      "required": false,
+      "ticket_snapshot_unchanged": true,
+      "trial1_process": false,
+      "trial1_report": true,
+      "trial2_process": true,
+      "trial2_report": true,
+      "worker_handbook_read": true
+    },
+    "sessions": [
+      "workers/eval-manager/task-histogram/session.jsonl.bz2",
+      "workers/eval-worker/task-histogram-1/session.jsonl.bz2"
+    ],
+    "tool_errors": [
+      {
+        "report": "workers/eval-worker/task-histogram-1/report.json",
+        "summary": "err[parse.expected-terminator]: expected statement terminator\n  t5.xsh:5:16\n    let c = a // b\n                 ^ expected statement terminator\ncheck=2\nerr[parse.expected-terminator]: expected statement terminator\n  t5.xsh:5:16\n    let c = a // b\n                 ^ expected statement terminator\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 18,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-histogram-1"
+        }
+      },
+      {
+        "report": "workers/eval-worker/task-histogram-1/report.json",
+        "summary": "=== empty file ===\nout:[] exit=0\n=== blanks only ===\nout:[] exit=0\n=== negative line ===\nruntime traceback\nexecutable: /usr/local/bin/xsh\noperation: result.propagate\nerror: parse-uint: expected unsigned integer\ncall path:\n  1. proc main at histogram.xsh:1:1-1:1\nexit=3\n=== bad line ===\nruntime traceback\nexecutable: /usr/local/bin/xsh\noperation: result.propagate\nerror: parse-uint: invalid unsigned integer `abc`\ncall path:\n  1. proc main at histogram.xsh:1:1-1:1\nexit=3\n=== width 0 ===\nexit=133\n=== width non-int ===\ncall path:\n  1. proc main at histogram.xsh:1:1-1:1\nsh: syntax error: bad substitution\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 22,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-histogram-1"
+        }
+      }
+    ],
+    "trials": [
+      {
+        "evidence": {
+          "candidate_sha256": "unknown",
+          "classification": "restriction_failed",
+          "correctness": "pass",
+          "eval_id": "task-histogram",
+          "handbook_sha256": "unknown",
+          "oracle_sha256": "unknown",
+          "passed": false,
+          "protocol": "pass",
+          "restrictions": "fail",
+          "result": "fail",
+          "timing": "pass",
+          "trial_id": "1",
+          "valid": true
+        },
+        "path": "workers/eval-worker/task-histogram-1/run.json"
+      }
+    ],
+    "workers": [
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-histogram"
+        },
+        "path": "workers/eval-manager/task-histogram/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 12,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.006423551999999999,
+          "cache_read_tokens": 356864,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.014144742,
+          "input_cost_usd": 0.00463977,
+          "input_tokens": 51553,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0030814199999999996,
+          "output_tokens": 17119,
+          "provider_total_tokens": 425536,
+          "reasoning_tokens": 11666,
+          "thinking_blocks": 11,
+          "tool_calls": 21,
+          "tool_errors": 0,
+          "tool_results": 21,
+          "total_bucket_tokens": 425536,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-histogram-1"
+        },
+        "path": "workers/eval-worker/task-histogram-1/report.json",
+        "result": "pass",
+        "tool_errors": 2,
+        "usage": {
+          "assistant_turns": 29,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.007243776,
+          "cache_read_tokens": 402432,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.011679605999999995,
+          "input_cost_usd": 0.00231993,
+          "input_tokens": 25777,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0021159,
+          "output_tokens": 11755,
+          "provider_total_tokens": 439964,
+          "reasoning_tokens": 7024,
+          "thinking_blocks": 25,
+          "tool_calls": 43,
+          "tool_errors": 2,
+          "tool_results": 43,
+          "total_bucket_tokens": 439964,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "26d59eb844b670365931d91ffb15ae8c109bae12"
+  },
+  "findings": [
+    {
+      "kind": "required-outputs",
+      "state": "failed"
+    }
+  ],
+  "identity": {
+    "eval_id": "task-histogram",
+    "mode": "eval",
+    "run_id": "02-reeval-task-histogram-005"
+  },
+  "kind": "phase",
+  "result": "fail",
+  "schema_version": 1,
+  "state": "completed"
+}

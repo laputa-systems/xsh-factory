@@ -1,0 +1,286 @@
+{
+  "artifacts": [
+    {
+      "kind": "session-directory",
+      "path": "workers/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 30,
+      "budget_failures": 0,
+      "cost_usd": 0.016568226,
+      "tool_errors": 1,
+      "total_bucket_tokens": 466874.0,
+      "unknown_costs": 0,
+      "workers": 3
+    },
+    "designer": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786212430316/phases/02-reeval-task-dupcheck-002/workers/eval-designer/proposal-1/REPORT.md",
+      "present": false,
+      "result": "not-requested",
+      "role": "eval-designer",
+      "valid": true
+    },
+    "director": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786212430316/phases/02-reeval-task-dupcheck-002/workers/director/director/REPORT.md",
+      "present": false,
+      "result": "not-requested",
+      "role": "director",
+      "valid": true
+    },
+    "engineer": [],
+    "handbook_lineage": {
+      "approved": "lineage/handbook-approved.md",
+      "candidate": "lineage/handbook-candidate.md"
+    },
+    "manager": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786212430316/phases/02-reeval-task-dupcheck-002/workers/eval-manager/task-dupcheck/REPORT.md",
+      "present": true,
+      "result": "not-ready",
+      "role": "eval-manager",
+      "valid": true
+    },
+    "mode": "eval",
+    "narratives": [
+      {
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786212430316/phases/02-reeval-task-dupcheck-002/workers/eval-manager/task-dupcheck-retry-1/REPORT.md",
+        "present": true,
+        "result": "not-ready",
+        "role": "eval-manager",
+        "valid": true
+      },
+      {
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786212430316/phases/02-reeval-task-dupcheck-002/workers/eval-manager/task-dupcheck/REPORT.md",
+        "present": true,
+        "result": "not-ready",
+        "role": "eval-manager",
+        "valid": true
+      }
+    ],
+    "open_tickets": [
+      {
+        "eval_id": "task-bigfiles",
+        "id": "task-bigfiles-005",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-bigfiles-005.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-dupcheck",
+        "id": "task-dupcheck-002",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-dupcheck-002.md",
+        "status": "Approved."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-005",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-005.md",
+        "status": "Approved."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-006",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-006.md",
+        "status": "Approved."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-007",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-007.md",
+        "status": "Approved."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-008",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-008.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-009",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-009.md",
+        "status": "Open."
+      }
+    ],
+    "outcomes": {
+      "cycle": "fail",
+      "evaluator": "pass",
+      "infrastructure": "fail",
+      "product": "pass"
+    },
+    "required_outputs": {
+      "audit": true,
+      "candidate_acceptance": false,
+      "candidate_handbook": true,
+      "designer_handbook_read": true,
+      "designer_output": true,
+      "handbook_lineage": true,
+      "manager_evidence_read": true,
+      "manager_handbook_read": true,
+      "manager_report": false,
+      "manager_session": true,
+      "required": false,
+      "ticket_snapshot_unchanged": true,
+      "trial1_process": true,
+      "trial1_report": true,
+      "trial2_process": true,
+      "trial2_report": true,
+      "worker_handbook_read": true
+    },
+    "sessions": [
+      "workers/eval-manager/task-dupcheck-retry-1/session.jsonl.bz2",
+      "workers/eval-manager/task-dupcheck/session.jsonl.bz2",
+      "workers/eval-worker/task-dupcheck-1/session.jsonl.bz2"
+    ],
+    "tool_errors": [
+      {
+        "report": "workers/eval-worker/task-dupcheck-1/report.json",
+        "summary": "proc main(...argv: List[Str]) [fs, error] {\n  let root = fp\"${argv[0]}\"\n  let entries = fs.files(root, stat: false, hidden: true)?\n    |> where .kind == \"file\"\n    |> map { |e|\n      {digest: hash.sha256(e.path)?.hex(), path: e.path}\n    }\n    |> collect()\n  let ordered = entries\n    |> sort-by { |r|\n      r.path\n    }\n    |> sort-by { |r|\n      r.digest\n    }\n    |> group-by { |r|\n      r.digest\n    }\n    |> collect()\n  for g in ordered {\n    if g.items.len() > 1 {\n      for item in g.items {\n        print f\"${item.digest}  ${item.path.display()}\"\n      }\n    }\n  }\n}\n=== verify vs oracle once more on t2 ===\nawk: cmd. line:4: Unexpected token\n--- -\n+++ /dev/fd/64\n@@ -0,0 +1,5 @@\n+4a8d8134f29b0b7b60c126f5532bc9f5d9bb73037373cf6fb872d81f1dcefdfd  /tmp/t2/.b2\n+4a8d8134f29b0b7b60c126f5532bc9f5d9bb73037373cf6fb872d81f1dcefdfd  /tmp/t2/b1\n+cb1ad2119d8fafb69566510ee712661f9f14b83385006ef92aec47f523a38358  /tmp/t2/d1/.hidden.txt\n+cb1ad2119d8fafb69566510ee712661f9f14b83385006ef92aec47f523a38358  /tmp/t2/d2/x2.txt\n+cb1ad2119d8fafb69566510ee712661f9f14b83385006ef92aec47f523a38358  /tmp/t2/x1.txt\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 15,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-dupcheck-1"
+        }
+      }
+    ],
+    "trials": [
+      {
+        "evidence": {
+          "candidate_sha256": "unknown",
+          "classification": "pass",
+          "correctness": "pass",
+          "eval_id": "task-dupcheck",
+          "handbook_sha256": "unknown",
+          "oracle_sha256": "unknown",
+          "passed": true,
+          "protocol": "pass",
+          "restrictions": "pass",
+          "result": "pass",
+          "timing": "pass",
+          "trial_id": "1",
+          "valid": true
+        },
+        "path": "workers/eval-worker/task-dupcheck-1/run.json"
+      }
+    ],
+    "workers": [
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-dupcheck-retry-1"
+        },
+        "path": "workers/eval-manager/task-dupcheck-retry-1/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 4,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.0008386559999999999,
+          "cache_read_tokens": 46592,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.003813876,
+          "input_cost_usd": 0.0020870999999999997,
+          "input_tokens": 23190,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00088812,
+          "output_tokens": 4934,
+          "provider_total_tokens": 74716,
+          "reasoning_tokens": 4215,
+          "thinking_blocks": 4,
+          "tool_calls": 13,
+          "tool_errors": 0,
+          "tool_results": 13,
+          "total_bucket_tokens": 74716,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-dupcheck"
+        },
+        "path": "workers/eval-manager/task-dupcheck/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 5,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.00119808,
+          "cache_read_tokens": 66560,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.00539667,
+          "input_cost_usd": 0.00331677,
+          "input_tokens": 36853,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00088182,
+          "output_tokens": 4899,
+          "provider_total_tokens": 108312,
+          "reasoning_tokens": 4204,
+          "thinking_blocks": 5,
+          "tool_calls": 13,
+          "tool_errors": 0,
+          "tool_results": 13,
+          "total_bucket_tokens": 108312,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-dupcheck-1"
+        },
+        "path": "workers/eval-worker/task-dupcheck-1/report.json",
+        "result": "pass",
+        "tool_errors": 1,
+        "usage": {
+          "assistant_turns": 21,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.00465984,
+          "cache_read_tokens": 258880,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.007357679999999999,
+          "input_cost_usd": 0.0017960400000000005,
+          "input_tokens": 19956,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0009018,
+          "output_tokens": 5010,
+          "provider_total_tokens": 283846,
+          "reasoning_tokens": 2274,
+          "thinking_blocks": 13,
+          "tool_calls": 25,
+          "tool_errors": 1,
+          "tool_results": 25,
+          "total_bucket_tokens": 283846,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "26d59eb844b670365931d91ffb15ae8c109bae12"
+  },
+  "findings": [
+    {
+      "kind": "required-outputs",
+      "state": "failed"
+    }
+  ],
+  "identity": {
+    "eval_id": "task-dupcheck",
+    "mode": "eval",
+    "run_id": "02-reeval-task-dupcheck-002"
+  },
+  "kind": "phase",
+  "result": "fail",
+  "schema_version": 1,
+  "state": "completed"
+}

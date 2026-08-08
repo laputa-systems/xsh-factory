@@ -1,0 +1,96 @@
+{
+  "classification": "restriction_failed",
+  "correctness": {
+    "all_exact": true,
+    "cases": [
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 11594561,
+        "exact": true,
+        "name": "public",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 11626061
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 64103425,
+        "exact": true,
+        "name": "hidden_width",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 11129138
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 11162473,
+        "exact": true,
+        "name": "hidden_many",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 11732646
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 11217139,
+        "exact": true,
+        "name": "hidden_sparse",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 11218932
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 11091096,
+        "exact": true,
+        "name": "hidden_single",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 12687991
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 11071805,
+        "exact": true,
+        "name": "hidden_ties",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 12485614
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 12713659,
+        "exact": true,
+        "name": "hidden_empty",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 12396279
+      },
+      {
+        "candidate_exit": -1,
+        "candidate_wall_ns": 11234556,
+        "exact": true,
+        "name": "hidden_bad_width",
+        "oracle_exit": 1,
+        "oracle_wall_ns": 13052163
+      },
+      {
+        "candidate_exit": 3,
+        "candidate_wall_ns": 11366225,
+        "exact": true,
+        "name": "hidden_bad_value",
+        "oracle_exit": 2,
+        "oracle_wall_ns": 12606616
+      }
+    ],
+    "passed": true
+  },
+  "eval_id": "task-histogram",
+  "image_id": "sha256:ed8e1c094d50dceeee9e82f717172a30f6c44f727b7e30ac97036d3e58b4599d",
+  "platform": "linux/arm64",
+  "protocol": {
+    "artifact_present": true,
+    "review_ok": true
+  },
+  "restrictions": {
+    "passed": false
+  },
+  "result": "fail",
+  "timings": {
+    "passed": true
+  },
+  "trial_id": "1"
+}

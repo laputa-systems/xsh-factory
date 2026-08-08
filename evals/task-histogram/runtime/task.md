@@ -32,6 +32,7 @@ Use the handbook and the available `xsht` checks as the reference. A normal
 development loop is:
 
     xsht api search:parse_int
+    xsht api search:parse_uint
     xsht api language:stream.sort-by
     xsht check histogram.xsh
     xsht fmt histogram.xsh

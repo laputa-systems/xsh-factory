@@ -904,6 +904,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
       }
 
       let ticket_candidate = ticket_worktree.display()
+      let retained_replay = if ticket_is_reused { "true" } else { "false" }
       runtime.emit_event(
         event_template,
         run_dir,
@@ -934,6 +935,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
           f"FACTORY_REEVAL_TICKET=${ticket_id}",
           f"FACTORY_REEVAL_WORKTREE=${ticket_candidate}",
           "FACTORY_SKIP_TICKET_RECONCILE=true",
+          f"FACTORY_RETAINED_REPLAY=${retained_replay}",
         ],
         fp"${run_dir}/reeval-${ticket_id}.stdout",
         fp"${run_dir}/reeval-${ticket_id}.stderr",

@@ -322,6 +322,7 @@ proc test_role_defaults_are_coded_and_capped() [env, error] {
   test.eq(control.default_max_wall_seconds("eval-manager"), "600")?
   test.eq(control.default_max_wall_seconds("eval-worker"), "1800")?
   test.eq(control.default_max_wall_seconds("engineer"), "1800")?
+  test.eq(control.retained_replay_manager_wall_seconds(), "300")?
   env FACTORY_ENGINEER_BUDGET_USD="2" {
     test.eq(control.configured_role_setting("engineer", "BUDGET_USD")?, control.default_budget("engineer"))?
   }

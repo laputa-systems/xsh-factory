@@ -611,6 +611,18 @@ and record-literal guidance, but it is single-eval evidence. Keep the approved
 handbook unchanged until the named histogram replay and a second
 record/division-heavy eval confirm reduced discovery friction.
 
+## Explicit CTO disposition — run-1786212430316
+
+| Candidate SHA-256 | Disposition |
+| --- | --- |
+| `31cede20ab94b0d557a8f59aad36a02ff960dbf453280e63816b6614b09540b4` | deferred pending cross-eval replay; not promoted |
+
+The `task-histogram` replay staged concise guidance about `parse_uint`,
+positive bounds, and standard-module shadowing. It is useful but remains
+single-eval evidence, and this replay's evaluator restriction gate was stale.
+Keep the approved handbook unchanged until the repaired histogram replay and a
+second numeric or path eval confirm that the guidance generalizes.
+
 ## Explicit CTO disposition — run-1786128115649
 
 | Candidate SHA-256 | Disposition |

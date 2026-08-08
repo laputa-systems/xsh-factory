@@ -222,6 +222,13 @@ export pure default_max_wall_seconds(role: Str) -> Str {
   return ""
 }
 
+## Retained replays are valuable quality evidence, but they must not consume
+## the same closeout budget as fresh delivery. The organization controller
+## applies this lower bound only to an already-retained branch.
+export pure retained_replay_manager_wall_seconds() -> Str {
+  return "300"
+}
+
 ## Clamps a turn or wall-clock limit to the role's hard ceiling.
 export pure clamp_session_limit(role: Str, key: Str, configured: Str) -> Result[Str] {
   let ceiling_text = if key == "MAX_TURNS" {
