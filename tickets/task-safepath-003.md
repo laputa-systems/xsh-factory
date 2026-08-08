@@ -2,7 +2,20 @@
 
 ## Status
 
-Open.
+Approved.
+
+## CTO decision — throughput cycle 2026-08-08
+
+- Decision: Approved for one bounded implementation and linked-replay cycle.
+- Basis: The preceding `task-safepath-002` delivery passed correctness and
+  replay, while the same replay produced a distinct, minimal residual
+  `full_ir_function_blocker` for nested conditional statements inside `fold`.
+- Scope: Extend the existing fold lowering path for the two stated conditional
+  forms; no new syntax, stream surface, or unrelated diagnostic redesign.
+- Evidence: `runs/run-1786162002471/phases/02-reeval-task-safepath-002/workers/eval-manager/task-safepath/REPORT.md`
+  and the worker session/reproducer referenced by `task-safepath-003`.
+- Admission: One engineer row is required; linked `task-safepath` replay and
+  one independent eval remain the delivery gates.
 
 ## Change target
 
