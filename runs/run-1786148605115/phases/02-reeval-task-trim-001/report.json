@@ -1,0 +1,45 @@
+{
+  "artifacts": [
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    },
+    {
+      "kind": "build-log",
+      "path": "staging-build.stderr"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 0,
+      "cost_usd": 0.0,
+      "tool_errors": 0,
+      "total_bucket_tokens": 0,
+      "workers": 0
+    },
+    "eval_id": "task-trim",
+    "mode": "eval",
+    "narratives": [],
+    "sessions": [],
+    "tool_errors": [],
+    "trials": [],
+    "workers": [],
+    "xsh_commit": "unknown"
+  },
+  "findings": [
+    {
+      "kind": "preflight-failure",
+      "message": "staging local XSH binaries or factory modules failed; see xsh-build.stderr",
+      "stage": "staging"
+    }
+  ],
+  "identity": {
+    "eval_id": "task-trim",
+    "mode": "eval",
+    "run_id": "02-reeval-task-trim-001"
+  },
+  "kind": "phase",
+  "result": "fail",
+  "schema_version": 1,
+  "state": "completed"
+}

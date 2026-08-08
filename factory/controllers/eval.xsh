@@ -456,9 +456,21 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     fs.write_atomic(toolchain_cache, toolchain_key + "\n")?
   }
 
-  let staged_dir = fp"${factory_dir}/evals/.dist"
+  let base_context = fp"${run_dir}/base-context"
+  let staged_dir = fp"${base_context}/.dist"
+  fs.mkdir(base_context)?
   fs.mkdir(staged_dir)?
   fs.mkdir(fp"${staged_dir}/factory")?
+  fs.copy(
+    fp"${factory_dir}/evals/Dockerfile.base",
+    fp"${base_context}/Dockerfile.base",
+    overwrite: true,
+  )?
+  fs.copy(
+    fp"${factory_dir}/evals/eval-worker.xsh",
+    fp"${base_context}/eval-worker.xsh",
+    overwrite: true,
+  )?
   let stage_xsh = process.run(
     process.command_argv(
       "cp",
@@ -528,8 +540,8 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
       "-t",
       base_image,
       "-f",
-      fp"${factory_dir}/evals/Dockerfile.base".display(),
-      fp"${factory_dir}/evals".display(),
+      fp"${base_context}/Dockerfile.base".display(),
+      base_context.display(),
     ],
   )
   let base_status = if shared_base_image_cache_hit {

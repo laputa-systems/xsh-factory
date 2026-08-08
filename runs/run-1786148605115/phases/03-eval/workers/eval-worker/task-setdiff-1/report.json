@@ -1,0 +1,126 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786148605115/phases/03-eval/workers/eval-worker/task-setdiff-1/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_state": "pass",
+    "agent_wall_ms": 114706,
+    "artifact": {
+      "name": "setdiff.xsh",
+      "state": "present"
+    },
+    "budget_state": "pass",
+    "classification": "pass",
+    "evaluator_manifest": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786148605115/phases/03-eval/workers/eval-worker/task-setdiff-1/run.json",
+    "evaluator_state": "pass",
+    "reporting_state": "pass",
+    "result": "pass",
+    "review": {
+      "state": "present"
+    }
+  },
+  "findings": [
+    {
+      "count": 2,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "eval_id": "task-setdiff",
+    "role": "eval-worker",
+    "run_id": "03-eval",
+    "worker_id": "task-setdiff-1"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "provider_telemetry": {
+    "event_turns": 37,
+    "events_path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786148605115/phases/03-eval/workers/eval-worker/task-setdiff-1/session.jsonl.events.jsonl",
+    "output_tokens_per_second": 0,
+    "present": true,
+    "provider_errors": [],
+    "response_elapsed_ms": 0,
+    "retry_count": 0,
+    "retry_delay_ms": 0,
+    "retry_errors": [],
+    "retry_failures": 0,
+    "retry_successes": 0
+  },
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786148605115/phases/03-eval/workers/eval-worker/task-setdiff-1/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 36,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 113516
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786148605115/phases/03-eval/workers/eval-worker/task-setdiff-1/session.jsonl.bz2",
+      "summary": "err[parse.expected-expression]: expected expression\n  setdiff.xsh:11:20\n      |> where { |l| not bSet.has(l) }\n                     ^^^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  setdiff.xsh:12:5\n      |> sort-by { |l| l }\n      ^^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  setdiff.xsh:13:5\n      |> collect()\n      ^^ expected expression\n\nerr[parse.expected-token]: expected `}` to close block\n  setdiff.xsh:16:1\n  \n  ^ expected `}` to close block\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 10
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786148605115/phases/03-eval/workers/eval-worker/task-setdiff-1/session.jsonl.bz2",
+      "summary": "warn[lint.path-constructor]: prefer p-string interpolation over `Path(...)`\n  setdiff.xsh:2:15\n    let aPath = Path(argv[0])\n                ------------- use path string syntax instead\nnote: `Path(...)` remains a cast, but p-strings are the preferred path syntax\nhelp: replace with path string -> fp\"${argv[0]}\"\nwarn[lint.path-constructor]: prefer p-string interpolation over `Path(...)`\n  setdiff.xsh:3:15\n    let bPath = Path(argv[1])\n                ------------- use path string syntax instead\nnote: `Path(...)` remains a cast, but p-strings are the preferred path syntax\nhelp: replace with path string -> fp\"${argv[1]}\"\n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 23
+    }
+  ],
+  "tools": [
+    {
+      "count": 35,
+      "name": "bash"
+    },
+    {
+      "count": 3,
+      "name": "edit"
+    },
+    {
+      "count": 4,
+      "name": "read"
+    },
+    {
+      "count": 1,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 37,
+    "budget_usd": 0.5,
+    "cache_read_cost_usd": 0.009510912,
+    "cache_read_tokens": 528384,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.013267601999999996,
+    "input_cost_usd": 0.00223281,
+    "input_tokens": 24809,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.0015238800000000002,
+    "output_tokens": 8466,
+    "provider_total_tokens": 561659,
+    "reasoning_tokens": 3434,
+    "thinking_blocks": 32,
+    "tool_calls": 43,
+    "tool_errors": 2,
+    "tool_results": 43,
+    "total_bucket_tokens": 561659,
+    "user_messages": 1
+  }
+}

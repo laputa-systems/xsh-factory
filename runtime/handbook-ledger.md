@@ -6,6 +6,16 @@ A candidate hash listed as `promoted` has been incorporated into the rolling
 must remain visible as unresolved work in the CTO briefing; controllers must
 not silently discard it.
 
+## Explicit CTO disposition — run-1786148605115
+
+| Candidate SHA-256 | Disposition |
+| --- | --- |
+| `bc51137b6fcd7bddc1378d3db4b23fc354eb063f6848a133617d4a27327562c7` | deferred pending cross-eval replay; not promoted |
+
+The independent `task-setdiff` eval staged a general predicate-negation
+lesson, but it is single-trial evidence. Defer it pending the named replay
+and a nearby predicate eval; keep the approved handbook unchanged.
+
 ## Explicit CTO disposition — run-1786147170660
 
 | Candidate SHA-256 | Disposition |

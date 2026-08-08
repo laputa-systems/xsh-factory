@@ -30,7 +30,7 @@ XSH's stated role is practical systems glue ("connect processes, files, paths,
 streams, JSON, and system state"); file text transformation is core glue work.
 This eval probes whether an agent with the handbook can:
 
-- read a file's lines as XSH values via the `fs` module and stream stages
+- read a file's lines as XSH values via filesystem APIs and stream stages
   (not by shelling out to `sed` / `tr` / `awk`);
 - apply a per-line transformation and reassemble the lines with exact
   newline separation;
@@ -95,11 +95,13 @@ cases:
   non-ASCII text.
 
 The evaluator checks the source does not contain the forbidden subprocess
-boundary, requires that the source references the filesystem module (`fs.`)
-and the text-read path so a hard-coded text workaround is classified as a
-restriction failure, verifies the input file is left unchanged, and checks that
-`review.md` preserves both required headings and contains no template
-placeholders.
+boundary and references a supported file-I/O surface: filesystem-module calls
+such as `fs.read_text`/`fs.read_bytes` and `fs.write`, or typed-Path methods
+such as `Path.read_text()`/`Path.read_bytes()` and `Path.write()`. This keeps a
+hard-coded text workaround classified as a restriction failure without
+requiring one API spelling. It also verifies the input file is left unchanged,
+and checks that `review.md` preserves both required headings and contains no
+template placeholders.
 
 ## Metrics
 

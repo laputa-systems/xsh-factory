@@ -9,6 +9,12 @@ proc review_ok() [fs, error] -> Result[Bool] {
   return text.contains("## XSH language proposals") and text.contains("## xsht friction") and ! ("{{" in text)
 }
 
+pure source_uses_file_io(source: Str) -> Bool {
+  let reads_file = "fs.read_text" in source or "fs.read_bytes" in source or ".read_text()" in source or ".read_bytes()" in source
+  let writes_file = "fs.write" in source or ".write(" in source
+  return reads_file and writes_file
+}
+
 proc main() [fs, process, env, time, error, io] {
   let artifact = /work/trim.xsh
   let input = /tmp/task-trim-input
@@ -36,7 +42,7 @@ internal  spaces
     process.run(process.command_argv("false", ["false"]))?
   }
   let source = if fs.exists(artifact)? { artifact.read_text()? } else { "" }
-  let restriction_ok = "fs." in source and ! ("process." in source) and ! ("spawn " in source)
+  let restriction_ok = source_uses_file_io(source) and ! ("process." in source) and ! ("spawn " in source)
   let exact = candidate.ok and fs.exists(output)? and output.read_text()? == expected.read_text()?
   let review = review_ok()?
   let passed = exact and restriction_ok and review

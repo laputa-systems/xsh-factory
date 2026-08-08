@@ -1,0 +1,154 @@
+{
+  "artifacts": [
+    {
+      "kind": "phase-reports",
+      "path": "phases/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 56,
+      "budget_failures": 0,
+      "cost_usd": 0.02929627799999999,
+      "tool_errors": 2,
+      "total_bucket_tokens": 1031403.0,
+      "unknown_costs": 0,
+      "workers": 2
+    },
+    "mode": "organization",
+    "outcomes": {
+      "cycle": "fail",
+      "evaluator": "fail",
+      "infrastructure": "pass",
+      "product": "fail"
+    },
+    "phases": [
+      {
+        "id": "01-ticket",
+        "path": "phases/01-ticket/report.json",
+        "result": "pass",
+        "valid": true
+      },
+      {
+        "id": "02-reeval-task-trim-001",
+        "path": "phases/02-reeval-task-trim-001/report.json",
+        "result": "fail",
+        "valid": true
+      },
+      {
+        "id": "03-eval",
+        "path": "phases/03-eval/report.json",
+        "result": "pass",
+        "valid": true
+      }
+    ],
+    "tool_errors": [
+      {
+        "report": "phases/03-eval/workers/eval-worker/task-setdiff-1/report.json",
+        "summary": "err[parse.expected-expression]: expected expression\n  setdiff.xsh:11:20\n      |> where { |l| not bSet.has(l) }\n                     ^^^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  setdiff.xsh:12:5\n      |> sort-by { |l| l }\n      ^^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  setdiff.xsh:13:5\n      |> collect()\n      ^^ expected expression\n\nerr[parse.expected-token]: expected `}` to close block\n  setdiff.xsh:16:1\n  \n  ^ expected `}` to close block\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 10,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-setdiff-1"
+        }
+      },
+      {
+        "report": "phases/03-eval/workers/eval-worker/task-setdiff-1/report.json",
+        "summary": "warn[lint.path-constructor]: prefer p-string interpolation over `Path(...)`\n  setdiff.xsh:2:15\n    let aPath = Path(argv[0])\n                ------------- use path string syntax instead\nnote: `Path(...)` remains a cast, but p-strings are the preferred path syntax\nhelp: replace with path string -> fp\"${argv[0]}\"\nwarn[lint.path-constructor]: prefer p-string interpolation over `Path(...)`\n  setdiff.xsh:3:15\n    let bPath = Path(argv[1])\n                ------------- use path string syntax instead\nnote: `Path(...)` remains a cast, but p-strings are the preferred path syntax\nhelp: replace with path string -> fp\"${argv[1]}\"\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 23,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-setdiff-1"
+        }
+      }
+    ],
+    "workers": [
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-setdiff"
+        },
+        "path": "phases/03-eval/workers/eval-manager/task-setdiff/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 19,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.006932735999999998,
+          "cache_read_tokens": 385152,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.016028675999999995,
+          "input_cost_usd": 0.006130620000000001,
+          "input_tokens": 68118,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0029653199999999996,
+          "output_tokens": 16474,
+          "provider_total_tokens": 469744,
+          "reasoning_tokens": 10233,
+          "thinking_blocks": 18,
+          "tool_calls": 28,
+          "tool_errors": 0,
+          "tool_results": 28,
+          "total_bucket_tokens": 469744,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-setdiff-1"
+        },
+        "path": "phases/03-eval/workers/eval-worker/task-setdiff-1/report.json",
+        "result": "pass",
+        "tool_errors": 2,
+        "usage": {
+          "assistant_turns": 37,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.009510912,
+          "cache_read_tokens": 528384,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.013267601999999996,
+          "input_cost_usd": 0.00223281,
+          "input_tokens": 24809,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0015238800000000002,
+          "output_tokens": 8466,
+          "provider_total_tokens": 561659,
+          "reasoning_tokens": 3434,
+          "thinking_blocks": 32,
+          "tool_calls": 43,
+          "tool_errors": 2,
+          "tool_results": 43,
+          "total_bucket_tokens": 561659,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "630d14261ce5cf0160bf9809e79e2fca12922c70"
+  },
+  "findings": [
+    {
+      "id": "02-reeval-task-trim-001",
+      "kind": "phase",
+      "result": "fail"
+    }
+  ],
+  "identity": {
+    "mode": "organization",
+    "run_id": "run-1786148605115"
+  },
+  "kind": "run",
+  "result": "fail",
+  "schema_version": 1,
+  "state": "completed"
+}

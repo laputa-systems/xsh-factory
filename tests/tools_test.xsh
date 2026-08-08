@@ -2364,6 +2364,22 @@ proc test_package_evaluators_use_direct_process_status(_: TestContext) [fs, erro
   }
 }
 
+proc test_task_trim_restriction_accepts_typed_path_io() [fs, error] {
+  let evaluator = fs.read_text(fp"${fs.cwd()?}/evals/task-trim/evaluator.xsh")?
+  test.contains(evaluator, "pure source_uses_file_io(source: Str) -> Bool")?
+  test.contains(evaluator, "\".read_bytes()\" in source")?
+  test.contains(evaluator, "\".write(\" in source")?
+  test.contains(evaluator, "source_uses_file_io(source)")?
+  test.ok("let restriction_ok = \"fs.\" in source" not in evaluator)?
+}
+
+proc test_eval_staging_context_is_run_scoped() [fs, error] {
+  let evaluator = fs.read_text(fp"${fs.cwd()?}/factory/controllers/eval.xsh")?
+  test.contains(evaluator, r"""let base_context = fp"${run_dir}/base-context""" )?
+  test.contains(evaluator, "base_context.display()")?
+  test.ok(r"""fp"${factory_dir}/evals/.dist""" not in evaluator)?
+}
+
 proc test_task_bigfiles_evaluator_is_package_owned() [fs, error] {
   let evaluator = fs.read_text(fp"${fs.cwd()?}/evals/task-bigfiles/evaluator.xsh")?
   test.ok(control.eval_evaluator_package_owned(evaluator))?
