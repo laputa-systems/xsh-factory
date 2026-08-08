@@ -2,7 +2,7 @@
 
 ## Status
 
-pending-validation
+validated
 
 ## Change
 
@@ -67,5 +67,7 @@ not to return to unconditional independent work in product cycles.
 
 ## Next-cycle disposition
 
-The next CTO must replace `pending-validation` with `validated` or `reverted`
-after linking the native and next-run evidence.
+Validated by `runs/run-1786225653459/events.jsonl`: the retained ticket cycle
+recorded `independent_eval_target=0` and `independent_evals=0`, so the
+independent-lane admission repair held. The next improvement under test is the
+session-watch timestamp conversion recorded in that run's handoff.

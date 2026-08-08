@@ -2,7 +2,21 @@
 
 ## Status
 
-Approved.
+Open.
+
+## CTO decision — retained replay 2026-08-08
+
+- Decision: Deferred after linked replay rejection; do not replay again until
+  the artifact satisfies the package restriction boundary.
+- Evidence: `runs/run-1786225653459/phases/02-reeval-task-histogram-005/workers/eval-worker/task-histogram-1/run.json`
+  passed correctness and protocol but failed restrictions because the
+  candidate did not contain the required typed file-read surface. The manager
+  could not complete closeout because of the separately recorded watchdog unit
+  defect; no merge is authorized.
+- Next action: preserve branch
+  `factory/task-histogram-005/1786212466873`, require a directed compliant
+  replay or a new CTO decision, and let the next approved retained branch use
+  the bounded replay lane.
 
 ## CTO review — cycle 25 close
 
