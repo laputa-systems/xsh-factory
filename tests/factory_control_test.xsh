@@ -1044,6 +1044,7 @@ proc test_standard_cycle_uses_diverse_active_eval(ctx: TestContext) [fs, error] 
   test.contains(organization, "adaptive_approved_tickets")?
   test.contains(organization, "organization_eval_target")?
   test.contains(organization, "max_concurrent_discovery_evals()")?
+  test.contains(launcher, "organization_eval_target")?
   test.contains(runtime_source, "organization_ticket_counts")?
   test.contains(fs.read_text(fp"${fs.cwd()?}/run.xsh")?, "next_untried_approved_eval")?
   test.contains(organization, "cto_unreviewed_open_tickets")?

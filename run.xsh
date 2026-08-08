@@ -210,7 +210,9 @@ proc preflight(
 
   if mode == "eval" or mode == "organization" or mode == "eval-design" {
     let requested_eval_values = typed_request.eval_values(request_text)?
-    let adaptive_eval_limit = if candidate_tickets.len() > 0 {
+    let adaptive_eval_limit = if mode == "organization" {
+      control.organization_eval_target(queue_counts.get(0, 0), candidate_tickets.len())
+    } else if candidate_tickets.len() > 0 {
       1
     } else {
       discovery_target
@@ -221,8 +223,8 @@ proc preflight(
       requested_eval_values
     }
     let eval_id = if eval_values.len() > 0 { eval_values[0] } else { "" }
-    if mode == "organization" and eval_id == "" {
-      eprint "organization request must select an eval"
+    if mode == "organization" and candidate_tickets.len() == 0 and eval_id == "" {
+      eprint "ticketless organization request must select an eval"
       return false
     }
     if mode == "organization" and candidate_tickets.len() == 0 and (eval_values.len() < 1 or eval_values.len() > control.max_concurrent_discovery_evals()) {
