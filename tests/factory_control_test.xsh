@@ -378,6 +378,12 @@ proc test_ticket_api_surface_gate_is_documented() [fs, error] {
   test.contains(ticket, "ergonomic shortcut")?
 }
 
+proc test_approved_dupcheck_ticket_satisfies_admission_gate() [fs, error] {
+  let ticket = fs.read_text(fp"${fs.cwd()?}/tickets/task-dupcheck-002.md")?
+  test.ok(control.ticket_is_accepted(ticket))?
+  test.ok(control.ticket_api_surface_gate_ok(ticket))?
+}
+
 proc test_admission_and_report_contracts() [error] {
   test.ok(control.valid_eval_id("task-tags"))?
   test.eq(
