@@ -1,0 +1,388 @@
+{
+  "artifacts": [
+    {
+      "kind": "session-directory",
+      "path": "workers/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 62,
+      "budget_failures": 0,
+      "cost_usd": 0.074067087,
+      "tool_errors": 16,
+      "total_bucket_tokens": 4084297.0,
+      "unknown_costs": 0,
+      "workers": 2
+    },
+    "designer": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786163685229/phases/01-ticket/workers/eval-designer/proposal-1/REPORT.md",
+      "present": false,
+      "result": "not-requested",
+      "role": "eval-designer",
+      "valid": true
+    },
+    "director": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786163685229/phases/01-ticket/workers/director/director/REPORT.md",
+      "present": true,
+      "result": "pass",
+      "role": "director",
+      "valid": true
+    },
+    "engineer": [
+      {
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786163685229/phases/01-ticket/workers/director/director/REPORT.md",
+        "present": true,
+        "result": "pass",
+        "role": "director",
+        "valid": true
+      },
+      {
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786163685229/phases/01-ticket/workers/engineer/task-safepath-003/REPORT.md",
+        "present": true,
+        "result": "ready-for-review",
+        "role": "engineer",
+        "valid": true
+      }
+    ],
+    "handbook_lineage": {
+      "approved": "lineage/handbook-approved.md",
+      "candidate": "lineage/handbook-candidate.md"
+    },
+    "manager": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786163685229/phases/01-ticket/workers/eval-manager/task-safepath/REPORT.md",
+      "present": false,
+      "result": "missing",
+      "role": "eval-manager",
+      "valid": false
+    },
+    "mode": "ticket-implementation",
+    "narratives": [
+      {
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786163685229/phases/01-ticket/workers/director/director/REPORT.md",
+        "present": true,
+        "result": "pass",
+        "role": "director",
+        "valid": true
+      },
+      {
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786163685229/phases/01-ticket/workers/engineer/task-safepath-003/REPORT.md",
+        "present": true,
+        "result": "ready-for-review",
+        "role": "engineer",
+        "valid": true
+      }
+    ],
+    "open_tickets": [
+      {
+        "eval_id": "task-bigfiles",
+        "id": "task-bigfiles-001",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-bigfiles-001.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-dupcheck",
+        "id": "task-dupcheck-002",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-dupcheck-002.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-004",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-004.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-005",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-005.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-006",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-006.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-007",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-007.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-008",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-008.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-pathparts",
+        "id": "task-pathparts-002",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-pathparts-002.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-safepath",
+        "id": "task-safepath-003",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-safepath-003.md",
+        "status": "Approved."
+      }
+    ],
+    "outcomes": {
+      "cycle": "pass",
+      "evaluator": "pass",
+      "infrastructure": "pass",
+      "product": "pass"
+    },
+    "required_outputs": null,
+    "sessions": [
+      "workers/director/director/session.jsonl.bz2",
+      "workers/engineer/task-safepath-003/session.jsonl.bz2"
+    ],
+    "tool_errors": [
+      {
+        "report": "workers/engineer/task-safepath-003/report.json",
+        "summary": "ENOENT: no such file or directory, access '/Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786163685229/tests/xsh/stdlib/streams.xsh'",
+        "tool": "read",
+        "turn": 3,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-safepath-003"
+        }
+      },
+      {
+        "report": "workers/engineer/task-safepath-003/report.json",
+        "summary": "rg: regex parse error:\n    (?:ArenaStmtKind::If {)\n                          ^\nerror: repetition quantifier expects a valid decimal",
+        "tool": "grep",
+        "turn": 6,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-safepath-003"
+        }
+      },
+      {
+        "report": "workers/engineer/task-safepath-003/report.json",
+        "summary": "ENOENT: no such file or directory, access '/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786163685229/phases/01-ticket/workers/eval-manager/task-safepath/REPORT.md'",
+        "tool": "read",
+        "turn": 12,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-safepath-003"
+        }
+      },
+      {
+        "report": "workers/engineer/task-safepath-003/report.json",
+        "summary": "tests/runtime.rs:39:mod streams;\n    Finished `test` profile [unoptimized] target(s) in 0.41s\n     Running tests/integration.rs (target/debug/deps/integration-4d74d0805adc1abb)\n\nrunning 2 tests\n   Compiling xsh v0.0.1 (/Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786163685229/task-safepath-003)\n   Compiling xsht v0.0.1 (/Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786163685229/task-safepath-003/crates/xsht)\n   Compiling xshi v0.0.1 (/Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786163685229/task-safepath-003/crates/xshi)\n    Finished `dev` profile [unoptimized] target(s) in 16.62s\n\nthread 'runtime::streams::fold_block_supports_nested_if_as_branch_tail' (14077656) panicked at tests/runtime/streams.rs:84:5:\nxsht check rejected a nested if tail in a fold block: err[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  /var/folders/tb/mq41rvt94470b3lwmq67s0zc0000gn/T/xsh-fold-nested-if-tail-66413.xsh:13:7\n  print result\n        ^^^^^^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $result\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\nthread 'runtime::streams::fold_block_supports_nested_if_statement_with_assignment' (14077657) panicked at tests/runtime/streams.rs:48:5:\nxsht check rejected a nested if statement in a fold block: err[check.bare-print-ident]: bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\n  /var/folders/tb/mq41rvt94470b3lwmq67s0zc0000gn/T/xsh-fold-nested-if-statement-66413.xsh:9:7\n  print result\n        ^^^^^^ bare identifiers in print are ambiguous; use `$ident` to dereference or `\"text\"` for a literal\nhelp: use `$` shorthand -> $result\n\ntest runtime::streams::fold_block_supports_nested_if_statement_with_assignment ... FAILED\ntest runtime::streams::fold_block_supports_nested_if_as_branch_tail ... FAILED\n\nfailures:\n\nfailures:\n    runtime::streams::fold_block_supports_nested_if_as_branch_tail\n    runtime::streams::fold_block_supports_nested_if_statement_with_assignment\n\ntest result: FAILED. 0 passed; 2 failed; 0 ignored; 0 measured; 488 filtered out; finished in 16.83s\n\nerror: test failed, to rerun pass `--test integration`\n\n\nCommand exited with code 101",
+        "tool": "bash",
+        "turn": 16,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-safepath-003"
+        }
+      },
+      {
+        "report": "workers/engineer/task-safepath-003/report.json",
+        "summary": "Found 2 occurrences of the text in /Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786163685229/task-safepath-003/tests/runtime/streams.rs. The text must be unique. Please provide more context to make it unique.",
+        "tool": "edit",
+        "turn": 17,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-safepath-003"
+        }
+      },
+      {
+        "report": "workers/engineer/task-safepath-003/report.json",
+        "summary": "Validation failed for tool \"edit\":\n  - path: must have required properties path, edits\n\nReceived arguments:\n{\n  \"command\": \"sed -n '15,95p' tests/runtime/streams.rs\"\n}",
+        "tool": "edit",
+        "turn": 18,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-safepath-003"
+        }
+      },
+      {
+        "report": "workers/engineer/task-safepath-003/report.json",
+        "summary": "Found 2 occurrences of the text in /Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786163685229/task-safepath-003/tests/runtime/streams.rs. The text must be unique. Please provide more context to make it unique.",
+        "tool": "edit",
+        "turn": 21,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-safepath-003"
+        }
+      },
+      {
+        "report": "workers/engineer/task-safepath-003/report.json",
+        "summary": "   Compiling xsh v0.0.1 (/Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786163685229/task-safepath-003)\n    Finished `test` profile [unoptimized] target(s) in 1.76s\n     Running tests/integration.rs (target/debug/deps/integration-4d74d0805adc1abb)\n\nrunning 2 tests\n    Finished `dev` profile [unoptimized] target(s) in 0.17s\n\nthread 'runtime::streams::fold_block_supports_nested_if_as_branch_tail' (14081477) panicked at tests/runtime/streams.rs:84:5:\nxsht check rejected a nested if tail in a fold block: err[compact.indexed-build]: indexed IR could not encode `top_level_boundary_blocker`\n  /var/folders/tb/mq41rvt94470b3lwmq67s0zc0000gn/T/xsh-fold-nested-if-tail-67482.xsh:2:1\n  let result = [1, 2, 3] |> fold(0) { |acc, item|\n  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ indexed IR could not encode `top_level_boundary_blocker`\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\nthread 'runtime::streams::fold_block_supports_nested_if_statement_with_assignment' (14081478) panicked at tests/runtime/streams.rs:48:5:\nxsht check rejected a nested if statement in a fold block: err[compact.indexed-build]: indexed IR could not encode `top_level_boundary_blocker`\n  /var/folders/tb/mq41rvt94470b3lwmq67s0zc0000gn/T/xsh-fold-nested-if-statement-67482.xsh:2:1\n  let result = [1, 2, 3] |> fold(0) { |acc, item|\n  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ indexed IR could not encode `top_level_boundary_blocker`\n\ntest runtime::streams::fold_block_supports_nested_if_statement_with_assignment ... FAILED\ntest runtime::streams::fold_block_supports_nested_if_as_branch_tail ... FAILED\n\nfailures:\n\nfailures:\n    runtime::streams::fold_block_supports_nested_if_as_branch_tail\n    runtime::streams::fold_block_supports_nested_if_statement_with_assignment\n\ntest result: FAILED. 0 passed; 2 failed; 0 ignored; 0 measured; 488 filtered out; finished in 0.36s\n\nerror: test failed, to rerun pass `--test integration`\n\n\nCommand exited with code 101",
+        "tool": "bash",
+        "turn": 23,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-safepath-003"
+        }
+      },
+      {
+        "report": "workers/engineer/task-safepath-003/report.json",
+        "summary": "   Compiling xsh v0.0.1 (/Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786163685229/task-safepath-003)\n   Compiling xsht v0.0.1 (/Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786163685229/task-safepath-003/crates/xsht)\n    Finished `test` profile [unoptimized] target(s) in 5.46s\n     Running tests/integration.rs (target/debug/deps/integration-4d74d0805adc1abb)\n\nrunning 2 tests\n   Compiling xsh v0.0.1 (/Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786163685229/task-safepath-003)\n   Compiling xsht v0.0.1 (/Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786163685229/task-safepath-003/crates/xsht)\n   Compiling xshi v0.0.1 (/Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786163685229/task-safepath-003/crates/xshi)\n    Finished `dev` profile [unoptimized] target(s) in 4.79s\n\nthread 'runtime::streams::fold_block_supports_nested_if_statement_with_assignment' (14084292) panicked at tests/runtime/streams.rs:48:5:\nxsht check rejected a nested if statement in a fold block: err[compact.indexed-build]: indexed IR could not encode `top_level_boundary_blocker`\n  /var/folders/tb/mq41rvt94470b3lwmq67s0zc0000gn/T/xsh-fold-nested-if-statement-68167.xsh:2:1\n  let result = [1, 2, 3] |> fold(0) { |acc, item|\n  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ indexed IR could not encode `top_level_boundary_blocker`\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\ntest runtime::streams::fold_block_supports_nested_if_statement_with_assignment ... FAILED\ntest runtime::streams::fold_block_supports_nested_if_as_branch_tail ... ok\n\nfailures:\n\nfailures:\n    runtime::streams::fold_block_supports_nested_if_statement_with_assignment\n\ntest result: FAILED. 1 passed; 1 failed; 0 ignored; 0 measured; 488 filtered out; finished in 5.35s\n\nerror: test failed, to rerun pass `--test integration`\n\n\nCommand exited with code 101",
+        "tool": "bash",
+        "turn": 25,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-safepath-003"
+        }
+      },
+      {
+        "report": "workers/engineer/task-safepath-003/report.json",
+        "summary": "Could not find the exact text in /Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786163685229/task-safepath-003/src/runtime/eval/lower.rs. The old text must match exactly including all whitespace and newlines.",
+        "tool": "edit",
+        "turn": 26,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-safepath-003"
+        }
+      },
+      {
+        "report": "workers/engineer/task-safepath-003/report.json",
+        "summary": "Found 2 occurrences of the text in /Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786163685229/task-safepath-003/src/runtime/eval/lower.rs. The text must be unique. Please provide more context to make it unique.",
+        "tool": "edit",
+        "turn": 28,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-safepath-003"
+        }
+      },
+      {
+        "report": "workers/engineer/task-safepath-003/report.json",
+        "summary": "Found 2 occurrences of the text in /Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786163685229/task-safepath-003/src/runtime/eval/lower.rs. The text must be unique. Please provide more context to make it unique.",
+        "tool": "edit",
+        "turn": 29,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-safepath-003"
+        }
+      },
+      {
+        "report": "workers/engineer/task-safepath-003/report.json",
+        "summary": "Could not find edits[0] in /Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786163685229/task-safepath-003/src/runtime/eval/lower.rs. The oldText must match exactly including all whitespace and newlines.",
+        "tool": "edit",
+        "turn": 31,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-safepath-003"
+        }
+      },
+      {
+        "report": "workers/engineer/task-safepath-003/report.json",
+        "summary": "    Finished `test` profile [unoptimized] target(s) in 0.18s\n     Running tests/integration.rs (target/debug/deps/integration-4d74d0805adc1abb)\n\nrunning 1 test\n    Finished `dev` profile [unoptimized] target(s) in 0.17s\ntest runtime::coverage::runnable_xsh_corpus_is_formatted_and_lints_without_warnings ... FAILED\n\nfailures:\n\n---- runtime::coverage::runnable_xsh_corpus_is_formatted_and_lints_without_warnings stdout ----\n\nthread 'runtime::coverage::runnable_xsh_corpus_is_formatted_and_lints_without_warnings' (14093413) panicked at tests/runtime/common.rs:541:5:\nstatus=Some(1)\nstdout:\ntests/xsh/stdlib/streams.xsh: needs formatting\n\nstderr:\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\n\nfailures:\n    runtime::coverage::runnable_xsh_corpus_is_formatted_and_lints_without_warnings\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 489 filtered out; finished in 0.59s\n\nerror: test failed, to rerun pass `--test integration`\n\n\nCommand exited with code 101",
+        "tool": "bash",
+        "turn": 38,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-safepath-003"
+        }
+      },
+      {
+        "report": "workers/engineer/task-safepath-003/report.json",
+        "summary": "    Finished `test` profile [unoptimized] target(s) in 0.19s\n     Running tests/integration.rs (target/debug/deps/integration-4d74d0805adc1abb)\n\nrunning 1 test\n    Finished `dev` profile [unoptimized] target(s) in 0.17s\ntest runtime::coverage::runnable_xsh_corpus_is_formatted_and_lints_without_warnings ... FAILED\n\nfailures:\n\n---- runtime::coverage::runnable_xsh_corpus_is_formatted_and_lints_without_warnings stdout ----\n\nthread 'runtime::coverage::runnable_xsh_corpus_is_formatted_and_lints_without_warnings' (14095694) panicked at tests/runtime/common.rs:541:5:\nstatus=Some(1)\nstdout:\ntests/xsh/stdlib/streams.xsh: needs formatting\n\nstderr:\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\n\nfailures:\n    runtime::coverage::runnable_xsh_corpus_is_formatted_and_lints_without_warnings\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 489 filtered out; finished in 0.62s\n\nerror: test failed, to rerun pass `--test integration`\n\n\nCommand exited with code 101",
+        "tool": "bash",
+        "turn": 42,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-safepath-003"
+        }
+      },
+      {
+        "report": "workers/engineer/task-safepath-003/report.json",
+        "summary": "    Finished `test` profile [unoptimized] target(s) in 0.19s\n     Running tests/integration.rs (target/debug/deps/integration-4d74d0805adc1abb)\n\nrunning 1 test\n    Finished `dev` profile [unoptimized] target(s) in 0.17s\ntest runtime::coverage::runnable_xsh_corpus_is_formatted_and_lints_without_warnings ... FAILED\n\nfailures:\n\n---- runtime::coverage::runnable_xsh_corpus_is_formatted_and_lints_without_warnings stdout ----\n\nthread 'runtime::coverage::runnable_xsh_corpus_is_formatted_and_lints_without_warnings' (14097348) panicked at tests/runtime/common.rs:541:5:\nstatus=Some(1)\nstdout:\ntests/xsh/stdlib/streams.xsh: needs formatting\n\nstderr:\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\n\nfailures:\n    runtime::coverage::runnable_xsh_corpus_is_formatted_and_lints_without_warnings\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 489 filtered out; finished in 0.59s\n\nerror: test failed, to rerun pass `--test integration`\n\n\nCommand exited with code 101",
+        "tool": "bash",
+        "turn": 47,
+        "worker": {
+          "role": "engineer",
+          "worker_id": "task-safepath-003"
+        }
+      }
+    ],
+    "trials": [],
+    "workers": [
+      {
+        "identity": {
+          "role": "director",
+          "worker_id": "director"
+        },
+        "path": "workers/director/director/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 10,
+          "budget_usd": 0.06,
+          "cache_read_cost_usd": 0.003174912,
+          "cache_read_tokens": 176384,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.006877062,
+          "input_cost_usd": 0.00274923,
+          "input_tokens": 30547,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00095292,
+          "output_tokens": 5294,
+          "provider_total_tokens": 212225,
+          "reasoning_tokens": 2588,
+          "thinking_blocks": 9,
+          "tool_calls": 21,
+          "tool_errors": 0,
+          "tool_results": 21,
+          "total_bucket_tokens": 212225,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "engineer",
+          "worker_id": "task-safepath-003"
+        },
+        "path": "workers/engineer/task-safepath-003/report.json",
+        "result": "pass",
+        "tool_errors": 16,
+        "usage": {
+          "assistant_turns": 52,
+          "budget_usd": 0.35,
+          "cache_read_cost_usd": 0.0368069,
+          "cache_read_tokens": 3680690,
+          "cache_write_cost_usd": 0.022202125,
+          "cache_write_tokens": 177617,
+          "cost_usd": 0.067190025,
+          "input_cost_usd": 0.00001560000000000001,
+          "input_tokens": 156,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0081654,
+          "output_tokens": 13609,
+          "provider_total_tokens": 3872072,
+          "reasoning_tokens": 6219,
+          "thinking_blocks": 16,
+          "tool_calls": 69,
+          "tool_errors": 16,
+          "tool_results": 69,
+          "total_bucket_tokens": 3872072,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "95878384b9d6bb66f5631d630dca4d306f95a3a0"
+  },
+  "findings": [],
+  "identity": {
+    "eval_id": "task-safepath",
+    "mode": "ticket-implementation",
+    "run_id": "01-ticket"
+  },
+  "kind": "phase",
+  "result": "pass",
+  "schema_version": 1,
+  "state": "completed"
+}

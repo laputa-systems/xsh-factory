@@ -1,8 +1,42 @@
+# Controller-assigned engineer ticket
+
+This is an immutable controller assignment for one implementation worker.
+The controller, not the worker, selected the ticket, snapshot, worktree, and
+branch.
+
+## Assignment authority
+
+- Ticket ID: `task-safepath-003`
+- Ticket snapshot: `/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786163685229/phases/01-ticket/tickets/task-safepath-003.md`
+- Ticket snapshot SHA-256: `0d94a868df0a00b2be9d4e71f31566038c8084e575a9308294ed8b4bccd4730f`
+- Dedicated XSH worktree: `/Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786163685229/task-safepath-003`
+- Branch: `factory/task-safepath-003/1786163688493`
+- XSH base commit: `95878384b9d6bb66f5631d630dca4d306f95a3a0`
+- engineer report: `/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786163685229/phases/01-ticket/workers/engineer/task-safepath-003/REPORT.md`
+- Factory root: `/Users/josh/d/laputa-systems/xsh-factory`
+- Run evidence root: `/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786163685229/phases/01-ticket`
+
+You are an implementation worker, not a ticket selector. Implement only the
+ticket identified above and inlined below. Do not search for open tickets,
+choose another ticket, or broaden this assignment. Do not create or modify a
+ticket assignment. If the ticket ID, worktree, branch, or snapshot is missing
+or conflicts with the runner's `FACTORY_TICKET_ID` or `FACTORY_WORKDIR`, stop
+and report the assignment problem; do not guess.
+
+The snapshot path is retained for provenance. The inlined snapshot below is
+the controller's authoritative task input, so no ticket-discovery read is
+required. Relative links in that snapshot resolve from the factory root above,
+not from the XSH product worktree; use exact paths under that root if linked
+evidence needs to be consulted.
+
+## Ticket snapshot
+
+<!-- CONTROLLER_TICKET_SNAPSHOT_BEGIN -->
 # Ticket task-safepath-003
 
 ## Status
 
-Merged.
+Approved.
 
 ## CTO decision — throughput cycle 2026-08-08
 
@@ -30,10 +64,10 @@ None.
 
 ## Merge record
 
-- Implementation branch: `factory/task-safepath-003/1786163688493`
-- Implementation commit: `7e9814fe774ceeb9e587ae95c967944548706701`
-- Detected at XSH commit: `7e9814fe774ceeb9e587ae95c967944548706701`
-- Implementation run: `/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786163685229/phases/01-ticket`
+- Implementation branch: `{{IMPLEMENTATION_BRANCH}}`
+- Implementation commit: `{{IMPLEMENTATION_COMMIT}}`
+- Detected at XSH commit: `{{DETECTED_XSH_COMMIT}}`
+- Implementation run: `{{IMPLEMENTATION_RUN}}`
 
 ## Source eval and manager
 
@@ -69,7 +103,7 @@ error.
 ## Evidence
 
 - Worker session:
-  `runs/run-1786162002471/phases/02-reeval-task-safepath-002/workers/eval-worker/task-safepath-1/session.jsonl`
+  `runs/run-1786162002471/phases/02-reeval-task-safepath-002/workers/eval-worker/task-safepath-1/session.jsonl.bz2`
   — repeated `err[compact.indexed-build] ... full_ir_function_blocker` during
   systematic reduction (thinking/tool lines 51, 67, 77, 79, 81), including a
   minimal nested-`if`-statement-in-`fold` repro with no `take`/`collect`
@@ -158,3 +192,81 @@ The next `task-safepath` (or a validator-style) eval-manager replay must accept
 the merged change when a nested conditional statement inside a `fold` block
 compiles without an opaque error and all correctness cases pass, and reject it
 otherwise.
+
+<!-- CONTROLLER_TICKET_SNAPSHOT_END -->
+
+## Factory context required before coding
+
+The factory documents below are outside the XSH worktree. Before coding, use
+the `read` tool on each exact absolute path. This is required so the session
+JSONL proves that the worker consumed the current factory guidance:
+
+- North star: `/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786163685229/phases/01-ticket/guidance/NORTH-STAR.md`
+- Approved handbook snapshot: `/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786163685229/phases/01-ticket/guidance/handbook.md`
+- Handbook candidate: `/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786163685229/phases/01-ticket/lineage/handbook-candidate.md`
+
+The approved snapshot is a run-scoped copy of the checked-in handbook. Read it
+as an input and never edit it or the checked-in handbook. If this ticket
+produces a reusable lesson, add it to the run-scoped candidate path above; the
+candidate is shared review input and is promoted only after CTO review. If no
+handbook improvement is justified, leave the candidate unchanged.
+
+Then use the `read` tool on the product worktree's exact guidance files:
+
+- Product agent guide: `/Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786163685229/task-safepath-003/AGENTS.md`
+- XSH rationale: `/Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786163685229/task-safepath-003/docs/CHAPTER-01-why-xsh.md`
+
+## Implementation contract
+
+Work only in `/Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786163685229/task-safepath-003` on branch `factory/task-safepath-003/1786163688493`. Do not edit XSH main, the
+factory checkout, the approved handbook snapshot, or the ticket diagnosis.
+Make the smallest general XSH language, tooling, test, or
+canonical-documentation change supported by the ticket. Run the narrowest
+relevant checks, commit the product change on this branch, and leave the
+worktree clean.
+
+For ordinary product tickets, use `xsht lint --fix` for linting, then rerun the
+relevant checks. If this ticket specifically targets lint, parsing, or
+diagnostics, preserve the behavior under test and follow its explicit
+acceptance procedure instead of auto-fixing away the evidence.
+
+The controller has staged a fail-closed `not-ready` report at
+`/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786163685229/phases/01-ticket/workers/engineer/task-safepath-003/REPORT.md`. Complete that file in place; do not spend turns
+reconstructing its headings. Keep `## Result` as `not-ready` until the
+acceptance checks, commit, and clean-worktree validation are complete.
+
+Write `/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786163685229/phases/01-ticket/workers/engineer/task-safepath-003/REPORT.md` with these exact headings:
+
+```markdown
+## Result
+
+ready-for-review
+
+## Branch
+
+<branch name>
+
+## Commit
+
+<commit hash>
+
+## Files changed
+
+<short list>
+
+## Tests
+
+<commands and results>
+
+## North-star impact
+
+<how this improves XSH or agent use>
+
+## Remaining risks
+
+<known limitations, or None.>
+```
+
+Change `## Result` to `ready-for-review` only when the branch is committed, the worktree is
+clean, and the relevant checks passed. Do not merge the branch or update the
+ticket status; the deterministic controller records it for CTO review.

@@ -1,0 +1,166 @@
+diff --git a/docs/SPEC.md b/docs/SPEC.md
+index 73b7b8f..33e2c11 100644
+--- a/docs/SPEC.md
++++ b/docs/SPEC.md
+@@ -2781,8 +2781,9 @@ parameter with `{ |item| ... }`, but the implicit `.` item is available in
+ one-expression and multi-statement stage blocks. `fold`/`reduce` additionally
+ accept a two-parameter block `{ |acc, item| ... }` whose first parameter is the
+ accumulated value (typed by the initial value) and whose second is the stream
+-item; the block's tail must produce the accumulator's type, and the stage
+-returns that accumulated value. Fold and reduce blocks are pure reductions and
++item. These blocks may contain ordinary statements and nested conditionals;
++their tail must produce the accumulator's type, and the stage returns that
++accumulated value. Fold and reduce blocks are pure reductions and
+ must not print; use a following `each { |item| print $item }` stage for output.
+ `xsht check` reports this constraint as `check.fold-effect`.
+ 
+diff --git a/docs/STREAMS.md b/docs/STREAMS.md
+index e860197..ba84bd3 100644
+--- a/docs/STREAMS.md
++++ b/docs/STREAMS.md
+@@ -67,8 +67,10 @@ eager vec handlers and the lazy sinks.
+   `fs.walk |> where … |> count()` is O(1) live memory.
+   `fold(init)`/`reduce(init)` use an explicit accumulator block that binds the
+   accumulator (typed by the initial value) first and the stream item second:
+-  `|> fold(0) { |acc, item| acc + item }`. It is a sequential user combine with
+-  no merge function and returns that accumulator. Fold/reduce blocks are pure
++  `|> fold(0) { |acc, item| acc + item }`. The block may use ordinary
++  statements and nested conditionals before producing the next accumulator. It
++  is a sequential user combine with no merge function and returns that
++  accumulator. Fold/reduce blocks are pure
+   reductions: output belongs in a following `each { |item| print $item }`
+   stage. `xsht check` reports this constraint directly when a block contains
+   `print` or `eprint`.
+diff --git a/src/runtime/eval/lower.rs b/src/runtime/eval/lower.rs
+index 5636673..06e0f45 100644
+--- a/src/runtime/eval/lower.rs
++++ b/src/runtime/eval/lower.rs
+@@ -10868,6 +10868,8 @@ impl CompactLowerConstructProbe<'_, '_> {
+                     | BuildStmtRow::AssignInt { .. }
+                     | BuildStmtRow::AssignIndex { .. }
+                     | BuildStmtRow::AssignBool { .. }
++                    | BuildStmtRow::If { .. }
++                    | BuildStmtRow::IfBool { .. }
+             ) {
+                 slots.exit(saved);
+                 return None;
+@@ -10977,28 +10979,19 @@ impl CompactLowerConstructProbe<'_, '_> {
+                 Some(item_slot),
+             )?);
+         }
+-        let value = match self.program.arena.stmt(tail).kind {
+-            ArenaStmtKind::Expr(expr) => {
+-                self.lower_expr(expr, slots, current_function, Some(item_slot))?
+-            }
+-            ArenaStmtKind::TailBareIdent(name) => self.lower_bare_ident(name, slots)?,
+-            _ => {
+-                slots.exit(saved);
+-                return None;
+-            }
+-        };
+-        body.push(push_build_row!(
+-            self,
+-            stmt,
+-            BuildStmtRow::Assign {
+-                slot: result_slot,
+-                op: AssignOp::Set,
+-                value,
+-                span: self.program.arena.stmt(tail).span,
+-            }
+-        ));
++        if !self.lower_fold_value_stmt(
++            tail,
++            result_slot,
++            &mut body,
++            slots,
++            current_function,
++            item_slot,
++        ) {
++            slots.exit(saved);
++            return None;
++        }
+         slots.exit(saved);
+-        Some(body.clone())
++        Some(body)
+     }
+ 
+     fn lower_pipeline_stage_reduce_by(
+diff --git a/tests/runtime/streams.rs b/tests/runtime/streams.rs
+index 18fdc2c..9507556 100644
+--- a/tests/runtime/streams.rs
++++ b/tests/runtime/streams.rs
+@@ -29,6 +29,74 @@ print result.parts.join(",")
+     let _ = std::fs::remove_file(path);
+ }
+ 
++#[test]
++fn fold_block_supports_nested_if_statement_with_assignment() {
++    let source = r#"
++let result = [1, 2, 3] |> fold(0) { |acc, item|
++  var next = acc
++  if item > 1 {
++    next = next + item
++  }
++  next
++}
++print $result
++"#;
++    let path = write_temp_script("fold-nested-if-statement", source);
++    let path_str = path.to_str().unwrap();
++
++    let check = xsht(["check", path_str]);
++    assert!(
++        check.status.success(),
++        "xsht check rejected a nested if statement in a fold block: {}",
++        String::from_utf8_lossy(&check.stderr)
++    );
++
++    let run = xsh([path_str]);
++    assert!(
++        run.status.success(),
++        "xsh failed on a nested if statement in a fold block: {}",
++        String::from_utf8_lossy(&run.stderr)
++    );
++    assert_eq!(String::from_utf8(run.stdout).unwrap(), "5\n");
++    let _ = std::fs::remove_file(path);
++}
++
++#[test]
++fn fold_block_supports_nested_if_as_branch_tail() {
++    let source = r#"
++let result = [1, 2, 3] |> fold(0) { |acc, item|
++  if item == 1 {
++    acc
++  } else {
++    if item == 2 {
++      acc + 2
++    } else {
++      acc + 3
++    }
++  }
++}
++print $result
++"#;
++    let path = write_temp_script("fold-nested-if-tail", source);
++    let path_str = path.to_str().unwrap();
++
++    let check = xsht(["check", path_str]);
++    assert!(
++        check.status.success(),
++        "xsht check rejected a nested if tail in a fold block: {}",
++        String::from_utf8_lossy(&check.stderr)
++    );
++
++    let run = xsh([path_str]);
++    assert!(
++        run.status.success(),
++        "xsh failed on a nested if tail in a fold block: {}",
++        String::from_utf8_lossy(&run.stderr)
++    );
++    assert_eq!(String::from_utf8(run.stdout).unwrap(), "5\n");
++    let _ = std::fs::remove_file(path);
++}
++
+ #[test]
+ fn live_stream_par_map_flat_map_reduce_by_matches_collected_rows() {
+     let root = temp_path("live-stream-flat-map-reduce-root");

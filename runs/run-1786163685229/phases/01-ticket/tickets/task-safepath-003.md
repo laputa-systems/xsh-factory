@@ -2,7 +2,7 @@
 
 ## Status
 
-Merged.
+Approved.
 
 ## CTO decision — throughput cycle 2026-08-08
 
@@ -30,10 +30,10 @@ None.
 
 ## Merge record
 
-- Implementation branch: `factory/task-safepath-003/1786163688493`
-- Implementation commit: `7e9814fe774ceeb9e587ae95c967944548706701`
-- Detected at XSH commit: `7e9814fe774ceeb9e587ae95c967944548706701`
-- Implementation run: `/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786163685229/phases/01-ticket`
+- Implementation branch: `{{IMPLEMENTATION_BRANCH}}`
+- Implementation commit: `{{IMPLEMENTATION_COMMIT}}`
+- Detected at XSH commit: `{{DETECTED_XSH_COMMIT}}`
+- Implementation run: `{{IMPLEMENTATION_RUN}}`
 
 ## Source eval and manager
 
@@ -69,7 +69,7 @@ error.
 ## Evidence
 
 - Worker session:
-  `runs/run-1786162002471/phases/02-reeval-task-safepath-002/workers/eval-worker/task-safepath-1/session.jsonl`
+  `runs/run-1786162002471/phases/02-reeval-task-safepath-002/workers/eval-worker/task-safepath-1/session.jsonl.bz2`
   — repeated `err[compact.indexed-build] ... full_ir_function_blocker` during
   systematic reduction (thinking/tool lines 51, 67, 77, 79, 81), including a
   minimal nested-`if`-statement-in-`fold` repro with no `take`/`collect`

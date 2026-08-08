@@ -1,0 +1,287 @@
+{
+  "artifacts": [
+    {
+      "kind": "session-directory",
+      "path": "workers/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 66,
+      "budget_failures": 0,
+      "cost_usd": 0.03675446999999999,
+      "tool_errors": 4,
+      "total_bucket_tokens": 1446659.0,
+      "unknown_costs": 0,
+      "workers": 2
+    },
+    "designer": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786163685229/phases/02-reeval-task-safepath-003/workers/eval-designer/proposal-1/REPORT.md",
+      "present": false,
+      "result": "not-requested",
+      "role": "eval-designer",
+      "valid": true
+    },
+    "director": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786163685229/phases/02-reeval-task-safepath-003/workers/director/director/REPORT.md",
+      "present": false,
+      "result": "not-requested",
+      "role": "director",
+      "valid": true
+    },
+    "engineer": [],
+    "handbook_lineage": {
+      "approved": "lineage/handbook-approved.md",
+      "candidate": "lineage/handbook-candidate.md"
+    },
+    "manager": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786163685229/phases/02-reeval-task-safepath-003/workers/eval-manager/task-safepath/REPORT.md",
+      "present": true,
+      "result": "fail",
+      "role": "eval-manager",
+      "valid": true
+    },
+    "mode": "eval",
+    "narratives": [
+      {
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786163685229/phases/02-reeval-task-safepath-003/workers/eval-manager/task-safepath/REPORT.md",
+        "present": true,
+        "result": "fail",
+        "role": "eval-manager",
+        "valid": true
+      }
+    ],
+    "open_tickets": [
+      {
+        "eval_id": "task-bigfiles",
+        "id": "task-bigfiles-001",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-bigfiles-001.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-dupcheck",
+        "id": "task-dupcheck-002",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-dupcheck-002.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-004",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-004.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-005",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-005.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-006",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-006.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-007",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-007.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-histogram",
+        "id": "task-histogram-008",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-008.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-pathparts",
+        "id": "task-pathparts-002",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-pathparts-002.md",
+        "status": "Open."
+      },
+      {
+        "eval_id": "task-safepath",
+        "id": "task-safepath-003",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-safepath-003.md",
+        "status": "Approved."
+      },
+      {
+        "eval_id": "task-safepath",
+        "id": "task-safepath-004",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-safepath-004.md",
+        "status": "Open."
+      }
+    ],
+    "outcomes": {
+      "cycle": "pass",
+      "evaluator": "pass",
+      "infrastructure": "pass",
+      "product": "pass"
+    },
+    "required_outputs": {
+      "audit": true,
+      "candidate_handbook": true,
+      "designer_handbook_read": true,
+      "designer_output": true,
+      "handbook_lineage": true,
+      "manager_evidence_read": true,
+      "manager_handbook_read": true,
+      "manager_report": true,
+      "manager_session": true,
+      "required": true,
+      "trial1_process": true,
+      "trial1_report": true,
+      "trial2_process": true,
+      "trial2_report": true,
+      "worker_handbook_read": true
+    },
+    "sessions": [
+      "workers/eval-manager/task-safepath/session.jsonl.bz2",
+      "workers/eval-worker/task-safepath-1/session.jsonl.bz2"
+    ],
+    "tool_errors": [
+      {
+        "report": "workers/eval-manager/task-safepath/report.json",
+        "summary": "=== turn 9 (bash error) ===\n1: {\"type\":\"session\",\"version\":3,\"id\":\"019fdfb0-939c-7eaa-9c26-f5c3561d9866\",\"timestamp\":\"2026-08-08T04:45:19.132Z\",\"cwd\":\"/work\"}\n\n--- search isError ---\n0\n--- search isError false ---\n0\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 6,
+        "worker": {
+          "role": "eval-manager",
+          "worker_id": "task-safepath"
+        }
+      },
+      {
+        "report": "workers/eval-manager/task-safepath/report.json",
+        "summary": "=== turn 9 area ===\n=== raw grep turn markers ===\n0\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 7,
+        "worker": {
+          "role": "eval-manager",
+          "worker_id": "task-safepath"
+        }
+      },
+      {
+        "report": "workers/eval-worker/task-safepath-1/report.json",
+        "summary": "(no output)\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 9,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-safepath-1"
+        }
+      },
+      {
+        "report": "workers/eval-worker/task-safepath-1/report.json",
+        "summary": "Could not find the exact text in /work/safepath.xsh. The old text must match exactly including all whitespace and newlines.",
+        "tool": "edit",
+        "turn": 39,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-safepath-1"
+        }
+      }
+    ],
+    "trials": [
+      {
+        "evidence": {
+          "candidate_sha256": "09f27ec66490e06ca2884e977214a12045e45ba312e1cb2fbfb0e6d272dc6ee1",
+          "classification": "pass",
+          "correctness": "pass",
+          "eval_id": "task-safepath",
+          "handbook_sha256": "4610e8f4e282c52e2fa34eca91ec46f2ef93d6f313b35a88ffb82f5af7e4365a",
+          "oracle_sha256": "09f27ec66490e06ca2884e977214a12045e45ba312e1cb2fbfb0e6d272dc6ee1",
+          "passed": true,
+          "protocol": "pass",
+          "restrictions": "pass",
+          "result": "pass",
+          "timing": "pass",
+          "trial_id": "1",
+          "valid": true
+        },
+        "path": "workers/eval-worker/task-safepath-1/run.json"
+      }
+    ],
+    "workers": [
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-safepath"
+        },
+        "path": "workers/eval-manager/task-safepath/report.json",
+        "result": "pass",
+        "tool_errors": 2,
+        "usage": {
+          "assistant_turns": 17,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.007363583999999999,
+          "cache_read_tokens": 409088,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.014482854,
+          "input_cost_usd": 0.00387873,
+          "input_tokens": 43097,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0032405399999999997,
+          "output_tokens": 18003,
+          "provider_total_tokens": 470188,
+          "reasoning_tokens": 10605,
+          "thinking_blocks": 16,
+          "tool_calls": 30,
+          "tool_errors": 2,
+          "tool_results": 30,
+          "total_bucket_tokens": 470188,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-safepath-1"
+        },
+        "path": "workers/eval-worker/task-safepath-1/report.json",
+        "result": "pass",
+        "tool_errors": 2,
+        "usage": {
+          "assistant_turns": 49,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.016713216,
+          "cache_read_tokens": 928512,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.02227161599999999,
+          "input_cost_usd": 0.00307422,
+          "input_tokens": 34158,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00248418,
+          "output_tokens": 13801,
+          "provider_total_tokens": 976471,
+          "reasoning_tokens": 8523,
+          "thinking_blocks": 33,
+          "tool_calls": 58,
+          "tool_errors": 2,
+          "tool_results": 58,
+          "total_bucket_tokens": 976471,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "95878384b9d6bb66f5631d630dca4d306f95a3a0"
+  },
+  "findings": [],
+  "identity": {
+    "eval_id": "task-safepath",
+    "mode": "eval",
+    "run_id": "02-reeval-task-safepath-003"
+  },
+  "kind": "phase",
+  "result": "pass",
+  "schema_version": 1,
+  "state": "completed"
+}
