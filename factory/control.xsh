@@ -1092,6 +1092,9 @@ export pure reeval_manager_acceptance_gate(report: Str) -> Bool {
   let explicit_acceptance = lower.contains("candidate acceptance: pass") or lower.contains(
     "decision: **accept**",
   ) or lower.contains("decision: accept") or lower.contains("candidate acceptance exercised")
+    or lower.contains("decision in conference: retain/accept") or lower.contains(
+      "controller decision in conference: retain/accept",
+    )
   return explicit_acceptance and ! explicit_rejection
 }
 

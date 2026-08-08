@@ -1,0 +1,159 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786191275308/phases/01-ticket/workers/engineer/task-bigfiles-004/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_process": "pass",
+    "dispatch_claim": "4e4745915c635c3d6aeaaeb7e3d5882bff0da0be9154844b50f18cf8d997b37b",
+    "dispatch_id": "engineer-task-bigfiles-004",
+    "factory_source": "unchanged",
+    "message_sha256": "4e4745915c635c3d6aeaaeb7e3d5882bff0da0be9154844b50f18cf8d997b37b",
+    "reporting": "pass",
+    "required_report": "present",
+    "session_limit_watcher": "pass",
+    "system_prompt_sha256": "ecc8835d632066a0a401be64bdc2acccf83f2a112ec06d394e08b82713fdaae3",
+    "watcher": "pass"
+  },
+  "findings": [
+    {
+      "count": 8,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "role": "engineer",
+    "worker_id": "task-bigfiles-004"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/openai/gpt-5.6-luna"
+  ],
+  "provider_telemetry": {
+    "event_turns": 33,
+    "events_path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786191275308/phases/01-ticket/workers/engineer/task-bigfiles-004/session.jsonl.events.jsonl",
+    "output_tokens_per_second": 0,
+    "present": true,
+    "provider_errors": [],
+    "response_elapsed_ms": 0,
+    "retry_count": 0,
+    "retry_delay_ms": 0,
+    "retry_errors": [],
+    "retry_failures": 0,
+    "retry_successes": 0
+  },
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786191275308/phases/01-ticket/workers/engineer/task-bigfiles-004/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 32,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 217162
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786191275308/phases/01-ticket/workers/engineer/task-bigfiles-004/session.jsonl.bz2",
+      "summary": "ENOENT: no such file or directory, access '/Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786191275308/task-bigfiles-004/crates/xsh-registry/src/signature.rs'",
+      "tool": "read",
+      "turn": 6
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786191275308/phases/01-ticket/workers/engineer/task-bigfiles-004/session.jsonl.bz2",
+      "summary": "crates/xsh-registry/src/signature/docs.rs:312: trailing whitespace.\n+        )), \n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 12
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786191275308/phases/01-ticket/workers/engineer/task-bigfiles-004/session.jsonl.bz2",
+      "summary": "   Compiling libc v0.2.186\n   Compiling cfg-if v1.0.4\n   Compiling crossbeam-utils v0.8.21\n   Compiling pin-project-lite v0.2.17\n   Compiling shlex v2.0.1\n   Compiling bitflags v2.13.0\n   Compiling find-msvc-tools v0.1.9\n   Compiling rustix v1.1.4\n   Compiling futures-core v0.3.32\n   Compiling parking v2.2.1\n   Compiling futures-io v0.3.32\n   Compiling fastrand v2.4.1\n   Compiling once_cell v1.21.4\n   Compiling value-bag v1.13.1\n   Compiling fs_extra v1.3.0\n   Compiling dunce v1.0.5\n   Compiling proc-macro2 v1.0.106\n   Compiling io-lifetimes v2.0.4\n   Compiling futures-lite v2.6.1\n   Compiling quote v1.0.46\n   Compiling io-lifetimes v3.0.1\n   Compiling log v0.4.33\n   Compiling unicode-ident v1.0.24\n   Compiling io-extras v0.19.0\n   Compiling typenum v1.20.1\n   Compiling zeroize v1.9.0\n   Compiling aws-lc-rs v1.17.0\n   Compiling concurrent-queue v2.5.0\n   Compiling atomic-waker v1.1.2\n   Compiling slab v0.4.12\n   Compiling cap-primitives v4.0.2\n   Compiling jobserver v0.1.34\n   Compiling errno v0.3.14\n   Compiling itoa v1.0.18\n   Compiling event-listener v5.4.1\n   Compiling autocfg v1.5.1\n   Compiling hybrid-array v0.4.12\n   Compiling maybe-owned v0.3.4\n   Compiling cc v1.2.66\n   Compiling cap-std v4.0.2\n   Compiling ipnet v2.12.0\n   Compiling ambient-authority v0.0.2\n   Compiling memchr v2.8.1\n   Compiling async-io v2.6.0\n   Compiling event-listener-strategy v0.5.4\n   Compiling syn v2.0.118\n   Compiling rustls-pki-types v1.15.0\n   Compiling async-task v4.7.1\n   Compiling crc32fast v1.5.0\n   Compiling foldhash v0.2.0\n   Compiling bytes v1.11.1\n   Compiling hashbrown v0.17.1\n   Compiling cmake v0.1.58\n   Compiling crypto-common v0.2.2\n   Compiling block-buffer v0.12.0\n   Compiling simd-adler32 v0.3.9\n   Compiling untrusted v0.9.0\n   Compiling core-foundation-sys v0.8.7\n   Compiling const-oid v0.10.2\n   Compiling http v1.5.0\n   Compiling adler2 v2.0.1\n   Compiling rustls v0.23.41\n   Compiling getrandom v0.4.2\n   Compiling miniz_oxide v0.8.9\n   Compiling async-executor v1.14.0\n   Compiling aws-lc-sys v0.41.0\n   Compiling digest v0.11.3\n   Compiling aho-corasick v1.1.4\n   Compiling async-channel v2.5.0\n   Compiling piper v0.2.5\n   Compiling tracing-core v0.1.36\n   Compiling subtle v2.6.1\n   Compiling zlib-rs v0.6.3\n   Compiling httparse v1.10.1\n   Compiling equivalent v1.0.2\n   Compiling regex-syntax v0.8.11\n   Compiling fs-set-times v0.20.3\n   Compiling polling v3.11.0\n   Compiling tracing v0.1.44\n   Compiling indexmap v2.14.0\n   Compiling blocking v1.6.2\n   Compiling regex-automata v0.4.14\n   Compiling http-body v1.1.0\n   Compiling security-framework-sys v2.17.0\n   Compiling core-foundation v0.10.1\n   Compiling async-lock v3.4.2\n   Compiling cpufeatures v0.3.0\n   Compiling compression-core v0.4.32\n   Compiling zmij v1.0.21\n   Compiling option-ext v0.2.0\n   Compiling fnv v1.0.7\n   Compiling thiserror v2.0.18\n   Compiling try-lock v0.2.5\n   Compiling smallvec v1.15.2\n   Compiling event-listener v2.5.3\n   Compiling futures-sink v0.3.33\n   Compiling thiserror-impl v2.0.18\n   Compiling h2-futures v0.4.15 (https://github.com/joshuarli/h2-futures-lite?rev=732e8770cc6bbf998c573844f62e0afaccec3192#732e8770)\n   Compiling want v0.3.1\n   Compiling async-channel v1.9.0\n   Compiling pin-project-internal v1.1.13\n   Compiling async-global-executor v2.4.1\n   Compiling security-framework v3.7.0\n   Compiling dirs-sys v0.5.0\n   Compiling libmimalloc-sys v0.1.49\n   Compiling crossbeam-epoch v0.9.18\n   Compiling kv-log-macro v1.0.7\n   Compiling futures-channel v0.3.32\n   Compiling xsh-registry v0.0.1 (/Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786191275308/task-bigfiles-004/crates/xsh-registry)\n   Compiling cap-fs-ext v4.0.2\n   Compiling miniserde v0.1.45\n   Compiling bstr v1.12.1\n   Compiling same-file v1.0.6\n   Compiling pin-utils v0.1.0\n   Compiling async-std v1.13.2\n   Compiling walkdir v2.5.0\n   Compiling globset v0.4.18\n   Compiling pin-project v1.1.13\n   Compiling crossbeam-deque v0.8.6\n   Compiling directories v6.0.0\n   Compiling cap-net-ext v4.0.2\n   Compiling flate2 v1.1.9\n   Compiling mini-internal v0.1.45\n   Compiling sha2 v0.11.0\n   Compiling uuid v1.23.3\n   Compiling hyper v1.11.0 (https://github.com/joshuarli/hyper-futures-lite?rev=c99b20ce178251a962289977fdfa2474e2564f8e#c99b20ce)\n   Compiling compression-codecs v0.4.38\n   Compiling async-compression v0.4.42\n   Compiling http-body-util v0.1.4\n   Compiling xsh v0.0.1 (/Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786191275308/task-bigfiles-004)\n   Compiling rustls-pemfile v2.2.0\n   Compiling filetime v0.2.29\n   Compiling crossbeam-channel v0.5.15\n   Compiling rustc-hash v2.1.3\n   Compiling libbz2-rs-sys v0.2.5\n   Compiling astral_async_zip v0.0.20\n   Compiling async-tar v0.6.1 (https://github.com/dignifiedquire/async-tar.git?rev=109365969684b9cfdbe2696d5185b4ebcfb29b4c#10936596)\n   Compiling lzma-rust2 v0.16.5\n   Compiling cap-tempfile v4.0.2\n   Compiling ignore v0.4.25\n   Compiling cap-directories v4.0.2\n   Compiling bzip2 v0.6.1\n   Compiling sha1 v0.11.0\n   Compiling tempfile v3.27.0\n   Compiling md-5 v0.11.0\n   Compiling diffy v0.5.0\n   Compiling jiff v0.2.31\n   Compiling data-encoding v2.11.0\n   Compiling regex-lite v0.1.9\n   Compiling mimalloc v0.1.52\n   Compiling rustls-webpki v0.103.13\n   Compiling rustls-platform-verifier v0.7.0\n   Compiling futures-rustls v0.26.0\n   Compiling xsh-net v0.0.1 (/Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786191275308/task-bigfiles-004/crates/xsh-net)\n   Compiling xsht v0.0.1 (/Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786191275308/task-bigfiles-004/crates/xsht)\n    Finished `test` profile [unoptimized] target(s) in 36.53s\n     Running tests/api.rs (target/debug/deps/api-f2ab4bd0312f2501)\n\nrunning 1 test\ntest api_filesystem_walk_contract_documents_hidden_default ... FAILED\n\nfailures:\n\n---- api_filesystem_walk_contract_documents_hidden_default stdout ----\n\nthread 'api_filesystem_walk_contract_documents_hidden_default' (15723051) panicked at crates/xsht/tests/api.rs:134:5:\nassertion `left == right` failed: query: api:fs.files\nstatus: exact\n\napi: module.fs.files\nkind: module-function\npurpose: Produces lazy structured filesystem entries.\ncontract: Order and traversal behavior are explicit in the options; hidden: false by default omits dot-prefixed files and directories, while hidden: true includes them. Use stream terminals to choose materialization.\neffects: fs\nsignature: fs.files(path: Path, gitignore: Bool = default, stat: Bool = default, exts: List[Str] = default, hidden: Bool = default) -> Result[Stream[{accessed: Int, blocks_512: Int, executable: Bool, ext: Str, gid: Int, group_executable: Bool, kind: Str, mode: Int, modified: Int, name: Str, other_executable: Bool, owner_executable: Bool, path: Path, setgid: Bool, setuid: Bool, size: Int, sticky: Bool, uid: Int, world_writable: Bool}], Error]\ntags: fs, files, filesystem, streaming, walk\n\nquery: api:fs.walk\nstatus: exact\n\napi: module.fs.walk\nkind: module-function\npurpose: Produces lazy structured filesystem entries.\ncontract: Order and traversal behavior are explicit in the options; hidden: false by default omits dot-prefixed files and directories, while hidden: true includes them. Use stream terminals to choose materialization.\neffects: fs\nsignature: fs.walk(path: Path, gitignore: Bool = default, stat: Bool = default, hidden: Bool = default) -> Result[Stream[{accessed: Int, blocks_512: Int, executable: Bool, ext: Str, gid: Int, group_executable: Bool, kind: Str, mode: Int, modified: Int, name: Str, other_executable: Bool, owner_executable: Bool, path: Path, setgid: Bool, setuid: Bool, size: Int, sticky: Bool, uid: Int, world_writable: Bool}], Error]\ntags: fs, walk, filesystem, streaming\n\n  left: 0\n right: 2\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\n\nfailures:\n    api_filesystem_walk_contract_documents_hidden_default\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 31 filtered out; finished in 0.37s\n\nerror: test failed, to rerun pass `-p xsht --test api`\n\n\nCommand exited with code 101",
+      "tool": "bash",
+      "turn": 12
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786191275308/phases/01-ticket/workers/engineer/task-bigfiles-004/session.jsonl.bz2",
+      "summary": "Found 282 occurrences of the text in /Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786191275308/task-bigfiles-004/crates/xsh-registry/src/signature/docs.rs. The text must be unique. Please provide more context to make it unique.",
+      "tool": "edit",
+      "turn": 13
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786191275308/phases/01-ticket/workers/engineer/task-bigfiles-004/session.jsonl.bz2",
+      "summary": "Could not find the exact text in /Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786191275308/task-bigfiles-004/crates/xsh-registry/src/signature/docs.rs. The old text must match exactly including all whitespace and newlines.",
+      "tool": "edit",
+      "turn": 15
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786191275308/phases/01-ticket/workers/engineer/task-bigfiles-004/session.jsonl.bz2",
+      "summary": "Could not find the exact text in /Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786191275308/task-bigfiles-004/crates/xsh-registry/src/signature/docs.rs. The old text must match exactly including all whitespace and newlines.",
+      "tool": "edit",
+      "turn": 16
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786191275308/phases/01-ticket/workers/engineer/task-bigfiles-004/session.jsonl.bz2",
+      "summary": "Could not find the exact text in /Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786191275308/task-bigfiles-004/crates/xsh-registry/src/signature/docs.rs. The old text must match exactly including all whitespace and newlines.",
+      "tool": "edit",
+      "turn": 17
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786191275308/phases/01-ticket/workers/engineer/task-bigfiles-004/session.jsonl.bz2",
+      "summary": "   Compiling xsh-registry v0.0.1 (/Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786191275308/task-bigfiles-004/crates/xsh-registry)\n   Compiling xsh v0.0.1 (/Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786191275308/task-bigfiles-004)\n   Compiling xsht v0.0.1 (/Users/josh/d/laputa-systems/.xsh-factory-worktrees/run-1786191275308/task-bigfiles-004/crates/xsht)\n    Finished `test` profile [unoptimized] target(s) in 4.26s\n     Running tests/api.rs (target/debug/deps/api-f2ab4bd0312f2501)\n\nrunning 1 test\ntest api_filesystem_walk_contract_documents_hidden_default ... FAILED\n\nfailures:\n\n---- api_filesystem_walk_contract_documents_hidden_default stdout ----\n\nthread 'api_filesystem_walk_contract_documents_hidden_default' (15725102) panicked at crates/xsht/tests/api.rs:134:5:\nassertion `left == right` failed: query: api:fs.files\nstatus: exact\n\napi: module.fs.files\nkind: module-function\npurpose: Produces lazy structured filesystem entries.\ncontract: Order and traversal behavior are explicit in the options; hidden: false by default omits dot-prefixed files and directories, while hidden: true includes them. Use stream terminals to choose materialization.\neffects: fs\nsignature: fs.files(path: Path, gitignore: Bool = default, stat: Bool = default, exts: List[Str] = default, hidden: Bool = default) -> Result[Stream[{accessed: Int, blocks_512: Int, executable: Bool, ext: Str, gid: Int, group_executable: Bool, kind: Str, mode: Int, modified: Int, name: Str, other_executable: Bool, owner_executable: Bool, path: Path, setgid: Bool, setuid: Bool, size: Int, sticky: Bool, uid: Int, world_writable: Bool}], Error]\ntags: fs, files, filesystem, streaming, walk\n\nquery: api:fs.walk\nstatus: exact\n\napi: module.fs.walk\nkind: module-function\npurpose: Produces lazy structured filesystem entries.\ncontract: Order and traversal behavior are explicit in the options; hidden: false by default omits dot-prefixed files and directories, while hidden: true includes them. Use stream terminals to choose materialization.\neffects: fs\nsignature: fs.walk(path: Path, gitignore: Bool = default, stat: Bool = default, hidden: Bool = default) -> Result[Stream[{accessed: Int, blocks_512: Int, executable: Bool, ext: Str, gid: Int, group_executable: Bool, kind: Str, mode: Int, modified: Int, name: Str, other_executable: Bool, owner_executable: Bool, path: Path, setgid: Bool, setuid: Bool, size: Int, sticky: Bool, uid: Int, world_writable: Bool}], Error]\ntags: fs, walk, filesystem, streaming\n\n  left: 0\n right: 2\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\n\nfailures:\n    api_filesystem_walk_contract_documents_hidden_default\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 31 filtered out; finished in 0.14s\n\nerror: test failed, to rerun pass `-p xsht --test api`\n\n\nCommand exited with code 101",
+      "tool": "bash",
+      "turn": 19
+    }
+  ],
+  "tools": [
+    {
+      "count": 22,
+      "name": "bash"
+    },
+    {
+      "count": 9,
+      "name": "edit"
+    },
+    {
+      "count": 12,
+      "name": "grep"
+    },
+    {
+      "count": 19,
+      "name": "read"
+    },
+    {
+      "count": 1,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 33,
+    "budget_usd": 0.35,
+    "cache_read_cost_usd": 0.011831670000000002,
+    "cache_read_tokens": 1183167,
+    "cache_write_cost_usd": 0.010561500000000003,
+    "cache_write_tokens": 84492,
+    "cost_usd": 0.027349469999999997,
+    "input_cost_usd": 9.9e-6,
+    "input_tokens": 99,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.0049463999999999975,
+    "output_tokens": 8244,
+    "provider_total_tokens": 1276002,
+    "reasoning_tokens": 2858,
+    "thinking_blocks": 9,
+    "tool_calls": 63,
+    "tool_errors": 8,
+    "tool_results": 63,
+    "total_bucket_tokens": 1276002,
+    "user_messages": 1
+  }
+}
