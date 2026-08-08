@@ -1,7 +1,7 @@
 # CTO ticket inventory
 
-- Open tickets: 4
-- Approved tickets: 1
+- Open tickets: 3
+- Approved tickets: 2
 - Ticket rows: 48
 
 | Ticket | Status | Change target | Linked eval | CTO review marker | Open branch |
@@ -37,7 +37,7 @@
 | `task-histogram-004` | `Merged.` | `product` | `task-histogram` | present | `none` |
 | `task-histogram-005` | `Open.` | `product` | `task-histogram` | present | `none` |
 | `task-histogram-006` | `Open.` | `product` | `task-histogram` | present | `none` |
-| `task-histogram-007` | `Open.` | `product` | `task-histogram` | present | `none` |
+| `task-histogram-007` | `Approved.` | `product` | `task-histogram` | present | `none` |
 | `task-histogram-008` | `Open.` | `product` | `task-histogram` | present | `none` |
 | `task-jsonfilter-001` | `Merged.` | `product` | `task-jsonfilter` | missing | `none` |
 | `task-pathparts-001` | `Merged.` | `product` | `task-pathparts` | missing | `none` |
