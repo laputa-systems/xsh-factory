@@ -1934,7 +1934,12 @@ export proc unresolved_handbook_candidates(factory_dir: Path) [fs, error] -> Res
   for entry in fs.walk(runs_dir, gitignore: false, hidden: true)? |> where .kind == "file" {
     continue when entry.name != "handbook-candidate.md"
     let sha = hash.sha256(entry.path)?.hex()
-    if sha != current_sha and sha not in ledger {
+    let equivalent = if sha == current_sha {
+      true
+    } else {
+      control.handbook_text_equivalent(handbook.read_text()?, entry.path.read_text()?)
+    }
+    if ! equivalent and sha not in ledger {
       unresolved = unresolved + 1
     }
   }

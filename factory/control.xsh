@@ -14,6 +14,16 @@ export pure source_has_forbidden_subprocess(source: Str) -> Bool {
   return false
 }
 
+pure normalize_handbook_text(value: Str) -> Str {
+  return value.replace("’", "'").replace("‘", "'").trim()
+}
+
+## Compare handbook snapshots while ignoring only typographic apostrophes and
+## outer whitespace; substantive text still requires explicit disposition.
+export pure handbook_text_equivalent(approved: Str, candidate: Str) -> Bool {
+  return normalize_handbook_text(approved) == normalize_handbook_text(candidate)
+}
+
 ## Reads the current lifecycle marker from a ticket.
 export pure ticket_status(text: Str) -> Str {
   var in_status = false

@@ -1,0 +1,146 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786230602946/phases/02-eval/workers/eval-worker/task-colsum-1/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_state": "pass",
+    "agent_wall_ms": 149441,
+    "artifact": {
+      "name": "colsum.xsh",
+      "state": "present"
+    },
+    "budget_state": "pass",
+    "classification": "pass",
+    "evaluator_manifest": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786230602946/phases/02-eval/workers/eval-worker/task-colsum-1/run.json",
+    "evaluator_state": "pass",
+    "reporting_state": "pass",
+    "result": "pass",
+    "review": {
+      "state": "present"
+    }
+  },
+  "findings": [
+    {
+      "count": 4,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "eval_id": "task-colsum",
+    "role": "eval-worker",
+    "run_id": "02-eval",
+    "worker_id": "task-colsum-1"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "provider_telemetry": {
+    "event_turns": 41,
+    "events_path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786230602946/phases/02-eval/workers/eval-worker/task-colsum-1/session.jsonl.events.jsonl",
+    "output_tokens_per_second": 0,
+    "present": true,
+    "provider_errors": [
+      "503 status code (no body)"
+    ],
+    "response_elapsed_ms": 0,
+    "retry_count": 1,
+    "retry_delay_ms": 2000,
+    "retry_errors": [
+      "503 status code (no body)"
+    ],
+    "retry_failures": 0,
+    "retry_successes": 1
+  },
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786230602946/phases/02-eval/workers/eval-worker/task-colsum-1/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "error"
+    },
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 39,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 147810
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786230602946/phases/02-eval/workers/eval-worker/task-colsum-1/session.jsonl.bz2",
+      "summary": "err[parse.expected-token]: expected `=>` in match arm\n  /tmp/t.xsh:5:10\n        ok { print \"dec\" $v \"=>\" $r.value }\n           ^ expected `=>` in match arm\n\nerr[parse.expected-token]: expected `=>` in match arm\n  /tmp/t.xsh:6:11\n        err { print \"dec\" $v \"=>ERR\" }\n            ^ expected `=>` in match arm\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 6
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786230602946/phases/02-eval/workers/eval-worker/task-colsum-1/session.jsonl.bz2",
+      "summary": "err[check.field-access]: field access requires a record-like value\n  /tmp/t.xsh:5:35\n        ok => { print \"dec\" $v \"=>\" $r.value }\n                                    ^^^^^^^^ field access requires a record-like value\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 7
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786230602946/phases/02-eval/workers/eval-worker/task-colsum-1/session.jsonl.bz2",
+      "summary": "err[check.unknown-method]: unknown method `byte_slice` on List[Str]\n  /tmp/t.xsh:3:14\n    let rest = argv.byte_slice(1)\n               ^^^^^^^^^^^^^^^^^^ `byte_slice` is not defined for List[Str]\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 16
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786230602946/phases/02-eval/workers/eval-worker/task-colsum-1/session.jsonl.bz2",
+      "summary": "== -5 ==\nerr[parse.expected-expression]: expected expression\n  /tmp/t2.xsh:9:6\n    if not valid {\n       ^^^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  /tmp/t2.xsh:11:5\n    } else {\n      ^^^^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  /tmp/t2.xsh:15:3\n    }\n    ^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  /tmp/t2.xsh:16:1\n  }\n  ^ expected expression\n== 007 ==\nerr[parse.expected-expression]: expected expression\n  /tmp/t2.xsh:9:6\n    if not valid {\n       ^^^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  /tmp/t2.xsh:11:5\n    } else {\n      ^^^^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  /tmp/t2.xsh:15:3\n    }\n    ^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  /tmp/t2.xsh:16:1\n  }\n  ^ expected expression\n== +3 ==\nerr[parse.expected-expression]: expected expression\n  /tmp/t2.xsh:9:6\n    if not valid {\n       ^^^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  /tmp/t2.xsh:11:5\n    } else {\n      ^^^^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  /tmp/t2.xsh:15:3\n    }\n    ^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  /tmp/t2.xsh:16:1\n  }\n  ^ expected expression\n== 5-3 ==\nerr[parse.expected-expression]: expected expression\n  /tmp/t2.xsh:9:6\n    if not valid {\n       ^^^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  /tmp/t2.xsh:11:5\n    } else {\n      ^^^^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  /tmp/t2.xsh:15:3\n    }\n    ^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  /tmp/t2.xsh:16:1\n  }\n  ^ expected expression\n== abc ==\nerr[parse.expected-expression]: expected expression\n  /tmp/t2.xsh:9:6\n    if not valid {\n       ^^^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  /tmp/t2.xsh:11:5\n    } else {\n      ^^^^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  /tmp/t2.xsh:15:3\n    }\n    ^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  /tmp/t2.xsh:16:1\n  }\n  ^ expected expression\n== - ==\nerr[parse.expected-expression]: expected expression\n  /tmp/t2.xsh:9:6\n    if not valid {\n       ^^^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  /tmp/t2.xsh:11:5\n    } else {\n      ^^^^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  /tmp/t2.xsh:15:3\n    }\n    ^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  /tmp/t2.xsh:16:1\n  }\n  ^ expected expression\n== 42 ==\nerr[parse.expected-expression]: expected expression\n  /tmp/t2.xsh:9:6\n    if not valid {\n       ^^^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  /tmp/t2.xsh:11:5\n    } else {\n      ^^^^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  /tmp/t2.xsh:15:3\n    }\n    ^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  /tmp/t2.xsh:16:1\n  }\n  ^ expected expression\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 20
+    }
+  ],
+  "tools": [
+    {
+      "count": 41,
+      "name": "bash"
+    },
+    {
+      "count": 3,
+      "name": "edit"
+    },
+    {
+      "count": 3,
+      "name": "read"
+    },
+    {
+      "count": 1,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 41,
+    "budget_usd": 0.5,
+    "cache_read_cost_usd": 0.009911808,
+    "cache_read_tokens": 550656,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.018428328,
+    "input_cost_usd": 0.00646308,
+    "input_tokens": 71812,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.002053440000000001,
+    "output_tokens": 11408,
+    "provider_total_tokens": 633876,
+    "reasoning_tokens": 5928,
+    "thinking_blocks": 27,
+    "tool_calls": 48,
+    "tool_errors": 4,
+    "tool_results": 48,
+    "total_bucket_tokens": 633876,
+    "user_messages": 1
+  }
+}

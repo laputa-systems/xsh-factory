@@ -316,7 +316,7 @@ includes adaptive queue pressure, one-fresh-plus-one-retained selection,
 independent-eval suppression under ticket pressure, split product/evaluator/
 infrastructure outcomes, provenance-aware delivery accounting, manager retry
 bounds, and epoch-correct inactivity detection. It has been exercised by the
-141-test native suite.
+144-test native suite.
 
 The paid validation sequence exposed and repaired real boundary failures:
 
@@ -326,6 +326,8 @@ The paid validation sequence exposed and repaired real boundary failures:
 | `run-1786225653459` | retained `task-histogram-005`; no independent eval | correctness/protocol pass, restriction fail | manager report incomplete after an epoch-unit bug | fixed session mtime conversion; deferred ticket 005 to `Open.` |
 | `run-1786226438672` | retained `task-histogram-006`; no independent eval | correctness/restriction/protocol pass | manager timed out at 60 seconds and retry at 180; no delivery | widened manager inactivity to 120 seconds |
 | `run-1786227317528` | retained `task-histogram-006`; no independent eval | correctness/restriction/protocol pass | active manager review survived the old idle bound, but both narrative reports remained `not-ready`; no delivery | tightened report-first manager and retry instructions; validation pending |
+| `run-1786230433596` | ticketless; two Open tickets, zero Approved rows; two discovery evals | both phases failed before Pi at local XSH build | zero workers, zero turns, `$0.00`; explicit image tag had been overwritten by the failed prior Docker build | repaired/validated explicit qualified-image selection; created a fresh platform-matched image |
+| `run-1786230602946` | ticketless; two Open tickets, zero Approved rows; `task-bigfiles` and `task-colsum` discovery overlap | both nine-case evals passed correctness/restrictions/protocol; both managers passed | four workers, 97 turns, `$0.052743888`; no delivery because no eligible ticket; one provider 503 retry succeeded | validated the image/build repair; cleared a non-semantic handbook snapshot with a native-tested narrow equivalence gate |
 
 Run 4 is an important negative result. It proves that the 120-second idle
 repair fixed a false-positive inactivity diagnosis, but it did not yet prove
@@ -387,18 +389,56 @@ a fresh-throughput miss.
 The deterministic repair is `control.toolchain_build_required`: a present,
 platform-matched explicit image suppresses a stale cache-driven default
 rebuild, while a missing image or explicit force flag still requires a build.
-The repair is covered by 143 native tests and must be validated by the next
-ticketless discovery request before further paid qualification.
+The repair was covered by 143 native tests and then validated by Run 10.
 
-The current queue contains one deferred Open ticket (`task-histogram-005`) and
-two retained Approved branches (`task-histogram-006` and
-`task-histogram-007`). After Run 5, `task-histogram-006` is Open pending its
-directed diagnostic replay, leaving `task-histogram-007` as the remaining
-retained Approved branch. Because there is no branchless Approved ticket, the
-three-cycle fresh-delivery qualification has not honestly started. Retained
-replays may drain pending engineer work, but their commits do not satisfy the
-fresh target. CTO inventory must obtain a new branchless Approved ticket before
-claiming the first eligible qualification cycle.
+Run 9 (`run-1786230433596`) was the first attempted validation after that
+repair. The policy correctly skipped a stale cache-driven rebuild because an
+explicit image was supplied, but the operator supplied the old tag
+`xsh-test-throughput-1786225102047`. Run 8's failed Docker build had already
+overwritten that tag with an image missing `linux/random.h` and `libunwind`.
+Both discovery phases failed at the same local XSH distribution build, before
+Pi, at zero cost. This was not evidence that the selection policy was wrong;
+it was evidence that a tag is not a durable image identity.
+
+The CTO created a new local image from the cached toolchain, installed the
+missing platform dependencies, and tagged it as
+`xsh-test-throughput-qualified-1786230433596`. Docker inspection recorded
+image `sha256:d3bccbbc5302186bd642455fc7174c3e9d145db8c3102b534ac41672ff894892`
+with `linux/arm64` and `/usr/include/linux/random.h` present. This image is
+operator-local validation state, not a checked-in factory artifact.
+
+Run 10 (`run-1786230602946`) supplied that image with
+`XSH_TEST_IMAGE_BUILD=0`. Both eval phases crossed the build boundary, ran
+their workers, and completed report-first managers. `task-bigfiles` passed all
+nine cases, restrictions, and protocol with one recovered warn-only lint exit;
+`task-colsum` passed all nine cases, restrictions, and protocol after four
+self-corrected syntax/API guesses. Both managers found no strong reproducible
+product or handbook ticket. The root report was `product=pass`,
+`evaluator=pass`, `infrastructure=pass`, `cycle=pass`, with four workers, 97
+assistant turns, `$0.052743888`, no budget failures, and one successful
+provider 503 retry. It was a factory-robustness success and an evaluator-only
+cycle: no engineer commit was expected because there were zero Approved rows.
+
+Run 10 also exposed a bookkeeping edge: the `task-bigfiles` manager described
+the approved handbook as unchanged, but its staged candidate changed only
+curly apostrophes to straight apostrophes and omitted the final newline. The
+CTO recorded candidate hash
+`9c3fc917935612d17cd065ad3c78bce13e17945c55e980b81f00fca3fa2ed857` as
+non-semantic editorial drift in `runtime/handbook-ledger.md`, and added
+`control.handbook_text_equivalent` to keep only that case out of the unresolved
+backlog. The native suite now passes 144 tests, including a regression proving
+that substantive wording changes still compare unequal. `runtime/handbook.md`
+itself was not changed.
+
+The current queue contains two Open tickets:
+`task-histogram-005` remains blocked by its restriction failure, and
+`task-histogram-006` remains blocked until a directed replay compiles
+`filter { |x| ... }` and asserts the defining readable `filter`/`where`
+diagnostic. There are zero Approved rows and no branchless implementation
+ticket, so the three-cycle fresh-delivery qualification has not started.
+Retained delivery from Run 7 is historical throughput evidence, not a fresh
+eligible-cycle pass. The next productive cycle requires CTO-approved,
+branchless product supply before the one-commit gate can be measured.
 
 ## Qualification and closeout
 

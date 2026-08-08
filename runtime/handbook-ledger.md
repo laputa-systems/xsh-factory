@@ -677,6 +677,19 @@ positional-only API guidance candidate, but it is single-eval evidence. Keep
 the approved handbook unchanged until `task-dupcheck` and a second
 defaulted-parameter eval confirm the guidance generalizes.
 
+## Explicit CTO disposition — run-1786230602946 candidate
+
+| Candidate SHA-256 | Disposition |
+| --- | --- |
+| `9c3fc917935612d17cd065ad3c78bce13e17945c55e980b81f00fca3fa2ed857` | rejected as non-semantic editorial drift; no handbook candidate |
+
+The `task-bigfiles` manager reported that the approved handbook was unchanged,
+but its staged snapshot changed only curly apostrophes to straight apostrophes
+and omitted the terminal newline. The approved handbook remains unchanged; the
+factory's candidate gate now treats precisely those editorial differences as
+equivalent while continuing to require a ledger disposition for substantive
+text changes.
+
 ## Explicit CTO disposition — run-1786229388916
 
 | Candidate SHA-256 | Disposition |

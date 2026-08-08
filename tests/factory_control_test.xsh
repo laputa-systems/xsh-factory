@@ -277,6 +277,17 @@ proc test_handbook_candidate_gate_requires_ledger_disposition(ctx: TestContext) 
   test.eq(runtime.unresolved_handbook_candidates(root)?, 0)?
 }
 
+proc test_handbook_text_equivalent_ignores_editorial_drift() {
+  test.eq(
+    control.handbook_text_equivalent("worker’s handbook\n", "worker's handbook"),
+    true,
+  )?
+  test.eq(
+    control.handbook_text_equivalent("worker's handbook\n", "worker handbook"),
+    false,
+  )?
+}
+
 proc test_organization_phase_request_preserves_multiple_tickets() [fs, error] {
   let template = fs.read_text(fp"${fs.cwd()?}/templates/ORGANIZATION-PHASE-REQUEST.md")?
   let request = control.fill_template(

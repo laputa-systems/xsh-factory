@@ -1,0 +1,253 @@
+{
+  "artifacts": [
+    {
+      "kind": "phase-reports",
+      "path": "phases/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 97,
+      "budget_failures": 0,
+      "cost_usd": 0.052743887999999996,
+      "tool_errors": 5,
+      "total_bucket_tokens": 1737580.0,
+      "unknown_costs": 0,
+      "workers": 4
+    },
+    "mode": "organization",
+    "outcomes": {
+      "cycle": "pass",
+      "evaluator": "pass",
+      "infrastructure": "pass",
+      "product": "pass"
+    },
+    "phases": [
+      {
+        "id": "01-eval",
+        "path": "phases/01-eval/report.json",
+        "result": "pass",
+        "valid": true
+      },
+      {
+        "id": "02-eval",
+        "path": "phases/02-eval/report.json",
+        "result": "pass",
+        "valid": true
+      }
+    ],
+    "throughput": {
+      "admitted_tickets": 0,
+      "delivered_tickets": 0,
+      "delivery_conversion": 0.0,
+      "delivery_target_met": true,
+      "fresh_delivered_tickets": 0,
+      "fresh_engineer_rows": 0,
+      "fresh_engineer_target": 0,
+      "handbook_quarantines": 0,
+      "overlap_linked_replays": false,
+      "overlap_retained_fresh": false,
+      "reeval_dispatched": 0,
+      "reeval_passed": 0,
+      "retained_delivered_tickets": 0,
+      "retained_fast_paths": 0,
+      "retained_rows": 0
+    },
+    "tool_errors": [
+      {
+        "report": "phases/01-eval/workers/eval-worker/task-bigfiles-1/report.json",
+        "summary": "proc main(...argv: List[Str]) [fs, error] {\n  let root = Path(argv[0])\n  let n = if argv.len() >= 2 {\n    argv[1].parse_uint()?\n  } else {\n    5\n  }\n  let top = fs.files(root, hidden: true, stat: true)?\n    |> sort-by --desc { |e|\n      e.size\n    }\n    |> take(n)\n    |> collect()\n  for item in top {\n    print $item.size $item.path.display()\n  }\n}\n===lint===\nwarn[lint.path-constructor]: prefer p-string interpolation over `Path(...)`\n  bigfiles.xsh:2:14\n    let root = Path(argv[0])\n               ------------- use path string syntax instead\nnote: `Path(...)` remains a cast, but p-strings are the preferred path syntax\nhelp: replace with path string -> fp\"${argv[0]}\"\nwarn[lint.redundant-command-interpolation]: command args can use expression syntax directly\n  bigfiles.xsh:15:22\n      print $item.size $item.path.display()\n                       -------------------- this interpolation is unnecessary\nhelp: use the expression directly -> item.path.display()\nwarn[lint.redundant-path-display]: redundant `.display()` on a Path value\n  bigfiles.xsh:15:22\n      print $item.size $item.path.display()\n                       -------------------- Path values display automatically in command arguments\nhelp: remove `.display()` -> $item.path\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 33,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-bigfiles-1"
+        }
+      },
+      {
+        "report": "phases/02-eval/workers/eval-worker/task-colsum-1/report.json",
+        "summary": "err[parse.expected-token]: expected `=>` in match arm\n  /tmp/t.xsh:5:10\n        ok { print \"dec\" $v \"=>\" $r.value }\n           ^ expected `=>` in match arm\n\nerr[parse.expected-token]: expected `=>` in match arm\n  /tmp/t.xsh:6:11\n        err { print \"dec\" $v \"=>ERR\" }\n            ^ expected `=>` in match arm\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 6,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-colsum-1"
+        }
+      },
+      {
+        "report": "phases/02-eval/workers/eval-worker/task-colsum-1/report.json",
+        "summary": "err[check.field-access]: field access requires a record-like value\n  /tmp/t.xsh:5:35\n        ok => { print \"dec\" $v \"=>\" $r.value }\n                                    ^^^^^^^^ field access requires a record-like value\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 7,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-colsum-1"
+        }
+      },
+      {
+        "report": "phases/02-eval/workers/eval-worker/task-colsum-1/report.json",
+        "summary": "err[check.unknown-method]: unknown method `byte_slice` on List[Str]\n  /tmp/t.xsh:3:14\n    let rest = argv.byte_slice(1)\n               ^^^^^^^^^^^^^^^^^^ `byte_slice` is not defined for List[Str]\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 16,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-colsum-1"
+        }
+      },
+      {
+        "report": "phases/02-eval/workers/eval-worker/task-colsum-1/report.json",
+        "summary": "== -5 ==\nerr[parse.expected-expression]: expected expression\n  /tmp/t2.xsh:9:6\n    if not valid {\n       ^^^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  /tmp/t2.xsh:11:5\n    } else {\n      ^^^^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  /tmp/t2.xsh:15:3\n    }\n    ^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  /tmp/t2.xsh:16:1\n  }\n  ^ expected expression\n== 007 ==\nerr[parse.expected-expression]: expected expression\n  /tmp/t2.xsh:9:6\n    if not valid {\n       ^^^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  /tmp/t2.xsh:11:5\n    } else {\n      ^^^^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  /tmp/t2.xsh:15:3\n    }\n    ^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  /tmp/t2.xsh:16:1\n  }\n  ^ expected expression\n== +3 ==\nerr[parse.expected-expression]: expected expression\n  /tmp/t2.xsh:9:6\n    if not valid {\n       ^^^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  /tmp/t2.xsh:11:5\n    } else {\n      ^^^^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  /tmp/t2.xsh:15:3\n    }\n    ^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  /tmp/t2.xsh:16:1\n  }\n  ^ expected expression\n== 5-3 ==\nerr[parse.expected-expression]: expected expression\n  /tmp/t2.xsh:9:6\n    if not valid {\n       ^^^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  /tmp/t2.xsh:11:5\n    } else {\n      ^^^^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  /tmp/t2.xsh:15:3\n    }\n    ^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  /tmp/t2.xsh:16:1\n  }\n  ^ expected expression\n== abc ==\nerr[parse.expected-expression]: expected expression\n  /tmp/t2.xsh:9:6\n    if not valid {\n       ^^^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  /tmp/t2.xsh:11:5\n    } else {\n      ^^^^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  /tmp/t2.xsh:15:3\n    }\n    ^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  /tmp/t2.xsh:16:1\n  }\n  ^ expected expression\n== - ==\nerr[parse.expected-expression]: expected expression\n  /tmp/t2.xsh:9:6\n    if not valid {\n       ^^^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  /tmp/t2.xsh:11:5\n    } else {\n      ^^^^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  /tmp/t2.xsh:15:3\n    }\n    ^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  /tmp/t2.xsh:16:1\n  }\n  ^ expected expression\n== 42 ==\nerr[parse.expected-expression]: expected expression\n  /tmp/t2.xsh:9:6\n    if not valid {\n       ^^^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  /tmp/t2.xsh:11:5\n    } else {\n      ^^^^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  /tmp/t2.xsh:15:3\n    }\n    ^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  /tmp/t2.xsh:16:1\n  }\n  ^ expected expression\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 20,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-colsum-1"
+        }
+      }
+    ],
+    "workers": [
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-bigfiles"
+        },
+        "path": "phases/01-eval/workers/eval-manager/task-bigfiles/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 5,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.000861696,
+          "cache_read_tokens": 47872,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.0068469659999999995,
+          "input_cost_usd": 0.00439983,
+          "input_tokens": 48887,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00158544,
+          "output_tokens": 8808,
+          "provider_total_tokens": 105567,
+          "reasoning_tokens": 3291,
+          "thinking_blocks": 4,
+          "tool_calls": 11,
+          "tool_errors": 0,
+          "tool_results": 11,
+          "total_bucket_tokens": 105567,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-bigfiles-1"
+        },
+        "path": "phases/01-eval/workers/eval-worker/task-bigfiles-1/report.json",
+        "result": "pass",
+        "tool_errors": 1,
+        "usage": {
+          "assistant_turns": 45,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.014579712,
+          "cache_read_tokens": 809984,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.020420802,
+          "input_cost_usd": 0.00389835,
+          "input_tokens": 43315,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0019427399999999997,
+          "output_tokens": 10793,
+          "provider_total_tokens": 864092,
+          "reasoning_tokens": 6295,
+          "thinking_blocks": 26,
+          "tool_calls": 48,
+          "tool_errors": 1,
+          "tool_results": 48,
+          "total_bucket_tokens": 864092,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-colsum"
+        },
+        "path": "phases/02-eval/workers/eval-manager/task-colsum/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 6,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.001377792,
+          "cache_read_tokens": 76544,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.007047792,
+          "input_cost_usd": 0.00468018,
+          "input_tokens": 52002,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00098982,
+          "output_tokens": 5499,
+          "provider_total_tokens": 134045,
+          "reasoning_tokens": 2523,
+          "thinking_blocks": 4,
+          "tool_calls": 11,
+          "tool_errors": 0,
+          "tool_results": 11,
+          "total_bucket_tokens": 134045,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-colsum-1"
+        },
+        "path": "phases/02-eval/workers/eval-worker/task-colsum-1/report.json",
+        "result": "pass",
+        "tool_errors": 4,
+        "usage": {
+          "assistant_turns": 41,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.009911808,
+          "cache_read_tokens": 550656,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.018428328,
+          "input_cost_usd": 0.00646308,
+          "input_tokens": 71812,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.002053440000000001,
+          "output_tokens": 11408,
+          "provider_total_tokens": 633876,
+          "reasoning_tokens": 5928,
+          "thinking_blocks": 27,
+          "tool_calls": 48,
+          "tool_errors": 4,
+          "tool_results": 48,
+          "total_bucket_tokens": 633876,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "aef5ddb3396ab78783dd76516d5fdcc25a17df29"
+  },
+  "findings": [],
+  "identity": {
+    "mode": "organization",
+    "run_id": "run-1786230602946"
+  },
+  "kind": "run",
+  "result": "pass",
+  "schema_version": 1,
+  "state": "completed"
+}
