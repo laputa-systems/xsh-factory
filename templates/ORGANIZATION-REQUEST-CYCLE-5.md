@@ -14,7 +14,7 @@ preserving the one-engineer-delivery gate.
 
 ## Mode
 
-- organization
+- `organization`
 
 ## Eval admission
 
