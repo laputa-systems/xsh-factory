@@ -3066,7 +3066,10 @@ proc test_run_status_inspects_live_and_completed_evidence(ctx: TestContext) [fs,
 {"event_id":"95-cycle-validated","state":"validated","subject":"organization","detail":"all required phases passed"}
 """,
   )?
-  fs.write(fp"${run_dir}/processes/controller.pids", f"${process.current_pid()?}\n")?
+  let controller_pid = process.current_pid()?
+  let child = spawn process.command_argv("sh", ["sh", "-c", "sleep 10"])?
+  fs.write(fp"${run_dir}/processes/controller.pids", f"${controller_pid}\n")?
+  fs.write(fp"${run_dir}/processes/phase-worker.pids", f"${child.pid}\n")?
   let output = fp"${root}/status.txt"
   let error_output = fp"${root}/status.err"
   let xsh = process.which("xsh")?
@@ -3091,7 +3094,9 @@ proc test_run_status_inspects_live_and_completed_evidence(ctx: TestContext) [fs,
   test.contains(report, "RUN run-1 STATE completed RESULT pass")?
   test.contains(report, "QUEUE open=4; approved=1; engineers=1; discovery_evals=1")?
   test.contains(report, "LAST 95-cycle-validated validated organization")?
-  test.contains(report, "ACTIVE 1")?
+  test.contains(report, "ACTIVE 2")?
+  test.contains(report, f"processes/controller pid=${controller_pid}")?
+  test.contains(report, f"processes/phase-worker pid=${child.pid}")?
   test.contains(report, "01-ticket completed pass")?
   test.contains(report, "engineer/task-a pass turns=7 cost=0.040000 errors=1")?
 
@@ -3110,6 +3115,8 @@ proc test_run_status_inspects_live_and_completed_evidence(ctx: TestContext) [fs,
     ),
   )?
   test.ok(! missing.ok, "run-status must fail closed for a missing run")?
+  process.kill(child.pid, signal: "TERM")?
+  let _ = wait child?
 }
 
 proc test_ticket_snapshot_rejects_existing_ticket_mutation(ctx: TestContext) [fs, error] {

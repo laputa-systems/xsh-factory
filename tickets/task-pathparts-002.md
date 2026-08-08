@@ -2,7 +2,20 @@
 
 ## Status
 
-Open.
+Approved.
+
+## CTO decision — pre-cycle-4
+
+- Decision: Approved for one bounded implementation and linked-replay cycle.
+- Basis: The typed-`Path` restriction/lint conflict remains a reproducible,
+  general contract failure with a minimal tooling-alignment scope. The prior
+  deferral required a named repair and isolated acceptance plan; this ticket
+  now provides both, and the linked `task-pathparts` eval remains available.
+- Scope: Align the lint guidance and restriction boundary so a documented
+  typed-`Path` construction can satisfy both checks; do not change the task,
+  oracle, or path-decomposition API.
+- Admission: Dispatch one engineer; require the linked replay and one
+  independent eval before delivery.
 
 ## CTO decision — 2026-08-07
 

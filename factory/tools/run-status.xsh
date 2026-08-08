@@ -129,7 +129,9 @@ proc worker_rows(run_dir: Path) [fs, error] -> Result[List[Any]] {
 
 proc active_processes(run_dir: Path) [fs, process, error] -> Result[List[Any]] {
   var rows: List[Any] = []
-  let processes = process.list()?
+  # `process.list()` is a single-use live stream. Materialize one snapshot so
+  # every registered PID is checked against the same process table.
+  let processes = process.list()?.collect()
   for entry in fs.files(run_dir, gitignore: false, hidden: true) {
     continue when ! entry.name.ends_with(".pids")
     let pid_text = entry.path.read_text()?.trim()
