@@ -677,6 +677,20 @@ positional-only API guidance candidate, but it is single-eval evidence. Keep
 the approved handbook unchanged until `task-dupcheck` and a second
 defaulted-parameter eval confirm the guidance generalizes.
 
+## Explicit CTO disposition — run-1786227317528
+
+| Candidate SHA-256 | Disposition |
+| --- | --- |
+| `b23299b6ab01f5b0cc3744c10e9abba62a66078fa2ec1b0b5971c41134f18b69` | deferred pending matched integer-division replay; not promoted |
+
+The retained `task-histogram-006` replay staged a clear `/`-as-integer-
+division rule and correctly contrasted it with invalid `//` syntax. The
+guidance is good, but it repeats the already-deferred histogram integer-
+division hypothesis and still has no matched cross-eval replay. Record the
+candidate explicitly so preflight can proceed, keep the approved handbook
+unchanged, and consume the candidate only in a future arithmetic or
+stream-fold replay that exercises the rule.
+
 ## Explicit CTO disposition — run-1786209582303 candidates
 
 | Candidate SHA-256 | Disposition |
