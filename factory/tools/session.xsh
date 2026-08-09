@@ -275,6 +275,7 @@ proc read_session(session_path: Path) [fs, process, error] -> Result[SessionRepo
                   if start_ms < 0 or timestamp < start_ms {
                     start_ms = timestamp
                   }
+
                   if timestamp > end_ms {
                     end_ms = timestamp
                   }
@@ -314,10 +315,12 @@ proc read_session(session_path: Path) [fs, process, error] -> Result[SessionRepo
                   if delta.reasoning_seen {
                     reasoning_seen = true
                   }
+
                   provider_total_tokens += delta.provider_total_tokens
                   if delta.provider_total_seen {
                     provider_total_seen = true
                   }
+
                   input_cost_usd += delta.input_cost_usd
                   output_cost_usd += delta.output_cost_usd
                   cache_read_cost_usd += delta.cache_read_cost_usd
@@ -325,6 +328,7 @@ proc read_session(session_path: Path) [fs, process, error] -> Result[SessionRepo
                   if delta.cost_components_seen {
                     cost_components_seen = true
                   }
+
                   cost_usd += delta.cost_usd
                   if delta.cost_seen {
                     cost_seen = true
@@ -377,10 +381,12 @@ proc read_session(session_path: Path) [fs, process, error] -> Result[SessionRepo
                   if delta.reasoning_seen {
                     reasoning_seen = true
                   }
+
                   provider_total_tokens += delta.provider_total_tokens
                   if delta.provider_total_seen {
                     provider_total_seen = true
                   }
+
                   input_cost_usd += delta.input_cost_usd
                   output_cost_usd += delta.output_cost_usd
                   cache_read_cost_usd += delta.cache_read_cost_usd
@@ -388,6 +394,7 @@ proc read_session(session_path: Path) [fs, process, error] -> Result[SessionRepo
                   if delta.cost_components_seen {
                     cost_components_seen = true
                   }
+
                   cost_usd += delta.cost_usd
                   if delta.cost_seen {
                     cost_seen = true
@@ -409,10 +416,12 @@ proc read_session(session_path: Path) [fs, process, error] -> Result[SessionRepo
             if delta.reasoning_seen {
               reasoning_seen = true
             }
+
             provider_total_tokens += delta.provider_total_tokens
             if delta.provider_total_seen {
               provider_total_seen = true
             }
+
             input_cost_usd += delta.input_cost_usd
             output_cost_usd += delta.output_cost_usd
             cache_read_cost_usd += delta.cache_read_cost_usd
@@ -420,6 +429,7 @@ proc read_session(session_path: Path) [fs, process, error] -> Result[SessionRepo
             if delta.cost_components_seen {
               cost_components_seen = true
             }
+
             cost_usd += delta.cost_usd
             if delta.cost_seen {
               cost_seen = true
@@ -500,6 +510,7 @@ proc parse_pi_events(events_path: Path) [fs, process, error] -> Result[ProviderT
   if ! fs.exists(events_path)? {
     return empty
   }
+
   var retries = 0
   var retry_delay = 0
   var errors: List[Str] = []
@@ -587,6 +598,7 @@ pure optional_number(value: Float, seen: Bool) -> Any {
   if seen {
     result = value
   }
+
   return result
 }
 
@@ -595,6 +607,7 @@ pure optional_int(value: Int, seen: Bool) -> Any {
   if seen {
     result = value
   }
+
   return result
 }
 
@@ -676,10 +689,12 @@ proc parse_budget(value: Str) [error] -> Result[Float] {
   if parts.len() == 1 {
     return Ok(whole.float())
   }
+
   let fraction_text = parts[1]
   if fraction_text == "" {
     return Ok(whole.float())
   }
+
   let fraction = fraction_text.parse_int()?
   var divisor = 1
   for _ in range(fraction_text.count_chars()) {
@@ -732,9 +747,11 @@ proc run_worker(argv: List[Str]) [fs, process, env, error] -> Result[Int] {
   if ! report.cost_seen {
     return Ok(2)
   }
+
   if report.usage.cost_usd > budget {
     return Ok(3)
   }
+
   0
 }
 

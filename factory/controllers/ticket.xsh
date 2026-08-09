@@ -795,6 +795,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     eprint "factory source changed before ticket admission"
     abort(1)
   }
+
   let request = fp"${argv[0]}"
   let xsh_repo = env.path("FACTORY_XSH_REPO", fp"${factory_dir}/../xsh")?
   let home = env.get("HOME")?

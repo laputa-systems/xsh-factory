@@ -218,14 +218,12 @@ export proc claim_once(run_dir: Path, spec: DispatchSpec, claimed_by: Str) [fs, 
   let claim_record = claim(spec, spec.claim_token, claimed_by, "planned")?
   fs.write_atomic(
     claim_path,
-    json.encode(
-      {
-        dispatch_id: claim_record.dispatch_id.value,
-        claim_token: claim_record.claim_token,
-        claimed_by: claim_record.claimed_by,
-        state: claim_record.state,
-      },
-    )? + "\n",
+    json.encode({
+      dispatch_id: claim_record.dispatch_id.value,
+      claim_token: claim_record.claim_token,
+      claimed_by: claim_record.claimed_by,
+      state: claim_record.state,
+    })? + "\n",
   )?
   return Ok(claim_record)
 }

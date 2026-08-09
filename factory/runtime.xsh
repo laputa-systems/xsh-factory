@@ -468,6 +468,7 @@ export proc amend_engineer_commit(
   if commit_id == "" {
     return Ok("")
   }
+
   let existing_output = run.text "git" "-C" $worktree "log" "-1" "--format=%B" $commit_id ?
   let existing_message = existing_output.trim()
   if "Factory-Provenance-Version:" in existing_message {
@@ -840,6 +841,7 @@ export proc ticket_snapshot(factory_dir: Path) [fs, error] -> Result[List[Any]] 
       sha256: hash.sha256(entry.path)?.hex(),
     })
   }
+
   snapshot |> sort-by .name
 }
 
@@ -859,10 +861,12 @@ export proc ticket_snapshot_unchanged(factory_dir: Path, snapshot: List[Any]) [f
     if name == "" or expected == "" or ! fs.exists(ticket_path)? {
       return false
     }
+
     if hash.sha256(ticket_path)?.hex() != expected {
       return false
     }
   }
+
   true
 }
 
@@ -1002,10 +1006,9 @@ export proc next_untried_approved_evals(factory_dir: Path, limit: Int) [fs, erro
   var selected: List[Str] = []
   for eval_id in untried {
     selected = selected.push(eval_id)
-    if selected.len() >= limit {
-      break
-    }
+    break when selected.len() >= limit
   }
+
   return selected
 }
 
@@ -1086,7 +1089,11 @@ export proc first_approved_tickets(factory_dir: Path, limit: Int) [fs, error] ->
 ## branches. Fresh work is the throughput target; retained branches remain in
 ## the same bounded batch so replay quality is still exercised when capacity
 ## exists.
-export proc adaptive_approved_tickets(factory_dir: Path, xsh_repo: Path, limit: Int) [fs, process, error] -> Result[List[Str]] {
+export proc adaptive_approved_tickets(
+  factory_dir: Path,
+  xsh_repo: Path,
+  limit: Int,
+) [fs, process, error] -> Result[List[Str]] {
   if limit <= 0 {
     return []
   }
@@ -1113,6 +1120,7 @@ export proc adaptive_approved_tickets(factory_dir: Path, xsh_repo: Path, limit: 
   }
 
   var selected: List[Str] = []
+
   # Reserve exactly one fresh delivery row. The second organization slot is
   # for one retained replay, never for another fresh engineer whose merge
   # could create an avoidable closeout queue.
@@ -1131,6 +1139,7 @@ export proc adaptive_approved_tickets(factory_dir: Path, xsh_repo: Path, limit: 
     selected = selected.push(ticket_id)
     break
   }
+
   selected
 }
 
@@ -1186,6 +1195,7 @@ export proc organization_ticket_counts(factory_dir: Path, xsh_repo: Path) [fs, p
     if ticket.status == "Open." {
       open_tickets += 1
     }
+
     if (ticket.status == "Approved." or ticket.status == "Accepted.") and ticket.change_target == "product" {
       approved_tickets += 1
     }
@@ -1551,6 +1561,7 @@ export proc merge_validated_ticket(
   if ! branch_head_status.ok {
     return evidence
   }
+
   let branch_head = run.text "git" "-C" $xsh_repo "rev-parse" $branch ?
   let actual_merge_base = run.text "git" "-C" $xsh_repo "merge-base" "HEAD" $branch ?
   let merge_base_matches_contract = if reported_merge_base == "" {
@@ -1558,7 +1569,11 @@ export proc merge_validated_ticket(
   } else {
     actual_merge_base.trim() == merge_base
   }
-  if branch_head.trim() != implementation_commit.trim() or ! merge_base_matches_contract or ! ref_contains_commit(xsh_repo, "HEAD", merge_base)? or ! ref_contains_commit(xsh_repo, branch, merge_base)? {
+  if branch_head.trim() != implementation_commit.trim() or ! merge_base_matches_contract or ! ref_contains_commit(
+    xsh_repo,
+    "HEAD",
+    merge_base,
+  )? or ! ref_contains_commit(xsh_repo, branch, merge_base)? {
     return evidence
   }
 
@@ -1851,7 +1866,9 @@ export proc factory_source_fingerprint(factory_dir: Path) [fs, error] -> Result[
     }
   }
 
-  files = files |> sort-by .display() |> collect()
+  files = files
+    |> sort-by .display()
+    |> collect()
   var manifest = ""
   for file in files {
     if ! fs.exists(file)? {

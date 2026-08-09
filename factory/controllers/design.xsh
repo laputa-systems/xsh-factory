@@ -26,6 +26,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     eprint "factory source changed before eval-design admission"
     abort(1)
   }
+
   let request = fp"${argv[0]}"
   let request_text = request.read_text()?
   if typed_request.mode_value(request_text)? != "eval-design" {

@@ -57,6 +57,7 @@ proc spawn_child(
   if configured_base_image != "" {
     assignments = assignments.push("FACTORY_BASE_IMAGE=" + configured_base_image)
   }
+
   let source_sha = env.get_or("FACTORY_SOURCE_SHA", "")?
   if source_sha != "" {
     assignments = assignments.push("FACTORY_SOURCE_SHA=" + source_sha)
@@ -235,6 +236,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     eprint "factory source changed before organization admission"
     abort(1)
   }
+
   let request = fp"${argv[0]}"
   let request_text = request.read_text()?
   if typed_request.mode_value(request_text)? != "organization" {
@@ -363,16 +365,19 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
       reuse_tickets = reuse_tickets.push(ticket_id)
     }
   }
+
   if reuse_tickets.len() > 1 {
     eprint "organization cycles support at most one retained implementation branch per batch"
     abort(2)
   }
+
   let reuse_existing_branch = reuse_tickets.len() == 1
   let reuse_ticket = if reuse_existing_branch { reuse_tickets[0] } else { "" }
   if reuse_existing_branch {
     let reuse_branch = runtime.open_ticket_branch(xsh_repo, reuse_ticket)?
     eprint f"reusing existing implementation branch for ${reuse_ticket}: ${reuse_branch}"
   }
+
   let primary_dispatch_requested = selected_ticket == "" or fresh_tickets.len() > 0
 
   for ticket_id in selected_tickets {
@@ -425,10 +430,12 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     eprint f"organization cycles allow at most ${control.max_concurrent_discovery_evals()} independent evals"
     abort(2)
   }
+
   if selected_ticket == "" and request_evals.len() < 1 {
     eprint "ticketless organization cycles require at least one discovery eval"
     abort(2)
   }
+
   let requested_eval = if request_evals.len() > 0 {
     request_evals[0]
   } else if selected_ticket != "" {
@@ -443,9 +450,11 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
         eprint f"organization discovery evals must be distinct: ${eval_id}"
         abort(2)
       }
+
       seen_evals = seen_evals.push(eval_id)
     }
   }
+
   let independent_eval_requested = request_evals.len() > 0 and (selected_ticket != "" or request_evals.len() > 1)
   let ticket_eval = if selected_ticket != "" {
     control.ticket_eval(selected_ticket_path.read_text()?)
@@ -528,6 +537,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   if reuse_existing_branch and fresh_tickets.len() > 0 {
     fs.mkdir(reuse_phase)?
   }
+
   if design_requested {
     fs.mkdir(design_phase)?
   }
@@ -631,22 +641,24 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
       primary_objective,
     )?
   }
+
   if independent_eval_requested {
-  var independent_eval_index = 0
-  for eval_id in independent_eval_ids {
-    phase_request(
-      phase_template,
-      independent_eval_requests[independent_eval_index],
-      "eval",
-      eval_id,
-      trial_count,
-      0,
-      "None.",
-      f"Run the independent ${eval_id} eval against the XSH main commit.",
-    )?
-    independent_eval_index += 1
+    var independent_eval_index = 0
+    for eval_id in independent_eval_ids {
+      phase_request(
+        phase_template,
+        independent_eval_requests[independent_eval_index],
+        "eval",
+        eval_id,
+        trial_count,
+        0,
+        "None.",
+        f"Run the independent ${eval_id} eval against the XSH main commit.",
+      )?
+      independent_eval_index += 1
+    }
   }
-  }
+
   if design_requested {
     phase_request(
       phase_template,
@@ -776,6 +788,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
       xsh_commit.trim(),
     )?
   }
+
   var fresh_primary_ok = ! primary_dispatch_requested
   if primary_dispatch_requested {
     let primary_handle = spawn_child(
@@ -805,6 +818,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     )?
     fresh_primary_ok = wait_child(primary_handle)?
   }
+
   var reuse_primary_ok = true
   if reuse_primary_handle != null {
     reuse_primary_ok = wait_child(reuse_primary_handle)?
@@ -813,7 +827,11 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
       run_dir,
       "80-reuse-completed",
       reuse_ticket,
-      if reuse_primary_ok { "completed" } else { "failed" },
+      if reuse_primary_ok {
+        "completed"
+      } else {
+        "failed"
+      },
       1,
       "controller",
       "retained branch fast path returned",
@@ -874,6 +892,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   if selected_ticket != "" {
     reeval_pass_for_result = true
     delivery_ok = true
+
     # Wait and merge fresh rows before retained replays. Replay validation is
     # still mandatory for each row, but an older branch must not hold a fresh
     # product commit behind its own slow or failed manager closeout.
@@ -974,6 +993,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     var reeval_wait_index = 0
     for ticket_id in reeval_ticket_ids {
       let reeval_phase = fp"${phases_dir}/02-reeval-${ticket_id}"
+
       # A controller may return nonzero after writing a complete, passing
       # phase report (for example, a recoverable image/tool subprocess error).
       # Preserve that process status as evidence, but let the validated phase
@@ -988,6 +1008,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
       let reeval_report_ok = phase_run_pass(reeval_phase, "report.json")? and reeval_required_ok
       let reeval_pass = reeval_report_ok
       let retained_replay = reuse_existing_branch and ticket_id == reuse_ticket
+
       # A retained replay is quality evidence for an already-existing branch.
       # If its bounded manager closeout defers, keep the branch available for a
       # later replay without allowing that old row to block fresh delivery.
@@ -1009,6 +1030,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
           implementation_commit: "",
         }
       }
+
       # A retained branch can pass its replay and still be too old to merge
       # cleanly after the fresh commit. Keep that branch for a future
       # reconciliation, but do not report its expected stale-base conflict as
@@ -1071,7 +1093,11 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
         run_dir,
         "80-reeval-completed",
         f"${ticket_id}-reevaluation",
-        if reeval_pass { "completed" } else { "failed" },
+        if reeval_pass {
+          "completed"
+        } else {
+          "failed"
+        },
         1,
         "controller",
         if reeval_pass {
@@ -1103,7 +1129,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
       # removed. A retained timeout may have no patch, but its detached
       # worktree is still safe to remove when clean; the Git branch remains.
       let patch_ready = fs.exists(reeval_ticket_patches[reeval_wait_index])?
-      let cleanup_allowed = (patch_ready and reeval_pass) or retained_replay
+      let cleanup_allowed = patch_ready and reeval_pass or retained_replay
       let cleaned = cleanup_allowed and runtime.remove_clean_worktree(
         xsh_repo,
         reeval_ticket_worktrees[reeval_wait_index],
@@ -1173,8 +1199,10 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
           "discovery eval report.json passed",
         )?
       }
+
       independent_eval_wait_index += 1
     }
+
     independent_eval_state = if all_independent_evals_pass { "pass" } else { "fail" }
     independent_eval_report_state = if all_independent_eval_reports_pass { "pass" } else { "missing-or-failed" }
   }

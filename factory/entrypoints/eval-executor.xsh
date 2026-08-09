@@ -10,6 +10,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     eprint "factory source changed before eval executor admission"
     abort(1)
   }
+
   let eval_id = if argv.len() > 0 { argv[0] } else { env.get_or("FACTORY_EVAL_ID", "")? }
   if eval_id == "" {
     eprint "eval-executor requires an eval id"

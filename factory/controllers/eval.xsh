@@ -220,6 +220,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     eprint "factory source changed before eval admission"
     abort(1)
   }
+
   let request = fp"${argv[0]}"
   let request_text = request.read_text()?
   let request_evals = typed_request.eval_values(request_text)?
@@ -308,6 +309,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   )?
   fs.copy(request, fp"${run_dir}/CYCLE-REQUEST.md", overwrite: true)?
   fs.copy(fp"${factory_dir}/runtime/handbook.md", baseline_handbook, overwrite: true)?
+
   # The approved snapshot is also the fail-safe candidate. A manager may
   # overwrite this file with a provisional change, but an unchanged decision
   # must not fail because copying identical content was forgotten.
@@ -444,6 +446,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     "0"
   }
   let build_started = time.now()
+
   # `dist-Linux-docker` sets CARGO_TARGET_DIR to `<repo>/target`, so Cargo
   # writes the cross-built binaries under `target/<target>/dist`.
   let dist_dir = fp"${xsh_repo}/target/${target}/dist"
@@ -535,6 +538,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     )?
     staging_ok = stage_xsh.ok and stage_xsht.ok and stage_control.ok and stage_runtime.ok and stage_schema.ok
   }
+
   if ! staging_ok {
     write_preflight_failure_report(
       run_dir,
@@ -894,12 +898,9 @@ wall-ms=${build_elapsed}
     let ticket_name = schema.value_text(json.get(ticket, ["name"], ""))
     continue when ticket_name == ""
     let ticket_path = fp"${factory_dir}/tickets/${ticket_name}"
-    existing_ticket_paths = if existing_ticket_paths == "none" {
-      ticket_path.display()
-    } else {
-      existing_ticket_paths + ", " + ticket_path.display()
-    }
+    existing_ticket_paths = if existing_ticket_paths == "none" { ticket_path.display() } else { existing_ticket_paths + ", " + ticket_path.display() }
   }
+
   let manager_message = fp"${messages_dir}/${eval_id}-manager.md"
   let manager_template = fp"${factory_dir}/templates/EVAL-MANAGER-ASSIGNMENT.md"
   let manager_values = [
@@ -991,7 +992,10 @@ wall-ms=${build_elapsed}
   let manager_worker_report = fp"${run_dir}/workers/eval-manager/${eval_id}/report.json"
   var manager_process_ok = manager_status.ok
   let initial_manager_narrative = if fs.exists(manager_report)? { fs.read_text(manager_report)? } else { "" }
-  let manager_report_ready = fs.exists(manager_report)? and control.report_section(initial_manager_narrative, "Result") != "not-ready" and control.manager_report_contract_ok(initial_manager_narrative)
+  let manager_report_ready = fs.exists(manager_report)? and control.report_section(initial_manager_narrative, "Result") != "not-ready" and control.manager_report_contract_ok(
+    initial_manager_narrative,
+  )
+
   # A process failure is not made successful by a syntactically complete
   # narrative. Retry both incomplete reports and failed manager processes so
   # the normal bounded recovery path can repair transient harness failures.
@@ -1011,24 +1015,39 @@ wall-ms=${build_elapsed}
     let retry_guidance = control.fill_template(
       fp"${factory_dir}/templates/EVAL-MANAGER-RETRY.md".read_text()?,
       [
-        {key: "PHASE_REPORT", value: fp"${run_dir}/report.json".display()},
-        {key: "REPORT_PATH", value: retry_report.display()},
+        {
+          key: "PHASE_REPORT",
+          value: fp"${run_dir}/report.json".display(),
+        },
+        {
+          key: "REPORT_PATH",
+          value: retry_report.display(),
+        },
       ],
     )
-    let retry_assignment = retry_guidance + "\n\n" + manager_message.read_text()?.replace(
-      fp"${run_dir}/workers/eval-manager/${eval_id}".display(),
-      fp"${run_dir}/workers/eval-manager/${retry_worker_id}".display(),
-    )
+    let retry_assignment = retry_guidance + """
+
+""" + manager_message.read_text()?.replace(
+  fp"${run_dir}/workers/eval-manager/${eval_id}".display(),
+  fp"${run_dir}/workers/eval-manager/${retry_worker_id}".display(),
+)
     fs.write(retry_message, retry_assignment)?
     if fs.exists(manager_session)? {
       fs.copy(manager_session, fp"${run_dir}/workers/eval-manager/${eval_id}/session.attempt-1.jsonl", overwrite: true)?
     }
+
     if fs.exists(manager_report)? {
       fs.copy(manager_report, fp"${run_dir}/workers/eval-manager/${eval_id}/REPORT.attempt-1.md", overwrite: true)?
     }
+
     if fs.exists(manager_worker_report)? {
-      fs.copy(manager_worker_report, fp"${run_dir}/workers/eval-manager/${eval_id}/report.attempt-1.json", overwrite: true)?
+      fs.copy(
+        manager_worker_report,
+        fp"${run_dir}/workers/eval-manager/${eval_id}/report.attempt-1.json",
+        overwrite: true,
+      )?
     }
+
     let retry_handle = spawn_agent(
       factory_dir,
       run_dir,
@@ -1049,15 +1068,19 @@ wall-ms=${build_elapsed}
     let retry_worker_report = fp"${run_dir}/workers/eval-manager/${retry_worker_id}/report.json"
     let retry_session = fp"${run_dir}/workers/eval-manager/${retry_worker_id}/session.jsonl"
     let retry_narrative = if fs.exists(retry_report)? { fs.read_text(retry_report)? } else { "" }
-    let retry_ready = fs.exists(retry_report)? and control.report_section(retry_narrative, "Result") != "not-ready" and control.manager_report_contract_ok(retry_narrative)
+    let retry_ready = fs.exists(retry_report)? and control.report_section(retry_narrative, "Result") != "not-ready" and control.manager_report_contract_ok(
+      retry_narrative,
+    )
     if retry_ready {
       fs.copy(retry_report, manager_report, overwrite: true)?
       if fs.exists(retry_worker_report)? {
         fs.copy(retry_worker_report, manager_worker_report, overwrite: true)?
       }
+
       if fs.exists(retry_session)? {
         fs.copy(retry_session, manager_session, overwrite: true)?
       }
+
       runtime.emit_structured_event(
         event_template,
         run_dir,
@@ -1075,6 +1098,7 @@ wall-ms=${build_elapsed}
       )?
     }
   }
+
   let ticket_snapshot_unchanged = runtime.ticket_snapshot_unchanged(factory_dir, pre_manager_ticket_snapshot)?
   if ! ticket_snapshot_unchanged {
     runtime.emit_structured_event(
@@ -1085,6 +1109,7 @@ wall-ms=${build_elapsed}
       {status: "failed", detail: "manager changed a pre-existing ticket file"},
     )?
   }
+
   let manager_ok = manager_process_ok and ticket_snapshot_unchanged
 
   var designer_ok = true
@@ -1281,7 +1306,9 @@ wall-ms=${build_elapsed}
       candidate_handbook: candidate_exists,
       handbook_lineage: lineage_ok,
       manager_report: manager_report_ok,
-      candidate_acceptance: candidate_ticket == "not-reevaluation" or control.reeval_manager_acceptance_gate(manager_narrative),
+      candidate_acceptance: candidate_ticket == "not-reevaluation" or control.reeval_manager_acceptance_gate(
+        manager_narrative,
+      ),
       ticket_snapshot_unchanged: ticket_snapshot_unchanged,
       designer_output: designer_output_ok,
       audit: audit_pass,

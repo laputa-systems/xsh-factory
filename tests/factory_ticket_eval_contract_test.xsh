@@ -31,5 +31,4 @@ Improve an existing behavior.
     Ok(_) => test.fail("unproven merge was accepted")?
     Err(_) => {}
   }
-
 }

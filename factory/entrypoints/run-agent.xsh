@@ -27,6 +27,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     eprint "factory source changed before worker admission"
     abort(2)
   }
+
   let run_dir = env.path("FACTORY_RUN_DIR")?.resolve()?
   runtime.stage_factory_source_snapshot(factory_dir, run_dir)?
   let handbook_file = env.path("FACTORY_HANDBOOK_FILE", fp"${factory_dir}/runtime/handbook.md")?
@@ -448,14 +449,17 @@ ${limit_watcher.pid}
   if factory_source_state == "handbook-quarantined" {
     fs.write_atomic(
       fp"${worker_dir}/FACTORY-HANDBOOK-QUARANTINED",
-      "live handbook edit captured as a run-scoped candidate\n",
+      """live handbook edit captured as a run-scoped candidate
+""",
     )?
   } else if factory_source_state == "source-changed" {
     fs.write_atomic(
       fp"${worker_dir}/FACTORY-SOURCE-MUTATED",
-      "non-handbook factory source changed during the worker session\n",
+      """non-handbook factory source changed during the worker session
+""",
     )?
   }
+
   if required_report != "" and ! fs.exists(fp"${required_report}")? {
     fs.write(
       fp"${worker_dir}/REPORT-MISSING",

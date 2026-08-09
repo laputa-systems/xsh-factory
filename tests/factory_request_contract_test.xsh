@@ -54,7 +54,11 @@ proc test_request_and_scalar_accessors_preserve_operator_intent() [error] {
   test.ok(request.measured_reuse_value(text)?)?
   test.eq(request.parse_aggregate_budget(text)?, 0.75)?
 
-  let paired_discovery = text.replace("- `task-ecount`", "- `task-ecount`\n- `task-envcfg`")
+  let paired_discovery = text.replace(
+    "- `task-ecount`",
+    """- `task-ecount`
+- `task-envcfg`""",
+  )
   test.eq(request.eval_values(paired_discovery)?, ["task-ecount", "task-envcfg"])?
 
   let no_tickets = """# Cycle
@@ -69,7 +73,12 @@ proc test_request_and_scalar_accessors_preserve_operator_intent() [error] {
 """
   test.eq(request.ticket_policy_value(no_tickets)?, "none")?
   test.eq(request.parse_trial_count(no_tickets)?.value, 1)?
-  match request.parse("# Cycle\n\n## Approved tickets\n\n- None.\n") {
+  match request.parse("""# Cycle
+
+## Approved tickets
+
+- None.
+""") {
     Ok(_) => test.fail("a request without a mode was accepted")?
     Err(_) => {}
   }

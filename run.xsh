@@ -231,10 +231,12 @@ proc preflight(
       eprint "ticketless organization request must select an eval"
       return false
     }
+
     if mode == "organization" and candidate_tickets.len() == 0 and (eval_values.len() < 1 or eval_values.len() > control.max_concurrent_discovery_evals()) {
       eprint f"ticketless organization discovery requires one to ${control.max_concurrent_discovery_evals()} active evals"
       return false
     }
+
     if mode == "organization" and candidate_tickets.len() > 0 and eval_values.len() > 1 {
       eprint "ticket organization cycles allow at most one independent eval"
       return false
@@ -247,7 +249,9 @@ proc preflight(
         runtime.next_untried_approved_evals(factory_dir, 1)?
       }
       if next_untried.len() > 0 and eval_values != next_untried {
-        eprint f"organization request must select the next untried approved evals ${next_untried.join(", ")}; selected ${eval_values.join(", ")}"
+        eprint f"organization request must select the next untried approved evals ${next_untried.join(", ")}; selected ${eval_values.join(
+          ", ",
+        )}"
         return false
       }
     }
@@ -366,5 +370,6 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     eprint "factory source changed during the cycle; run failed closed"
     abort(1)
   }
+
   abort(if status.ok { 0 } else { status.exit_code() ?? 1 })
 }

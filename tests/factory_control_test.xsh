@@ -277,13 +277,21 @@ proc test_handbook_candidate_gate_requires_ledger_disposition(ctx: TestContext) 
   test.eq(runtime.unresolved_handbook_candidates(root)?, 0)?
 }
 
-proc test_handbook_text_equivalent_ignores_editorial_drift() {
+proc test_handbook_text_equivalent_ignores_editorial_drift() [error] {
   test.eq(
-    control.handbook_text_equivalent("worker’s handbook\n", "worker's handbook"),
+    control.handbook_text_equivalent(
+  """worker’s handbook
+""",
+  "worker's handbook",
+),
     true,
   )?
   test.eq(
-    control.handbook_text_equivalent("worker's handbook\n", "worker handbook"),
+    control.handbook_text_equivalent(
+  """worker's handbook
+""",
+  "worker handbook",
+),
     false,
   )?
 }
@@ -365,7 +373,7 @@ proc test_role_defaults_are_coded_and_capped() [env, error] {
   }
 }
 
-proc test_explicit_toolchain_image_skips_stale_default_rebuild() {
+proc test_explicit_toolchain_image_skips_stale_default_rebuild() [error] {
   test.ok(! control.toolchain_build_required(false, true, false, true))?
   test.ok(! control.toolchain_build_required(false, false, true, true))?
   test.ok(control.toolchain_build_required(false, false, true, false))?
@@ -412,15 +420,15 @@ The existing operation is insufficient; semantic evidence is required.
   )?
   test.ok(
     control.ticket_api_surface_gate_ok(
-      ticket.replace(
-        "## Proposed XSH change",
-        """## API-surface justification
+  ticket.replace(
+  "## Proposed XSH change",
+  """## API-surface justification
 
 The existing capability is insufficient; evidence supports the smaller change.
 
 ## Proposed XSH change""",
-      ),
-    ),
+),
+),
   )?
 }
 
@@ -624,23 +632,31 @@ fixture
 """
   test.ok(control.manager_report_gate_ok(manager_report, true, false))?
   test.ok(control.reeval_manager_acceptance_gate("Candidate acceptance: pass."))?
-  test.ok(control.reeval_manager_acceptance_gate("Candidate acceptance: pass. The worker exercised the candidate surface."))?
-  test.ok(! control.reeval_manager_acceptance_gate("Candidate acceptance surface exercised; the linked candidate passed."))?
+  test.ok(
+    control.reeval_manager_acceptance_gate("Candidate acceptance: pass. The worker exercised the candidate surface."),
+  )?
+  test.ok(
+    ! control.reeval_manager_acceptance_gate("Candidate acceptance surface exercised; the linked candidate passed."),
+  )?
   test.ok(! control.reeval_manager_acceptance_gate("Candidate re-evaluation accepted for merge."))?
   test.ok(! control.reeval_manager_acceptance_gate("Candidate acceptance: pass. Decision: needs-replay."))?
   test.ok(! control.reeval_manager_acceptance_gate("Candidate acceptance: fail."))?
   test.ok(! control.reeval_manager_acceptance_gate("Result pass, but needs-replay: acceptance was not exercised."))?
   test.ok(! control.reeval_manager_acceptance_gate("Candidate re-evaluation was not accepted; needs-replay."))?
-  test.ok(! control.reeval_manager_acceptance_gate("""## Post-merge decisions
+  test.ok(
+    ! control.reeval_manager_acceptance_gate("""## Post-merge decisions
 
 None. The reconciler reported accept/reject/needs-replay as possible decisions.
 
 Candidate acceptance was exercised. Decision: **accept**.
-"""))?
-  test.ok(! control.reeval_manager_acceptance_gate("""## Post-merge decisions
+"""),
+  )?
+  test.ok(
+    ! control.reeval_manager_acceptance_gate("""## Post-merge decisions
 
 Decision: **accept**, but needs-replay before delivery.
-"""))?
+"""),
+  )?
   test.eq(
     control.report_section(
   """# Report
@@ -815,7 +831,13 @@ Open.
   test.ok(control.shared_image_cache_valid(false, true))?
   test.ok(! control.shared_image_cache_valid(true, true))?
   test.ok(! control.shared_image_cache_valid(false, false))?
-  test.ok(control.toolchain_image_platform_matches("linux/arm64\n", "linux/arm64"))?
+  test.ok(
+    control.toolchain_image_platform_matches(
+  """linux/arm64
+""",
+  "linux/arm64",
+),
+  )?
   test.ok(! control.toolchain_image_platform_matches("linux/amd64", "linux/arm64"))?
   test.ok(
     control.factory_image_tag(

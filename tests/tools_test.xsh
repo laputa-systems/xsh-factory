@@ -66,6 +66,7 @@ proc test_controller_and_tool_entrypoints_fail_closed(ctx: TestContext) [fs, pro
     test.contains(source_text, "FACTORY_SOURCE_SHA")?
     test.contains(source_text, "verify_factory_source")?
   }
+
   test.ok(! run_factory_entrypoint("run.xsh", [])?)?
   test.ok(! run_factory_entrypoint("run.xsh", ["missing-request.md"])?)?
   test.ok(! run_factory_entrypoint("factory/controllers/eval.xsh", [])?)?
@@ -583,7 +584,11 @@ exit 0
   test.ok(fs.exists(fp"${run_dir}/report.json")?)?
   test.ok(fs.exists(fp"${run_dir}/CTO-REPORT.md")?)?
   test.ok(fs.exists(fp"${run_dir}/events.jsonl")?)?
-  test.eq(fs.read_text(fp"${run_dir}/lineage/handbook-candidate.md")?, "candidate handbook\n")?
+  test.eq(
+    fs.read_text(fp"${run_dir}/lineage/handbook-candidate.md")?,
+    """candidate handbook
+""",
+  )?
   test.ok(fs.exists(fp"${run_dir}/patches/${ticket_id}.diff")?)?
   test.ok(! fs.exists(runtime.ticket_worktree_path(product, run_dir, ticket_id))?)?
   let branches = run.text "git" "-C" $product "branch" "--format=%(refname:short)" ?
@@ -681,6 +686,7 @@ proc test_factory_source_fingerprint_detects_immutable_mutation(ctx: TestContext
   for directory in ["factory/controllers", "roles", "templates", "evals/task-test", "runtime", "tickets", "runs"] {
     fs.mkdir(fp"${root}/${directory}")?
   }
+
   for file in [
     "run.xsh",
     "NORTH-STAR.md",
@@ -692,15 +698,27 @@ proc test_factory_source_fingerprint_detects_immutable_mutation(ctx: TestContext
     "runtime/handbook-ledger.md",
     "factory/controllers/eval.xsh",
   ] {
-    fs.write(fp"${root}/${file}", "stable\n")?
+    fs.write(
+      fp"${root}/${file}",
+      """stable
+""",
+    )?
   }
 
   let before = runtime.factory_source_fingerprint(root)?
   test.ok(before != "")?
-  fs.write(fp"${root}/factory/controllers/eval.xsh", "changed\n")?
+  fs.write(
+    fp"${root}/factory/controllers/eval.xsh",
+    """changed
+""",
+  )?
   let after_source_change = runtime.factory_source_fingerprint(root)?
   test.ok(after_source_change != before)?
-  fs.write(fp"${root}/tickets/task-test.md", "lifecycle-only\n")?
+  fs.write(
+    fp"${root}/tickets/task-test.md",
+    """lifecycle-only
+""",
+  )?
   let after_ticket_change = runtime.factory_source_fingerprint(root)?
   test.eq(after_ticket_change, after_source_change)?
 }
@@ -710,6 +728,7 @@ proc test_factory_handbook_edit_is_quarantined_and_restored(ctx: TestContext) [f
   for directory in ["factory/controllers", "roles", "templates", "evals/task-test", "runtime", "tickets", "runs"] {
     fs.mkdir(fp"${root}/${directory}")?
   }
+
   for file in [
     "run.xsh",
     "NORTH-STAR.md",
@@ -721,16 +740,38 @@ proc test_factory_handbook_edit_is_quarantined_and_restored(ctx: TestContext) [f
     "runtime/handbook-ledger.md",
     "factory/controllers/eval.xsh",
   ] {
-    fs.write(fp"${root}/${file}", if file == "runtime/handbook.md" { "approved\n" } else { "stable\n" })?
+    fs.write(
+      fp"${root}/${file}",
+      if file == "runtime/handbook.md" {
+  """approved
+"""
+} else {
+  """stable
+"""
+},
+    )?
   }
+
   let run_dir = fp"${root}/runs/run-1"
   let before = runtime.factory_source_fingerprint(root)?
   runtime.stage_factory_source_snapshot(root, run_dir)?
-  fs.write(fp"${root}/runtime/handbook.md", "candidate\n")?
+  fs.write(
+    fp"${root}/runtime/handbook.md",
+    """candidate
+""",
+  )?
   let state = runtime.quarantine_factory_handbook(root, run_dir, before)?
   test.eq(state, "handbook-quarantined")?
-  test.eq(fs.read_text(fp"${root}/runtime/handbook.md")?, "approved\n")?
-  test.eq(fs.read_text(fp"${run_dir}/factory-source/handbook-candidate.md")?, "candidate\n")?
+  test.eq(
+    fs.read_text(fp"${root}/runtime/handbook.md")?,
+    """approved
+""",
+  )?
+  test.eq(
+    fs.read_text(fp"${run_dir}/factory-source/handbook-candidate.md")?,
+    """candidate
+""",
+  )?
   test.ok(runtime.verify_factory_source(root, before)?)?
   test.eq(runtime.unresolved_handbook_candidates(root)?, 1)?
 }
@@ -751,6 +792,7 @@ proc test_eval_controller_completes_with_fake_build_docker_and_pi(ctx: TestConte
   fs.mkdir(bin_dir)?
   test.ok(! fs.exists(run_dir)?)?
   defer fs.remove(run_dir, missing_ok: true)?
+
   # This fixture deliberately replaces the product build with shell doubles.
   # Remove both shared transient outputs so a later real eval cannot accept the
   # fixture's cache stamp and stage the no-op doubles into its Docker image.
@@ -1747,10 +1789,16 @@ proc test_organization_audit_projects_throughput_from_existing_evidence(ctx: Tes
     {
       schema_version: 1,
       kind: "phase",
-      identity: {run_id: "01-ticket", mode: "ticket-reuse", ticket_id: "task-a"},
+      identity: {
+        run_id: "01-ticket",
+        mode: "ticket-reuse",
+        ticket_id: "task-a",
+      },
       state: "completed",
       result: "pass",
-      data: {fast_path: true},
+      data: {
+        fast_path: true,
+      },
       findings: [],
       artifacts: [],
     },
@@ -1761,7 +1809,10 @@ proc test_organization_audit_projects_throughput_from_existing_evidence(ctx: Tes
     {
       schema_version: 1,
       kind: "worker",
-      identity: {role: "engineer", worker_id: "task-b"},
+      identity: {
+        role: "engineer",
+        worker_id: "task-b",
+      },
       state: "completed",
       result: "pass",
       usage: {
@@ -1816,13 +1867,27 @@ proc test_organization_audit_preserves_phase_outcome_dimensions(ctx: TestContext
     {
       schema_version: 1,
       kind: "phase",
-      identity: {run_id: "03-eval", mode: "eval", eval_id: "task-a"},
+      identity: {
+        run_id: "03-eval",
+        mode: "eval",
+        eval_id: "task-a",
+      },
       state: "completed",
       result: "fail",
       data: {
         mode: "eval",
-        outcomes: {product: "pass", evaluator: "fail", infrastructure: "fail"},
-        cost: {workers: 0, assistant_turns: 0, total_bucket_tokens: 0, cost_usd: 0.0, tool_errors: 0},
+        outcomes: {
+          product: "pass",
+          evaluator: "fail",
+          infrastructure: "fail",
+        },
+        cost: {
+          workers: 0,
+          assistant_turns: 0,
+          total_bucket_tokens: 0,
+          cost_usd: 0.0,
+          tool_errors: 0,
+        },
       },
       findings: [],
       artifacts: [],
@@ -1859,10 +1924,19 @@ proc test_organization_audit_fails_delivery_event(ctx: TestContext) [fs, process
     {
       schema_version: 1,
       kind: "phase",
-      identity: {run_id: "01-ticket", mode: "ticket-implementation"},
+      identity: {
+        run_id: "01-ticket",
+        mode: "ticket-implementation",
+      },
       state: "completed",
       result: "pass",
-      data: {outcomes: {product: "pass", evaluator: "pass", infrastructure: "pass"}},
+      data: {
+        outcomes: {
+          product: "pass",
+          evaluator: "pass",
+          infrastructure: "pass",
+        },
+      },
       findings: [],
       artifacts: [],
     },
@@ -1896,10 +1970,19 @@ proc test_organization_audit_tolerates_retained_replay_defer(ctx: TestContext) [
   let passing_phase = {
     schema_version: 1,
     kind: "phase",
-    identity: {run_id: "phase", mode: "organization"},
+    identity: {
+      run_id: "phase",
+      mode: "organization",
+    },
     state: "completed",
     result: "pass",
-    data: {outcomes: {product: "pass", evaluator: "pass", infrastructure: "pass"}},
+    data: {
+      outcomes: {
+        product: "pass",
+        evaluator: "pass",
+        infrastructure: "pass",
+      },
+    },
     findings: [],
     artifacts: [],
   }
@@ -1909,10 +1992,19 @@ proc test_organization_audit_tolerates_retained_replay_defer(ctx: TestContext) [
     {
       schema_version: 1,
       kind: "phase",
-      identity: {run_id: "phase", mode: "eval"},
+      identity: {
+        run_id: "phase",
+        mode: "eval",
+      },
       state: "completed",
       result: "fail",
-      data: {outcomes: {product: "fail", evaluator: "fail", infrastructure: "fail"}},
+      data: {
+        outcomes: {
+          product: "fail",
+          evaluator: "fail",
+          infrastructure: "fail",
+        },
+      },
       findings: [],
       artifacts: [],
     },
@@ -2000,12 +2092,20 @@ proc test_adaptive_ticket_selection_prefers_fresh_rows(ctx: TestContext) [fs, pr
   test.ok(command_ok(git, ["git", "-C", product.display(), "init", "-q", "-b", "main"])?)?
   test.ok(command_ok(git, ["git", "-C", product.display(), "config", "user.email", "factory@test"])?)?
   test.ok(command_ok(git, ["git", "-C", product.display(), "config", "user.name", "Factory Test"])?)?
-  fs.write(fp"${product}/README", "base\n")?
+  fs.write(
+    fp"${product}/README",
+    """base
+""",
+  )?
   test.ok(command_ok(git, ["git", "-C", product.display(), "add", "README"])?)?
   test.ok(command_ok(git, ["git", "-C", product.display(), "commit", "-qm", "base"])?)?
   test.ok(command_ok(git, ["git", "-C", product.display(), "branch", "factory/task-a/1"])?)?
   test.ok(command_ok(git, ["git", "-C", product.display(), "checkout", "-q", "factory/task-a/1"])?)?
-  fs.write(fp"${product}/candidate", "retained\n")?
+  fs.write(
+    fp"${product}/candidate",
+    """retained
+""",
+  )?
   test.ok(command_ok(git, ["git", "-C", product.display(), "add", "candidate"])?)?
   test.ok(command_ok(git, ["git", "-C", product.display(), "commit", "-qm", "retained"])?)?
   test.ok(command_ok(git, ["git", "-C", product.display(), "checkout", "-q", "main"])?)?
@@ -2219,7 +2319,11 @@ proc test_organization_delivery_merges_exact_engineer_commit(ctx: TestContext) [
   test.ok(command_ok(git, ["git", "-C", product.display(), "init", "-q", "-b", "main"])?)?
   test.ok(command_ok(git, ["git", "-C", product.display(), "config", "user.email", "factory@test"])?)?
   test.ok(command_ok(git, ["git", "-C", product.display(), "config", "user.name", "Factory Test"])?)?
-  fs.write(fp"${product}/README", "base\n")?
+  fs.write(
+    fp"${product}/README",
+    """base
+""",
+  )?
   test.ok(command_ok(git, ["git", "-C", product.display(), "add", "README"])?)?
   test.ok(command_ok(git, ["git", "-C", product.display(), "commit", "-qm", "base"])?)?
   let base = run.text "git" "-C" $product "rev-parse" "HEAD" ?
@@ -2240,7 +2344,12 @@ proc test_organization_delivery_merges_exact_engineer_commit(ctx: TestContext) [
       ],
     )?,
   )?
-  fs.write(fp"${worktree}/README", "base\nengineer\n")?
+  fs.write(
+    fp"${worktree}/README",
+    """base
+engineer
+""",
+  )?
   test.ok(command_ok(git, ["git", "-C", worktree.display(), "add", "README"])?)?
   test.ok(command_ok(git, ["git", "-C", worktree.display(), "commit", "-qm", "engineer"])?)?
   let implementation = run.text "git" "-C" $worktree "rev-parse" "HEAD" ?
@@ -2283,7 +2392,11 @@ ${implementation.trim()}
       ],
     )?,
   )?
-  fs.write(fp"${second_worktree}/SECOND", "second\n")?
+  fs.write(
+    fp"${second_worktree}/SECOND",
+    """second
+""",
+  )?
   test.ok(command_ok(git, ["git", "-C", second_worktree.display(), "add", "SECOND"])?)?
   test.ok(command_ok(git, ["git", "-C", second_worktree.display(), "commit", "-qm", "second engineer"])?)?
   let second_implementation = run.text "git" "-C" $second_worktree "rev-parse" "HEAD" ?
@@ -2300,13 +2413,21 @@ ${second_implementation.trim()}
   )?
   let second_evidence = runtime.merge_validated_ticket(product, phase, "task-b", base.trim())?
   test.ok(second_evidence.merged, "a second admitted branch must also be delivered")?
-  test.ok(command_ok(git, ["git", "-C", product.display(), "merge-base", "--is-ancestor", implementation.trim(), "HEAD"])?)?
-  test.ok(command_ok(git, ["git", "-C", product.display(), "merge-base", "--is-ancestor", second_implementation.trim(), "HEAD"])?)?
+  test.ok(
+    command_ok(git, ["git", "-C", product.display(), "merge-base", "--is-ancestor", implementation.trim(), "HEAD"])?,
+  )?
+  test.ok(
+    command_ok(git, ["git", "-C", product.display(), "merge-base", "--is-ancestor", second_implementation.trim(), "HEAD"])?,
+  )?
   test.ok(command_ok(git, ["git", "-C", product.display(), "worktree", "remove", "-f", second_worktree.display()])?)?
 
   # A retained branch from the old cycle baseline must still be deliverable
   # after an unrelated product commit advanced the current cycle baseline.
-  fs.write(fp"${product}/CURRENT", "current\n")?
+  fs.write(
+    fp"${product}/CURRENT",
+    """current
+""",
+  )?
   test.ok(command_ok(git, ["git", "-C", product.display(), "add", "CURRENT"])?)?
   test.ok(command_ok(git, ["git", "-C", product.display(), "commit", "-qm", "current baseline"])?)?
   let current_base = run.text "git" "-C" $product "rev-parse" "HEAD" ?
@@ -2328,7 +2449,11 @@ ${second_implementation.trim()}
       ],
     )?,
   )?
-  fs.write(fp"${third_worktree}/THIRD", "third\n")?
+  fs.write(
+    fp"${third_worktree}/THIRD",
+    """third
+""",
+  )?
   test.ok(command_ok(git, ["git", "-C", third_worktree.display(), "add", "THIRD"])?)?
   test.ok(command_ok(git, ["git", "-C", third_worktree.display(), "commit", "-qm", "third engineer"])?)?
   let third_implementation = run.text "git" "-C" $third_worktree "rev-parse" "HEAD" ?
@@ -2344,7 +2469,9 @@ ${second_implementation.trim()}
   )?
   let third_evidence = runtime.merge_validated_ticket(product, phase, "task-c", current_base.trim())?
   test.ok(third_evidence.merged, "a retained branch must merge from a verified common ancestor")?
-  test.ok(command_ok(git, ["git", "-C", product.display(), "merge-base", "--is-ancestor", third_implementation.trim(), "HEAD"])?)?
+  test.ok(
+    command_ok(git, ["git", "-C", product.display(), "merge-base", "--is-ancestor", third_implementation.trim(), "HEAD"])?,
+  )?
   test.ok(command_ok(git, ["git", "-C", product.display(), "worktree", "remove", "-f", third_worktree.display()])?)?
 }
 
@@ -2688,7 +2815,7 @@ proc test_organization_starts_independent_eval_before_primary_wait() [fs, error]
   let before_independent_close = organization.split("var independent_eval_state").get(0, "")
   let after_independent_close = organization.split("var independent_eval_state").get(1, "")
   test.ok(
-    ! before_independent_close.contains("reconcile_tickets(factory_dir, xsh_repo, delivered_xsh_commit.trim())"),
+    "reconcile_tickets(factory_dir, xsh_repo, delivered_xsh_commit.trim())" not in before_independent_close,
     "ticket reconciliation must not race the independent manager snapshot",
   )?
   test.contains(
@@ -2719,7 +2846,11 @@ proc test_session_watch_idle_uses_epoch_milliseconds(ctx: TestContext) [fs, proc
   let root = test.temp_dir(ctx, name: "session-watch-idle")?
   let session = fp"${root}/session.jsonl"
   let marker = fp"${root}/SESSION-LIMIT"
-  fs.write(session, "{}\n")?
+  fs.write(
+    session,
+    """{}
+""",
+  )?
   let xsh = process.which("xsh")?
   let factory = fs.cwd()?
   let sleeper = spawn process.command_argv("sleep", ["sleep", "3"])?
@@ -2829,15 +2960,31 @@ proc test_eval_manager_assignment_proves_exact_handbook_read() [fs, error] {
   test.contains(assignment, "Candidate acceptance: fail.")?
   test.contains(assignment, "your next tool call MUST")?
   test.contains(assignment, "the complete first-read set")?
-  test.contains(assignment, "Do not read any\nworker report")?
-  test.contains(assignment, "After that\nfirst draft")?
+  test.contains(
+    assignment,
+    """Do not read any
+worker report""",
+  )?
+  test.contains(
+    assignment,
+    """After that
+first draft""",
+  )?
   test.contains(assignment, "Keep evidence ownership separate")?
   test.contains(assignment, "do not require the evaluator sandbox to duplicate")?
   test.contains(assignment, "exact artifact/review paths")?
   test.contains(assignment, "Do not guess an `artifacts/`")?
-  test.contains(role, "report-first throughput\ncontract")?
+  test.contains(
+    role,
+    """report-first throughput
+contract""",
+  )?
   test.contains(role, "the very next tool call MUST be")?
-  test.contains(role, "Do not read a worker\nreport")?
+  test.contains(
+    role,
+    """Do not read a worker
+report""",
+  )?
   test.contains(retry_template, "Do not read the original worker report")?
 }
 
@@ -2979,7 +3126,11 @@ proc test_task_histogram_restriction_accepts_typed_unsigned_parse() [fs, error] 
   test.contains(evaluator, "typed_integer_parse and \"sort-by\" in source")?
   test.contains(evaluator, "hidden_padded_width")?
   test.contains(evaluator, "sed 's/^[[:space:]]*//;s/[[:space:]]*$//'")?
-  test.contains(contract, "`parse_int` or\n`parse_uint`")?
+  test.contains(
+    contract,
+    """`parse_int` or
+`parse_uint`""",
+  )?
   test.contains(contract, "strict unsigned")?
   test.contains(contract, "surrounding-whitespace width")?
 }
@@ -3004,7 +3155,7 @@ proc test_task_pathparts_restriction_accepts_documented_typed_path_forms() [fs, 
 
 proc test_eval_staging_context_is_run_scoped() [fs, error] {
   let evaluator = fs.read_text(fp"${fs.cwd()?}/factory/controllers/eval.xsh")?
-  test.contains(evaluator, r"""let base_context = fp"${run_dir}/base-context""" )?
+  test.contains(evaluator, r"""let base_context = fp"${run_dir}/base-context""")?
   test.contains(evaluator, "base_context.display()")?
   test.contains(evaluator, "if shared_base_image_cache_hit")?
   test.contains(evaluator, "shared_base_image_cache_hit or")?
@@ -3423,7 +3574,11 @@ proc test_run_status_inspects_live_and_completed_evidence(ctx: TestContext) [fs,
       kind: "run",
       state: "completed",
       result: "pass",
-      data: {cost: {cost_usd: 0.12}},
+      data: {
+        cost: {
+          cost_usd: 0.12,
+        },
+      },
     },
     pretty: true,
   )?
@@ -3439,7 +3594,11 @@ proc test_run_status_inspects_live_and_completed_evidence(ctx: TestContext) [fs,
       kind: "worker",
       state: "completed",
       result: "pass",
-      usage: {assistant_turns: 7, cost_usd: 0.04, tool_errors: 1},
+      usage: {
+        assistant_turns: 7,
+        cost_usd: 0.04,
+        tool_errors: 1,
+      },
     },
     pretty: true,
   )?
@@ -3453,9 +3612,22 @@ proc test_run_status_inspects_live_and_completed_evidence(ctx: TestContext) [fs,
   let child = spawn process.command_argv("sh", ["sh", "-c", "sleep 10"])?
   let zombie = spawn process.command_argv("sh", ["sh", "-c", "exit 0"])?
   let _zombie_ready = process.wait_ready([zombie])?
-  fs.write(fp"${run_dir}/processes/controller.pids", f"${controller_pid}\n")?
-  fs.write(fp"${run_dir}/processes/phase-worker.pids", f"${controller_pid}\n${child.pid}\n")?
-  fs.write(fp"${run_dir}/processes/zombie.pids", f"${zombie.pid}\n")?
+  fs.write(
+    fp"${run_dir}/processes/controller.pids",
+    f"""${controller_pid}
+""",
+  )?
+  fs.write(
+    fp"${run_dir}/processes/phase-worker.pids",
+    f"""${controller_pid}
+${child.pid}
+""",
+  )?
+  fs.write(
+    fp"${run_dir}/processes/zombie.pids",
+    f"""${zombie.pid}
+""",
+  )?
   let output = fp"${root}/status.txt"
   let error_output = fp"${root}/status.err"
   let xsh = process.which("xsh")?
@@ -3484,13 +3656,17 @@ proc test_run_status_inspects_live_and_completed_evidence(ctx: TestContext) [fs,
   test.contains(report, f"processes/controller pid=${controller_pid}")?
   test.contains(report, f"processes/phase-worker pid=${controller_pid}")?
   test.contains(report, f"processes/phase-worker pid=${child.pid}")?
-  test.ok(! report.contains(f"processes/zombie pid=${zombie.pid}"), "run-status must exclude zombie process entries")?
+  test.ok(f"processes/zombie pid=${zombie.pid}" not in report, "run-status must exclude zombie process entries")?
   test.contains(report, "status=")?
   test.contains(report, "age=")?
   test.contains(report, "01-ticket completed pass")?
   test.contains(report, "engineer/task-a pass turns=7 cost=0.040000 errors=1")?
 
-  fs.write(fp"${run_dir}/processes/completed.pids", f"${controller_pid}\n")?
+  fs.write(
+    fp"${run_dir}/processes/completed.pids",
+    f"""${controller_pid}
+""",
+  )?
   runtime.unregister_process(run_dir, "completed")?
   test.ok(! fs.exists(fp"${run_dir}/processes/completed.pids")?, "completed process registrations must be removable")?
 
@@ -3541,11 +3717,26 @@ proc test_ticket_snapshot_rejects_existing_ticket_mutation(ctx: TestContext) [fs
   let root = test.temp_dir(ctx, name: "ticket-snapshot")?
   let tickets = fp"${root}/tickets"
   fs.mkdir(tickets)?
-  fs.write(fp"${tickets}/task-a.md", "## Status\nMerged.\n")?
+  fs.write(
+    fp"${tickets}/task-a.md",
+    """## Status
+Merged.
+""",
+  )?
   let snapshot = runtime.ticket_snapshot(root)?
-  fs.write(fp"${tickets}/task-a.md", "## Status\nOpen.\n")?
+  fs.write(
+    fp"${tickets}/task-a.md",
+    """## Status
+Open.
+""",
+  )?
   test.ok(! runtime.ticket_snapshot_unchanged(root, snapshot)?, "existing ticket mutation must fail closed")?
-  fs.write(fp"${tickets}/task-b.md", "## Status\nOpen.\n")?
+  fs.write(
+    fp"${tickets}/task-b.md",
+    """## Status
+Open.
+""",
+  )?
   let refreshed = runtime.ticket_snapshot(root)?
   test.ok(runtime.ticket_snapshot_unchanged(root, refreshed)?, "new ticket identities are allowed")?
 }

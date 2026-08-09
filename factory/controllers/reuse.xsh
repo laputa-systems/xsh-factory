@@ -120,6 +120,7 @@ proc main(...argv: List[Str]) [fs, process, env, error, io] {
     eprint "factory source changed before ticket reuse admission"
     abort(1)
   }
+
   let xsh_repo = env.path("FACTORY_XSH_REPO")?
   let ticket_id = env.get("FACTORY_TICKET_ID")?
   let branch = env.get("FACTORY_TICKET_BRANCH")?

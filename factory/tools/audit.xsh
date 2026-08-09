@@ -102,14 +102,16 @@ proc organization_throughput(run_dir: Path, worker_reports: List[Path]) [fs, err
           let subject = text(json.get(event, ["subject"], ""))
           let state = text(json.get(event, ["state"], ""))
           if event_id == "06-ticket-admitted" {
-            if !(subject in admitted_tickets) {
+            if ! (subject in admitted_tickets) {
               admitted_tickets = admitted_tickets.push(subject)
             }
+
             let fresh = boolean(json.get(event, ["payload", "fresh"], false))
-            if fresh and !(subject in fresh_admitted_tickets) {
+            if fresh and ! (subject in fresh_admitted_tickets) {
               fresh_admitted_tickets = fresh_admitted_tickets.push(subject)
             }
-            if ! fresh and !(subject in retained_admitted_tickets) {
+
+            if ! fresh and ! (subject in retained_admitted_tickets) {
               retained_admitted_tickets = retained_admitted_tickets.push(subject)
             }
           } else if event_id == "10-reeval-started" {
@@ -117,9 +119,10 @@ proc organization_throughput(run_dir: Path, worker_reports: List[Path]) [fs, err
           } else if event_id == "80-reeval-completed" and state == "completed" {
             reeval_passed += 1
           } else if event_id.starts_with("86-ticket-") {
-            if !(subject in admitted_tickets) {
+            if ! (subject in admitted_tickets) {
               admitted_tickets = admitted_tickets.push(subject)
             }
+
             if event_id.ends_with("-delivered") {
               delivered_tickets += 1
               let fresh = boolean(json.get(event, ["payload", "fresh"], false))
@@ -147,16 +150,16 @@ proc organization_throughput(run_dir: Path, worker_reports: List[Path]) [fs, err
       }
     }
   }
+
   var retained_fast_paths = 0
   for phase in retained_phases {
     let report = fp"${phase}/report.json"
-    if fs.exists(report)? { retained_fast_paths += 1 }
+    if fs.exists(report)? {
+      retained_fast_paths += 1
+    }
   }
-  let handbook_quarantines = [
-    entry
-    for entry in fs.files(run_dir, gitignore: false, hidden: true)?
-    if entry.name == "FACTORY-HANDBOOK-QUARANTINED"
-  ].len()
+
+  let handbook_quarantines = [entry for entry in fs.files(run_dir, gitignore: false, hidden: true)? if entry.name == "FACTORY-HANDBOOK-QUARANTINED"].len()
   let admitted_count = admitted_tickets.len()
   let fresh_target = if fresh_admitted_tickets.len() > 0 { 1 } else { 0 }
   let delivery_conversion = if admitted_count == 0 {
@@ -164,11 +167,7 @@ proc organization_throughput(run_dir: Path, worker_reports: List[Path]) [fs, err
   } else {
     delivered_tickets.float() / admitted_count.float()
   }
-  let fresh_engineer_rows = [
-    report
-    for report in worker_reports
-    if "/workers/engineer/" in report.display()
-  ].len()
+  let fresh_engineer_rows = [report for report in worker_reports if "/workers/engineer/" in report.display()].len()
   return {
     admitted_tickets: admitted_count,
     fresh_engineer_target: fresh_target,
@@ -210,6 +209,7 @@ pure detail_outcome(detail: Str, dimension: Str, fallback: Bool) -> Bool {
       return field.replace(prefix, "").trim() == "pass"
     }
   }
+
   fallback
 }
 
@@ -226,7 +226,7 @@ proc organization_retained_deferred_tickets(run_dir: Path) [fs, error] -> Result
         let event_id = text(json.get(event, ["event_id"], ""))
         if event_id.starts_with("86-ticket-") and event_id.ends_with("-retained-replay-deferred") {
           let subject = text(json.get(event, ["subject"], ""), "")
-          if subject != "" and !(subject in tickets) {
+          if subject != "" and ! (subject in tickets) {
             tickets = tickets.push(subject)
           }
         }
@@ -234,6 +234,7 @@ proc organization_retained_deferred_tickets(run_dir: Path) [fs, error] -> Result
       Err(_) => {}
     }
   }
+
   tickets
 }
 
@@ -260,6 +261,7 @@ proc organization_event_outcomes(
         if event_id.starts_with("86-ticket-") and event_id.ends_with("-delivery-failed") {
           delivery_failed = true
         }
+
         continue unless event_id == "90-cycle-completed" or event_id == "90-cycle-failed"
         let detail = text(json.get(event, ["detail"], ""), "")
         if detail != "" {
@@ -325,6 +327,7 @@ proc manifest_evidence(manifest_path: Path) [fs, error] -> Result[Any] {
   let correctness_passed = json.get(correctness, ["passed"], null)
   let correctness_all_exact = json.get(correctness, ["all_exact"], null)
   let correctness_exact = json.get(correctness, ["exact"], null)
+
   # Some package evaluators expose a per-case boolean map rather than an
   # aggregate field. Their terminal `result` is the aggregate contract; do
   # not mistake the absent `passed` key for a failed trial.
@@ -334,9 +337,9 @@ proc manifest_evidence(manifest_path: Path) [fs, error] -> Result[Any] {
       b is Bool => b,
       _ => match correctness_exact {
         b is Bool => b,
-        _ => result == "pass"
-      }
-    }
+        _ => result == "pass",
+      },
+    },
   }
   let restrictions_ok = boolean(json.get(restrictions, ["passed"], false))
   let timing_present = json.get(timings, ["passed"], null)
@@ -707,6 +710,7 @@ proc audit_organization(run_dir: Path, factory_dir: Path) [fs, process, env, err
           },
         )
       }
+
       if valid and ! retained_replay_deferred {
         product_ok = product_ok and phase_outcome(value, "product")
         evaluator_ok = evaluator_ok and phase_outcome(value, "evaluator")

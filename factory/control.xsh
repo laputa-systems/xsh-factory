@@ -15,7 +15,7 @@ export pure source_has_forbidden_subprocess(source: Str) -> Bool {
 }
 
 pure normalize_handbook_text(value: Str) -> Str {
-  return value.replace("’", "'").replace("‘", "'").trim()
+  return value.replace("\u{2019}", "'").replace("\u{2018}", "'").trim()
 }
 
 ## Compare handbook snapshots while ignoring only typographic apostrophes and
@@ -1198,17 +1198,12 @@ export pure manager_report_gate_ok(report: Str, worker_tool_errors: Bool, manage
 ## manager explicitly says was not exercised or needs another replay.
 export pure reeval_manager_acceptance_gate(report: Str) -> Bool {
   let lower = report.lower()
+
   # The manager owns the explanation, but delivery needs one exact decision
   # token. Fuzzy acceptance synonyms caused repeated false positives and
   # false negatives across otherwise valid replay reports.
-  let explicit_rejection = lower.contains("candidate acceptance: fail.") or lower.contains(
-    "decision: **needs-replay**",
-  ) or lower.contains("decision: needs-replay") or lower.contains("but needs-replay") or lower.contains(
-    "decision: **reject**",
-  ) or lower.contains("decision: reject") or lower.contains("acceptance was not exercised") or lower.contains(
-    "not supported",
-  ) or lower.contains("not accepted") or lower.contains("candidate re-evaluation rejected")
-  let explicit_acceptance = lower.contains("candidate acceptance: pass.")
+  let explicit_rejection = "candidate acceptance: fail." in lower or "decision: **needs-replay**" in lower or "decision: needs-replay" in lower or "but needs-replay" in lower or "decision: **reject**" in lower or "decision: reject" in lower or "acceptance was not exercised" in lower or "not supported" in lower or "not accepted" in lower or "candidate re-evaluation rejected" in lower
+  let explicit_acceptance = "candidate acceptance: pass." in lower
   return explicit_acceptance and ! explicit_rejection
 }
 

@@ -21,9 +21,11 @@ pure terminal_result(event_id: Str, fallback: Str) -> Str {
   if event_id == "90-cycle-completed" or event_id == "95-cycle-validated" {
     return "pass"
   }
+
   if event_id == "90-cycle-failed" {
     return "fail"
   }
+
   return fallback
 }
 
@@ -34,10 +36,12 @@ pure phase_id(path_value: Path) -> Str {
     if after_phases {
       return part
     }
+
     if part == "phases" {
       after_phases = true
     }
   }
+
   return "unknown"
 }
 
@@ -53,10 +57,12 @@ pure worker_identity(path_value: Path) -> Any {
         return {role: role, worker_id: part}
       }
     }
+
     if part == "workers" {
       after_workers = true
     }
   }
+
   return {role: role, worker_id: "unknown"}
 }
 
@@ -67,6 +73,7 @@ pure relative_path(run_dir: Path, path_value: Path) -> Str {
   if marker_at >= 0 {
     return path_text.byte_slice(marker_at + marker.byte_len(), path_text.byte_len() - marker_at - marker.byte_len())
   }
+
   return path_text.replace(f"${run_dir.display()}/", "")
 }
 
@@ -112,6 +119,7 @@ proc phase_rows(run_dir: Path) [fs, error] -> Result[List[Any]] {
       result: text(json.get(report, ["result"], "unknown")),
     })
   }
+
   rows |> sort-by .id
 }
 
@@ -134,11 +142,13 @@ proc worker_rows(run_dir: Path) [fs, error] -> Result[List[Any]] {
       tool_errors: integer(json.get(usage, ["tool_errors"], 0)),
     })
   }
+
   rows |> sort-by .path
 }
 
 proc active_processes(run_dir: Path) [fs, process, error] -> Result[List[Any]] {
   var rows: List[Any] = []
+
   # `process.list()` is a single-use live stream. Materialize one snapshot so
   # every registered PID is checked against the same process table.
   let processes = process.list()?.collect()
@@ -166,6 +176,7 @@ proc active_processes(run_dir: Path) [fs, process, error] -> Result[List[Any]] {
       }
     }
   }
+
   rows |> sort-by .label
 }
 
@@ -196,10 +207,11 @@ proc main(...argv: List[Str]) [fs, process, env, error, io] {
     }
   }
 
-  if run_dir == null or (format != "table" and format != "json") {
+  if run_dir == null or format != "table" and format != "json" {
     eprint "usage: run-status.xsh --run-dir PATH [--format table|json]"
     abort(2)
   }
+
   let selected = run_dir ?? fp"."
   if ! fs.exists(selected)? {
     eprint f"run directory does not exist: ${selected.display()}"
@@ -241,19 +253,35 @@ proc main(...argv: List[Str]) [fs, process, env, error, io] {
 
   print f"RUN ${run_id(selected)} STATE ${state} RESULT ${result}"
   print f"PATH ${selected.display()}"
-  print f"LAST ${text(json.get(latest, ["event_id"], "none"))} ${text(json.get(latest, ["state"], "unknown"))} ${text(json.get(latest, ["subject"], "unknown"))} ${text(json.get(latest, ["detail"], ""), "")}" 
+  print f"LAST ${text(json.get(latest, ["event_id"], "none"))} ${text(json.get(latest, ["state"], "unknown"))} ${text(
+    json.get(latest, ["subject"], "unknown"),
+  )} ${text(json.get(latest, ["detail"], ""), "")}"
   print f"QUEUE ${text(json.get(event_data, ["adaptive"], "not recorded"), "not recorded")}"
-  print f"BUDGET cost=${text(json.get(budget, ["observed_usd"], "not reported"))} breach=${text(json.get(budget, ["breach"], false))} stop=${text(json.get(budget, ["stop"], false))} postmortem=${text(json.get(budget, ["postmortem"], false))}"
+  print f"BUDGET cost=${text(json.get(budget, ["observed_usd"], "not reported"))} breach=${text(
+    json.get(budget, ["breach"], false),
+  )} stop=${text(json.get(budget, ["stop"], false))} postmortem=${text(json.get(budget, ["postmortem"], false))}"
   print f"ACTIVE ${active.len()}"
   for item in active {
-    print f"  ${text(json.get(item, ["label"], "unknown"))} pid=${text(json.get(item, ["pid"], "unknown"))} status=${text(json.get(item, ["status"], "unknown"))} age=${text(json.get(item, ["runtime_seconds"], "unknown"))}s command=${text(json.get(item, ["command"], "unknown"))}"
+    print f"  ${text(json.get(item, ["label"], "unknown"))} pid=${text(json.get(item, ["pid"], "unknown"))} status=${text(
+      json.get(item, ["status"], "unknown"),
+    )} age=${text(json.get(item, ["runtime_seconds"], "unknown"))}s command=${text(
+      json.get(item, ["command"], "unknown"),
+    )}"
   }
+
   print "PHASES"
   for phase in phases {
-    print f"  ${text(json.get(phase, ["id"], "unknown"))} ${text(json.get(phase, ["state"], "unknown"))} ${text(json.get(phase, ["result"], "unknown"))}"
+    print f"  ${text(json.get(phase, ["id"], "unknown"))} ${text(json.get(phase, ["state"], "unknown"))} ${text(
+      json.get(phase, ["result"], "unknown"),
+    )}"
   }
+
   print "WORKERS"
   for worker in workers {
-    print f"  ${text(json.get(worker, ["role"], "unknown"))}/${text(json.get(worker, ["worker_id"], "unknown"))} ${text(json.get(worker, ["result"], "unknown"))} turns=${text(json.get(worker, ["turns"], 0))} cost=${text(json.get(worker, ["cost_usd"], "unknown"))} errors=${text(json.get(worker, ["tool_errors"], 0))}"
+    print f"  ${text(json.get(worker, ["role"], "unknown"))}/${text(json.get(worker, ["worker_id"], "unknown"))} ${text(
+      json.get(worker, ["result"], "unknown"),
+    )} turns=${text(json.get(worker, ["turns"], 0))} cost=${text(json.get(worker, ["cost_usd"], "unknown"))} errors=${text(
+      json.get(worker, ["tool_errors"], 0),
+    )}"
   }
 }
