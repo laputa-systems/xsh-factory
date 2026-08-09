@@ -1,0 +1,310 @@
+{
+  "artifacts": [
+    {
+      "kind": "session-directory",
+      "path": "workers/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 47,
+      "budget_failures": 0,
+      "cost_usd": 0.020529684,
+      "tool_errors": 7,
+      "total_bucket_tokens": 780374.0,
+      "unknown_costs": 0,
+      "workers": 3
+    },
+    "designer": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786257836059/phases/03-supply-eval/workers/eval-designer/proposal-1/REPORT.md",
+      "present": false,
+      "result": "not-requested",
+      "role": "eval-designer",
+      "valid": true
+    },
+    "director": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786257836059/phases/03-supply-eval/workers/director/director/REPORT.md",
+      "present": false,
+      "result": "not-requested",
+      "role": "director",
+      "valid": true
+    },
+    "engineer": [],
+    "handbook_lineage": {
+      "approved": "lineage/handbook-approved.md",
+      "candidate": "lineage/handbook-candidate.md"
+    },
+    "manager": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786257836059/phases/03-supply-eval/workers/eval-manager/task-groupsum/REPORT.md",
+      "present": true,
+      "result": "not-ready",
+      "role": "eval-manager",
+      "valid": true
+    },
+    "mode": "eval",
+    "narratives": [
+      {
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786257836059/phases/03-supply-eval/workers/eval-manager/task-groupsum-retry-1/REPORT.md",
+        "present": true,
+        "result": "not-ready",
+        "role": "eval-manager",
+        "valid": true
+      },
+      {
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786257836059/phases/03-supply-eval/workers/eval-manager/task-groupsum/REPORT.md",
+        "present": true,
+        "result": "not-ready",
+        "role": "eval-manager",
+        "valid": true
+      }
+    ],
+    "open_tickets": [
+      {
+        "eval_id": "task-envcfg",
+        "id": "task-envcfg-009",
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/tickets/task-envcfg-009.md",
+        "status": "Approved."
+      }
+    ],
+    "outcomes": {
+      "cycle": "fail",
+      "evaluator": "pass",
+      "infrastructure": "fail",
+      "product": "pass"
+    },
+    "required_outputs": {
+      "audit": true,
+      "candidate_acceptance": true,
+      "candidate_handbook": true,
+      "designer_handbook_read": true,
+      "designer_output": true,
+      "handbook_lineage": true,
+      "manager_evidence_read": true,
+      "manager_handbook_read": true,
+      "manager_report": false,
+      "manager_session": true,
+      "required": false,
+      "ticket_snapshot_unchanged": true,
+      "trial1_process": true,
+      "trial1_report": true,
+      "trial2_process": true,
+      "trial2_report": true,
+      "worker_handbook_read": true
+    },
+    "sessions": [
+      "workers/eval-manager/task-groupsum-retry-1/session.jsonl.bz2",
+      "workers/eval-manager/task-groupsum/session.jsonl.bz2",
+      "workers/eval-worker/task-groupsum-1/session.jsonl.bz2"
+    ],
+    "tool_errors": [
+      {
+        "report": "workers/eval-worker/task-groupsum-1/report.json",
+        "summary": "err[check.display-conversion]: value cannot be displayed by print\n  /tmp/t2.xsh:5:19\n      print $s \"=>\" $r \"|\" $d\n                    ^^ value cannot be displayed by print\n\nerr[check.display-conversion]: value cannot be displayed by print\n  /tmp/t2.xsh:5:26\n      print $s \"=>\" $r \"|\" $d\n                           ^^ value cannot be displayed by print\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 12,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-groupsum-1"
+        }
+      },
+      {
+        "report": "workers/eval-worker/task-groupsum-1/report.json",
+        "summary": "err[check.pattern-constructor]: unknown constructor pattern\n  /tmp/t2.xsh:4:22\n    let s1 = match r { ok(n) => f\"ok=${n}\", err(e) => \"err\" }\n                       ^^^^^ unknown constructor pattern\n\nerr[check.pattern-constructor]: unknown constructor pattern\n  /tmp/t2.xsh:4:43\n    let s1 = match r { ok(n) => f\"ok=${n}\", err(e) => \"err\" }\n                                            ^^^^^^ unknown constructor pattern\n\nerr[check.pattern-constructor]: unknown constructor pattern\n  /tmp/t2.xsh:5:22\n    let s2 = match d { ok(n) => f\"ok=${n}\", err(e) => \"err\" }\n                       ^^^^^ unknown constructor pattern\n\nerr[check.pattern-constructor]: unknown constructor pattern\n  /tmp/t2.xsh:5:43\n    let s2 = match d { ok(n) => f\"ok=${n}\", err(e) => \"err\" }\n                                            ^^^^^^ unknown constructor pattern\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 13,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-groupsum-1"
+        }
+      },
+      {
+        "report": "workers/eval-worker/task-groupsum-1/report.json",
+        "summary": "42 => 42\n-3 => -3\n0 => 0\n007 => 7\n-007 => -7\n-0 => 0\n+5 => 5\nruntime traceback\nexecutable: /usr/local/bin/xsh\noperation: result.propagate\nerror: parse-int: invalid integer `12a`\ncall path:\n  1. proc main at /tmp/t2.xsh:1:1-1:1\n\n\nCommand exited with code 3",
+        "tool": "bash",
+        "turn": 14,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-groupsum-1"
+        }
+      },
+      {
+        "report": "workers/eval-worker/task-groupsum-1/report.json",
+        "summary": "query: search:starts\nstatus: matches\n\napi: language.cli.xshi\nkind: language\npurpose: Starts the interactive XSH-compatible session frontend.\n\napi: language.trace.script.enter\nkind: language\npurpose: Records entry into a script trace scope.\n---\napi: method.Str.contains\n---\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 16,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-groupsum-1"
+        }
+      },
+      {
+        "report": "workers/eval-worker/task-groupsum-1/report.json",
+        "summary": "err[parse.expected-expression]: expected expression\n  groupsum.xsh:9:37\n    if dashes > 1 or (dashes == 1 and not s.starts_with(\"-\")) {\n                                      ^^^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  groupsum.xsh:13:1\n  }\n  ^ expected expression\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 23,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-groupsum-1"
+        }
+      },
+      {
+        "report": "workers/eval-worker/task-groupsum-1/report.json",
+        "summary": "err[check.type-mismatch]: type mismatch\n  groupsum.xsh:26:29\n        let val = parse_value(fs2.get(1))\n                              ^^^^^^^^^^ expected Str, found Result[Str, Error]\n\nerr[check.type-mismatch]: type mismatch\n  groupsum.xsh:27:23\n        sums = sums.set(key, sums.get(key, 0) + val)\n                        ^^^ expected Str, found Result[Str, Error]\n\nerr[check.type-mismatch]: no standard API overload matches argument types\n  groupsum.xsh:27:28\n        sums = sums.set(key, sums.get(key, 0) + val)\n                             ^^^^^^^^^^^^^^^^ no standard API overload matches argument types\n\nerr[check.type-mismatch]: type mismatch\n  groupsum.xsh:27:37\n        sums = sums.set(key, sums.get(key, 0) + val)\n                                      ^^^ expected Str, found Result[Str, Error]\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 27,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-groupsum-1"
+        }
+      },
+      {
+        "report": "workers/eval-worker/task-groupsum-1/report.json",
+        "summary": "---fmt ok---\nwarn[lint.path-constructor]: prefer p-string interpolation over `Path(...)`\n  groupsum.xsh:17:27\n    let text = fs.read_text(Path(argv[0]))?\n                            ------------- use path string syntax instead\nnote: `Path(...)` remains a cast, but p-strings are the preferred path syntax\nhelp: replace with path string -> fp\"${argv[0]}\"\nwarn[lint.redundant-command-interpolation]: command args can use expression syntax directly\n  groupsum.xsh:36:14\n      print $k $sums.get(k, 0)\n               --------------- this interpolation is unnecessary\nhelp: use the expression directly -> sums.get(k, 0)\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 36,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-groupsum-1"
+        }
+      }
+    ],
+    "trials": [
+      {
+        "evidence": {
+          "candidate_sha256": "unknown",
+          "classification": "pass",
+          "correctness": "pass",
+          "eval_id": "task-groupsum",
+          "handbook_sha256": "unknown",
+          "oracle_sha256": "unknown",
+          "passed": true,
+          "protocol": "pass",
+          "restrictions": "pass",
+          "result": "pass",
+          "timing": "pass",
+          "trial_id": "1",
+          "valid": true
+        },
+        "path": "workers/eval-worker/task-groupsum-1/run.json"
+      }
+    ],
+    "workers": [
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-groupsum-retry-1"
+        },
+        "path": "workers/eval-manager/task-groupsum-retry-1/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 1,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.000041472,
+          "cache_read_tokens": 2304,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.000520542,
+          "input_cost_usd": 0.00042129,
+          "input_tokens": 4681,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00005778,
+          "output_tokens": 321,
+          "provider_total_tokens": 7306,
+          "reasoning_tokens": 15,
+          "thinking_blocks": 1,
+          "tool_calls": 5,
+          "tool_errors": 0,
+          "tool_results": 5,
+          "total_bucket_tokens": 7306,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-groupsum"
+        },
+        "path": "workers/eval-manager/task-groupsum/report.attempt-1.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 1,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0,
+          "cache_read_tokens": 0,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.00065061,
+          "input_cost_usd": 0.00058635,
+          "input_tokens": 6515,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00006426,
+          "output_tokens": 357,
+          "provider_total_tokens": 6872,
+          "reasoning_tokens": 42,
+          "thinking_blocks": 1,
+          "tool_calls": 5,
+          "tool_errors": 0,
+          "tool_results": 5,
+          "total_bucket_tokens": 6872,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-groupsum-1"
+        },
+        "path": "workers/eval-worker/task-groupsum-1/report.json",
+        "result": "pass",
+        "tool_errors": 7,
+        "usage": {
+          "assistant_turns": 45,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.012650112000000003,
+          "cache_read_tokens": 702784,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.019358532,
+          "input_cost_usd": 0.00470574,
+          "input_tokens": 52286,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00200268,
+          "output_tokens": 11126,
+          "provider_total_tokens": 766196,
+          "reasoning_tokens": 5195,
+          "thinking_blocks": 36,
+          "tool_calls": 55,
+          "tool_errors": 7,
+          "tool_results": 55,
+          "total_bucket_tokens": 766196,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "7b4bee1a1cef74fed832331cd6cc5bb6e324c4ee"
+  },
+  "findings": [
+    {
+      "kind": "required-outputs",
+      "state": "failed"
+    }
+  ],
+  "identity": {
+    "eval_id": "task-groupsum",
+    "mode": "eval",
+    "run_id": "03-supply-eval"
+  },
+  "kind": "phase",
+  "result": "fail",
+  "schema_version": 1,
+  "state": "completed"
+}

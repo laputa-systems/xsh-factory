@@ -1,0 +1,138 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786257836059/phases/02-reeval-task-envcfg-009/workers/eval-worker/task-envcfg-1/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_state": "pass",
+    "agent_wall_ms": 754054,
+    "artifact": {
+      "name": "envcfg.xsh",
+      "state": "present"
+    },
+    "budget_state": "pass",
+    "classification": "pass",
+    "evaluator_manifest": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786257836059/phases/02-reeval-task-envcfg-009/workers/eval-worker/task-envcfg-1/run.json",
+    "evaluator_state": "pass",
+    "reporting_state": "pass",
+    "result": "pass",
+    "review": {
+      "state": "present"
+    }
+  },
+  "findings": [
+    {
+      "count": 4,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "eval_id": "task-envcfg",
+    "role": "eval-worker",
+    "run_id": "02-reeval-task-envcfg-009",
+    "worker_id": "task-envcfg-1"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "provider_telemetry": {
+    "event_turns": 23,
+    "events_path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786257836059/phases/02-reeval-task-envcfg-009/workers/eval-worker/task-envcfg-1/session.jsonl.events.jsonl",
+    "output_tokens_per_second": 0,
+    "present": true,
+    "provider_errors": [],
+    "response_elapsed_ms": 0,
+    "retry_count": 0,
+    "retry_delay_ms": 0,
+    "retry_errors": [],
+    "retry_failures": 0,
+    "retry_successes": 0
+  },
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786257836059/phases/02-reeval-task-envcfg-009/workers/eval-worker/task-envcfg-1/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 22,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 752813
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786257836059/phases/02-reeval-task-envcfg-009/workers/eval-worker/task-envcfg-1/session.jsonl.bz2",
+      "summary": "query: search:Path.cast\nstatus: missing\n---\nquery: search:Str.to_path\nstatus: missing\n---\nxsht api: invalid API query 'api:language.core.path-literals'; expected NAME.MEMBER\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 4
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786257836059/phases/02-reeval-task-envcfg-009/workers/eval-worker/task-envcfg-1/session.jsonl.bz2",
+      "summary": "query: language:core.results\nstatus: exact\n\napi: language.core.results\nkind: language\npurpose: Defines Result values and error families.\ncontract: Expected host failures remain Result data until ? or another explicit boundary propagates them.\neffects: none\ntags: language, results\nexample:\n  let value = Ok(\"ready\")\n---ABORT---\nxsht api: invalid API query 'api:language.core.abort'; expected NAME.MEMBER\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 6
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786257836059/phases/02-reeval-task-envcfg-009/workers/eval-worker/task-envcfg-1/session.jsonl.bz2",
+      "summary": "err[check.effect-violation]: `?` requires the `error` effect\n  envcfg.xsh:3:14\n    let host = env.get_or(\"CFG_HOST\", \"localhost\")?\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `?` requires the `error` effect\n\nerr[check.effect-violation]: `?` requires the `error` effect\n  envcfg.xsh:4:14\n    let port = env.get_or(\"CFG_PORT\", \"8080\")?\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `?` requires the `error` effect\n\nerr[check.effect-violation]: `?` requires the `error` effect\n  envcfg.xsh:5:13\n    let dbg = env.get_or(\"CFG_DEBUG\", \"false\")?\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `?` requires the `error` effect\n\nerr[check.effect-violation]: `?` requires the `error` effect\n  envcfg.xsh:10:3\n    fs.write(out, content)?\n    ^^^^^^^^^^^^^^^^^^^^^^^ `?` requires the `error` effect\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 9
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786257836059/phases/02-reeval-task-envcfg-009/workers/eval-worker/task-envcfg-1/session.jsonl.bz2",
+      "summary": "=== defaults ===\nenv: can't execute 'xsh': No such file or directory\nexit=127\n--- file ---\ncat: can't open '/tmp/out.cfg': No such file or directory\n=== all set ===\nenv: can't execute 'xsh': No such file or directory\nexit=127\n--- file ---\ncat: can't open '/tmp/out.cfg': No such file or directory\n=== empty host/debug, absent port ===\nenv: can't execute 'xsh': No such file or directory\nexit=127\n--- file ---\ncat: can't open '/tmp/out.cfg': No such file or directory\n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 14
+    }
+  ],
+  "tools": [
+    {
+      "count": 17,
+      "name": "bash"
+    },
+    {
+      "count": 2,
+      "name": "edit"
+    },
+    {
+      "count": 3,
+      "name": "read"
+    },
+    {
+      "count": 2,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 23,
+    "budget_usd": 0.5,
+    "cache_read_cost_usd": 0.005438591999999999,
+    "cache_read_tokens": 302144,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.014862312,
+    "input_cost_usd": 0.007954199999999998,
+    "input_tokens": 88380,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.00146952,
+    "output_tokens": 8164,
+    "provider_total_tokens": 398688,
+    "reasoning_tokens": 4151,
+    "thinking_blocks": 17,
+    "tool_calls": 24,
+    "tool_errors": 4,
+    "tool_results": 24,
+    "total_bucket_tokens": 398688,
+    "user_messages": 1
+  }
+}

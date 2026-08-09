@@ -1,0 +1,182 @@
+diff --git a/crates/xsh-registry/src/signature/docs.rs b/crates/xsh-registry/src/signature/docs.rs
+index 31e0da6..34c0a2b 100644
+--- a/crates/xsh-registry/src/signature/docs.rs
++++ b/crates/xsh-registry/src/signature/docs.rs
+@@ -111,6 +111,10 @@ fn module_docs(module: &str) -> ApiDocs {
+             "Environment variable and PATH manipulation.",
+             "Environment changes are explicit values or lexical overlays.",
+         ),
++        "error" => (
++            "Expected validation failure construction.",
++            "error.fail returns validation Result data; propagating it requires the enclosing error effect.",
++        ),
+         "fs" => (
+             "Filesystem reads, writes, metadata, links, permissions, locking, and installation.",
+             "Filesystem APIs use typed Path values and return structured records at metadata boundaries.",
+@@ -502,6 +506,11 @@ fn function_doc(module: &str, function: &str) -> Option<DocRow> {
+             "Malformed files return structured errors; the parser does not execute or load the inspected object.",
+             &["elf", "binary", "inspection"],
+         )),
++        ("error", "fail") => Some((
++            "Constructs an expected validation failure as Result data.",
++            "error.fail(message) returns Result[Unit, Error] with kind validation; propagating it requires the enclosing error effect.",
++            &["error", "validation", "failure", "result"],
++        )),
+         ("env", "get") => Some((
+             "Reads one environment variable as text.",
+             "Missing variables and invalid host bytes remain distinguishable results.",
+diff --git a/crates/xsh-registry/src/signature/modules.rs b/crates/xsh-registry/src/signature/modules.rs
+index c968e12..0131417 100644
+--- a/crates/xsh-registry/src/signature/modules.rs
++++ b/crates/xsh-registry/src/signature/modules.rs
+@@ -62,6 +62,10 @@ pub(in crate::signature) fn build_api_spec() -> ApiSpec {
+                 name: "env",
+                 sig: env_module(),
+             },
++            ModuleEntry {
++                name: "error",
++                sig: error_module(),
++            },
+             ModuleEntry {
+                 name: "fs",
+                 sig: fs_module(),
+@@ -167,6 +171,20 @@ pub(in crate::signature) fn build_api_spec() -> ApiSpec {
+         value_methods(),
+     )
+ }
++fn error_module() -> ModuleSig {
++    module_sig(vec![
++        (
++            "fail",
++            sig(
++                vec![param("message", Type::Str)],
++                result(Type::Unit),
++                false,
++                RuntimeOp::ResultContext,
++            ),
++        ),
++    ])
++}
++
+ fn applet_user_type() -> Type {
+     Type::Record(btree_map(vec![
+         ("name".to_string(), Type::Str),
+diff --git a/crates/xsht/tests/api.rs b/crates/xsht/tests/api.rs
+index 162014e..10f34b4 100644
+--- a/crates/xsht/tests/api.rs
++++ b/crates/xsht/tests/api.rs
+@@ -112,6 +112,26 @@ fn api_module_query_lists_the_module_and_its_members() {
+     assert_eq!(String::from_utf8(output.stderr).unwrap(), "");
+ }
+ 
++#[test]
++fn api_error_fail_is_exactly_registered_and_searchable() {
++    let output = xsht(&["api", "api:error.fail"]);
++
++    assert!(output.status.success());
++    let stdout = String::from_utf8(output.stdout).expect("utf8 stdout");
++    assert!(stdout.contains("status: exact"), "{stdout}");
++    assert!(stdout.contains("api: module.error.fail"), "{stdout}");
++    assert!(stdout.contains("error.fail"), "{stdout}");
++    assert!(stdout.contains("validation"), "{stdout}");
++    assert!(stdout.contains("error effect"), "{stdout}");
++
++    let output = xsht(&["api", "search:fail"]);
++    assert!(output.status.success());
++    let stdout = String::from_utf8(output.stdout).expect("utf8 stdout");
++    assert!(stdout.contains("api: module.error.fail"), "{stdout}");
++    assert!(stdout.contains("status: matches"), "{stdout}");
++    assert_eq!(String::from_utf8(output.stderr).unwrap(), "");
++}
++
+ #[test]
+ fn api_exact_item_explains_effects_and_contract() {
+     let output = xsht(&["api", "api:fs.read_text"]);
+diff --git a/docs/SPEC.md b/docs/SPEC.md
+index 8315de5..692007b 100644
+--- a/docs/SPEC.md
++++ b/docs/SPEC.md
+@@ -302,6 +302,12 @@ such as `path`.
+ ordinary bindings named `args` are allowed in nested scopes; the root binding
+ remains the script argument value. Qualified `cli.parse(...)` still resolves to
+ the standard module.
++`error` is another compatibility exception: `error` is the conventional payload
++name in `Err(error)` bindings, and the `error.fail(...)` validation operation is
++addressed through its qualified module name. Local bindings named `error` are
++therefore legal in all ordinary binding positions; an unshadowed `error.fail`
++call continues to resolve to the standard module and requires the `error` effect.
++Other standard module names remain reserved.
+ 
+ Command and proc identifiers additionally allow `-` after the first character:
+ 
+diff --git a/src/sema/check.rs b/src/sema/check.rs
+index c95b07e..b4e45bb 100644
+--- a/src/sema/check.rs
++++ b/src/sema/check.rs
+@@ -618,7 +618,7 @@ impl Checker {
+             }
+             return;
+         }
+-        if api_spec().is_standard_module(name) {
++        if name != "error" && api_spec().is_standard_module(name) {
+             let message = format!("name `{name}` shadows the standard module `{name}`");
+             self.error(span, &message, "check.standard-module-shadow");
+         }
+diff --git a/src/sema/check/compact.rs b/src/sema/check/compact.rs
+index cce9eb5..cabb804 100644
+--- a/src/sema/check/compact.rs
++++ b/src/sema/check/compact.rs
+@@ -466,7 +466,7 @@ impl CompactDeclCollector {
+         if name == "args" {
+             return;
+         }
+-        if api_spec().is_standard_module(name) {
++        if name != "error" && api_spec().is_standard_module(name) {
+             let message = format!("name `{name}` shadows the standard module `{name}`");
+             self.error(span, &message, "check.standard-module-shadow");
+         }
+diff --git a/src/syntax/node.rs b/src/syntax/node.rs
+index e039f20..31e3891 100644
+--- a/src/syntax/node.rs
++++ b/src/syntax/node.rs
+@@ -47,6 +47,7 @@ impl Effect {
+             },
+             "net" | "dns" => Some(Self::Net),
+             "env" => Some(Self::Env),
++            "error" => Some(Self::Error),
+             "time" => match function {
+                 // Pure Duration constructors: no clock access, usable anywhere.
+                 "millis" | "seconds" => None,
+diff --git a/tests/sema.rs b/tests/sema.rs
+index 01cc4da..4cfb4b1 100644
+--- a/tests/sema.rs
++++ b/tests/sema.rs
+@@ -256,6 +256,28 @@ let text = path.read_text()?
+     assert_no_codes(&output, &["check.unknown-module-api"]);
+ }
+ 
++#[test]
++fn checker_accepts_error_bindings_and_preserves_error_fail_effect() {
++    let bindings = check(
++        r#"
++proc keep_error() { let error = "missing value" }
++"#,
++    );
++    assert_no_codes(&bindings, &["check.standard-module-shadow"]);
++
++    let call = check(
++        r#"
++proc validate() [error] -> Result[Unit] {
++  return error.fail("missing value")?
++}
++"#,
++    );
++    assert_no_codes(
++        &call,
++        &["check.standard-module-shadow", "check.effect-violation", "check.type-mismatch"],
++    );
++}
++
+ #[test]
+ fn checker_rejects_standard_module_shadowing() {
+     for source in [

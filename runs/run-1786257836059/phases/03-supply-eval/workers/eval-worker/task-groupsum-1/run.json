@@ -1,0 +1,97 @@
+{
+  "classification": "pass",
+  "correctness": {
+    "all_exact": true,
+    "cases": [
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 12033619,
+        "exact": true,
+        "name": "public",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 12456119
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 12256119,
+        "exact": true,
+        "name": "hidden_accumulate",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 12354578
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 11682701,
+        "exact": true,
+        "name": "hidden_order",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 13392122
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 15132086,
+        "exact": true,
+        "name": "hidden_many",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 12694537
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 12367203,
+        "exact": true,
+        "name": "hidden_blank",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 13636498
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 15361586,
+        "exact": true,
+        "name": "hidden_empty",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 12706079
+      },
+      {
+        "candidate_exit": 3,
+        "candidate_wall_ns": 11830660,
+        "exact": true,
+        "name": "hidden_bad_fields",
+        "oracle_exit": 1,
+        "oracle_wall_ns": 11396450
+      },
+      {
+        "candidate_exit": 3,
+        "candidate_wall_ns": 14269833,
+        "exact": true,
+        "name": "hidden_bad_value",
+        "oracle_exit": 1,
+        "oracle_wall_ns": 12312953
+      },
+      {
+        "candidate_exit": 3,
+        "candidate_wall_ns": 12256952,
+        "exact": true,
+        "name": "hidden_missing",
+        "oracle_exit": 1,
+        "oracle_wall_ns": 12687787
+      }
+    ],
+    "passed": true
+  },
+  "eval_id": "task-groupsum",
+  "image_id": "sha256:47fb9d0ed35829c6a8e3463a21d33749284e98ba2a407f24506cd984c5e9eb3c",
+  "platform": "linux/arm64",
+  "protocol": {
+    "artifact_present": true,
+    "review_ok": true
+  },
+  "restrictions": {
+    "passed": true,
+    "reads_text": true
+  },
+  "result": "pass",
+  "timings": {
+    "passed": true
+  },
+  "trial_id": "1"
+}

@@ -82,7 +82,9 @@ assignment, never as new engineer work. Record the decision and evidence in
 Use this bounded evidence order, which is also the report-first throughput
 contract. First read exactly the five admission files named by the assignment:
 the supplied handbook snapshot, `NORTH-STAR.md`, `roles/pi-session-briefing.md`,
-the eval `EVAL.md`, and the current phase `report.json`. Do not read a worker
+the eval `EVAL.md`, and the current phase `report.json`.
+Make those reads one at a time, in the assignment's listed order; never batch or parallelize them.
+Wait for each result before the next read. Do not read a worker
 report, evaluator manifest, manager skeleton, artifact, or raw session before
 the first draft. After those five tool results, the very next tool call MUST be
 one `write` or `edit` that replaces the staged `REPORT.md` with a complete

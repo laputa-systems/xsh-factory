@@ -3074,6 +3074,7 @@ proc test_eval_manager_assignment_proves_exact_handbook_read() [fs, error] {
   test.contains(assignment, "Candidate acceptance: fail.")?
   test.contains(assignment, "your next tool call MUST")?
   test.contains(assignment, "the complete first-read set")?
+  test.contains(assignment, "one at a time, in the listed order; never batch or parallelize")?
   test.contains(
     assignment,
     """Do not read any
@@ -3099,7 +3100,9 @@ contract""",
     """Do not read a worker
 report""",
   )?
+  test.contains(role, "one at a time, in the assignment's listed order; never batch or parallelize")?
   test.contains(retry_template, "Do not read the original worker report")?
+  test.contains(retry_template, "one at a time, in that order; never batch or parallelize")?
 }
 
 proc test_organization_delivery_is_a_success_gate() [fs, error] {

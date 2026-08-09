@@ -1,0 +1,156 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786257836059/phases/03-supply-eval/workers/eval-worker/task-groupsum-1/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_state": "pass",
+    "agent_wall_ms": 881580,
+    "artifact": {
+      "name": "groupsum.xsh",
+      "state": "present"
+    },
+    "budget_state": "pass",
+    "classification": "pass",
+    "evaluator_manifest": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786257836059/phases/03-supply-eval/workers/eval-worker/task-groupsum-1/run.json",
+    "evaluator_state": "pass",
+    "reporting_state": "pass",
+    "result": "pass",
+    "review": {
+      "state": "present"
+    }
+  },
+  "findings": [
+    {
+      "count": 7,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "eval_id": "task-groupsum",
+    "role": "eval-worker",
+    "run_id": "03-supply-eval",
+    "worker_id": "task-groupsum-1"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "provider_telemetry": {
+    "event_turns": 45,
+    "events_path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786257836059/phases/03-supply-eval/workers/eval-worker/task-groupsum-1/session.jsonl.events.jsonl",
+    "output_tokens_per_second": 0,
+    "present": true,
+    "provider_errors": [],
+    "response_elapsed_ms": 0,
+    "retry_count": 0,
+    "retry_delay_ms": 0,
+    "retry_errors": [],
+    "retry_failures": 0,
+    "retry_successes": 0
+  },
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786257836059/phases/03-supply-eval/workers/eval-worker/task-groupsum-1/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 44,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 880198
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786257836059/phases/03-supply-eval/workers/eval-worker/task-groupsum-1/session.jsonl.bz2",
+      "summary": "err[check.display-conversion]: value cannot be displayed by print\n  /tmp/t2.xsh:5:19\n      print $s \"=>\" $r \"|\" $d\n                    ^^ value cannot be displayed by print\n\nerr[check.display-conversion]: value cannot be displayed by print\n  /tmp/t2.xsh:5:26\n      print $s \"=>\" $r \"|\" $d\n                           ^^ value cannot be displayed by print\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 12
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786257836059/phases/03-supply-eval/workers/eval-worker/task-groupsum-1/session.jsonl.bz2",
+      "summary": "err[check.pattern-constructor]: unknown constructor pattern\n  /tmp/t2.xsh:4:22\n    let s1 = match r { ok(n) => f\"ok=${n}\", err(e) => \"err\" }\n                       ^^^^^ unknown constructor pattern\n\nerr[check.pattern-constructor]: unknown constructor pattern\n  /tmp/t2.xsh:4:43\n    let s1 = match r { ok(n) => f\"ok=${n}\", err(e) => \"err\" }\n                                            ^^^^^^ unknown constructor pattern\n\nerr[check.pattern-constructor]: unknown constructor pattern\n  /tmp/t2.xsh:5:22\n    let s2 = match d { ok(n) => f\"ok=${n}\", err(e) => \"err\" }\n                       ^^^^^ unknown constructor pattern\n\nerr[check.pattern-constructor]: unknown constructor pattern\n  /tmp/t2.xsh:5:43\n    let s2 = match d { ok(n) => f\"ok=${n}\", err(e) => \"err\" }\n                                            ^^^^^^ unknown constructor pattern\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 13
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786257836059/phases/03-supply-eval/workers/eval-worker/task-groupsum-1/session.jsonl.bz2",
+      "summary": "42 => 42\n-3 => -3\n0 => 0\n007 => 7\n-007 => -7\n-0 => 0\n+5 => 5\nruntime traceback\nexecutable: /usr/local/bin/xsh\noperation: result.propagate\nerror: parse-int: invalid integer `12a`\ncall path:\n  1. proc main at /tmp/t2.xsh:1:1-1:1\n\n\nCommand exited with code 3",
+      "tool": "bash",
+      "turn": 14
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786257836059/phases/03-supply-eval/workers/eval-worker/task-groupsum-1/session.jsonl.bz2",
+      "summary": "query: search:starts\nstatus: matches\n\napi: language.cli.xshi\nkind: language\npurpose: Starts the interactive XSH-compatible session frontend.\n\napi: language.trace.script.enter\nkind: language\npurpose: Records entry into a script trace scope.\n---\napi: method.Str.contains\n---\n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 16
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786257836059/phases/03-supply-eval/workers/eval-worker/task-groupsum-1/session.jsonl.bz2",
+      "summary": "err[parse.expected-expression]: expected expression\n  groupsum.xsh:9:37\n    if dashes > 1 or (dashes == 1 and not s.starts_with(\"-\")) {\n                                      ^^^ expected expression\n\nerr[parse.expected-expression]: expected expression\n  groupsum.xsh:13:1\n  }\n  ^ expected expression\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 23
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786257836059/phases/03-supply-eval/workers/eval-worker/task-groupsum-1/session.jsonl.bz2",
+      "summary": "err[check.type-mismatch]: type mismatch\n  groupsum.xsh:26:29\n        let val = parse_value(fs2.get(1))\n                              ^^^^^^^^^^ expected Str, found Result[Str, Error]\n\nerr[check.type-mismatch]: type mismatch\n  groupsum.xsh:27:23\n        sums = sums.set(key, sums.get(key, 0) + val)\n                        ^^^ expected Str, found Result[Str, Error]\n\nerr[check.type-mismatch]: no standard API overload matches argument types\n  groupsum.xsh:27:28\n        sums = sums.set(key, sums.get(key, 0) + val)\n                             ^^^^^^^^^^^^^^^^ no standard API overload matches argument types\n\nerr[check.type-mismatch]: type mismatch\n  groupsum.xsh:27:37\n        sums = sums.set(key, sums.get(key, 0) + val)\n                                      ^^^ expected Str, found Result[Str, Error]\n\n\nCommand exited with code 2",
+      "tool": "bash",
+      "turn": 27
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786257836059/phases/03-supply-eval/workers/eval-worker/task-groupsum-1/session.jsonl.bz2",
+      "summary": "---fmt ok---\nwarn[lint.path-constructor]: prefer p-string interpolation over `Path(...)`\n  groupsum.xsh:17:27\n    let text = fs.read_text(Path(argv[0]))?\n                            ------------- use path string syntax instead\nnote: `Path(...)` remains a cast, but p-strings are the preferred path syntax\nhelp: replace with path string -> fp\"${argv[0]}\"\nwarn[lint.redundant-command-interpolation]: command args can use expression syntax directly\n  groupsum.xsh:36:14\n      print $k $sums.get(k, 0)\n               --------------- this interpolation is unnecessary\nhelp: use the expression directly -> sums.get(k, 0)\n\n\nCommand exited with code 1",
+      "tool": "bash",
+      "turn": 36
+    }
+  ],
+  "tools": [
+    {
+      "count": 47,
+      "name": "bash"
+    },
+    {
+      "count": 4,
+      "name": "edit"
+    },
+    {
+      "count": 3,
+      "name": "read"
+    },
+    {
+      "count": 1,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 45,
+    "budget_usd": 0.5,
+    "cache_read_cost_usd": 0.012650112000000003,
+    "cache_read_tokens": 702784,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.019358532,
+    "input_cost_usd": 0.00470574,
+    "input_tokens": 52286,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.00200268,
+    "output_tokens": 11126,
+    "provider_total_tokens": 766196,
+    "reasoning_tokens": 5195,
+    "thinking_blocks": 36,
+    "tool_calls": 55,
+    "tool_errors": 7,
+    "tool_results": 55,
+    "total_bucket_tokens": 766196,
+    "user_messages": 1
+  }
+}

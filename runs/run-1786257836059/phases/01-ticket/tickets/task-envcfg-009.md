@@ -2,7 +2,7 @@
 
 ## Status
 
-Merged.
+Approved.
 
 ## Change target
 
@@ -32,10 +32,10 @@ None.
 
 ## Merge record
 
-- Implementation branch: `factory/task-envcfg-009/1786257843378`
-- Implementation commit: `04fb98f8c63b63cccffce7ef2c3cabde81bb05ba`
-- Detected at XSH commit: `04fb98f8c63b63cccffce7ef2c3cabde81bb05ba`
-- Implementation run: `/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786257836059/phases/01-ticket`
+- Implementation branch: `{{IMPLEMENTATION_BRANCH}}`
+- Implementation commit: `{{IMPLEMENTATION_COMMIT}}`
+- Detected at XSH commit: `7b4bee1a1cef74fed832331cd6cc5bb6e324c4ee`
+- Implementation run: `{{IMPLEMENTATION_RUN}}`
 
 ## Source eval and manager
 

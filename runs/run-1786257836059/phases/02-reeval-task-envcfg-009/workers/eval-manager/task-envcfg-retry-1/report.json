@@ -1,0 +1,105 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786257836059/phases/02-reeval-task-envcfg-009/workers/eval-manager/task-envcfg-retry-1/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_process": "nonzero-exit",
+    "dispatch_claim": "03caf655d70eb41f56548b2a9e8fad509d6531c2ac74cb1f8ba90d49a6aceee5",
+    "dispatch_id": "eval-manager-task-envcfg-retry-1",
+    "factory_source": "unchanged",
+    "message_sha256": "03caf655d70eb41f56548b2a9e8fad509d6531c2ac74cb1f8ba90d49a6aceee5",
+    "reporting": "pass",
+    "required_report": "present",
+    "session_limit_watcher": "failed",
+    "system_prompt_sha256": "75e4263ca5275326232c179c9d6a014cbde42112245afcf635d4f417cc187174",
+    "watcher": "pass"
+  },
+  "findings": [
+    {
+      "count": 1,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "role": "eval-manager",
+    "worker_id": "task-envcfg-retry-1"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "provider_telemetry": {
+    "event_turns": 8,
+    "events_path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786257836059/phases/02-reeval-task-envcfg-009/workers/eval-manager/task-envcfg-retry-1/session.jsonl.events.jsonl",
+    "output_tokens_per_second": 0,
+    "present": true,
+    "provider_errors": [],
+    "response_elapsed_ms": 0,
+    "retry_count": 0,
+    "retry_delay_ms": 0,
+    "retry_errors": [],
+    "retry_failures": 0,
+    "retry_successes": 0
+  },
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786257836059/phases/02-reeval-task-envcfg-009/workers/eval-manager/task-envcfg-retry-1/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 8,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 176316
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786257836059/phases/02-reeval-task-envcfg-009/workers/eval-manager/task-envcfg-retry-1/session.jsonl.bz2",
+      "summary": "Could not find edits[2] in /Users/josh/d/laputa-systems/xsh-factory/runs/run-1786257836059/phases/02-reeval-task-envcfg-009/workers/eval-manager/task-envcfg-retry-1/REPORT.md. The oldText must match exactly including all whitespace and newlines.",
+      "tool": "edit",
+      "turn": 4
+    }
+  ],
+  "tools": [
+    {
+      "count": 2,
+      "name": "edit"
+    },
+    {
+      "count": 10,
+      "name": "read"
+    },
+    {
+      "count": 2,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 8,
+    "budget_usd": 0.15,
+    "cache_read_cost_usd": 0.002595456,
+    "cache_read_tokens": 144192,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.007409646000000001,
+    "input_cost_usd": 0.00322263,
+    "input_tokens": 35807,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.00159156,
+    "output_tokens": 8842,
+    "provider_total_tokens": 188841,
+    "reasoning_tokens": 1757,
+    "thinking_blocks": 7,
+    "tool_calls": 14,
+    "tool_errors": 1,
+    "tool_results": 14,
+    "total_bucket_tokens": 188841,
+    "user_messages": 1
+  }
+}

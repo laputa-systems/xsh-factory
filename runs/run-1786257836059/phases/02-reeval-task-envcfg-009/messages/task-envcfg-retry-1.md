@@ -1,4 +1,34 @@
-# Eval-manager assignment: `{{EVAL_ID}}`
+# Eval-manager bounded retry
+
+This is the final bounded retry for the eval-manager report. The prior attempt
+did not produce a contract-complete narrative. Recover the existing evidence;
+do not rerun the executor, broaden discovery, or inspect historical runs.
+
+The role and immutable assignment still require exactly five first reads: the
+supplied handbook snapshot, `NORTH-STAR.md`, `roles/pi-session-briefing.md`,
+the eval's `EVAL.md`, and the current structured phase report below. Complete
+that set first. Do not read the original worker report. Do not read the staged report, evaluator manifest, artifact, or raw session before drafting. Your next
+tool call after those five reads MUST use `write` or `edit` to replace every
+skeleton placeholder at the staged report path below. Finish the report before
+any optional investigation, raw session read, or artifact probe. A valid closeout
+has `## Result` set to `pass` or `fail`, all required headings populated, no
+`not-ready` result, and no `Fill from` or `Fill every` placeholder text.
+
+- Phase report: `/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786257836059/phases/02-reeval-task-envcfg-009/report.json`
+- Staged retry report: `/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786257836059/phases/02-reeval-task-envcfg-009/workers/eval-manager/task-envcfg-retry-1/REPORT.md`
+
+For a candidate-linked replay, state one explicit acceptance decision grounded
+in whether the worker exercised the proposed candidate surface. If accepted,
+include the exact sentence `Candidate acceptance: pass.` If not accepted,
+include `Candidate acceptance: fail.` Do not leave that decision implicit.
+
+Keep the report concise and evidence-backed. If a value is absent from the
+structured packet, write `unknown` or `None.` and continue. The retry budget is
+for completing the report, not for re-reading raw sessions after the
+structured evidence is already sufficient.
+
+
+# Eval-manager assignment: `task-envcfg`
 
 Throughput bound: use the structured evidence packet and complete the staged
 report promptly. Do not spend a turn rediscovering controller state or reading
@@ -8,23 +38,21 @@ tools for the bounded evidence review and report, not shell discovery.
 
 Use the `read` tool, not `bash`, `cat`, or `grep`, for the required reads below.
 Before any other investigation, make an exact `read` tool call for
-`{{RUN_DIR}}/lineage/handbook-approved.md`; the controller proves this exact
+`/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786257836059/phases/02-reeval-task-envcfg-009/lineage/handbook-approved.md`; the controller proves this exact
 call as part of the manager admission contract.
 
-Read `{{FACTORY_DIR}}/NORTH-STAR.md`, `{{FACTORY_DIR}}/roles/pi-session-briefing.md`,
-`{{EVAL_DIR}}/EVAL.md`, and `{{RUN_DIR}}/report.json` first. These four files
+Read `/Users/josh/d/laputa-systems/xsh-factory/NORTH-STAR.md`, `/Users/josh/d/laputa-systems/xsh-factory/roles/pi-session-briefing.md`,
+`/Users/josh/d/laputa-systems/xsh-factory/evals/task-envcfg/EVAL.md`, and `/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786257836059/phases/02-reeval-task-envcfg-009/report.json` first. These four files
 plus the exact handbook snapshot are the complete first-read set.
-Make the five reads one at a time, in the listed order; never batch or parallelize them.
-Wait for each result before making the next required read.
-Use the exact absolute path `{{RUN_DIR}}/lineage/handbook-approved.md` as the
+Use the exact absolute path `/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786257836059/phases/02-reeval-task-envcfg-009/lineage/handbook-approved.md` as the
 handbook snapshot under review; do not substitute a different handbook path or
 construct a relative path from the worker directory. If hashing it, hash that
 supplied path directly.
 The controller dispatch and open-ticket snapshot are structured fields in
-`{{RUN_DIR}}/report.json`. The reconciler found these merged ticket files:
-`{{MERGED_TICKET_PATHS}}`. Read each listed ticket directly when the value is
+`/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786257836059/phases/02-reeval-task-envcfg-009/report.json`. The reconciler found these merged ticket files:
+`none`. Read each listed ticket directly when the value is
 not `none`. The pre-manager ticket identities are:
-`{{EXISTING_TICKET_PATHS}}`. These files are immutable review input; never
+`/Users/josh/d/laputa-systems/xsh-factory/tickets/task-bigfiles-001.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-bigfiles-002.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-bigfiles-003.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-bigfiles-004.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-bigfiles-005.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-colsum-001.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-colsum-002.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-dupcheck-001.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-dupcheck-002.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-ecount-001.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-ecount-002.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-ecount-003.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-ecount-004.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-ecount-005.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-ecount-006.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-ecount-007.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-ecount-008.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-ecount-009.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-envcfg-001.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-envcfg-002.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-envcfg-003.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-envcfg-004.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-envcfg-005.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-envcfg-006.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-envcfg-007.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-envcfg-008.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-envcfg-009.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-findexec-001.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-grep-001.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-001.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-002.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-003.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-004.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-005.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-006.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-007.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-008.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-009.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-010.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-jsonfilter-001.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-pathparts-001.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-pathparts-002.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-pathparts-003.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-render-001.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-safepath-001.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-safepath-002.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-safepath-003.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-safepath-004.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-svcstat-001.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-tags-001.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-tags-002.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-tags-003.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-trim-001.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-trim-002.md`. These files are immutable review input; never
 overwrite, rename, or repurpose a listed path. If a new observation is strong,
 use the next unused ticket identity. The executor is a black box. Every eval consumes the one
 factory-wide handbook; do not look for or create an eval-local handbook.
@@ -35,9 +63,9 @@ decision. Do not dispatch a merged ticket back to engineer.
 
 ## Candidate re-evaluation
 
-- Ticket: `{{CANDIDATE_TICKET}}`
-- engineer worktree metadata: `{{CANDIDATE_WORKTREE}}`
-- Candidate XSH commit: `{{XSH_COMMIT}}`
+- Ticket: `task-envcfg-009`
+- engineer worktree metadata: `controller-managed; do not read`
+- Candidate XSH commit: `04fb98f8c63b63cccffce7ef2c3cabde81bb05ba`
 
 The engineer worktree is controller-owned metadata, not manager evidence. It
 may be cleaned before this review starts. Do not read it or any path beneath
@@ -74,8 +102,8 @@ criterion is recorded in the structured engineer evidence named by the ticket
 or phase packet, and require the replay to cover the distinct behavior that
 would fail without the proposed change.
 
-The controller has completed exactly `{{TRIAL_COUNT}}` fresh trial(s). Preserve
-separate evidence under `{{RUN_DIR}}/workers/eval-worker/`. Do not read any
+The controller has completed exactly `1` fresh trial(s). Preserve
+separate evidence under `/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786257836059/phases/02-reeval-task-envcfg-009/workers/eval-worker/`. Do not read any
 worker report, evaluator `run.json`, artifact, review, manager skeleton, or raw
 session until the required first draft below has been written. After that
 first draft, inspect each worker `report.json`, evaluator `run.json`, and the
@@ -86,7 +114,7 @@ structured evidence. Consult raw session JSONL only when a structured
 discrepancy requires proof; an exhaustive session read is not part of manager
 closeout. The
 controller has staged the required report skeleton at
-`{{RUN_DIR}}/workers/eval-manager/{{EVAL_ID}}/REPORT.md`; edit it in place
+`/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786257836059/phases/02-reeval-task-envcfg-009/workers/eval-manager/task-envcfg-retry-1/REPORT.md`; edit it in place
 instead of reconstructing the headings. Your `## Tool-error findings` section
 must account for every failed Pi tool result in the structured worker and
 manager `report.json` files, including invalid `xsht api` discovery queries, or
@@ -100,7 +128,22 @@ tokens, tool calls, tool errors, repeated exploration, correctness, and artifact
 quality for the efficiency judgment. Do not recommend switching providers in
 this cycle; provider fallback is a future TODO only.
 
-{{TRIAL_INSTRUCTIONS}}
+## Trial 1
+
+The controller has already executed the configured trial against the approved
+handbook snapshot. Do not launch or rerun the executor. Inspect the executor
+report, worker report, thinking transcript, evaluator manifest, artifact,
+review, and quantitative session results at the paths in the phase `report.json`.
+The manager may stage a provisional candidate in the run lineage after
+classifying the evidence. Never edit the approved snapshot or the checked-in
+`runtime/handbook.md`.
+
+## Trial 2
+
+The controller has already executed trial 2 when the configured count is `2`.
+Compare its recorded inputs and outputs with trial 1; do not launch another
+executor.
+
 
 Follow the trial instructions above exactly. A one-trial plan may stage one
 concise provisional handbook candidate when the evidence supports a reusable
@@ -109,7 +152,7 @@ plan must state whether its candidate was actually replayed by the controller;
 do not claim validation that did not occur.
 
 Begin the narrative output before final analysis: the controller has created
-`{{RUN_DIR}}/workers/eval-manager/{{EVAL_ID}}/REPORT.md` with a fail-closed
+`/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786257836059/phases/02-reeval-task-envcfg-009/workers/eval-manager/task-envcfg-retry-1/REPORT.md` with a fail-closed
 `not-ready` result. The required first-read set is exactly the five files
 listed above. After those five results, your next tool call MUST use `write` or
 `edit` on that exact report path; do not read anything else first. Replace
@@ -129,11 +172,11 @@ where the eval contract explicitly makes it a gate. Do not call code quality
 an objective metric; explain qualitative judgments and their evidence.
 
 If a handbook change is justified, write it only to
-`{{RUN_DIR}}/lineage/handbook-candidate.md`; otherwise copy the approved
+`/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786257836059/phases/02-reeval-task-envcfg-009/lineage/handbook-candidate.md`; otherwise copy the approved
 snapshot there unchanged. Never edit the approved snapshot or the checked-in
-`{{FACTORY_DIR}}/runtime/handbook.md`.
+`/Users/josh/d/laputa-systems/xsh-factory/runtime/handbook.md`.
 
-Write `{{RUN_DIR}}/workers/eval-manager/{{EVAL_ID}}/REPORT.md` with
+Write `/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786257836059/phases/02-reeval-task-envcfg-009/workers/eval-manager/task-envcfg-retry-1/REPORT.md` with
 exactly these headings:
 
 ```markdown

@@ -7,7 +7,9 @@ do not rerun the executor, broaden discovery, or inspect historical runs.
 The role and immutable assignment still require exactly five first reads: the
 supplied handbook snapshot, `NORTH-STAR.md`, `roles/pi-session-briefing.md`,
 the eval's `EVAL.md`, and the current structured phase report below. Complete
-that set first. Do not read the original worker report. Do not read the staged report, evaluator manifest, artifact, or raw session before drafting. Your next
+that set one at a time, in that order; never batch or parallelize them.
+Wait for each result before the next read. Do not read the original worker report.
+Do not read the staged report, evaluator manifest, artifact, or raw session before drafting. Your next
 tool call after those five reads MUST use `write` or `edit` to replace every
 skeleton placeholder at the staged report path below. Finish the report before
 any optional investigation, raw session read, or artifact probe. A valid closeout
