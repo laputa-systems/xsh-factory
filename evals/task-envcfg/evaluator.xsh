@@ -65,6 +65,25 @@ proc run_envcfg_case(index: Int, case: EnvcfgCase) [fs, process, time, error] ->
   return {exact: exact, candidate_wall_ns: candidate.wall_ns, oracle_wall_ns: oracle.wall_ns}
 }
 
+# Verifies the canonical reference entry restored by task-envcfg-008.
+# This is a linked-replay gate only: ordinary config discovery must not be
+# coupled to a feature that its task contract does not require.
+proc error_fail_reference_resolves() [fs, process, error] -> Result[Bool] {
+  let stdout = /tmp/error-fail-api.stdout
+  let stderr = /tmp/error-fail-api.stderr
+  fs.remove(stdout, missing_ok: true)?
+  fs.remove(stderr, missing_ok: true)?
+  let result = process.run(
+    process.command_argv(
+      "xsht",
+      ["xsht", "api", "api:error.fail"],
+      stdout: stdout,
+      stderr: stderr,
+    ),
+  )?
+  return result.ok and fs.exists(stdout)? and "error.fail" in fs.read_text(stdout)?
+}
+
 proc run_task_envcfg() [fs, process, env, time, error, io] -> Result[Int] {
   defer copy_results("envcfg.xsh")?
   var eval_status = 0
@@ -103,6 +122,12 @@ proc run_task_envcfg() [fs, process, env, time, error, io] -> Result[Int] {
   var hidden_malformed_oracle_wall_ns = 0
   var hidden_empty_port_candidate_wall_ns = 0
   var hidden_empty_port_oracle_wall_ns = 0
+  let error_fail_reference_required = env.get_or("FACTORY_REEVAL_TICKET", "")? == "task-envcfg-008"
+  let error_fail_reference_passed = if error_fail_reference_required {
+    error_fail_reference_resolves()?
+  } else {
+    true
+  }
 
   if artifact_present {
     fs.write(
@@ -238,11 +263,11 @@ printf 'host=%s\nport=%s\ndebug=%s\n' "${CFG_HOST-localhost}" "${CFG_PORT-8080}"
     let source = fs.read_text(/work/envcfg.xsh)?
     forbidden_operations = ! control.source_has_forbidden_subprocess(source)
     env_referenced = "env." in source
-    if ! all_exact or ! forbidden_operations or ! env_referenced {
+    if ! all_exact or ! forbidden_operations or ! env_referenced or ! error_fail_reference_passed {
       eval_status = 1
     }
 
-    if all_exact and forbidden_operations and env_referenced {
+    if all_exact and forbidden_operations and env_referenced and error_fail_reference_passed {
       print "task-envcfg evaluation passed"
     } else {
       eprint "task-envcfg evaluation failed"
@@ -264,6 +289,8 @@ printf 'host=%s\nport=%s\ndebug=%s\n' "${CFG_HOST-localhost}" "${CFG_PORT-8080}"
     "worker_missing_artifact"
   } else if ! review_ok {
     "protocol_failed"
+  } else if ! error_fail_reference_passed {
+    "api_reference_failed"
   } else if ! restriction_ok {
     "restriction_failed"
   } else if ! correctness_ok {
@@ -326,6 +353,10 @@ printf 'host=%s\nport=%s\ndebug=%s\n' "${CFG_HOST-localhost}" "${CFG_PORT-8080}"
         forbidden_operations: forbidden_operations,
         env_referenced: env_referenced,
         passed: restriction_ok,
+      },
+      ticket_replay: {
+        error_fail_reference_required: error_fail_reference_required,
+        error_fail_reference_passed: error_fail_reference_passed,
       },
       timings: {
         public_candidate_wall_ns: public_candidate_wall_ns,

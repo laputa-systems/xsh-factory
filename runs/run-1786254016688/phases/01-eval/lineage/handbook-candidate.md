@@ -99,12 +99,11 @@ effects include error:
 Use the exact return type and effect information shown by `xsht api`. Do not
 turn an expected host failure into an unchecked assumption.
 
-For deliberate validation failure, use `error.fail("message")?`; it constructs
-a validation `Result[Unit, Error]`, and propagation requires the enclosing
-`error` effect. A bare `Error(...)` constructor is still not available. Use a
-typed conversion such as `env.int(...)` or `parse_int` with postfix `?` when
-that conversion itself is the validation being performed; do not route an
-unrelated conversion or host failure through a deliberate rejection branch.
+For deliberate validation failure, propagate an expected failure from a typed
+conversion such as `env.int(...)` or a `parse_int` result and let postfix `?`
+produce the nonzero exit. This build has no generic `Error(...)` constructor;
+do not invent an error value or use an unrelated host failure when a typed
+conversion can express the rejected input.
 
 ## Paths and filesystem values
 

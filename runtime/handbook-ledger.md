@@ -7,6 +7,21 @@ A candidate hash listed as `promoted` has been incorporated into the rolling
 must remain visible as unresolved work in the CTO briefing; controllers must
 not silently discard it.
 
+## Explicit CTO disposition — 2026-08-08 unchanged snapshots after validation correction
+
+| Candidate SHA-256 | Disposition |
+| --- | --- |
+| `eba997ebd583ac6f2eb0ac48feaf701f64696fcaf72e93626fae238102b46d32` | rejected as an unchanged approved snapshot; no manager proposed handbook guidance |
+| `e60b70ebb4e3e33f897ae366feaba0aa43d5dd698ac79f2f28d0ceb42f970e4a` | rejected as the same unchanged snapshot with only its final newline removed |
+
+The first hash appears in the unchanged candidate lineages from
+`run-1786248657421`, `run-1786250146613`, and `run-1786251384949`. The second
+is the unchanged `task-envcfg` candidate from `run-1786254016688`; its manager
+explicitly proposed no guidance. Both now differ from the rolling handbook
+only because the CTO corrected the factual `error.fail("message")?` validation
+instruction in the current handbook. Preserve the snapshots as run evidence;
+they are not pending handbook proposals.
+
 ## Explicit CTO disposition — 2026-08-08 unchanged snapshots
 
 | Candidate SHA-256 | Disposition |

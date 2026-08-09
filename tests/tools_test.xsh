@@ -3305,6 +3305,17 @@ proc test_task_histogram_replay_contract_exercises_ticket_defining_behavior() [f
   test.contains(executor, "FACTORY_REEVAL_TICKET")?
 }
 
+proc test_task_envcfg_error_fail_replay_checks_the_api_reference() [fs, error] {
+  let evaluator = fs.read_text(fp"${fs.cwd()?}/evals/task-envcfg/evaluator.xsh")?
+  let contract = fs.read_text(fp"${fs.cwd()?}/evals/task-envcfg/EVAL.md")?
+  test.contains(evaluator, "error_fail_reference_resolves")?
+  test.contains(evaluator, "api:error.fail")?
+  test.contains(evaluator, "task-envcfg-008")?
+  test.contains(evaluator, "api_reference_failed")?
+  test.contains(contract, "hard candidate gate only")?
+  test.contains(contract, "task-envcfg-008")?
+}
+
 proc test_eval_dispatch_is_package_owned() [fs, error] {
   let evaluate = fs.read_text(fp"${fs.cwd()?}/evals/task-bigfiles/evaluate.xsh")?
   let executor = fs.read_text(fp"${fs.cwd()?}/factory/entrypoints/eval-executor.xsh")?
