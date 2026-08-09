@@ -7,6 +7,20 @@ A candidate hash listed as `promoted` has been incorporated into the rolling
 must remain visible as unresolved work in the CTO briefing; controllers must
 not silently discard it.
 
+## Explicit CTO disposition — 2026-08-08 unchanged snapshots
+
+| Candidate SHA-256 | Disposition |
+| --- | --- |
+| `b9f68899da16e9b9582eebf532bf292208332c72c78e1f42cb1ac24a32d99ca6` | rejected as an unchanged approved snapshot; not promoted |
+
+This hash appears in eight `handbook-candidate.md` files from runs
+`run-1786230105277`, `run-1786230433596`, `run-1786230602946`,
+`run-1786231856321`, and `run-1786233883963`. Each manager copied the then
+approved handbook unchanged and proposed no new guidance. They are retained as
+run evidence, but are not an open handbook decision. The current handbook's
+separate optional `xsht -h` primer is a CTO-owned guidance update, not a
+promotion of those snapshots.
+
 ## Explicit CTO disposition — run-1786168895521
 
 | Candidate SHA-256 | Disposition |

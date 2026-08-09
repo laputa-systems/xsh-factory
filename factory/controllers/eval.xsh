@@ -100,6 +100,9 @@ proc valid_staged_binary(binary_path: Path) [fs, error] -> Result[Bool] {
 }
 
 proc write_preflight_failure_report(run_dir: Path, eval_id: Str, stage: Str, message: Str) [fs, error] {
+  # A preflight failure prevents eval evidence, but never changes the product
+  # in an eval-only phase. Preserve that distinction for the organization
+  # audit before its final lifecycle event is emitted.
   json.write(
     fp"${run_dir}/report.json",
     {
@@ -128,6 +131,7 @@ proc write_preflight_failure_report(run_dir: Path, eval_id: Str, stage: Str, mes
           tool_errors: 0,
         },
         tool_errors: [],
+        outcomes: schema.outcome(true, false, false),
       },
       findings: [
         {

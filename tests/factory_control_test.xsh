@@ -87,6 +87,13 @@ let status = process.run(command)
   )?
 }
 
+proc test_shared_handbook_offers_the_xsht_help_primer() [fs, error] {
+  let handbook = fs.read_text(fp"${fs.cwd()?}/runtime/handbook.md")?
+  test.contains(handbook, "## xsht quick primer")?
+  test.contains(handbook, "xsht -h")?
+  test.contains(handbook, "installed help is authoritative")?
+}
+
 proc test_direct_ticket_selector_can_select_two_approved_tickets(ctx: TestContext) [fs, error] {
   let root = test.temp_dir(ctx, name: "approved-ticket-selection")?
   let tickets = fp"${root}/tickets"

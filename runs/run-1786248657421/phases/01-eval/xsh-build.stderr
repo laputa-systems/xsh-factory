@@ -1,0 +1,773 @@
+#0 building with "orbstack" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile.test
+#1 transferring dockerfile: 5.53kB done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/alpine:3.24.1
+#2 DONE 0.0s
+
+#3 [internal] load .dockerignore
+#3 transferring context:
+#3 transferring context: 57B done
+#3 DONE 0.0s
+
+#4 [ 1/12] FROM docker.io/library/alpine:3.24.1@sha256:28bd5fe8b56d1bd048e5babf5b10710ebe0bae67db86916198a6eec434943f8b
+#4 resolve docker.io/library/alpine:3.24.1@sha256:28bd5fe8b56d1bd048e5babf5b10710ebe0bae67db86916198a6eec434943f8b 0.0s done
+#4 CACHED
+
+#5 [ 8/12] ADD https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-musl/rustup-init /rustup-init-x86_64
+#5 DONE 0.1s
+
+#6 [ 9/12] ADD https://static.rust-lang.org/rustup/dist/aarch64-unknown-linux-musl/rustup-init /rustup-init-aarch64
+#6 DONE 0.1s
+
+#7 [ 2/12] RUN apk add --no-cache musl-dev libgcc git make binutils tzdata zip strace
+#7 ...
+
+#8 [ 4/12] ADD https://github.com/laputa-systems/llvm-prebuilt-musl/releases/download/llvm-musl-23.1.0-rc2-6eb5fb9/clang+llvm-23.1.0-rc2-aarch64-linux-musl.tar.xz /tmp/llvm-aarch64.tar.xz
+#8 DONE 0.3s
+
+#8 [ 4/12] ADD https://github.com/laputa-systems/llvm-prebuilt-musl/releases/download/llvm-musl-23.1.0-rc2-6eb5fb9/clang+llvm-23.1.0-rc2-aarch64-linux-musl.tar.xz /tmp/llvm-aarch64.tar.xz
+#8 CACHED
+
+#6 [ 9/12] ADD https://static.rust-lang.org/rustup/dist/aarch64-unknown-linux-musl/rustup-init /rustup-init-aarch64
+#6 CACHED
+
+#5 [ 8/12] ADD https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-musl/rustup-init /rustup-init-x86_64
+#5 CACHED
+
+#9 [ 3/12] ADD https://github.com/laputa-systems/llvm-prebuilt-musl/releases/download/llvm-musl-23.1.0-rc2-6eb5fb9/clang+llvm-23.1.0-rc2-x86_64-linux-musl.tar.xz /tmp/llvm-x86_64.tar.xz
+#9 CACHED
+
+#7 [ 2/12] RUN apk add --no-cache musl-dev libgcc git make binutils tzdata zip strace
+#7 0.732 ( 1/27) Installing libgcc (15.2.0-r5)
+#7 0.742 ( 2/27) Installing jansson (2.15.0-r0)
+#7 0.753 ( 3/27) Installing libstdc++ (15.2.0-r5)
+#7 0.775 ( 4/27) Installing zstd-libs (1.5.7-r2)
+#7 0.792 ( 5/27) Installing binutils (2.45.1-r1)
+#7 0.866 ( 6/27) Installing brotli-libs (1.2.0-r1)
+#7 0.883 ( 7/27) Installing c-ares (1.34.8-r0)
+#7 0.896 ( 8/27) Installing libunistring (1.4.2-r0)
+#7 0.917 ( 9/27) Installing libidn2 (2.3.8-r0)
+#7 0.929 (10/27) Installing nghttp2-libs (1.69.0-r0)
+#7 0.940 (11/27) Installing libpsl (0.21.5-r3)
+#7 0.951 (12/27) Installing libcurl (8.21.0-r0)
+#7 0.967 (13/27) Installing libexpat (2.8.2-r0)
+#7 0.978 (14/27) Installing pcre2 (10.47-r1)
+#7 0.993 (15/27) Installing git (2.54.0-r0)
+#7 1.061 (16/27) Installing git-init-template (2.54.0-r0)
+#7 1.071 (17/27) Installing make (4.4.1-r4)
+#7 1.083 (18/27) Installing musl-dev (1.2.6-r2)
+#7 1.135 (19/27) Installing libelf (0.195-r0)
+#7 1.145 (20/27) Installing libbz2 (1.0.8-r6)
+#7 1.157 (21/27) Installing musl-fts (1.2.7-r7)
+#7 1.165 (22/27) Installing xz-libs (5.8.3-r0)
+#7 1.178 (23/27) Installing libdw (0.195-r0)
+#7 1.190 (24/27) Installing strace (6.19-r1)
+#7 1.209 (25/27) Installing tzdata (2026c-r0)
+#7 1.238 (26/27) Installing unzip (6.0-r16)
+#7 1.251 (27/27) Installing zip (3.0-r13)
+#7 1.266 Executing busybox-1.37.0-r31.trigger
+#7 1.270 OK: 53.3 MiB in 43 packages
+#7 DONE 1.5s
+
+#10 [ 3/12] ADD https://github.com/laputa-systems/llvm-prebuilt-musl/releases/download/llvm-musl-23.1.0-rc2-6eb5fb9/clang+llvm-23.1.0-rc2-x86_64-linux-musl.tar.xz /tmp/llvm-x86_64.tar.xz
+#10 DONE 0.3s
+
+#11 [ 4/12] ADD https://github.com/laputa-systems/llvm-prebuilt-musl/releases/download/llvm-musl-23.1.0-rc2-6eb5fb9/clang+llvm-23.1.0-rc2-aarch64-linux-musl.tar.xz /tmp/llvm-aarch64.tar.xz
+#11 DONE 0.3s
+
+#12 [ 5/12] RUN case "arm64" in         amd64) f=/tmp/llvm-x86_64.tar.xz ;;         arm64) f=/tmp/llvm-aarch64.tar.xz ;;     esac     && echo '36647cca0bf57d206a6ce757d07a9d8489ef6ccf283a2cc7f740d1cba99a088b  /tmp/llvm-x86_64.tar.xz' | sha256sum -c -     && echo '0c9bd6f0fefa26dbdb7d6ed568f3799b558428b1ce1264656aa328fc6fd9e32d  /tmp/llvm-aarch64.tar.xz' | sha256sum -c -     && mkdir -p /opt/llvm-musl     && tar xf "$f" -C /opt/llvm-musl --strip-components=1     && test -f /opt/llvm-musl/lib/libclang.so     && rm /tmp/llvm-x86_64.tar.xz /tmp/llvm-aarch64.tar.xz
+#12 0.681 /tmp/llvm-x86_64.tar.xz: OK
+#12 1.202 /tmp/llvm-aarch64.tar.xz: OK
+#12 DONE 9.2s
+
+#13 [ 6/12] RUN for target in aarch64-unknown-linux-musl x86_64-unknown-linux-musl; do         stub_dir="/usr/lib/xsh-crt/$target";         mkdir -p "$stub_dir";         for obj in crtbegin.o crtbeginS.o crtbeginT.o crtend.o crtendS.o; do             clang --target="$target" -x c -c /dev/null -o "$stub_dir/$obj";         done;     done
+#13 DONE 0.2s
+
+#14 [ 7/12] RUN llvm-strip --strip-debug /usr/lib/crt*.o /usr/lib/[S]*.o 2>/dev/null || true
+#14 DONE 0.1s
+
+#15 [ 8/12] ADD https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-musl/rustup-init /rustup-init-x86_64
+#15 DONE 0.1s
+
+#16 [ 9/12] ADD https://static.rust-lang.org/rustup/dist/aarch64-unknown-linux-musl/rustup-init /rustup-init-aarch64
+#16 DONE 0.1s
+
+#17 [10/12] RUN case "arm64" in         amd64) init=/rustup-init-x86_64 ;;         arm64) init=/rustup-init-aarch64 ;;     esac     && cp "$init" /rustup-init     && chmod +x /rustup-init     && /rustup-init -y --default-toolchain none     && rm /rustup-init /rustup-init-x86_64 /rustup-init-aarch64
+#17 0.138 warn: It looks like you have an existing rustup settings file at:
+#17 0.138 warn: /root/.rustup/settings.toml
+#17 0.138 warn: Rustup will install the default toolchain as specified in the settings file,
+#17 0.138 warn: instead of the one inferred from the default host triple.
+#17 0.153 info: profile set to default
+#17 0.153 info: default host triple is aarch64-unknown-linux-musl
+#17 0.153 info: skipping toolchain installation
+#17 0.153 
+#17 0.153 
+#17 0.153 Rust is installed now. Great!
+#17 0.153 
+#17 0.153 To get started you may need to restart your current shell.
+#17 0.153 This would reload your PATH environment variable to include
+#17 0.153 Cargo's bin directory ($HOME/.cargo/bin).
+#17 0.153 
+#17 0.153 To configure your current shell, you need to source
+#17 0.153 the corresponding env file under $HOME/.cargo.
+#17 0.153 
+#17 0.153 This is usually done by running one of the following (note the leading DOT):
+#17 0.153 . "$HOME/.cargo/env"            # For sh/bash/zsh/ash/dash/pdksh
+#17 0.153 source "$HOME/.cargo/env.fish"  # For fish
+#17 0.153 source "~/.cargo/env.nu"  # For nushell
+#17 0.153 source "$HOME/.cargo/env.tcsh"  # For tcsh
+#17 0.153 . "$HOME/.cargo/env.ps1"        # For pwsh
+#17 0.153 warn: no default linker (`cc`) was found in your PATH
+#17 0.153 warn: many Rust crates require a system C toolchain to build
+#17 0.153 source "$HOME/.cargo/env.xsh"   # For xonsh
+#17 DONE 0.2s
+
+#18 [11/12] RUN rustup toolchain install nightly-2026-07-24     --target aarch64-unknown-linux-musl     --target x86_64-unknown-linux-musl     --component llvm-tools-preview
+#18 0.155 info: syncing channel updates for nightly-2026-07-24-aarch64-unknown-linux-musl
+#18 0.317 info: latest update on 2026-07-24 for version 1.99.0-nightly (89c61a754 2026-07-23)
+#18 0.317 info: downloading 8 components
+#18 18.22 
+#18 18.25   nightly-2026-07-24-aarch64-unknown-linux-musl installed - rustc 1.99.0-nightly (89c61a754 2026-07-23)
+#18 18.25 
+#18 18.25 info: default toolchain set to nightly-2026-07-24-aarch64-unknown-linux-musl
+#18 18.25 info: checking for self-update (current version: 1.29.0)
+#18 DONE 21.4s
+
+#19 [12/12] RUN host_libdir="$(rustc --print target-libdir)"     && ln -sf /usr/lib/libgcc_s.so.1 "${host_libdir}/libgcc_s.so"     && ln -sf /usr/lib/libgcc_s.so.1 "${host_libdir}/libgcc_s.so.1"     && ln -sf /usr/lib/libc.so "${host_libdir}/libc.so"
+#19 DONE 0.4s
+
+#20 exporting to image
+#20 exporting layers
+#20 exporting layers 41.2s done
+#20 exporting manifest sha256:a8dd165465781d97891a072281ac62639ecc4d9be39a4ab8c8218918e24416e1 0.0s done
+#20 exporting config sha256:cb7d264cfc2fb0a10ff02e5211a02bc27250ce58f8b0bb1a1bf2f4cf27465a35 0.0s done
+#20 exporting attestation manifest sha256:e9f1f148770092ae9e4c10c24e2254b0a2de1f1c8d1591ec4ce7862aae66b0e4 0.0s done
+#20 exporting manifest list sha256:582340154d0f274fefbb1116f509f024f93acec4070c38d7791125573bf96693 0.0s done
+#20 naming to docker.io/library/xsh-test:latest done
+#20 unpacking to docker.io/library/xsh-test:latest
+#20 unpacking to docker.io/library/xsh-test:latest 14.2s done
+#20 DONE 55.5s
+info: syncing channel updates for nightly-2026-07-24-aarch64-unknown-linux-musl
+info: latest update on 2026-07-24 for version 1.99.0-nightly (89c61a754 2026-07-23)
+info: component llvm-tools is up to date
+info: downloading component rust-src
+    Updating crates.io index
+    Updating git repository `https://github.com/joshuarli/hyper-futures-lite`
+    Updating git repository `https://github.com/joshuarli/h2-futures-lite`
+    Updating git repository `https://github.com/dignifiedquire/async-tar.git`
+ Downloading crates ...
+  Downloaded block-buffer v0.12.0
+  Downloaded atomic-waker v1.1.2
+  Downloaded cap-fs-ext v4.0.2
+  Downloaded async-executor v1.14.0
+  Downloaded ambient-authority v0.0.2
+  Downloaded adler2 v2.0.1
+  Downloaded dunce v1.0.5
+  Downloaded bitflags v2.13.0
+  Downloaded async-channel v1.9.0
+  Downloaded futures-sink v0.3.33
+  Downloaded futures-core v0.3.32
+  Downloaded cap-tempfile v4.0.2
+  Downloaded bytes v1.11.1
+  Downloaded bzip2 v0.6.1
+  Downloaded aho-corasick v1.1.4
+  Downloaded cap-std v4.0.2
+  Downloaded rustls-webpki v0.103.13
+  Downloaded parking v2.2.1
+  Downloaded async-lock v3.4.2
+  Downloaded autocfg v1.5.1
+  Downloaded event-listener-strategy v0.5.4
+  Downloaded subtle v2.6.1
+  Downloaded futures-channel v0.3.32
+  Downloaded fastrand v2.4.1
+  Downloaded async-io v2.6.0
+  Downloaded async-global-executor v2.4.1
+  Downloaded bitflags v1.3.2
+  Downloaded cpufeatures v0.3.0
+  Downloaded rustc-hash v2.1.3
+  Downloaded async-channel v2.5.0
+  Downloaded find-msvc-tools v0.1.9
+  Downloaded compression-codecs v0.4.38
+  Downloaded ipnet v2.12.0
+  Downloaded io-lifetimes v2.0.4
+  Downloaded getrandom v0.2.17
+  Downloaded astral_async_zip v0.0.20
+  Downloaded async-compression v0.4.42
+  Downloaded const-oid v0.10.2
+  Downloaded itoa v1.0.18
+  Downloaded digest v0.11.3
+  Downloaded maybe-owned v0.3.4
+  Downloaded openssl-probe v0.2.1
+  Downloaded dirs-sys v0.5.0
+  Downloaded fnv v1.0.7
+  Downloaded async-task v4.7.1
+  Downloaded log v0.4.33
+  Downloaded fs_extra v1.3.0
+  Downloaded futures-rustls v0.26.0
+  Downloaded want v0.3.1
+  Downloaded cc v1.2.66
+  Downloaded option-ext v0.2.0
+  Downloaded compression-core v0.4.32
+  Downloaded mimalloc v0.1.52
+  Downloaded io-extras v0.19.0
+  Downloaded crc32fast v1.5.0
+  Downloaded crossbeam-channel v0.5.15
+  Downloaded data-encoding v2.11.0
+  Downloaded memchr v2.8.1
+  Downloaded indexmap v2.14.0
+  Downloaded libbz2-rs-sys v0.2.5
+  Downloaded cmake v0.1.58
+  Downloaded http-body-util v0.1.4
+  Downloaded sha1 v0.11.0
+  Downloaded httparse v1.10.1
+  Downloaded errno v0.3.14
+  Downloaded http v1.5.0
+  Downloaded cap-directories v4.0.2
+  Downloaded cap-net-ext v4.0.2
+  Downloaded io-lifetimes v3.0.1
+  Downloaded kv-log-macro v1.0.7
+  Downloaded simd-adler32 v0.3.9
+  Downloaded defmt-macros v1.1.1
+  Downloaded filetime v0.2.29
+  Downloaded cap-primitives v4.0.2
+  Downloaded ignore v0.4.25
+  Downloaded crossbeam-utils v0.8.21
+  Downloaded hashbrown v0.17.1
+  Downloaded mini-internal v0.1.45
+  Downloaded event-listener v5.4.1
+  Downloaded diffy v0.5.0
+  Downloaded untrusted v0.9.0
+  Downloaded pin-utils v0.1.0
+  Downloaded same-file v1.0.6
+  Downloaded try-lock v0.2.5
+  Downloaded blocking v1.6.2
+  Downloaded aws-lc-rs v1.17.0
+  Downloaded piper v0.2.5
+  Downloaded rustls-pemfile v2.2.0
+  Downloaded thiserror-impl v2.0.18
+  Downloaded rustix-linux-procfs v0.1.1
+  Downloaded quote v1.0.46
+  Downloaded rustls-native-certs v0.8.4
+  Downloaded slab v0.4.12
+  Downloaded pin-project-lite v0.2.17
+  Downloaded shlex v2.0.1
+  Downloaded pin-project-internal v1.1.13
+  Downloaded equivalent v1.0.2
+  Downloaded smallvec v1.15.2
+  Downloaded pin-project v1.1.13
+  Downloaded directories v6.0.0
+  Downloaded globset v0.4.18
+  Downloaded walkdir v2.5.0
+  Downloaded bstr v1.12.1
+  Downloaded async-std v1.13.2
+  Downloaded thiserror v2.0.18
+  Downloaded miniserde v0.1.45
+  Downloaded zeroize v1.9.0
+  Downloaded futures-io v0.3.32
+  Downloaded libmimalloc-sys v0.1.49
+  Downloaded tempfile v3.27.0
+  Downloaded http-body v1.1.0
+  Downloaded crypto-common v0.2.2
+  Downloaded cfg-if v1.0.4
+  Downloaded foldhash v0.2.0
+  Downloaded concurrent-queue v2.5.0
+  Downloaded defmt v1.1.1
+  Downloaded hybrid-array v0.4.12
+  Downloaded jobserver v0.1.34
+  Downloaded md-5 v0.11.0
+  Downloaded rustls-platform-verifier v0.7.0
+  Downloaded serde_core v1.0.228
+  Downloaded crossbeam-epoch v0.9.18
+  Downloaded once_cell v1.21.4
+  Downloaded flate2 v1.1.9
+  Downloaded defmt-parser v1.0.0
+  Downloaded event-listener v2.5.3
+  Downloaded fs-set-times v0.20.3
+  Downloaded sha2 v0.11.0
+  Downloaded futures-lite v2.6.1
+  Downloaded crossbeam-deque v0.8.6
+  Downloaded getrandom v0.4.2
+  Downloaded rustls-pki-types v1.15.0
+  Downloaded value-bag v1.13.1
+  Downloaded unicode-ident v1.0.24
+  Downloaded lzma-rust2 v0.16.5
+  Downloaded zmij v1.0.21
+  Downloaded miniz_oxide v0.8.9
+  Downloaded libc v0.2.186
+  Downloaded uuid v1.23.3
+  Downloaded proc-macro2 v1.0.106
+  Downloaded polling v3.11.0
+  Downloaded tracing-core v0.1.36
+  Downloaded regex-lite v0.1.9
+  Downloaded serde v1.0.228
+  Downloaded syscalls v0.8.1
+  Downloaded typenum v1.20.1
+  Downloaded jiff v0.2.31
+  Downloaded zlib-rs v0.6.3
+  Downloaded syn v2.0.118
+  Downloaded linux-raw-sys v0.12.1
+  Downloaded rustls v0.23.41
+  Downloaded regex-syntax v0.8.11
+  Downloaded rustix v1.1.4
+  Downloaded tracing v0.1.44
+  Downloaded regex-automata v0.4.14
+  Downloaded aws-lc-sys v0.41.0
+  Downloaded ring v0.17.14
+    Updating crates.io index
+ Downloading crates ...
+  Downloaded addr2line v0.27.0
+  Downloaded memchr v2.7.6
+  Downloaded gimli v0.34.0
+  Downloaded rustc-literal-escaper v0.0.8
+  Downloaded libc v0.2.189
+  Downloaded object v0.39.1
+  Downloaded rustc-demangle v0.1.28
+  Downloaded getopts v0.2.24
+  Downloaded miniz_oxide v0.9.1
+   Compiling compiler_builtins v0.1.160 (/root/.rustup/toolchains/nightly-2026-07-24-aarch64-unknown-linux-musl/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins)
+   Compiling core v0.0.0 (/root/.rustup/toolchains/nightly-2026-07-24-aarch64-unknown-linux-musl/lib/rustlib/src/rust/library/core)
+   Compiling std v0.0.0 (/root/.rustup/toolchains/nightly-2026-07-24-aarch64-unknown-linux-musl/lib/rustlib/src/rust/library/std)
+   Compiling crossbeam-utils v0.8.21
+   Compiling rustix v1.1.4
+   Compiling libc v0.2.186
+   Compiling io-lifetimes v3.0.1
+   Compiling io-lifetimes v2.0.4
+   Compiling aws-lc-sys v0.41.0
+   Compiling io-extras v0.19.0
+   Compiling cap-primitives v4.0.2
+   Compiling cap-std v4.0.2
+   Compiling async-io v2.6.0
+   Compiling crc32fast v1.5.0
+   Compiling getrandom v0.4.2
+   Compiling httparse v1.10.1
+   Compiling thiserror v2.0.18
+   Compiling libmimalloc-sys v0.1.49
+   Compiling zmij v1.0.21
+   Compiling cap-fs-ext v4.0.2
+   Compiling miniserde v0.1.45
+   Compiling syscalls v0.8.1
+   Compiling xsh v0.0.1 (/work)
+warning: aws-lc-sys@0.41.0: Environment Variable found 'AWS_LC_SYS_NO_JITTER_ENTROPY': '1'
+warning: aws-lc-sys@0.41.0: Value: 1 is true.
+warning: aws-lc-sys@0.41.0: Environment Variable found 'CARGO_ENCODED_RUSTFLAGS': '-Zlocation-detail=none-Zunstable-options-Cpanic=immediate-abort-Ctarget-cpu=neoverse-n2-Ctarget-feature=-sve,-sve2-Ctarget-feature=+crt-static-Clink-arg=--defsym=__isoc23_sscanf=sscanf-Clink-arg=--defsym=__isoc23_strtol=strtol'
+warning: aws-lc-sys@0.41.0: Emitting configuration: cargo:rustc-cfg=universal
+warning: aws-lc-sys@0.41.0: Building with: CC
+warning: aws-lc-sys@0.41.0: Symbol Prefix: Some("aws_lc_0_41_0")
+warning: aws-lc-sys@0.41.0: Target platform: 'aarch64-unknown-linux-musl'
+warning: aws-lc-sys@0.41.0: Environment Variable found 'AWS_LC_SYS_CFLAGS_aarch64_unknown_linux_musl': '--target=aarch64-unknown-linux-musl -B/usr/lib/xsh-crt/aarch64-unknown-linux-musl -I/usr/include'
+warning: aws-lc-sys@0.41.0: Environment Variable found 'CFLAGS_aarch64_unknown_linux_musl': '--target=aarch64-unknown-linux-musl -B/usr/lib/xsh-crt/aarch64-unknown-linux-musl -I/usr/include'
+warning: aws-lc-sys@0.41.0: Setting CFLAGS_aarch64_unknown_linux_musl: --target=aarch64-unknown-linux-musl -B/usr/lib/xsh-crt/aarch64-unknown-linux-musl -I/usr/include
+warning: aws-lc-sys@0.41.0: Compilation of 'c11.c' succeeded - Ok(["/work/target/aarch64-unknown-linux-musl/dist/build/aws-lc-sys-617f50e1c4aaad90/out/out-c11/7dfda64fdf5a526c-c11.o"]).
+warning: aws-lc-sys@0.41.0: Environment Variable found 'CC': '/opt/llvm-musl/bin/clang'
+warning: aws-lc-sys@0.41.0: Setting CC_aarch64_unknown_linux_musl: /opt/llvm-musl/bin/clang
+warning: aws-lc-sys@0.41.0: Using flag: -ffile-prefix-map=/root/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/aws-lc-sys-0.41.0=
+warning: aws-lc-sys@0.41.0: Compilation of 'stdalign_check.c' succeeded - Ok(["/work/target/aarch64-unknown-linux-musl/dist/build/aws-lc-sys-617f50e1c4aaad90/out/out-stdalign_check/7dfda64fdf5a526c-stdalign_check.o"]).
+warning: aws-lc-sys@0.41.0: Compilation of 'builtin_swap_check.c' succeeded - Ok(["/work/target/aarch64-unknown-linux-musl/dist/build/aws-lc-sys-617f50e1c4aaad90/out/out-builtin_swap_check/7dfda64fdf5a526c-builtin_swap_check.o"]).
+warning: aws-lc-sys@0.41.0: Compilation of 'neon_sha3_check.c' succeeded - Ok(["/work/target/aarch64-unknown-linux-musl/dist/build/aws-lc-sys-617f50e1c4aaad90/out/out-neon_sha3_check/7dfda64fdf5a526c-neon_sha3_check.o"]).
+warning: aws-lc-sys@0.41.0: /root/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/aws-lc-sys-0.41.0/aws-lc/tests/compiler_features_tests/linux_random_h.c:15:10: fatal error: 'linux/random.h' file not found
+warning: aws-lc-sys@0.41.0:    15 | #include <linux/random.h>
+warning: aws-lc-sys@0.41.0:       |          ^~~~~~~~~~~~~~~~
+warning: aws-lc-sys@0.41.0: 1 error generated.
+warning: aws-lc-sys@0.41.0: Compilation of 'linux_random_h.c' failed - Err(Error { kind: ToolExecError, message: "command did not execute successfully (status code exit status: 1): LC_ALL=\"C\" \"/opt/llvm-musl/bin/clang\" \"-O3\" \"-ffunction-sections\" \"-fdata-sections\" \"-fPIC\" \"--target=aarch64-unknown-linux-musl\" \"-Werror\" \"-Wno-unused-parameter\" \"--target=aarch64-unknown-linux-musl\" \"-B/usr/lib/xsh-crt/aarch64-unknown-linux-musl\" \"-I/usr/include\" \"-o\" \"/work/target/aarch64-unknown-linux-musl/dist/build/aws-lc-sys-617f50e1c4aaad90/out/out-linux_random_h/7dfda64fdf5a526c-linux_random_h.o\" \"-c\" \"/root/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/aws-lc-sys-0.41.0/aws-lc/tests/compiler_features_tests/linux_random_h.c\"" }).
+warning: aws-lc-sys@0.41.0: /root/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/aws-lc-sys-0.41.0/aws-lc/tests/compiler_features_tests/linux_random_h.c:15:10: fatal error: 'linux/random.h' file not found
+warning: aws-lc-sys@0.41.0:    15 | #include <linux/random.h>
+warning: aws-lc-sys@0.41.0:       |          ^~~~~~~~~~~~~~~~
+warning: aws-lc-sys@0.41.0: 1 error generated.
+warning: aws-lc-sys@0.41.0: Compilation of 'linux_random_h.c' failed - Err(Error { kind: ToolExecError, message: "command did not execute successfully (status code exit status: 1): LC_ALL=\"C\" \"/opt/llvm-musl/bin/clang\" \"-O3\" \"-ffunction-sections\" \"-fdata-sections\" \"-fPIC\" \"--target=aarch64-unknown-linux-musl\" \"-Werror\" \"-DDEFINE_U32\" \"-Wno-unused-parameter\" \"--target=aarch64-unknown-linux-musl\" \"-B/usr/lib/xsh-crt/aarch64-unknown-linux-musl\" \"-I/usr/include\" \"-o\" \"/work/target/aarch64-unknown-linux-musl/dist/build/aws-lc-sys-617f50e1c4aaad90/out/out-linux_random_h/7dfda64fdf5a526c-linux_random_h.o\" \"-c\" \"/root/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/aws-lc-sys-0.41.0/aws-lc/tests/compiler_features_tests/linux_random_h.c\"" }).
+error: failed to run custom build command for `aws-lc-sys v0.41.0`
+
+Caused by:
+  process didn't exit successfully: `/work/target/dist/build/aws-lc-sys-4af78a65abab26db/build-script-main` (exit status: 101)
+  --- stdout
+  cargo:rerun-if-env-changed=AWS_LC_SYS_NO_PREFIX_aarch64_unknown_linux_musl
+  cargo:rerun-if-env-changed=AWS_LC_SYS_NO_PREFIX
+  cargo:rerun-if-env-changed=AWS_LC_SYS_PREGENERATING_BINDINGS_aarch64_unknown_linux_musl
+  cargo:rerun-if-env-changed=AWS_LC_SYS_PREGENERATING_BINDINGS
+  cargo:rerun-if-env-changed=AWS_LC_SYS_EXTERNAL_BINDGEN_aarch64_unknown_linux_musl
+  cargo:rerun-if-env-changed=AWS_LC_SYS_EXTERNAL_BINDGEN
+  cargo:rerun-if-env-changed=AWS_LC_SYS_NO_ASM_aarch64_unknown_linux_musl
+  cargo:rerun-if-env-changed=AWS_LC_SYS_NO_ASM
+  cargo:rerun-if-env-changed=AWS_LC_SYS_PREBUILT_NASM_aarch64_unknown_linux_musl
+  cargo:rerun-if-env-changed=AWS_LC_SYS_PREBUILT_NASM
+  cargo:rerun-if-env-changed=AWS_LC_SYS_C_STD_aarch64_unknown_linux_musl
+  cargo:rerun-if-env-changed=AWS_LC_SYS_C_STD
+  cargo:rerun-if-env-changed=AWS_LC_SYS_CMAKE_BUILDER_aarch64_unknown_linux_musl
+  cargo:rerun-if-env-changed=AWS_LC_SYS_CMAKE_BUILDER
+  cargo:rerun-if-env-changed=AWS_LC_SYS_NO_PREGENERATED_SRC_aarch64_unknown_linux_musl
+  cargo:rerun-if-env-changed=AWS_LC_SYS_NO_PREGENERATED_SRC
+  cargo:rerun-if-env-changed=AWS_LC_SYS_EFFECTIVE_TARGET_aarch64_unknown_linux_musl
+  cargo:rerun-if-env-changed=AWS_LC_SYS_EFFECTIVE_TARGET
+  cargo:rerun-if-env-changed=AWS_LC_SYS_NO_JITTER_ENTROPY_aarch64_unknown_linux_musl
+  cargo:rerun-if-env-changed=AWS_LC_SYS_NO_JITTER_ENTROPY
+  cargo:warning=Environment Variable found 'AWS_LC_SYS_NO_JITTER_ENTROPY': '1'
+  cargo:warning=Value: 1 is true.
+  cargo:rerun-if-env-changed=AWS_LC_SYS_NO_U1_BINDINGS_aarch64_unknown_linux_musl
+  cargo:rerun-if-env-changed=AWS_LC_SYS_NO_U1_BINDINGS
+  cargo:rerun-if-env-changed=AWS_LC_SYS_INCLUDES_aarch64_unknown_linux_musl
+  cargo:rerun-if-env-changed=AWS_LC_SYS_INCLUDES
+  cargo:rerun-if-env-changed=AWS_LC_SYS_SANITIZER_aarch64_unknown_linux_musl
+  cargo:rerun-if-env-changed=AWS_LC_SYS_SANITIZER
+  cargo:rerun-if-env-changed=CARGO_ENCODED_RUSTFLAGS
+  cargo:warning=Environment Variable found 'CARGO_ENCODED_RUSTFLAGS': '-Zlocation-detail=none-Zunstable-options-Cpanic=immediate-abort-Ctarget-cpu=neoverse-n2-Ctarget-feature=-sve,-sve2-Ctarget-feature=+crt-static-Clink-arg=--defsym=__isoc23_sscanf=sscanf-Clink-arg=--defsym=__isoc23_strtol=strtol'
+  cargo:warning=Emitting configuration: cargo:rustc-cfg=universal
+  cargo:rustc-cfg=universal
+  cargo:rerun-if-env-changed=AWS_LC_SYS_STATIC_aarch64_unknown_linux_musl
+  cargo:rerun-if-env-changed=AWS_LC_SYS_STATIC
+  cargo:rerun-if-env-changed=CARGO_FEATURE_SSL
+  cargo:warning=Building with: CC
+  cargo:warning=Symbol Prefix: Some("aws_lc_0_41_0")
+  cargo:rerun-if-env-changed=CARGO_FEATURE_SSL
+  cargo:warning=Target platform: 'aarch64-unknown-linux-musl'
+  cargo:root=/work/target/aarch64-unknown-linux-musl/dist/build/aws-lc-sys-617f50e1c4aaad90/out
+  cargo:rerun-if-env-changed=AWS_LC_SYS_TARGET_CFLAGS_aarch64_unknown_linux_musl
+  cargo:rerun-if-env-changed=AWS_LC_SYS_TARGET_CFLAGS
+  cargo:rerun-if-env-changed=TARGET_CFLAGS_aarch64_unknown_linux_musl
+  cargo:rerun-if-env-changed=TARGET_CFLAGS
+  cargo:rerun-if-env-changed=AWS_LC_SYS_CFLAGS_aarch64_unknown_linux_musl
+  cargo:warning=Environment Variable found 'AWS_LC_SYS_CFLAGS_aarch64_unknown_linux_musl': '--target=aarch64-unknown-linux-musl -B/usr/lib/xsh-crt/aarch64-unknown-linux-musl -I/usr/include'
+  cargo:rerun-if-env-changed=AWS_LC_SYS_CFLAGS
+  cargo:rerun-if-env-changed=CFLAGS_aarch64_unknown_linux_musl
+  cargo:warning=Environment Variable found 'CFLAGS_aarch64_unknown_linux_musl': '--target=aarch64-unknown-linux-musl -B/usr/lib/xsh-crt/aarch64-unknown-linux-musl -I/usr/include'
+  cargo:rerun-if-env-changed=CFLAGS
+  cargo:warning=Setting CFLAGS_aarch64_unknown_linux_musl: --target=aarch64-unknown-linux-musl -B/usr/lib/xsh-crt/aarch64-unknown-linux-musl -I/usr/include
+  cargo:rerun-if-env-changed=CC_aarch64-unknown-linux-musl
+  CC_aarch64-unknown-linux-musl = None
+  cargo:rerun-if-env-changed=CC_aarch64_unknown_linux_musl
+  CC_aarch64_unknown_linux_musl = None
+  cargo:rerun-if-env-changed=HOST_CC
+  HOST_CC = None
+  cargo:rerun-if-env-changed=CC
+  CC = Some(/opt/llvm-musl/bin/clang)
+  cargo:rerun-if-env-changed=CC_ENABLE_DEBUG_OUTPUT
+  cargo:rerun-if-env-changed=CRATE_CC_NO_DEFAULTS
+  CRATE_CC_NO_DEFAULTS = None
+  cargo:rerun-if-env-changed=CFLAGS
+  CFLAGS = None
+  cargo:rerun-if-env-changed=HOST_CFLAGS
+  HOST_CFLAGS = None
+  cargo:rerun-if-env-changed=CFLAGS_aarch64_unknown_linux_musl
+  CFLAGS_aarch64_unknown_linux_musl = Some(--target=aarch64-unknown-linux-musl -B/usr/lib/xsh-crt/aarch64-unknown-linux-musl -I/usr/include)
+  cargo:rerun-if-env-changed=CC_SHELL_ESCAPED_FLAGS
+  CC_SHELL_ESCAPED_FLAGS = None
+  cargo:rerun-if-env-changed=CFLAGS_aarch64-unknown-linux-musl
+  CFLAGS_aarch64-unknown-linux-musl = None
+  cargo:rerun-if-env-changed=CC_aarch64-unknown-linux-musl
+  CC_aarch64-unknown-linux-musl = None
+  cargo:rerun-if-env-changed=CC_aarch64_unknown_linux_musl
+  CC_aarch64_unknown_linux_musl = None
+  cargo:rerun-if-env-changed=HOST_CC
+  HOST_CC = None
+  cargo:rerun-if-env-changed=CC
+  CC = Some(/opt/llvm-musl/bin/clang)
+  cargo:rerun-if-env-changed=CRATE_CC_NO_DEFAULTS
+  CRATE_CC_NO_DEFAULTS = None
+  cargo:rerun-if-env-changed=CFLAGS
+  CFLAGS = None
+  cargo:rerun-if-env-changed=HOST_CFLAGS
+  HOST_CFLAGS = None
+  cargo:rerun-if-env-changed=CFLAGS_aarch64_unknown_linux_musl
+  CFLAGS_aarch64_unknown_linux_musl = Some(--target=aarch64-unknown-linux-musl -B/usr/lib/xsh-crt/aarch64-unknown-linux-musl -I/usr/include)
+  cargo:rerun-if-env-changed=CC_SHELL_ESCAPED_FLAGS
+  CC_SHELL_ESCAPED_FLAGS = None
+  cargo:rerun-if-env-changed=CFLAGS_aarch64-unknown-linux-musl
+  CFLAGS_aarch64-unknown-linux-musl = None
+  cargo:rerun-if-env-changed=CC_aarch64-unknown-linux-musl
+  CC_aarch64-unknown-linux-musl = None
+  cargo:rerun-if-env-changed=CC_aarch64_unknown_linux_musl
+  CC_aarch64_unknown_linux_musl = None
+  cargo:rerun-if-env-changed=HOST_CC
+  HOST_CC = None
+  cargo:rerun-if-env-changed=CC
+  CC = Some(/opt/llvm-musl/bin/clang)
+  cargo:rerun-if-env-changed=CC_ENABLE_DEBUG_OUTPUT
+  cargo:rerun-if-env-changed=CRATE_CC_NO_DEFAULTS
+  CRATE_CC_NO_DEFAULTS = None
+  cargo:rerun-if-env-changed=CFLAGS
+  CFLAGS = None
+  cargo:rerun-if-env-changed=HOST_CFLAGS
+  HOST_CFLAGS = None
+  cargo:rerun-if-env-changed=CFLAGS_aarch64_unknown_linux_musl
+  CFLAGS_aarch64_unknown_linux_musl = Some(--target=aarch64-unknown-linux-musl -B/usr/lib/xsh-crt/aarch64-unknown-linux-musl -I/usr/include)
+  cargo:rerun-if-env-changed=CC_SHELL_ESCAPED_FLAGS
+  CC_SHELL_ESCAPED_FLAGS = None
+  cargo:rerun-if-env-changed=CFLAGS_aarch64-unknown-linux-musl
+  CFLAGS_aarch64-unknown-linux-musl = None
+  cargo:rerun-if-env-changed=CC_FORCE_DISABLE
+  CC_FORCE_DISABLE = None
+  cargo:rerun-if-env-changed=CC_aarch64-unknown-linux-musl
+  CC_aarch64-unknown-linux-musl = None
+  cargo:rerun-if-env-changed=CC_aarch64_unknown_linux_musl
+  CC_aarch64_unknown_linux_musl = None
+  cargo:rerun-if-env-changed=HOST_CC
+  HOST_CC = None
+  cargo:rerun-if-env-changed=CC
+  CC = Some(/opt/llvm-musl/bin/clang)
+  cargo:rerun-if-env-changed=CRATE_CC_NO_DEFAULTS
+  CRATE_CC_NO_DEFAULTS = None
+  cargo:rerun-if-env-changed=CFLAGS
+  CFLAGS = None
+  cargo:rerun-if-env-changed=HOST_CFLAGS
+  HOST_CFLAGS = None
+  cargo:rerun-if-env-changed=CFLAGS_aarch64_unknown_linux_musl
+  CFLAGS_aarch64_unknown_linux_musl = Some(--target=aarch64-unknown-linux-musl -B/usr/lib/xsh-crt/aarch64-unknown-linux-musl -I/usr/include)
+  cargo:rerun-if-env-changed=CC_SHELL_ESCAPED_FLAGS
+  CC_SHELL_ESCAPED_FLAGS = None
+  cargo:rerun-if-env-changed=CFLAGS_aarch64-unknown-linux-musl
+  CFLAGS_aarch64-unknown-linux-musl = None
+  cargo:warning=Compilation of 'c11.c' succeeded - Ok(["/work/target/aarch64-unknown-linux-musl/dist/build/aws-lc-sys-617f50e1c4aaad90/out/out-c11/7dfda64fdf5a526c-c11.o"]).
+  cargo:rerun-if-env-changed=AWS_LC_SYS_TARGET_CC_aarch64_unknown_linux_musl
+  cargo:rerun-if-env-changed=AWS_LC_SYS_TARGET_CC
+  cargo:rerun-if-env-changed=TARGET_CC_aarch64_unknown_linux_musl
+  cargo:rerun-if-env-changed=TARGET_CC
+  cargo:rerun-if-env-changed=AWS_LC_SYS_CC_aarch64_unknown_linux_musl
+  cargo:rerun-if-env-changed=AWS_LC_SYS_CC
+  cargo:rerun-if-env-changed=CC_aarch64_unknown_linux_musl
+  cargo:rerun-if-env-changed=CC
+  cargo:warning=Environment Variable found 'CC': '/opt/llvm-musl/bin/clang'
+  cargo:warning=Setting CC_aarch64_unknown_linux_musl: /opt/llvm-musl/bin/clang
+  cargo:rerun-if-env-changed=AWS_LC_SYS_TARGET_CXX_aarch64_unknown_linux_musl
+  cargo:rerun-if-env-changed=AWS_LC_SYS_TARGET_CXX
+  cargo:rerun-if-env-changed=TARGET_CXX_aarch64_unknown_linux_musl
+  cargo:rerun-if-env-changed=TARGET_CXX
+  cargo:rerun-if-env-changed=AWS_LC_SYS_CXX_aarch64_unknown_linux_musl
+  cargo:rerun-if-env-changed=AWS_LC_SYS_CXX
+  cargo:rerun-if-env-changed=CXX_aarch64_unknown_linux_musl
+  cargo:rerun-if-env-changed=CXX
+  cargo:rerun-if-env-changed=CC_aarch64-unknown-linux-musl
+  CC_aarch64-unknown-linux-musl = None
+  cargo:rerun-if-env-changed=CC_aarch64_unknown_linux_musl
+  CC_aarch64_unknown_linux_musl = Some(/opt/llvm-musl/bin/clang)
+  cargo:rerun-if-env-changed=CC_ENABLE_DEBUG_OUTPUT
+  cargo:rerun-if-env-changed=CRATE_CC_NO_DEFAULTS
+  CRATE_CC_NO_DEFAULTS = None
+  cargo:rerun-if-env-changed=CFLAGS
+  CFLAGS = None
+  cargo:rerun-if-env-changed=HOST_CFLAGS
+  HOST_CFLAGS = None
+  cargo:rerun-if-env-changed=CFLAGS_aarch64_unknown_linux_musl
+  CFLAGS_aarch64_unknown_linux_musl = Some(--target=aarch64-unknown-linux-musl -B/usr/lib/xsh-crt/aarch64-unknown-linux-musl -I/usr/include)
+  cargo:rerun-if-env-changed=CC_SHELL_ESCAPED_FLAGS
+  CC_SHELL_ESCAPED_FLAGS = None
+  cargo:rerun-if-env-changed=CFLAGS_aarch64-unknown-linux-musl
+  CFLAGS_aarch64-unknown-linux-musl = None
+  cargo:warning=Using flag: -ffile-prefix-map=/root/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/aws-lc-sys-0.41.0=
+  cargo:rerun-if-env-changed=CC_aarch64-unknown-linux-musl
+  CC_aarch64-unknown-linux-musl = None
+  cargo:rerun-if-env-changed=CC_aarch64_unknown_linux_musl
+  CC_aarch64_unknown_linux_musl = Some(/opt/llvm-musl/bin/clang)
+  cargo:rerun-if-env-changed=CC_ENABLE_DEBUG_OUTPUT
+  cargo:rerun-if-env-changed=CRATE_CC_NO_DEFAULTS
+  CRATE_CC_NO_DEFAULTS = None
+  cargo:rerun-if-env-changed=CFLAGS
+  CFLAGS = None
+  cargo:rerun-if-env-changed=HOST_CFLAGS
+  HOST_CFLAGS = None
+  cargo:rerun-if-env-changed=CFLAGS_aarch64_unknown_linux_musl
+  CFLAGS_aarch64_unknown_linux_musl = Some(--target=aarch64-unknown-linux-musl -B/usr/lib/xsh-crt/aarch64-unknown-linux-musl -I/usr/include)
+  cargo:rerun-if-env-changed=CC_SHELL_ESCAPED_FLAGS
+  CC_SHELL_ESCAPED_FLAGS = None
+  cargo:rerun-if-env-changed=CFLAGS_aarch64-unknown-linux-musl
+  CFLAGS_aarch64-unknown-linux-musl = None
+  cargo:rerun-if-env-changed=CC_FORCE_DISABLE
+  CC_FORCE_DISABLE = None
+  cargo:rerun-if-env-changed=CC_aarch64-unknown-linux-musl
+  CC_aarch64-unknown-linux-musl = None
+  cargo:rerun-if-env-changed=CC_aarch64_unknown_linux_musl
+  CC_aarch64_unknown_linux_musl = Some(/opt/llvm-musl/bin/clang)
+  cargo:rerun-if-env-changed=CRATE_CC_NO_DEFAULTS
+  CRATE_CC_NO_DEFAULTS = None
+  cargo:rerun-if-env-changed=CFLAGS
+  CFLAGS = None
+  cargo:rerun-if-env-changed=HOST_CFLAGS
+  HOST_CFLAGS = None
+  cargo:rerun-if-env-changed=CFLAGS_aarch64_unknown_linux_musl
+  CFLAGS_aarch64_unknown_linux_musl = Some(--target=aarch64-unknown-linux-musl -B/usr/lib/xsh-crt/aarch64-unknown-linux-musl -I/usr/include)
+  cargo:rerun-if-env-changed=CC_SHELL_ESCAPED_FLAGS
+  CC_SHELL_ESCAPED_FLAGS = None
+  cargo:rerun-if-env-changed=CFLAGS_aarch64-unknown-linux-musl
+  CFLAGS_aarch64-unknown-linux-musl = None
+  cargo:warning=Compilation of 'stdalign_check.c' succeeded - Ok(["/work/target/aarch64-unknown-linux-musl/dist/build/aws-lc-sys-617f50e1c4aaad90/out/out-stdalign_check/7dfda64fdf5a526c-stdalign_check.o"]).
+  cargo:rerun-if-env-changed=CC_aarch64-unknown-linux-musl
+  CC_aarch64-unknown-linux-musl = None
+  cargo:rerun-if-env-changed=CC_aarch64_unknown_linux_musl
+  CC_aarch64_unknown_linux_musl = Some(/opt/llvm-musl/bin/clang)
+  cargo:rerun-if-env-changed=CC_ENABLE_DEBUG_OUTPUT
+  cargo:rerun-if-env-changed=CRATE_CC_NO_DEFAULTS
+  CRATE_CC_NO_DEFAULTS = None
+  cargo:rerun-if-env-changed=CFLAGS
+  CFLAGS = None
+  cargo:rerun-if-env-changed=HOST_CFLAGS
+  HOST_CFLAGS = None
+  cargo:rerun-if-env-changed=CFLAGS_aarch64_unknown_linux_musl
+  CFLAGS_aarch64_unknown_linux_musl = Some(--target=aarch64-unknown-linux-musl -B/usr/lib/xsh-crt/aarch64-unknown-linux-musl -I/usr/include)
+  cargo:rerun-if-env-changed=CC_SHELL_ESCAPED_FLAGS
+  CC_SHELL_ESCAPED_FLAGS = None
+  cargo:rerun-if-env-changed=CFLAGS_aarch64-unknown-linux-musl
+  CFLAGS_aarch64-unknown-linux-musl = None
+  cargo:rerun-if-env-changed=CC_FORCE_DISABLE
+  CC_FORCE_DISABLE = None
+  cargo:rerun-if-env-changed=CC_aarch64-unknown-linux-musl
+  CC_aarch64-unknown-linux-musl = None
+  cargo:rerun-if-env-changed=CC_aarch64_unknown_linux_musl
+  CC_aarch64_unknown_linux_musl = Some(/opt/llvm-musl/bin/clang)
+  cargo:rerun-if-env-changed=CRATE_CC_NO_DEFAULTS
+  CRATE_CC_NO_DEFAULTS = None
+  cargo:rerun-if-env-changed=CFLAGS
+  CFLAGS = None
+  cargo:rerun-if-env-changed=HOST_CFLAGS
+  HOST_CFLAGS = None
+  cargo:rerun-if-env-changed=CFLAGS_aarch64_unknown_linux_musl
+  CFLAGS_aarch64_unknown_linux_musl = Some(--target=aarch64-unknown-linux-musl -B/usr/lib/xsh-crt/aarch64-unknown-linux-musl -I/usr/include)
+  cargo:rerun-if-env-changed=CC_SHELL_ESCAPED_FLAGS
+  CC_SHELL_ESCAPED_FLAGS = None
+  cargo:rerun-if-env-changed=CFLAGS_aarch64-unknown-linux-musl
+  CFLAGS_aarch64-unknown-linux-musl = None
+  cargo:warning=Compilation of 'builtin_swap_check.c' succeeded - Ok(["/work/target/aarch64-unknown-linux-musl/dist/build/aws-lc-sys-617f50e1c4aaad90/out/out-builtin_swap_check/7dfda64fdf5a526c-builtin_swap_check.o"]).
+  cargo:rerun-if-env-changed=CC_aarch64-unknown-linux-musl
+  CC_aarch64-unknown-linux-musl = None
+  cargo:rerun-if-env-changed=CC_aarch64_unknown_linux_musl
+  CC_aarch64_unknown_linux_musl = Some(/opt/llvm-musl/bin/clang)
+  cargo:rerun-if-env-changed=CC_ENABLE_DEBUG_OUTPUT
+  cargo:rerun-if-env-changed=CRATE_CC_NO_DEFAULTS
+  CRATE_CC_NO_DEFAULTS = None
+  cargo:rerun-if-env-changed=CFLAGS
+  CFLAGS = None
+  cargo:rerun-if-env-changed=HOST_CFLAGS
+  HOST_CFLAGS = None
+  cargo:rerun-if-env-changed=CFLAGS_aarch64_unknown_linux_musl
+  CFLAGS_aarch64_unknown_linux_musl = Some(--target=aarch64-unknown-linux-musl -B/usr/lib/xsh-crt/aarch64-unknown-linux-musl -I/usr/include)
+  cargo:rerun-if-env-changed=CC_SHELL_ESCAPED_FLAGS
+  CC_SHELL_ESCAPED_FLAGS = None
+  cargo:rerun-if-env-changed=CFLAGS_aarch64-unknown-linux-musl
+  CFLAGS_aarch64-unknown-linux-musl = None
+  cargo:rerun-if-env-changed=CC_FORCE_DISABLE
+  CC_FORCE_DISABLE = None
+  cargo:rerun-if-env-changed=CC_aarch64-unknown-linux-musl
+  CC_aarch64-unknown-linux-musl = None
+  cargo:rerun-if-env-changed=CC_aarch64_unknown_linux_musl
+  CC_aarch64_unknown_linux_musl = Some(/opt/llvm-musl/bin/clang)
+  cargo:rerun-if-env-changed=CRATE_CC_NO_DEFAULTS
+  CRATE_CC_NO_DEFAULTS = None
+  cargo:rerun-if-env-changed=CFLAGS
+  CFLAGS = None
+  cargo:rerun-if-env-changed=HOST_CFLAGS
+  HOST_CFLAGS = None
+  cargo:rerun-if-env-changed=CFLAGS_aarch64_unknown_linux_musl
+  CFLAGS_aarch64_unknown_linux_musl = Some(--target=aarch64-unknown-linux-musl -B/usr/lib/xsh-crt/aarch64-unknown-linux-musl -I/usr/include)
+  cargo:rerun-if-env-changed=CC_SHELL_ESCAPED_FLAGS
+  CC_SHELL_ESCAPED_FLAGS = None
+  cargo:rerun-if-env-changed=CFLAGS_aarch64-unknown-linux-musl
+  CFLAGS_aarch64-unknown-linux-musl = None
+  cargo:warning=Compilation of 'neon_sha3_check.c' succeeded - Ok(["/work/target/aarch64-unknown-linux-musl/dist/build/aws-lc-sys-617f50e1c4aaad90/out/out-neon_sha3_check/7dfda64fdf5a526c-neon_sha3_check.o"]).
+  cargo:rerun-if-env-changed=CC_aarch64-unknown-linux-musl
+  CC_aarch64-unknown-linux-musl = None
+  cargo:rerun-if-env-changed=CC_aarch64_unknown_linux_musl
+  CC_aarch64_unknown_linux_musl = Some(/opt/llvm-musl/bin/clang)
+  cargo:rerun-if-env-changed=CC_ENABLE_DEBUG_OUTPUT
+  cargo:rerun-if-env-changed=CRATE_CC_NO_DEFAULTS
+  CRATE_CC_NO_DEFAULTS = None
+  cargo:rerun-if-env-changed=CFLAGS
+  CFLAGS = None
+  cargo:rerun-if-env-changed=HOST_CFLAGS
+  HOST_CFLAGS = None
+  cargo:rerun-if-env-changed=CFLAGS_aarch64_unknown_linux_musl
+  CFLAGS_aarch64_unknown_linux_musl = Some(--target=aarch64-unknown-linux-musl -B/usr/lib/xsh-crt/aarch64-unknown-linux-musl -I/usr/include)
+  cargo:rerun-if-env-changed=CC_SHELL_ESCAPED_FLAGS
+  CC_SHELL_ESCAPED_FLAGS = None
+  cargo:rerun-if-env-changed=CFLAGS_aarch64-unknown-linux-musl
+  CFLAGS_aarch64-unknown-linux-musl = None
+  cargo:rerun-if-env-changed=CC_FORCE_DISABLE
+  CC_FORCE_DISABLE = None
+  cargo:rerun-if-env-changed=CC_aarch64-unknown-linux-musl
+  CC_aarch64-unknown-linux-musl = None
+  cargo:rerun-if-env-changed=CC_aarch64_unknown_linux_musl
+  CC_aarch64_unknown_linux_musl = Some(/opt/llvm-musl/bin/clang)
+  cargo:rerun-if-env-changed=CRATE_CC_NO_DEFAULTS
+  CRATE_CC_NO_DEFAULTS = None
+  cargo:rerun-if-env-changed=CFLAGS
+  CFLAGS = None
+  cargo:rerun-if-env-changed=HOST_CFLAGS
+  HOST_CFLAGS = None
+  cargo:rerun-if-env-changed=CFLAGS_aarch64_unknown_linux_musl
+  CFLAGS_aarch64_unknown_linux_musl = Some(--target=aarch64-unknown-linux-musl -B/usr/lib/xsh-crt/aarch64-unknown-linux-musl -I/usr/include)
+  cargo:rerun-if-env-changed=CC_SHELL_ESCAPED_FLAGS
+  CC_SHELL_ESCAPED_FLAGS = None
+  cargo:rerun-if-env-changed=CFLAGS_aarch64-unknown-linux-musl
+  CFLAGS_aarch64-unknown-linux-musl = None
+  cargo:warning=/root/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/aws-lc-sys-0.41.0/aws-lc/tests/compiler_features_tests/linux_random_h.c:15:10: fatal error: 'linux/random.h' file not found
+  cargo:warning=   15 | #include <linux/random.h>
+  cargo:warning=      |          ^~~~~~~~~~~~~~~~
+  cargo:warning=1 error generated.
+  cargo:warning=Compilation of 'linux_random_h.c' failed - Err(Error { kind: ToolExecError, message: "command did not execute successfully (status code exit status: 1): LC_ALL=\"C\" \"/opt/llvm-musl/bin/clang\" \"-O3\" \"-ffunction-sections\" \"-fdata-sections\" \"-fPIC\" \"--target=aarch64-unknown-linux-musl\" \"-Werror\" \"-Wno-unused-parameter\" \"--target=aarch64-unknown-linux-musl\" \"-B/usr/lib/xsh-crt/aarch64-unknown-linux-musl\" \"-I/usr/include\" \"-o\" \"/work/target/aarch64-unknown-linux-musl/dist/build/aws-lc-sys-617f50e1c4aaad90/out/out-linux_random_h/7dfda64fdf5a526c-linux_random_h.o\" \"-c\" \"/root/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/aws-lc-sys-0.41.0/aws-lc/tests/compiler_features_tests/linux_random_h.c\"" }).
+  cargo:rerun-if-env-changed=CC_aarch64-unknown-linux-musl
+  CC_aarch64-unknown-linux-musl = None
+  cargo:rerun-if-env-changed=CC_aarch64_unknown_linux_musl
+  CC_aarch64_unknown_linux_musl = Some(/opt/llvm-musl/bin/clang)
+  cargo:rerun-if-env-changed=CC_ENABLE_DEBUG_OUTPUT
+  cargo:rerun-if-env-changed=CRATE_CC_NO_DEFAULTS
+  CRATE_CC_NO_DEFAULTS = None
+  cargo:rerun-if-env-changed=CFLAGS
+  CFLAGS = None
+  cargo:rerun-if-env-changed=HOST_CFLAGS
+  HOST_CFLAGS = None
+  cargo:rerun-if-env-changed=CFLAGS_aarch64_unknown_linux_musl
+  CFLAGS_aarch64_unknown_linux_musl = Some(--target=aarch64-unknown-linux-musl -B/usr/lib/xsh-crt/aarch64-unknown-linux-musl -I/usr/include)
+  cargo:rerun-if-env-changed=CC_SHELL_ESCAPED_FLAGS
+  CC_SHELL_ESCAPED_FLAGS = None
+  cargo:rerun-if-env-changed=CFLAGS_aarch64-unknown-linux-musl
+  CFLAGS_aarch64-unknown-linux-musl = None
+  cargo:rerun-if-env-changed=CC_FORCE_DISABLE
+  CC_FORCE_DISABLE = None
+  cargo:rerun-if-env-changed=CC_aarch64-unknown-linux-musl
+  CC_aarch64-unknown-linux-musl = None
+  cargo:rerun-if-env-changed=CC_aarch64_unknown_linux_musl
+  CC_aarch64_unknown_linux_musl = Some(/opt/llvm-musl/bin/clang)
+  cargo:rerun-if-env-changed=CRATE_CC_NO_DEFAULTS
+  CRATE_CC_NO_DEFAULTS = None
+  cargo:rerun-if-env-changed=CFLAGS
+  CFLAGS = None
+  cargo:rerun-if-env-changed=HOST_CFLAGS
+  HOST_CFLAGS = None
+  cargo:rerun-if-env-changed=CFLAGS_aarch64_unknown_linux_musl
+  CFLAGS_aarch64_unknown_linux_musl = Some(--target=aarch64-unknown-linux-musl -B/usr/lib/xsh-crt/aarch64-unknown-linux-musl -I/usr/include)
+  cargo:rerun-if-env-changed=CC_SHELL_ESCAPED_FLAGS
+  CC_SHELL_ESCAPED_FLAGS = None
+  cargo:rerun-if-env-changed=CFLAGS_aarch64-unknown-linux-musl
+  CFLAGS_aarch64-unknown-linux-musl = None
+  cargo:warning=/root/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/aws-lc-sys-0.41.0/aws-lc/tests/compiler_features_tests/linux_random_h.c:15:10: fatal error: 'linux/random.h' file not found
+  cargo:warning=   15 | #include <linux/random.h>
+  cargo:warning=      |          ^~~~~~~~~~~~~~~~
+  cargo:warning=1 error generated.
+  cargo:warning=Compilation of 'linux_random_h.c' failed - Err(Error { kind: ToolExecError, message: "command did not execute successfully (status code exit status: 1): LC_ALL=\"C\" \"/opt/llvm-musl/bin/clang\" \"-O3\" \"-ffunction-sections\" \"-fdata-sections\" \"-fPIC\" \"--target=aarch64-unknown-linux-musl\" \"-Werror\" \"-DDEFINE_U32\" \"-Wno-unused-parameter\" \"--target=aarch64-unknown-linux-musl\" \"-B/usr/lib/xsh-crt/aarch64-unknown-linux-musl\" \"-I/usr/include\" \"-o\" \"/work/target/aarch64-unknown-linux-musl/dist/build/aws-lc-sys-617f50e1c4aaad90/out/out-linux_random_h/7dfda64fdf5a526c-linux_random_h.o\" \"-c\" \"/root/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/aws-lc-sys-0.41.0/aws-lc/tests/compiler_features_tests/linux_random_h.c\"" }).
+  cargo:rerun-if-env-changed=CC_aarch64-unknown-linux-musl
+  CC_aarch64-unknown-linux-musl = None
+  cargo:rerun-if-env-changed=CC_aarch64_unknown_linux_musl
+  CC_aarch64_unknown_linux_musl = Some(/opt/llvm-musl/bin/clang)
+  cargo:rerun-if-env-changed=CC_ENABLE_DEBUG_OUTPUT
+  cargo:rerun-if-env-changed=CRATE_CC_NO_DEFAULTS
+  CRATE_CC_NO_DEFAULTS = None
+  cargo:rerun-if-env-changed=CFLAGS
+  CFLAGS = None
+  cargo:rerun-if-env-changed=HOST_CFLAGS
+  HOST_CFLAGS = None
+  cargo:rerun-if-env-changed=CFLAGS_aarch64_unknown_linux_musl
+  CFLAGS_aarch64_unknown_linux_musl = Some(--target=aarch64-unknown-linux-musl -B/usr/lib/xsh-crt/aarch64-unknown-linux-musl -I/usr/include)
+  cargo:rerun-if-env-changed=CC_SHELL_ESCAPED_FLAGS
+  CC_SHELL_ESCAPED_FLAGS = None
+  cargo:rerun-if-env-changed=CFLAGS_aarch64-unknown-linux-musl
+  CFLAGS_aarch64-unknown-linux-musl = None
+
+  --- stderr
+
+  thread 'main' (116) panicked at /root/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/aws-lc-sys-0.41.0/builder/cc_builder.rs:748:9:
+  COMPILER: /opt/llvm-musl/bin/clangARGS: ["-O3", "-ffunction-sections", "-fdata-sections", "-fPIC", "--target=aarch64-unknown-linux-musl", "--target=aarch64-unknown-linux-musl", "-B/usr/lib/xsh-crt/aarch64-unknown-linux-musl", "-I/usr/include", "/root/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/aws-lc-sys-0.41.0/aws-lc/tests/compiler_features_tests/memcmp_invalid_stripped_check.c", "-Wno-unused-parameter", "-o", "/work/target/aarch64-unknown-linux-musl/dist/build/aws-lc-sys-617f50e1c4aaad90/out/memcmp_invalid_stripped_check"]EXECUTED: trueERROR: ld.lld: error: unable to find library -lunwind
+  ld.lld: error: unable to find library -lunwind
+  clang: error: linker command failed with exit code 1 (use -v to see invocation)
+  OUTPUT: Failed to compile memcmp_invalid_stripped_check
+              
+  note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+warning: build failed, waiting for other jobs to finish...
+make: *** [dist-Linux-docker] Error 101

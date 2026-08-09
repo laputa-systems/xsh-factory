@@ -46,20 +46,15 @@ XSH_MODULE_PATH=. xsh run.xsh templates/ORGANIZATION-REQUEST.md
 
 Before launch, the CTO reviews every remaining `Open.` ticket. The CTO checks
 evidence, duplication, scope, and acceptance criteria.
-The controller reconciles merged tickets and admits one complete organization
-delivery transaction.
-It starts safe independent phases concurrently.
-It replays successful tickets against linked evals. The optional independent
-eval lane adapts to queue pressure so product delivery keeps capacity when the
-ticket queue is crowded.
+The controller reconciles merged tickets and, when a branchless approved
+ticket is ready, admits one complete delivery transaction and its linked replay.
+No independent eval shares that transaction. When no ticket is ready, it runs
+one least-recently-tried approved discovery eval as the primary phase.
 It can produce, review, and promote one eval proposal.
-With no approved ticket, the selected eval becomes the primary phase.
 
 When reviewing ticket state, use the deterministic CTO inventory before an
 organization request template:
 
-```sh
-```
 ```sh
 XSH_MODULE_PATH=. xsh factory/tools/cto.xsh
 ```
@@ -83,9 +78,7 @@ Run a focused eval, ticket implementation, or design phase with its request
 template:
 
 ```sh
-XSH_MODULE_PATH=. xsh run.xsh templates/ORGANIZATION-REQUEST.md
 XSH_MODULE_PATH=. xsh factory/tools/eval-trends.xsh -- --factory-dir . --format table
-XSH_MODULE_PATH=. xsh run.xsh templates/ORGANIZATION-REQUEST.md
 ```
 
 Never launch Pi directly. Request templates live under `templates/`; the

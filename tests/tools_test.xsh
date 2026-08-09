@@ -753,6 +753,9 @@ exit 17
   let report = json.read(fp"${run_dir}/report.json")?
   test.ok(schema.valid(report, "phase"))?
   test.eq(schema.value_text(json.get(report, ["result"], "")), "fail")?
+  test.eq(schema.value_text(json.get(report, ["data", "outcomes", "product"], "")), "pass")?
+  test.eq(schema.value_text(json.get(report, ["data", "outcomes", "evaluator"], "")), "fail")?
+  test.eq(schema.value_text(json.get(report, ["data", "outcomes", "infrastructure"], "")), "fail")?
   let report_text = fs.read_text(fp"${run_dir}/report.json")?
   test.contains(report_text, "\"stage\": \"xsh\"")?
 }
