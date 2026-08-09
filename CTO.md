@@ -284,11 +284,19 @@ exists, identifies the exact next-cycle verification or safe inverse, and is
 linked from the CTO briefing. The improvement must address the bottleneck
 identified for that cycle, not merely record that the cycle produced no ticket.
 
-Before declaring a user-requested cycle complete, the CTO closes that cycle
-once with a dedicated commit in the factory checkout, regardless of whether
-its one attempt passed, failed, or stopped with partial evidence. Stage only
-the run's factory changes and durable evidence (including any scoped policy,
-ticket, eval, handbook-ledger, documentation, and run-evidence changes).
+Before declaring a user-requested cycle complete, the CTO confirms that every
+reviewable engineer candidate has a controller-owned hygiene event. Before
+provenance, the ticket controller runs `cargo build -p xsht --bin xsht` and
+`target/debug/xsht lint --fix` in the isolated candidate worktree, preserves
+both command streams in `events.jsonl`, and accepts only a clean result. A
+post-commit autofix fails the candidate and retains its branch; the CTO never
+uses a closeout lint command to mutate XSH `HEAD` after its replay gate.
+
+The CTO then closes that cycle once with a dedicated commit in the factory
+checkout, regardless of whether its one attempt passed, failed, or stopped
+with partial evidence. Stage only the run's factory changes and durable
+evidence (including any scoped policy, ticket, eval, handbook-ledger,
+documentation, and run-evidence changes).
 `runs/.gitignore` excludes transient controller plumbing; it does not exclude
 the reports, narratives, manifests, compressed sessions, events, patches, or
 other evidence needed for later review. Keep unrelated user work out of the

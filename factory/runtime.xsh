@@ -33,6 +33,18 @@ export type DeliveryEvidence = {
   implementation_commit: Str,
 }
 
+## Controller-owned evidence for the candidate hygiene boundary. The build and
+## lint commands run only in an isolated engineer worktree before provenance,
+## so an autofix can never mutate XSH `HEAD` after its replay has passed.
+export type EngineerHygiene = {
+  attempted: Bool,
+  build_ok: Bool,
+  lint_ok: Bool,
+  worktree_clean: Bool,
+  build_exit: Int,
+  lint_exit: Int,
+}
+
 ## Terminates all registered children of the active run.
 export proc cleanup_active_run() [fs, process, env, error] -> Result[Unit] {
   let configured_factory = env.get_or("FACTORY_DIR", "")?
@@ -601,6 +613,98 @@ export proc write_engineer_patch(
   }
 
   return fs.metadata(patch_path)?.size > 0
+}
+
+## Captures a controller-created uncommitted hygiene diff before forced
+## worktree cleanup. The original engineer branch remains unchanged; this
+## patch is durable evidence for the next explicit corrective assignment.
+export proc write_worktree_diff(
+  worktree: Path,
+  patch_path: Path,
+  stderr_path: Path,
+) [fs, process, error] -> Result[Bool] {
+  let status = process.run(
+    process.command_argv(
+      "git",
+      [
+        "git",
+        "-C",
+        worktree.display(),
+        "diff",
+        "--binary",
+        "--no-ext-diff",
+      ],
+      stdout: patch_path,
+      stderr: stderr_path,
+    ),
+  )?
+  return status.ok and fs.exists(patch_path)? and fs.metadata(patch_path)?.size > 0
+}
+
+## Rebuilds the candidate `xsht`, then runs its conservative lint autofixer in
+## the isolated engineer worktree. The caller accepts the candidate only when
+## the fixer leaves that worktree clean: fixes belong in the engineer commit,
+## never in a post-merge CTO closeout mutation.
+export proc run_engineer_hygiene(
+  worktree: Path,
+  cargo: Str,
+  build_stdout: Path,
+  build_stderr: Path,
+  lint_stdout: Path,
+  lint_stderr: Path,
+) [fs, process, error] -> Result[EngineerHygiene] {
+  let build = process.run(
+    process.command_argv(
+      cargo,
+      [cargo, "build", "-p", "xsht", "--bin", "xsht"],
+      cwd: worktree,
+      stdout: build_stdout,
+      stderr: build_stderr,
+    ),
+  )?
+  let build_exit = if build.ok { 0 } else { build.exit_code() ?? 1 }
+  if ! build.ok {
+    return {
+      attempted: true,
+      build_ok: false,
+      lint_ok: false,
+      worktree_clean: false,
+      build_exit: build_exit,
+      lint_exit: -1,
+    }
+  }
+
+  let xsht = fp"${worktree}/target/debug/xsht"
+  if ! fs.exists(xsht)? {
+    return {
+      attempted: true,
+      build_ok: true,
+      lint_ok: false,
+      worktree_clean: false,
+      build_exit: build_exit,
+      lint_exit: -1,
+    }
+  }
+
+  let lint = process.run(
+    process.command_argv(
+      xsht,
+      [xsht.display(), "lint", "--fix"],
+      cwd: worktree,
+      stdout: lint_stdout,
+      stderr: lint_stderr,
+    ),
+  )?
+  let lint_exit = if lint.ok { 0 } else { lint.exit_code() ?? 1 }
+  let worktree_status = run.text "git" "-C" $worktree "status" "--porcelain" ?
+  return {
+    attempted: true,
+    build_ok: build.ok,
+    lint_ok: lint.ok,
+    worktree_clean: worktree_status.trim() == "",
+    build_exit: build_exit,
+    lint_exit: lint_exit,
+  }
 }
 
 ## Computes the scratch root for a ticket worktree outside the factory checkout.

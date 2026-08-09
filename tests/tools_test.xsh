@@ -393,6 +393,7 @@ proc test_ticket_controller_happy_path_with_fake_pi(ctx: TestContext) [fs, proce
   let product = fp"${root}/product"
   let run_dir = fp"${source_factory}/runs/run-ticket-coverage-${root.name()}"
   let bin_dir = fp"${root}/bin"
+  let fake_cargo = fp"${bin_dir}/cargo"
   let fake_pi = fp"${bin_dir}/factory-coverage-pi"
   let ticket_id = "coverage-ticket"
   fs.mkdir(fixture_root)?
@@ -453,11 +454,16 @@ The controller path remains bounded and evidence-driven.
     """fixture product
 """,
   )?
+  fs.write(
+    fp"${product}/.gitignore",
+    """target/
+""",
+  )?
   let git = process.which("git")?
   test.ok(command_ok(git, ["git", "init", "-q", product.display()])?)?
   test.ok(command_ok(git, ["git", "-C", product.display(), "config", "user.email", "coverage@example.test"])?)?
   test.ok(command_ok(git, ["git", "-C", product.display(), "config", "user.name", "Coverage Fixture"])?)?
-  test.ok(command_ok(git, ["git", "-C", product.display(), "add", "README.md"])?)?
+  test.ok(command_ok(git, ["git", "-C", product.display(), "add", "README.md", ".gitignore"])?)?
   test.ok(command_ok(git, ["git", "-C", product.display(), "commit", "-qm", "fixture baseline"])?)?
   fs.write(
     fp"${root}/auth.json",
@@ -466,6 +472,18 @@ The controller path remains bounded and evidence-driven.
   )?
   fs.write(fp"${root}/active", "")?
   fs.write(fp"${root}/factory.lock", "")?
+  fs.write(
+    fake_cargo,
+    r"""#!/bin/sh
+mkdir -p target/debug
+cat > target/debug/xsht <<'EOF'
+#!/bin/sh
+printf 'fixture xsht lint %s %s\\n' "$1" "$2"
+EOF
+chmod +x target/debug/xsht
+printf 'fixture debug build\\n'
+""",
+  )?
   fs.write(
     fake_pi,
     r"""#!/bin/sh
@@ -549,7 +567,7 @@ EOF
 exit 0
 """,
   )?
-  test.ok(command_ok(process.which("chmod")?, ["chmod", "+x", fake_pi.display()])?)?
+  test.ok(command_ok(process.which("chmod")?, ["chmod", "+x", fake_cargo.display(), fake_pi.display()])?)?
   let xsh = process.which("xsh")?
   let inherited_path = env.get("PATH")?
   let env_path = f"${bin_dir.display()}:${inherited_path}"
@@ -591,10 +609,92 @@ exit 0
   )?
   test.ok(fs.exists(fp"${run_dir}/patches/${ticket_id}.diff")?)?
   test.ok(! fs.exists(runtime.ticket_worktree_path(product, run_dir, ticket_id))?)?
+  let events = fs.read_text(fp"${run_dir}/events.jsonl")?
+  test.contains(events, f"72-ticket-${ticket_id}-hygiene")?
+  test.contains(events, "cargo build -p xsht --bin xsht && target/debug/xsht lint --fix")?
+  test.contains(events, "fixture debug build")?
+  test.contains(events, "fixture xsht lint lint --fix")?
   let branches = run.text "git" "-C" $product "branch" "--format=%(refname:short)" ?
   test.ok(f"factory/${ticket_id}/" in branches)?
   let phase_report = json.read(fp"${run_dir}/report.json")?
   test.eq(schema.value_text(json.get(phase_report, ["result"], "")), "pass")?
+}
+
+proc test_engineer_hygiene_rebuilds_and_rejects_lint_mutation(ctx: TestContext) [fs, process, error] {
+  let root = test.temp_dir(ctx, name: "engineer-hygiene")?
+  let worktree = fp"${root}/worktree"
+  let evidence = fp"${root}/evidence"
+  let bin_dir = fp"${root}/bin"
+  let clean_cargo = fp"${bin_dir}/clean-cargo"
+  let dirty_cargo = fp"${bin_dir}/dirty-cargo"
+  let git = process.which("git")?
+  fs.mkdir(worktree)?
+  fs.mkdir(evidence)?
+  fs.mkdir(bin_dir)?
+  fs.write(fp"${worktree}/README.md", "fixture\n")?
+  fs.write(fp"${worktree}/.gitignore", "target/\n")?
+  test.ok(command_ok(git, ["git", "init", "-q", worktree.display()])?)?
+  test.ok(command_ok(git, ["git", "-C", worktree.display(), "config", "user.email", "hygiene@example.test"])?)?
+  test.ok(command_ok(git, ["git", "-C", worktree.display(), "config", "user.name", "Hygiene Fixture"])?)?
+  test.ok(command_ok(git, ["git", "-C", worktree.display(), "add", "README.md", ".gitignore"])?)?
+  test.ok(command_ok(git, ["git", "-C", worktree.display(), "commit", "-qm", "fixture baseline"])?)?
+  fs.write(
+    clean_cargo,
+    r"""#!/bin/sh
+mkdir -p target/debug
+cat > target/debug/xsht <<'EOF'
+#!/bin/sh
+printf 'clean lint %s %s\\n' "$1" "$2"
+EOF
+chmod +x target/debug/xsht
+printf 'clean debug build\\n'
+""",
+  )?
+  fs.write(
+    dirty_cargo,
+    r"""#!/bin/sh
+mkdir -p target/debug
+cat > target/debug/xsht <<'EOF'
+#!/bin/sh
+printf 'dirty lint %s %s\\n' "$1" "$2"
+printf 'fixed\\n' >> README.md
+EOF
+chmod +x target/debug/xsht
+printf 'dirty debug build\\n'
+""",
+  )?
+  test.ok(command_ok(process.which("chmod")?, ["chmod", "+x", clean_cargo.display(), dirty_cargo.display()])?)?
+
+  let clean = runtime.run_engineer_hygiene(
+    worktree,
+    clean_cargo.display(),
+    fp"${evidence}/clean-build.stdout",
+    fp"${evidence}/clean-build.stderr",
+    fp"${evidence}/clean-lint.stdout",
+    fp"${evidence}/clean-lint.stderr",
+  )?
+  test.ok(clean.attempted)?
+  test.ok(clean.build_ok)?
+  test.ok(clean.lint_ok)?
+  test.ok(clean.worktree_clean)?
+  test.contains(fs.read_text(fp"${evidence}/clean-build.stdout")?, "clean debug build")?
+  test.contains(fs.read_text(fp"${evidence}/clean-lint.stdout")?, "clean lint lint --fix")?
+
+  let dirty = runtime.run_engineer_hygiene(
+    worktree,
+    dirty_cargo.display(),
+    fp"${evidence}/dirty-build.stdout",
+    fp"${evidence}/dirty-build.stderr",
+    fp"${evidence}/dirty-lint.stdout",
+    fp"${evidence}/dirty-lint.stderr",
+  )?
+  test.ok(dirty.build_ok)?
+  test.ok(dirty.lint_ok)?
+  test.ok(! dirty.worktree_clean, "an autofix after the engineer commit must retain the candidate")?
+  test.contains(fs.read_text(fp"${worktree}/README.md")?, "fixed")?
+  let diff_path = fp"${evidence}/hygiene.diff"
+  test.ok(runtime.write_worktree_diff(worktree, diff_path, fp"${evidence}/hygiene.stderr")?)?
+  test.contains(fs.read_text(diff_path)?, "README.md")?
 }
 
 proc test_eval_controller_persists_build_preflight_failure(ctx: TestContext) [fs, process, env, error] {
@@ -3123,7 +3223,8 @@ proc test_task_histogram_restriction_accepts_typed_unsigned_parse() [fs, error] 
   let evaluator = fs.read_text(fp"${fs.cwd()?}/evals/task-histogram/evaluator.xsh")?
   let contract = fs.read_text(fp"${fs.cwd()?}/evals/task-histogram/EVAL.md")?
   test.contains(evaluator, "let typed_integer_parse = \"parse_int\" in source or \"parse_uint\" in source")?
-  test.contains(evaluator, "typed_integer_parse and \"sort-by\" in source")?
+  test.contains(evaluator, "let typed_file_read = \"fs.read_text\" in source or \".read_text\" in source")?
+  test.contains(evaluator, "typed_file_read and typed_integer_parse and sorted_stream")?
   test.contains(evaluator, "hidden_padded_width")?
   test.contains(evaluator, "sed 's/^[[:space:]]*//;s/[[:space:]]*$//'")?
   test.contains(
@@ -3171,6 +3272,23 @@ proc test_task_bigfiles_evaluator_is_package_owned() [fs, error] {
   test.contains(evaluator, "sort -k1,1rn")?
   test.contains(evaluator, "rel: \".hidden-note\"")?
   test.contains(task, "dot-prefixed regular files")?
+}
+
+proc test_task_histogram_replay_contract_exercises_ticket_defining_behavior() [fs, error] {
+  let evaluator = fs.read_text(fp"${fs.cwd()?}/evals/task-histogram/evaluator.xsh")?
+  let contract = fs.read_text(fp"${fs.cwd()?}/evals/task-histogram/EVAL.md")?
+  let task = fs.read_text(fp"${fs.cwd()?}/evals/task-histogram/runtime/task.md")?
+  let controller = fs.read_text(fp"${fs.cwd()?}/factory/controllers/eval.xsh")?
+  let executor = fs.read_text(fp"${fs.cwd()?}/factory/entrypoints/eval-executor.xsh")?
+  test.contains(evaluator, "run_filter_stage_diagnostic")?
+  test.contains(evaluator, "FACTORY_REEVAL_TICKET")?
+  test.contains(evaluator, "diagnostic_failed")?
+  test.contains(evaluator, "typed_file_read")?
+  test.contains(evaluator, "expected record field")?
+  test.contains(contract, "hard candidate gate only for that ticket's replay")?
+  test.contains(task, "typed file read is required")?
+  test.contains(controller, "FACTORY_REEVAL_TICKET")?
+  test.contains(executor, "FACTORY_REEVAL_TICKET")?
 }
 
 proc test_eval_dispatch_is_package_owned() [fs, error] {
@@ -3611,7 +3729,7 @@ proc test_run_status_inspects_live_and_completed_evidence(ctx: TestContext) [fs,
   let controller_pid = process.current_pid()?
   let child = spawn process.command_argv("sh", ["sh", "-c", "sleep 10"])?
   let zombie = spawn process.command_argv("sh", ["sh", "-c", "exit 0"])?
-  let _zombie_ready = process.wait_ready([zombie])?
+  let _ = process.wait_ready([zombie])?
   fs.write(
     fp"${run_dir}/processes/controller.pids",
     f"""${controller_pid}

@@ -2,7 +2,7 @@
 use factory.evals as evals
 use factory.types as types
 
-proc test_eval_package_status_and_boundaries_are_admission_ready(ctx: TestContext) [fs, error] {
+proc test_eval_package_status_and_boundaries_are_admission_ready() [fs, error] {
   let contract = fs.read_text(fp"${fs.cwd()?}/evals/task-ecount/EVAL.md")? + """
 
 ## Difficulty justification

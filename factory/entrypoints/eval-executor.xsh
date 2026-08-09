@@ -252,6 +252,8 @@ ${limit_watcher.pid}
     "--env",
     f"FACTORY_PLATFORM=${platform}",
     "--env",
+    f"FACTORY_REEVAL_TICKET=${env.get_or("FACTORY_REEVAL_TICKET", "")?}",
+    "--env",
     f"FACTORY_EVAL_WORKER_PROVIDER=${provider}",
     "--env",
     f"FACTORY_EVAL_WORKER_MODEL=${model}",

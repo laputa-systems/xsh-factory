@@ -136,10 +136,19 @@ The evaluator checks the source does not contain the forbidden subprocess
 boundary, requires that the source references a typed file read
 (`fs.read_text` or `.read_text`), a typed integer parse (`parse_int` or
 `parse_uint`), and a `sort-by` stage so a hard-coded answer is classified as a
-restriction failure, and checks that `review.md` preserves both required
-headings and contains no template placeholders. The strict unsigned
-`parse_uint` surface is accepted when the candidate contract requires sign
-rejection.
+restriction failure. Its manifest names each restriction separately, including
+the typed-file-read requirement, so a failed candidate has a direct corrective
+boundary rather than a generic rejection. It also checks that `review.md`
+preserves both required headings and contains no template placeholders. The
+strict unsigned `parse_uint` surface is accepted when the candidate contract
+requires sign rejection.
+
+For the linked replay of `task-histogram-006`, the package additionally
+compiles `filter { |value| ... }` and requires a readable nonzero diagnostic
+that names `filter` and recommends `where`, without the former record-literal
+cascade. It separately checks and lints the documented `where` form. This
+diagnostic probe is a hard candidate gate only for that ticket's replay; normal
+discovery trials retain the ordinary histogram contract.
 
 ## Metrics
 

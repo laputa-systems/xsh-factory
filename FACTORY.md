@@ -219,5 +219,10 @@ Then run a minimum user-facing cycle through `run.xsh`, inspect its
 `report.json` and `CTO-REPORT.md`, verify that the persisted tree contains only
 the declared outputs, and commit the durable run evidence selected by
 `runs/.gitignore`. Transient controller plumbing is intentionally ignored;
-durable reports and raw evidence are not. Never run formatters, autofixers,
-pre-commit hooks, or direct Pi commands as part of this contract.
+durable reports and raw evidence are not. The ticket controller alone runs
+`cargo build -p xsht --bin xsht` followed by `target/debug/xsht lint --fix`
+in an isolated engineer worktree before provenance. It records the command
+outputs in the lifecycle ledger and fails closed unless the worktree remains
+clean; it never autofixes XSH `HEAD` after replay or merge. Do not run other
+formatters, autofixers, pre-commit hooks, or direct Pi commands as part of this
+contract.

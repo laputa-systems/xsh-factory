@@ -29,6 +29,12 @@ per-bin counts with a keyed aggregation, sort the occupied bins, and fold the
 cumulative total. It must not start subprocesses, invoke an external command,
 or add diagnostic text to stdout.
 
+The typed file read is required: the submitted source must visibly use
+`fs.read_text` or a typed `.read_text` method before parsing the
+measurements. A solution that obtains the values by another route is outside
+this task's restriction contract even if its output happens to match the
+oracle.
+
 Use the handbook and the available `xsht` checks as the reference. A normal
 development loop is:
 

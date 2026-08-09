@@ -150,6 +150,13 @@ proc preflight(
     return false
   }
 
+  if candidate_tickets.len() > 0 {
+    # The ticket controller rebuilds the candidate xsht before its provenance
+    # boundary, so reject a missing Rust toolchain before any paid engineer is
+    # admitted rather than after its implementation has completed.
+    let _ = process.which("cargo")?
+  }
+
   for candidate_ticket in candidate_tickets {
     if ! control.valid_ticket_id(candidate_ticket) {
       eprint f"unsafe ticket id: ${candidate_ticket}"

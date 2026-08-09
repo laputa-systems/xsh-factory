@@ -54,7 +54,8 @@ The product-critical path is intentionally narrow:
 CTO inventory
   -> reserve one fresh approved ticket
   -> fresh engineer in an isolated XSH worktree
-  -> report, branch, clean-worktree, patch, and provenance checks
+  -> fresh debug xsht build and lint autofix; clean-worktree check
+  -> report, branch, patch, and provenance checks
   -> linked replay of the exact candidate behavior
   -> correctness/restriction/protocol/manager gates
   -> validated merge into XSH HEAD

@@ -1012,7 +1012,6 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
       # A retained replay is quality evidence for an already-existing branch.
       # If its bounded manager closeout defers, keep the branch available for a
       # later replay without allowing that old row to block fresh delivery.
-      let retained_replay_deferred = retained_replay and ! reeval_pass
       let effective_reeval_pass = reeval_pass or retained_replay
       reeval_pass_for_result = reeval_pass_for_result and effective_reeval_pass
       let delivery = if reeval_pass {

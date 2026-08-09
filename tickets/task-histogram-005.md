@@ -18,6 +18,21 @@ Open.
   replay or a new CTO decision, and let the next approved retained branch use
   the bounded replay lane.
 
+## CTO replay-contract repair 2026-08-08
+
+- Decision: The package contract now names the typed-file-read restriction in
+  both the task statement and evaluator manifest. A directed retained replay is
+  permitted when it explicitly produces `histogram.xsh` with `fs.read_text`
+  or `.read_text`; output-only correctness remains insufficient.
+- Evidence: `evals/task-histogram/runtime/task.md` and
+  `evals/task-histogram/evaluator.xsh` now make the failed boundary visible as
+  `restrictions.typed_file_read`, alongside the existing parse, sort, and
+  subprocess checks.
+- Next action: Preserve
+  `factory/task-histogram-005/1786212466873` and use one bounded retained
+  replay only after the manager-watcher repair is validated. This is retained
+  reconciliation, not fresh-throughput qualification.
+
 ## CTO review — cycle 25 close
 
 - Decision: Approved for controlled implementation in the next organization cycle.

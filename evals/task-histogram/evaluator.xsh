@@ -12,6 +12,14 @@ type CaseResult = {
   oracle_wall_ns: Int,
 }
 
+type StreamStageDiagnostic = {
+  required: Bool,
+  passed: Bool,
+  filter_exit: Int,
+  where_check_exit: Int,
+  where_lint_exit: Int,
+}
+
 pure source_has_forbidden_subprocess(source: Str) -> Bool {
   for line in source.lines() {
     let code = line.split("#").get(0, "")
@@ -85,6 +93,73 @@ proc run_case(index: Int, case: Case, oracle: Path) [fs, process, time, error] -
     oracle_exit: oracle_result.status.exit_code() ?? -1,
     candidate_wall_ns: candidate.wall_ns,
     oracle_wall_ns: oracle_result.wall_ns,
+  }
+}
+
+## Ticket task-histogram-006 changes a product diagnostic, so its linked replay
+## must exercise that diagnostic instead of inferring success from the ordinary
+## histogram artifact. The probe also protects the documented where spelling.
+proc run_filter_stage_diagnostic() [fs, process, error] -> Result[StreamStageDiagnostic] {
+  let filter_probe = /tmp/task-histogram-filter-stage.xsh
+  let where_probe = /tmp/task-histogram-where-stage.xsh
+  let filter_stdout = /session/task-histogram-filter-stage.stdout
+  let filter_stderr = /session/task-histogram-filter-stage.stderr
+  let where_check_stdout = /session/task-histogram-where-check.stdout
+  let where_check_stderr = /session/task-histogram-where-check.stderr
+  let where_lint_stdout = /session/task-histogram-where-lint.stdout
+  let where_lint_stderr = /session/task-histogram-where-lint.stderr
+  fs.write(
+    filter_probe,
+    """let values = ["alpha", ""]
+let filtered = values |> filter { |value| value != "" } |> collect()
+print filtered.len()
+""",
+  )?
+  fs.write(
+    where_probe,
+    """let values = ["alpha", ""]
+let filtered = values |> where { |value| value != "" } |> collect()
+print filtered.len()
+""",
+  )?
+  let filter = process.run(
+    process.command_argv(
+      "xsht",
+      ["xsht", "check", filter_probe.display()],
+      stdout: filter_stdout,
+      stderr: filter_stderr,
+    ),
+  )?
+  let where_check = process.run(
+    process.command_argv(
+      "xsht",
+      ["xsht", "check", where_probe.display()],
+      stdout: where_check_stdout,
+      stderr: where_check_stderr,
+    ),
+  )?
+  let where_lint = process.run(
+    process.command_argv(
+      "xsht",
+      ["xsht", "lint", where_probe.display()],
+      stdout: where_lint_stdout,
+      stderr: where_lint_stderr,
+    ),
+  )?
+  let filter_output = if fs.exists(filter_stdout)? { filter_stdout.read_text()? } else { "" }
+  let filter_errors = if fs.exists(filter_stderr)? { filter_stderr.read_text()? } else { "" }
+  let filter_text = filter_output + filter_errors
+  let names_stage = "filter" in filter_text and "where" in filter_text
+  let avoids_literal_cascade = "expected record field" not in filter_text and "expected } after record" not in filter_text
+  let filter_exit = if filter.ok { 0 } else { filter.exit_code() ?? 1 }
+  let where_check_exit = if where_check.ok { 0 } else { where_check.exit_code() ?? 1 }
+  let where_lint_exit = if where_lint.ok { 0 } else { where_lint.exit_code() ?? 1 }
+  return {
+    required: true,
+    passed: ! filter.ok and names_stage and avoids_literal_cascade and where_check.ok and where_lint.ok,
+    filter_exit: filter_exit,
+    where_check_exit: where_check_exit,
+    where_lint_exit: where_lint_exit,
   }
 }
 
@@ -226,12 +301,24 @@ awk -v w="$width" '
   }
 
   let source = if artifact_present { artifact.read_text()? } else { "" }
+  let typed_file_read = "fs.read_text" in source or ".read_text" in source
   let typed_integer_parse = "parse_int" in source or "parse_uint" in source
-  let restriction_ok = artifact_present and ("fs.read_text" in source or ".read_text" in source) and typed_integer_parse and "sort-by" in source and ! source_has_forbidden_subprocess(
-    source,
-  )
+  let sorted_stream = "sort-by" in source
+  let forbidden_subprocess = source_has_forbidden_subprocess(source)
+  let restriction_ok = artifact_present and typed_file_read and typed_integer_parse and sorted_stream and ! forbidden_subprocess
   let protocol_ok = review_ok()?
-  let passed = all_exact and restriction_ok and protocol_ok
+  let diagnostic = if env.get_or("FACTORY_REEVAL_TICKET", "")? == "task-histogram-006" {
+    run_filter_stage_diagnostic()?
+  } else {
+    {
+      required: false,
+      passed: true,
+      filter_exit: -1,
+      where_check_exit: -1,
+      where_lint_exit: -1,
+    }
+  }
+  let passed = all_exact and restriction_ok and protocol_ok and diagnostic.passed
   json.write(
     /session/run.json,
     {
@@ -246,6 +333,8 @@ awk -v w="$width" '
         "protocol_failed"
       } else if ! restriction_ok {
         "restriction_failed"
+      } else if ! diagnostic.passed {
+        "diagnostic_failed"
       } else if ! all_exact {
         "candidate_failed"
       } else {
@@ -262,6 +351,17 @@ awk -v w="$width" '
       },
       restrictions: {
         passed: restriction_ok,
+        typed_file_read: typed_file_read,
+        typed_integer_parse: typed_integer_parse,
+        sorted_stream: sorted_stream,
+        forbidden_subprocess: forbidden_subprocess,
+      },
+      diagnostic: {
+        required: diagnostic.required,
+        passed: diagnostic.passed,
+        filter_exit: diagnostic.filter_exit,
+        where_check_exit: diagnostic.where_check_exit,
+        where_lint_exit: diagnostic.where_lint_exit,
       },
       timings: {
         passed: true,

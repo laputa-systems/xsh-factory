@@ -554,8 +554,80 @@ proc run_ticket_cycle(
     let status = run.text "git" "-C" $worktree "status" "--porcelain" ?
     let branch_ok = branch.trim() == f"factory/${ticket_id}/${stamp}"
     let commit_ok = head.trim() != xsh_commit.trim()
-    let clean = status.trim() == ""
-    let ticket_ok = fs.exists(session)? and report_ok and north_star_read_ok and handbook_read_ok and branch_ok and commit_ok and clean
+    let initial_clean = status.trim() == ""
+    let candidate_ready_for_hygiene = fs.exists(session)? and report_ok and north_star_read_ok and handbook_read_ok and branch_ok and commit_ok and initial_clean
+    let hygiene = if candidate_ready_for_hygiene {
+      runtime.run_engineer_hygiene(
+        worktree,
+        process.which("cargo")?.display(),
+        fp"${worker_dir}/hygiene-build.stdout",
+        fp"${worker_dir}/hygiene-build.stderr",
+        fp"${worker_dir}/hygiene-lint.stdout",
+        fp"${worker_dir}/hygiene-lint.stderr",
+      )?
+    } else {
+      {
+        attempted: false,
+        build_ok: false,
+        lint_ok: false,
+        worktree_clean: false,
+        build_exit: -1,
+        lint_exit: -1,
+      }
+    }
+    let hygiene_patch = fp"${patch_root}/${ticket_id}-hygiene.diff"
+    let hygiene_patch_stderr = fp"${patch_root}/${ticket_id}-hygiene.stderr"
+    let hygiene_patch_captured = if hygiene.attempted and ! hygiene.worktree_clean {
+      runtime.write_worktree_diff(worktree, hygiene_patch, hygiene_patch_stderr)?
+    } else {
+      false
+    }
+    runtime.emit_process_output(
+      run_dir,
+      f"ticket-${ticket_id}-hygiene-build",
+      "stdout",
+      fp"${worker_dir}/hygiene-build.stdout",
+      hygiene.build_exit,
+    )?
+    runtime.emit_process_output(
+      run_dir,
+      f"ticket-${ticket_id}-hygiene-build",
+      "stderr",
+      fp"${worker_dir}/hygiene-build.stderr",
+      hygiene.build_exit,
+    )?
+    runtime.emit_process_output(
+      run_dir,
+      f"ticket-${ticket_id}-hygiene-lint",
+      "stdout",
+      fp"${worker_dir}/hygiene-lint.stdout",
+      hygiene.lint_exit,
+    )?
+    runtime.emit_process_output(
+      run_dir,
+      f"ticket-${ticket_id}-hygiene-lint",
+      "stderr",
+      fp"${worker_dir}/hygiene-lint.stderr",
+      hygiene.lint_exit,
+    )?
+    runtime.emit_structured_event(
+      event_template,
+      run_dir,
+      f"72-ticket-${ticket_id}-hygiene",
+      ticket_id,
+      {
+        attempted: hygiene.attempted,
+        command: "cargo build -p xsht --bin xsht && target/debug/xsht lint --fix",
+        build_ok: hygiene.build_ok,
+        lint_ok: hygiene.lint_ok,
+        worktree_clean: hygiene.worktree_clean,
+        build_exit: hygiene.build_exit,
+        lint_exit: hygiene.lint_exit,
+        hygiene_patch: if hygiene_patch_captured { hygiene_patch.display() } else { "" },
+        hygiene_patch_captured: hygiene_patch_captured,
+      },
+    )?
+    let ticket_ok = candidate_ready_for_hygiene and hygiene.build_ok and hygiene.lint_ok and hygiene.worktree_clean
     let assignment_sha = hash.sha256(fp"${run_dir}/messages/${ticket_id}.md")?.hex()
     let patch_path = fp"${patch_root}/${ticket_id}.diff"
     let patch_stderr = fp"${patch_root}/${ticket_id}.stderr"

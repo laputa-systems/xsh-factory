@@ -65,10 +65,19 @@ canonical-documentation change supported by the ticket. Run the narrowest
 relevant checks, commit the product change on this branch, and leave the
 worktree clean.
 
-For ordinary product tickets, use `xsht lint --fix` for linting, then rerun the
-relevant checks. If this ticket specifically targets lint, parsing, or
-diagnostics, preserve the behavior under test and follow its explicit
-acceptance procedure instead of auto-fixing away the evidence.
+The CTO, through the ticket controller, owns the required candidate-hygiene
+sequence. After you commit and leave this worktree clean, the controller runs:
+
+```sh
+cargo build -p xsht --bin xsht
+target/debug/xsht lint --fix
+```
+
+Do not run a broad autofixer yourself. The controller records both command
+streams before provenance and accepts the candidate only when the second
+command leaves the worktree clean. If it changes tracked source, the
+controller captures a portable hygiene patch and fails the candidate rather
+than changing XSH `HEAD` after linked replay.
 
 The controller has staged a fail-closed `not-ready` report at
 `{{ENGINEER_REPORT}}`. Complete that file in place; do not spend turns

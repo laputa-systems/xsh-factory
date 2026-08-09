@@ -20,6 +20,22 @@ Open.
 - Branch disposition: preserve `factory/task-histogram-006/1786209590202`
   unchanged for the directed replay; no merge record is written.
 
+## CTO replay-contract repair 2026-08-08
+
+- Decision: The package-owned evaluator now receives the linked replay ticket
+  identity and, for this ticket only, compiles a `filter { |value| ... }`
+  pipeline. It fails unless the diagnostic names `filter`, recommends
+  `where`, avoids the record-literal cascade, and the documented `where`
+  form passes both `xsht check` and `xsht lint`.
+- Evidence: `factory/controllers/eval.xsh` forwards
+  `FACTORY_REEVAL_TICKET`; `factory/entrypoints/eval-executor.xsh` mounts
+  it into the package evaluator; and `evals/task-histogram/evaluator.xsh`
+  records the exact diagnostic gate in `run.json`.
+- Next action: Preserve
+  `factory/task-histogram-006/1786209590202` and run one bounded retained
+  replay after the manager-watcher repair is validated. Its delivery remains
+  retained reconciliation, not fresh-throughput qualification.
+
 ## CTO review — cycle 24 close
 
 - Decision: Approved for implementation in the next organization cycle.

@@ -732,6 +732,7 @@ wall-ms=${build_elapsed}
     f"FACTORY_MODE=eval",
     f"FACTORY_EVAL_ID=${eval_id}",
     "FACTORY_TICKET_ID=",
+    f"FACTORY_REEVAL_TICKET=${candidate_ticket}",
     f"FACTORY_EVAL_DIR=${eval_dir.display()}",
     f"FACTORY_EVAL_IMAGE=${image}",
     f"FACTORY_BASE_IMAGE=${base_image}",
