@@ -72,8 +72,9 @@ One cycle may:
 - admit two engineer tickets in a ticket-implementation cycle whenever two
   evidence-backed Approved tickets are available;
 - run one linked re-evaluation for every passing engineer row; organization
-  mode runs one least-recently-tried approved discovery eval only when no
-  delivery ticket is available;
+  mode runs one least-recently-tried approved supply eval when no delivery
+  ticket is available or when consuming a delivery would leave fewer than two
+  Approved product tickets;
 - produce and immediately review at most one new eval proposal;
 - promote that proposal package into `evals/` regardless of the review result;
   set `Approved.` only when the evaluator and evidence pass, otherwise retain
@@ -220,8 +221,9 @@ The source is a request template; the immutable cycle request belongs under
 the controller-created `runs/run-<id>/CYCLE-REQUEST.md`, not at repository top
 level:
 
-- with an approved ticket: implement it and run its linked replay; no
-  independent eval shares that delivery cycle, and
+- with an approved ticket: implement it and run its linked replay; when the
+  two-ticket buffer would be drained, run one isolated supply eval beside the
+  delivery cycle, and
   produce, review, and promote one design proposal when below the cap;
 - without an approved ticket: run one active eval as primary and produce,
   review, and promote one design proposal when below the cap; or
@@ -282,6 +284,13 @@ leave the record `pending-validation`; the handoff is complete when the record
 exists, identifies the exact next-cycle verification or safe inverse, and is
 linked from the CTO briefing. The improvement must address the bottleneck
 identified for that cycle, not merely record that the cycle produced no ticket.
+
+When an isolated supply eval creates an `Open.` ticket, review it during the
+same closeout against the normal evidence and quality gates. Record approval,
+deferral, or rejection before the next paid admission, and report the approved
+branchless queue before and after delivery. Never promote it merely to hit the
+two-ticket target: the buffer is maintained by validated supply, not by a
+status quota.
 
 Before declaring a user-requested cycle complete, the CTO confirms that every
 reviewable engineer candidate has a controller-owned hygiene event. Before

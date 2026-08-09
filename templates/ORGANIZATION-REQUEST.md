@@ -11,15 +11,18 @@ top level.
 Run one bounded organization cycle. The controller applies the queue-pressure
 policy after deterministic CTO inventory: when a branchless approved product
 ticket exists, it reserves exactly one engineer row and its linked replay.
-The independent-eval lane is omitted while that delivery slot is available;
-with no ready ticket, one least-recently-tried discovery eval is selected. It
-never promotes an `Open.` ticket or replays an existing implementation branch.
+When consuming that row would leave fewer than two Approved product tickets,
+it also runs one isolated least-recently-tried supply eval; with no ready
+ticket, one least-recently-tried discovery eval is selected. It never promotes
+an `Open.` ticket or replays an existing implementation branch.
 
 ## Bottleneck review
 
 The current assembly-line bottleneck is approval -> reviewable engineer commit
 -> linked replay. Product delivery is the hard goal whenever an approved ticket
-is available; discovery expands only when the ready queue is empty.
+is available; the isolated supply lane replenishes the two-ticket low-water
+buffer without altering that delivery candidate. Its ticket snapshot closes
+before the controller performs the final merge.
 
 ## Mode
 
@@ -27,8 +30,8 @@ is available; discovery expands only when the ready queue is empty.
 
 ## Eval admission
 
-- The controller selects the least-recently-tried Approved eval when no
-  product ticket is ready.
+- The controller selects one least-recently-tried Approved eval when no
+  product ticket is ready or when a delivery would drain the two-ticket buffer.
 
 ## Active evals
 
@@ -67,8 +70,9 @@ invocation with a role-specific setting.
 
 - one engineer implementation row whenever a branchless approved ticket
   is ready;
-- the linked replay for that row, or one focused discovery eval only when no
-  ticket is ready;
+- the linked replay for that row and one isolated supply eval when admission
+  would drain the two-ticket buffer, or one focused discovery eval only when
+  no ticket is ready;
 - structured worker reports and raw Pi sessions;
 - a run-level `report.json` covering every worker;
 - a `## North-star impact` section in each narrative role report;

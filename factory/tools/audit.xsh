@@ -118,6 +118,8 @@ proc organization_throughput(run_dir: Path, worker_reports: List[Path]) [fs, err
   var delivered_tickets = 0
   var reeval_dispatched = 0
   var reeval_passed = 0
+  var supply_evals_dispatched = 0
+  var supply_evals_passed = 0
   let events_path = fp"${run_dir}/events.jsonl"
   if fs.exists(events_path)? {
     for line in fs.read_text(events_path)?.lines() {
@@ -134,6 +136,10 @@ proc organization_throughput(run_dir: Path, worker_reports: List[Path]) [fs, err
             reeval_dispatched += 1
           } else if event_id == "80-reeval-completed" and state == "completed" {
             reeval_passed += 1
+          } else if event_id == "10-supply-eval-started" {
+            supply_evals_dispatched += 1
+          } else if event_id == "80-supply-eval-completed" and state == "completed" {
+            supply_evals_passed += 1
           } else if event_id.starts_with("86-ticket-") {
             if ! (subject in admitted_tickets) {
               admitted_tickets = admitted_tickets.push(subject)
@@ -160,15 +166,25 @@ proc organization_throughput(run_dir: Path, worker_reports: List[Path]) [fs, err
   let engineer_rows = [report for report in worker_reports if "/workers/engineer/" in report.display()].len()
   return {
     admitted_tickets: admitted_count,
+    eligible_delivery_cycle: admitted_count > 0,
     engineer_target: engineer_target,
     engineer_rows: engineer_rows,
-    delivery_target_met: engineer_target == 0 or delivered_tickets > 0,
+    delivery_target_met: admitted_count > 0 and delivered_tickets > 0,
     reeval_dispatched: reeval_dispatched,
     reeval_passed: reeval_passed,
     delivered_tickets: delivered_tickets,
     delivery_conversion: delivery_conversion,
+    supply_evals_dispatched: supply_evals_dispatched,
+    supply_evals_passed: supply_evals_passed,
     handbook_quarantines: handbook_quarantines,
   }
+}
+
+# A delivery transaction alone decides the product outcome. Discovery and eval
+# design can replenish future supply, but their outcome must not relabel a
+# separately validated delivery as a product failure.
+pure organization_product_phase(phase_id: Str) -> Bool {
+  return phase_id == "01-ticket" or phase_id.starts_with("02-reeval-")
 }
 
 # Preserve the phase's explicit outcome dimension when present. Older or
@@ -655,11 +671,15 @@ proc audit_organization(run_dir: Path, factory_dir: Path) [fs, process, env, err
       }
 
       if valid {
-        product_ok = product_ok and phase_outcome(value, "product")
+        if organization_product_phase(entry.name) {
+          product_ok = product_ok and phase_outcome(value, "product")
+        }
         evaluator_ok = evaluator_ok and phase_outcome(value, "evaluator")
         infrastructure_ok = infrastructure_ok and phase_outcome(value, "infrastructure")
       } else {
-        product_ok = false
+        if organization_product_phase(entry.name) {
+          product_ok = false
+        }
         evaluator_ok = false
         infrastructure_ok = false
       }

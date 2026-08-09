@@ -52,8 +52,12 @@ fail-closed `xsht lint --fix` followed by lint. A lint autofix that changes the
 checkout stops admission for CTO review; it never silently changes paid work.
 The controller reconciles merged tickets and, when a branchless approved
 ticket is ready, admits one complete delivery transaction and its linked replay.
-No independent eval shares that transaction. When no ticket is ready, it runs
-one least-recently-tried approved discovery eval as the primary phase.
+While consuming that row would leave fewer than two approved product tickets,
+it also runs one isolated least-recently-tried supply eval. The supply result
+cannot alter the delivery candidate and any ticket it creates remains `Open.`
+until CTO evidence review; its ticket snapshot closes before the final merge.
+When no ticket is ready, it runs one
+least-recently-tried approved discovery eval as the primary phase.
 It can produce, review, and promote one eval proposal.
 
 When reviewing ticket state, use the deterministic CTO inventory before an

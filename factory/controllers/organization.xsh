@@ -1,4 +1,5 @@
-##! Organization-cycle controller for one delivery transaction or one discovery eval.
+##! Organization-cycle controller for one delivery transaction with bounded supply,
+##! or one discovery eval while the ready queue is empty.
 use factory.control as control
 use factory.request as typed_request
 use factory.runtime as runtime
@@ -357,25 +358,19 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   }
 
   let requested_evals = typed_request.eval_values(request_text)?
-  let adaptive_eval_limit = control.organization_eval_target(selected_tickets.len())
-  let request_evals = if requested_evals.len() == 0 {
-    runtime.adaptive_approved_evals(factory_dir, adaptive_eval_limit)?
-  } else {
-    requested_evals
-  }
-  if selected_ticket != "" and requested_evals.len() > 0 {
-    eprint "ticket organization cycles do not admit an independent eval"
+  let adaptive_eval_limit = control.organization_eval_target(selected_tickets.len(), approved_count)
+  let expected_evals = runtime.adaptive_approved_evals(factory_dir, adaptive_eval_limit)?
+  let request_evals = if requested_evals.len() == 0 { expected_evals } else { requested_evals }
+  if request_evals != expected_evals {
+    eprint f"organization supply policy requires the least-recently-tried approved evals ${expected_evals.join(", ")}; selected ${request_evals.join(", ")}"
     abort(2)
-  }
-  if selected_ticket == "" and requested_evals.len() > 0 {
-    let expected_evals = runtime.adaptive_approved_evals(factory_dir, 1)?
-    if requested_evals != expected_evals {
-      eprint f"organization request must select the least-recently-tried approved evals ${expected_evals.join(", ")}; selected ${requested_evals.join(", ")}"
-      abort(2)
-    }
   }
   if selected_ticket == "" and request_evals.len() != 1 {
     eprint "ticketless organization cycles require exactly one discovery eval"
+    abort(2)
+  }
+  if selected_ticket != "" and request_evals.len() != adaptive_eval_limit {
+    eprint f"delivery organization cycle requires ${adaptive_eval_limit} supply eval(s) for the approved-ticket buffer"
     abort(2)
   }
 
@@ -388,6 +383,11 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   }
   let ticket_eval = if selected_ticket != "" {
     control.ticket_eval(selected_ticket_path.read_text()?)
+  } else {
+    ""
+  }
+  let supply_eval = if selected_ticket != "" and request_evals.len() == 1 {
+    request_evals[0]
   } else {
     ""
   }
@@ -432,12 +432,14 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   } else {
     fp"${phases_dir}/04-eval-design"
   }
+  let supply_phase = fp"${phases_dir}/03-supply-eval"
   let primary_request = fp"${phase_requests_dir}/01-primary.md"
   let design_request = if selected_ticket == "" {
     fp"${phase_requests_dir}/0${request_evals.len() + 1}-eval-design.md"
   } else {
     fp"${phase_requests_dir}/04-eval-design.md"
   }
+  let supply_request = fp"${phase_requests_dir}/03-supply-eval.md"
   let event_template = run_dir
   let phase_template = fp"${factory_dir}/templates/ORGANIZATION-PHASE-REQUEST.md"
   let run_agent = fp"${factory_dir}/factory/entrypoints/run-agent.xsh"
@@ -448,6 +450,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   }
   let primary_controller = env.path("FACTORY_PRIMARY_CONTROLLER", default_primary_controller)?
   let reeval_controller = env.path("FACTORY_REEVAL_CONTROLLER", fp"${factory_dir}/factory/controllers/eval.xsh")?
+  let supply_controller = env.path("FACTORY_SUPPLY_CONTROLLER", fp"${factory_dir}/factory/controllers/eval.xsh")?
   let design_controller = env.path("FACTORY_DESIGN_CONTROLLER", fp"${factory_dir}/factory/controllers/design.xsh")?
   let home = env.get("HOME")?
   let auth_file = env.path("PI_AUTH_FILE", fp"${home}/.pi/agent/auth.json")?
@@ -458,6 +461,10 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   fs.mkdir(phases_dir)?
   fs.mkdir(phase_requests_dir)?
   fs.mkdir(primary_phase)?
+
+  if supply_eval != "" {
+    fs.mkdir(supply_phase)?
+  }
 
   if design_requested {
     fs.mkdir(design_phase)?
@@ -474,7 +481,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     "started",
     1,
     "controller",
-    "bounded organization cycle with one delivery transaction or one discovery eval",
+    "bounded organization cycle with one delivery transaction and an isolated supply lane when the approved-ticket buffer is low, or one discovery eval when empty",
   )?
   runtime.emit_event(
     event_template,
@@ -484,7 +491,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     "started",
     1,
     "controller",
-    f"open=${queue_counts.get(0, 0)}; approved=${queue_counts.get(1, 0)}; engineers=${engineer_target}; independent_eval_target=${adaptive_eval_limit}; independent_evals=${request_evals.len()}; linked_replay=mandatory; discovery=least-recently-tried",
+    f"open=${queue_counts.get(0, 0)}; approved=${queue_counts.get(1, 0)}; ticket_buffer_target=${control.organization_ticket_buffer_target()}; engineers=${engineer_target}; supply_eval_target=${adaptive_eval_limit}; supply_evals=${request_evals.len()}; linked_replay=mandatory; discovery=least-recently-tried",
   )?
 
   for ticket_id in selected_tickets {
@@ -538,6 +545,19 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     )?
   }
 
+  if supply_eval != "" {
+    phase_request(
+      phase_template,
+      supply_request,
+      "eval",
+      supply_eval,
+      trial_count,
+      0,
+      "None.",
+      f"Run one isolated fresh ${supply_eval} supply eval while ${selected_ticket} consumes a delivery slot; any ticket remains Open until CTO evidence review.",
+    )?
+  }
+
   var design_handle: ProcessHandle? = null
   if design_requested {
     runtime.emit_event(
@@ -567,6 +587,44 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
       ["FACTORY_MODE=eval-design", f"FACTORY_EVAL_ID=${requested_eval}"],
       fp"${run_dir}/design.stdout",
       fp"${run_dir}/design.stderr",
+    )?
+  }
+
+  var supply_handle: ProcessHandle? = null
+  if supply_eval != "" {
+    runtime.emit_event(
+      event_template,
+      run_dir,
+      "10-supply-eval-started",
+      supply_eval,
+      "started",
+      1,
+      "organization",
+      "isolated evidence lane admitted to replenish the approved-ticket buffer",
+    )?
+    supply_handle = spawn_child(
+      supply_controller,
+      supply_request,
+      supply_phase,
+      factory_dir,
+      xsh_repo,
+      run_dir,
+      xsh_commit.trim(),
+      run_agent,
+      auth_file,
+      pi_command,
+      docker,
+      target,
+      platform,
+      [
+        "FACTORY_MODE=eval",
+        f"FACTORY_EVAL_ID=${supply_eval}",
+        "FACTORY_REEVAL_TICKET=not-reevaluation",
+        "FACTORY_REEVAL_WORKTREE=not-reevaluation",
+        "FACTORY_SKIP_TICKET_RECONCILE=true",
+      ],
+      fp"${run_dir}/supply-eval.stdout",
+      fp"${run_dir}/supply-eval.stderr",
     )?
   }
 
@@ -651,6 +709,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   var reeval_ticket_worktrees: List[Path] = []
   var reeval_ticket_patches: List[Path] = []
   var reeval_handles: List[ProcessHandle] = []
+  var supply_state = "not-requested"
   if selected_ticket != "" {
     reeval_pass_for_result = true
     delivery_ok = true
@@ -736,6 +795,47 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
       reeval_ticket_worktrees = reeval_ticket_worktrees.push(ticket_worktree)
       reeval_ticket_patches = reeval_ticket_patches.push(ticket_patch)
       reeval_handles = reeval_handles.push(reeval_handle)
+    }
+
+    # The supply manager snapshots pre-existing tickets to prove that it did
+    # not alter them. Let that snapshot close before this controller changes
+    # the admitted ticket to Merged.; the eval work still overlaps engineer
+    # implementation and linked replay, but a controller-owned merge cannot
+    # look like manager tampering.
+    if supply_handle != null {
+      let supply_ok = wait_child(supply_handle)?
+      let supply_report_ok = phase_run_pass(supply_phase, "report.json")?
+      let supply_pass = supply_ok and supply_report_ok
+      let supply_exit = if supply_pass { 0 } else { 1 }
+      runtime.emit_process_output(run_dir, "supply-eval", "stdout", fp"${run_dir}/supply-eval.stdout", supply_exit)?
+      runtime.emit_process_output(run_dir, "supply-eval", "stderr", fp"${run_dir}/supply-eval.stderr", supply_exit)?
+      supply_state = if supply_pass { "pass" } else { "fail" }
+      runtime.emit_event(
+        event_template,
+        run_dir,
+        "80-supply-eval-completed",
+        supply_eval,
+        if supply_pass {
+          "completed"
+        } else {
+          "failed"
+        },
+        1,
+        "controller",
+        "isolated supply eval phase returned before product delivery",
+      )?
+      if supply_pass {
+        runtime.emit_event(
+          event_template,
+          run_dir,
+          "85-supply-eval-validated",
+          supply_eval,
+          "validated",
+          1,
+          "controller",
+          "supply eval report.json passed",
+        )?
+      }
     }
 
     var reeval_wait_index = 0
@@ -863,7 +963,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   worktree_cleanup_ok = worktree_cleanup_ok and final_worktree_cleanup_ok
   let delivered_xsh_commit = run.text "git" "-C" $xsh_repo "rev-parse" "HEAD" ?
 
-  # Reconcile only after the primary delivery or discovery phase has closed, so
+  # Reconcile only after every product or supply phase has closed, so
   # controller-owned lifecycle updates cannot look like a manager mutation.
   let _ = runtime.reconcile_tickets(factory_dir, xsh_repo, delivered_xsh_commit.trim())?
 
@@ -916,20 +1016,20 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   )?
   let audit_file = fp"${run_dir}/report.json"
   let audit_report_ok = audit_status.ok and fs.exists(audit_file)? and schema.valid(json.read(audit_file)?, "run")
-  let audit_result = if audit_report_ok {
-    schema.value_text(json.get(json.read(audit_file)?, ["result"], "missing"))
+  let audit_infrastructure_pass = if audit_report_ok {
+    schema.value_text(json.get(json.read(audit_file)?, ["data", "outcomes", "infrastructure"], "missing")) == "pass"
   } else {
-    "missing"
+    false
   }
-  let audit_pass = audit_report_ok and audit_result == "pass"
   let design_pass_for_result = design_state == "pass" or design_state == "not-requested"
+  let supply_pass_for_result = supply_state == "pass" or supply_state == "not-requested"
   let product_result = if selected_ticket == "" or (primary_pass and reeval_pass_for_result and delivery_ok) {
     "pass"
   } else {
     "fail"
   }
-  let evaluator_result = if (selected_ticket != "" or primary_pass) and design_pass_for_result { "pass" } else { "fail" }
-  let infrastructure_result = if worktree_cleanup_ok and audit_pass { "pass" } else { "fail" }
+  let evaluator_result = if (selected_ticket != "" or primary_pass) and supply_pass_for_result and design_pass_for_result { "pass" } else { "fail" }
+  let infrastructure_result = if worktree_cleanup_ok and audit_infrastructure_pass { "pass" } else { "fail" }
   let initial_result = if product_result == "pass" and evaluator_result == "pass" and infrastructure_result == "pass" {
     "pass"
   } else {

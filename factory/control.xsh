@@ -292,18 +292,26 @@ export pure organization_ticket_target(approved_count: Int) -> Int {
   return if approved_count > 0 { 1 } else { 0 }
 }
 
-## A ticketless organization cycle gets one focused discovery eval. Discovery
-## rotates by least-recently-tried evidence in runtime.xsh; multiplying stable
-## evals from a sparse queue spends budget without improving ticket supply.
-export pure organization_eval_target(selected_ticket_count: Int) -> Int {
+## Approved product tickets held after a single organization admission. Two
+## rows leave one ready delivery after the current row is consumed and give a
+## single evidence miss room to recover without starving engineers.
+export pure organization_ticket_buffer_target() -> Int {
+  return 2
+}
+
+## One focused discovery eval establishes and maintains the approved-ticket
+## buffer. A ticketless cycle needs one to establish supply. A delivery cycle
+## needs one while consuming its admission would leave fewer than the target.
+## Discovery rotates by least-recently-tried evidence in runtime.xsh; this is
+## bounded replenishment, never a quota that auto-approves weak tickets.
+export pure organization_eval_target(selected_ticket_count: Int, approved_ticket_count: Int) -> Int {
   let selected = if selected_ticket_count < 0 { 0 } else { selected_ticket_count }
-  if selected > 0 {
-    # A product cycle already has a mandatory linked replay. Independent
-    # discovery is optional evidence and must not consume the delivery lane.
-    return 0
+  let approved = if approved_ticket_count < 0 { 0 } else { approved_ticket_count }
+  if selected == 0 {
+    return 1
   }
 
-  return 1
+  return if approved <= organization_ticket_buffer_target() { 1 } else { 0 }
 }
 
 ## The manager reads a controller-prepared evidence packet. A short inactivity

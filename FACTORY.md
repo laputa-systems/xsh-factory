@@ -35,11 +35,12 @@ engineer never chooses a ticket. There is one process launcher,
 
 Organization admission applies queue pressure deterministically after CTO
 inventory: an eligible ready queue reserves exactly one branchless product
-ticket and its hard linked replay. The independent-eval lane is zero while
-that delivery slot exists; when no ticket is ready it runs one focused,
-least-recently-tried discovery eval. Existing implementation branches are
-preserved for CTO review or supersession, never replayed by the controller.
-Open tickets are never promoted by the controller.
+ticket and its hard linked replay. When that admission would leave fewer than
+two Approved product tickets, one isolated least-recently-tried supply eval
+runs beside the delivery; when no ticket is ready it runs one focused discovery
+eval. Existing implementation branches are preserved for CTO review or
+supersession, never replayed by the controller. Open tickets are never
+promoted by the controller.
 
 ## Engineering rules
 
@@ -144,8 +145,9 @@ level. The selected request is copied into the appropriate run directory as
 - `eval-design`: dispatch one designer, review its package, and promote one
   proposal while preserving `Draft.` status; or
 - `organization`: run one bounded implementation and linked replay when a
-  branchless approved ticket is ready, otherwise one focused discovery eval,
-  plus an optional design phase.
+  branchless approved ticket is ready, plus one isolated supply eval while the
+  two-ticket low-water buffer needs replenishment; otherwise run one focused
+  discovery eval, plus an optional design phase.
 
 Child phases may overlap only when their inputs and product state are
 independent. Ticket implementation completes before each ticket's candidate

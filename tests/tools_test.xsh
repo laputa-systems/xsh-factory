@@ -1974,6 +1974,8 @@ proc test_organization_audit_projects_throughput_from_existing_evidence(ctx: Tes
     """{"event_id":"06-ticket-admitted","subject":"task-a","payload":{"status":"admitted","delivery_target":true}}
 {"event_id":"10-reeval-started","subject":"task-a-reevaluation"}
 {"event_id":"80-reeval-completed","subject":"task-a-reevaluation","state":"completed"}
+{"event_id":"10-supply-eval-started","subject":"task-b"}
+{"event_id":"80-supply-eval-completed","subject":"task-b","state":"completed"}
 {"event_id":"86-ticket-task-a-delivered","subject":"task-a","payload":{"status":"delivered"}}
 """,
   )?
@@ -1994,6 +1996,9 @@ proc test_organization_audit_projects_throughput_from_existing_evidence(ctx: Tes
   test.eq(json.get(throughput, ["delivered_tickets"], -1), 1)?
   test.eq(json.get(throughput, ["engineer_target"], -1), 1)?
   test.ok(json.get(throughput, ["delivery_target_met"], false))?
+  test.ok(json.get(throughput, ["eligible_delivery_cycle"], false))?
+  test.eq(json.get(throughput, ["supply_evals_dispatched"], -1), 1)?
+  test.eq(json.get(throughput, ["supply_evals_passed"], -1), 1)?
 }
 
 proc test_organization_audit_preserves_phase_outcome_dimensions(ctx: TestContext) [fs, process, error] {
@@ -2048,6 +2053,8 @@ proc test_organization_audit_preserves_phase_outcome_dimensions(ctx: TestContext
   test.ok(status.ok, "organization audit should emit a report for a failed phase")?
   let report = json.read(fp"${root}/report.json")?
   test.eq(json.get(report, ["result"], ""), "fail")?
+  test.ok(! json.get(report, ["data", "throughput", "eligible_delivery_cycle"], true))?
+  test.ok(! json.get(report, ["data", "throughput", "delivery_target_met"], true))?
   test.eq(json.get(report, ["data", "outcomes", "product"], ""), "pass")?
   test.eq(json.get(report, ["data", "outcomes", "evaluator"], ""), "fail")?
   test.eq(json.get(report, ["data", "outcomes", "infrastructure"], ""), "fail")?
@@ -2918,28 +2925,35 @@ proc test_organization_has_one_fresh_linked_replay_path() [fs, error] {
   test.ok("retained" not in audit)?
 }
 
-proc test_organization_has_no_independent_eval_lane() [fs, error] {
+proc test_organization_maintains_ticket_buffer_with_isolated_supply_lane() [fs, error] {
   let organization = fs.read_text(fp"${fs.cwd()?}/factory/controllers/organization.xsh")?
   let launcher = fs.read_text(fp"${fs.cwd()?}/run.xsh")?
-  test.contains(organization, "ticket organization cycles do not admit an independent eval")?
-  test.ok("independent_eval_requested" not in organization)?
-  test.ok("independent_eval_ids" not in organization)?
-  test.contains(launcher, "ticket organization cycles do not admit an independent eval")?
+  test.contains(organization, "FACTORY_SUPPLY_CONTROLLER")?
+  test.contains(organization, "03-supply-eval")?
+  test.contains(organization, "10-supply-eval-started")?
+  test.contains(organization, "any ticket remains Open until CTO evidence review")?
+  test.ok(
+    organization.find("isolated supply eval phase returned before product delivery") < organization.find("runtime.merge_validated_ticket"),
+    "supply manager ticket snapshot must close before the controller changes the admitted ticket lifecycle",
+  )?
+  test.contains(launcher, "organization supply policy requires")?
 }
 
 proc test_organization_rotates_one_discovery_eval() [fs, error] {
   let organization = fs.read_text(fp"${fs.cwd()?}/factory/controllers/organization.xsh")?
   let launcher = fs.read_text(fp"${fs.cwd()?}/run.xsh")?
   test.contains(organization, "ticketless organization cycles require exactly one discovery eval")?
-  test.contains(organization, "adaptive_approved_evals(factory_dir, 1)")?
+  test.contains(organization, "adaptive_approved_evals(factory_dir, adaptive_eval_limit)")?
   test.contains(launcher, "ticketless organization discovery requires exactly one active eval")?
-  test.contains(launcher, "adaptive_approved_evals(factory_dir, 1)")?
+  test.contains(launcher, "adaptive_approved_evals(factory_dir, adaptive_eval_limit)")?
 }
 
-proc test_ticket_cycles_omit_independent_eval_phase_boundary() [fs, error] {
+proc test_ticket_cycles_bound_the_supply_eval_phase_boundary() [fs, error] {
   let organization = fs.read_text(fp"${fs.cwd()?}/factory/controllers/organization.xsh")?
-  test.ok("independent_eval_requested" not in organization)?
-  test.ok(r"""fs.mkdir(fp"${phases_dir}/03-eval")?""" not in organization)?
+  let control_source = fs.read_text(fp"${fs.cwd()?}/factory/control.xsh")?
+  test.contains(organization, r"""fs.mkdir(supply_phase)?""")?
+  test.contains(control_source, "organization_ticket_buffer_target")?
+  test.contains(control_source, "return if approved <= organization_ticket_buffer_target() { 1 } else { 0 }")?
 }
 
 proc test_session_watch_idle_uses_epoch_milliseconds(ctx: TestContext) [fs, process, time, error] {
@@ -3132,7 +3146,7 @@ proc test_ticket_cycle_bounds_concurrent_engineers() [fs, error] {
   test.contains(organization, "linked replay or exact merge failed; branch is preserved for review")?
   test.ok("fresh_first_ticket_order" not in organization)?
   test.ok("retained" not in organization)?
-  test.contains(organization, "ticket organization cycles do not admit an independent eval")?
+  test.contains(organization, "supply eval while")?
 }
 
 proc test_organization_reports_ticket_api_gate_failures() [fs, error] {

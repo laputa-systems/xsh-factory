@@ -29,7 +29,9 @@ provenance and cleanup = pass
 Three consecutive eligible cycles satisfying the target establish sustained
 throughput. A ticketless cycle is a discovery cycle, not an engineer-throughput
 result. The controller cannot manufacture product supply: CTO inventory must
-keep evidence-backed tickets approved and branchless.
+keep evidence-backed tickets approved and branchless. The operating north star
+is not a one-time batch: delivery must consume and replenishment must restore a
+two-ticket approved, branchless buffer over time.
 
 ## The delivery transaction and supply policy
 
@@ -56,27 +58,41 @@ Admission fails closed until the CTO reviews or supersedes it. This deliberately
 removes a low-value branch-replay compatibility path: preserved branches remain
 auditable historical evidence, not queued work.
 
-Queue pressure has one purpose: protect the delivery transaction. With a
-branchless approved ticket, organization mode runs exactly that transaction and
-no independent discovery eval. With no eligible ticket, it runs exactly one
-approved eval selected by least-recently-tried worker evidence. This rotation
-prevents an alphabetical or explicit-reuse escape from repeatedly spending on
-already-saturated evals.
+Queue pressure has one purpose: maintain product delivery. Organization mode
+has a two-ticket approved, branchless low-water mark. With no eligible ticket,
+it runs exactly one approved eval selected by least-recently-tried worker
+evidence. With one or two approved rows before admission, it reserves one
+delivery transaction and runs exactly one isolated supply eval alongside it;
+after consuming the admission, the remaining ready queue would otherwise fall
+below two. With three or more approved rows, it runs only the delivery
+transaction and its linked replay. This rotation prevents an alphabetical or
+explicit-reuse escape from repeatedly spending on already-saturated evals.
+
+The supply eval has no product-worktree access, cannot alter the candidate,
+and cannot promote a ticket. Its ticket snapshot closes before the controller
+performs the final merge, so a controller-owned `Merged.` transition cannot be
+misclassified as manager tampering. A useful finding is still recorded as
+`Open.` and requires normal CTO evidence review before becoming `Approved.`.
+That preserves the delivery gate while making replenishment a bounded,
+measurable control loop rather than an afterthought.
 
 The existing hard bounds remain: direct ticket-implementation mode may admit
 at most two rows; organization mode admits one row; every passing row receives
 one linked replay; the eval portfolio is capped at 30; and the aggregate cycle
 budget is the shutdown boundary.
 
-The run report's `data.throughput` contains admitted tickets, engineer target
-and rows, linked replays dispatched and passed, delivered tickets, delivery
-conversion, delivery-target status, and handbook quarantines. Admission events
-precede worker dispatch and reconciliation remains idempotent.
+The run report's `data.throughput` contains admitted tickets, whether the cycle
+was eligible for delivery, engineer target and rows, linked replays dispatched
+and passed, delivered tickets, delivery conversion, delivery-target status,
+supply evals dispatched and passed, and handbook quarantines. A ticketless
+cycle has `eligible_delivery_cycle: false` and `delivery_target_met: false`;
+it cannot make a throughput miss appear successful. Admission events precede
+worker dispatch and reconciliation remains idempotent.
 
 ## Outcome semantics
 
-The delivery transaction is the product outcome. A ticketless discovery eval
-is the evaluator outcome. Reports preserve:
+The delivery transaction is the product outcome. Ticketless discovery and the
+isolated supply lane are evaluator outcomes. Reports preserve:
 
 ```text
 product        = implementation/replay/merge result
@@ -180,7 +196,7 @@ provenance/patch/clean-worktree checks independently pass.
 | No approved branchless ticket | no delivery expectation | run one least-recently-tried eval |
 | Engineer report/branch/patch failure | preserve branch; no delivery | not applicable |
 | Linked correctness/restriction/protocol or manager failure | preserve candidate; no delivery | not applicable |
-| Independent eval failure | not applicable | evaluator outcome fails |
+| Isolated supply eval failure | delivery remains separately classified; buffer is not replenished | evaluator outcome fails |
 | Budget breach or source mutation | stop the owning cycle, preserve evidence, write postmortem | same |
 
 No failure class is repaired by relaunching the same paid request. Deterministic
@@ -202,7 +218,7 @@ fake child controllers, and harmless process doubles. The required cases are:
 1. one ready ticket reserves one engineer row;
 2. a second ticket cannot displace the reserved first row;
 3. an unmerged branch fails admission rather than entering a replay lane;
-4. a delivery cycle omits the independent eval lane;
+4. a delivery cycle at or below the two-ticket low-water mark starts exactly one isolated supply eval, while a three-ticket buffer starts none;
 5. a ticketless cycle selects one least-recently-tried approved eval;
 6. admission events count a ticket before worker dispatch;
 7. delivery events identify the ticket and exact merge;
@@ -412,9 +428,10 @@ cycle N+1: engineer row 1, delivery 1, linked replay pass
 cycle N+2: engineer row 1, delivery 1, linked replay pass
 ```
 
-Independent evals may be absent from these cycles when the approved queue is
-under pressure. That is expected: quality is preserved by the linked replay,
-while discovery resumes when no delivery row is available.
+Independent supply evals run in these cycles while the Approved queue has one
+or two rows before admission. That is expected: quality is preserved by the
+linked replay while the isolated supply lane works to restore the two-ticket
+buffer without substituting for delivery.
 
 Qualification fails if a non-product lane substitutes for delivery, if a
 manager consumes an unbounded retry, or if a passing report is not accompanied

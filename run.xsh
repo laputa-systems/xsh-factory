@@ -296,16 +296,14 @@ proc preflight(
   if mode == "eval" or mode == "organization" or mode == "eval-design" {
     let requested_eval_values = typed_request.eval_values(request_text)?
     let adaptive_eval_limit = if mode == "organization" {
-      control.organization_eval_target(candidate_tickets.len())
+      control.organization_eval_target(candidate_tickets.len(), approved_count)
     } else if candidate_tickets.len() > 0 {
       1
     } else {
       discovery_target
     }
     let eval_values = if mode == "organization" {
-      if candidate_tickets.len() > 0 {
-        []
-      } else if requested_eval_values.len() == 0 {
+      if requested_eval_values.len() == 0 {
         runtime.adaptive_approved_evals(factory_dir, adaptive_eval_limit)?
       } else {
         requested_eval_values
@@ -324,15 +322,10 @@ proc preflight(
       return false
     }
 
-    if mode == "organization" and candidate_tickets.len() > 0 and requested_eval_values.len() > 0 {
-      eprint "ticket organization cycles do not admit an independent eval"
-      return false
-    }
-
-    if mode == "organization" and eval_values.len() > 0 {
-      let expected_evals = runtime.adaptive_approved_evals(factory_dir, 1)?
+    if mode == "organization" {
+      let expected_evals = runtime.adaptive_approved_evals(factory_dir, adaptive_eval_limit)?
       if eval_values != expected_evals {
-        eprint f"organization request must select the least-recently-tried approved evals ${expected_evals.join(", ")}; selected ${eval_values.join(
+        eprint f"organization supply policy requires the least-recently-tried approved evals ${expected_evals.join(", ")}; selected ${eval_values.join(
           ", ",
         )}"
         return false

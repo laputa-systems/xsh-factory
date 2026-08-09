@@ -150,10 +150,12 @@ Approved.
   test.ok(! runtime.accepted_ticket(fp"${tickets}/task-factory.md")?)?
 }
 
-proc test_organization_eval_target_reserves_one_focused_discovery_lane() [error] {
-  test.eq(control.organization_eval_target(0), 1)?
-  test.eq(control.organization_eval_target(1), 0)?
-  test.eq(control.organization_eval_target(2), 0)?
+proc test_organization_eval_target_establishes_and_maintains_ticket_buffer() [error] {
+  test.eq(control.organization_ticket_buffer_target(), 2)?
+  test.eq(control.organization_eval_target(0, 0), 1)?
+  test.eq(control.organization_eval_target(1, 1), 1)?
+  test.eq(control.organization_eval_target(1, 2), 1)?
+  test.eq(control.organization_eval_target(1, 3), 0)?
 }
 
 proc test_organization_delivery_slot_is_single_fresh_row() [error] {

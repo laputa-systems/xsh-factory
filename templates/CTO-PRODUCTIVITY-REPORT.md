@@ -12,7 +12,9 @@ this cycle. Zero is a throughput failure for an organization cycle.
 ## Comparison with prior cycle
 
 Compare engineer commits, admitted tickets, completed product phases, paid
-cost, assistant turns, wall time, and product/evaluator/infrastructure outcomes.
+cost, assistant turns, wall time, product/evaluator/infrastructure outcomes,
+the approved branchless-ticket count before and after admission, and isolated
+supply evals dispatched and passed.
 
 ## Efficiency judgment
 
@@ -22,9 +24,12 @@ separate genuine product throughput from evaluator-only activity.
 ## Assembly-line bottleneck
 
 Name the constrained stage: eval signal, ticket approval, engineer delivery,
-or replay/merge. Cite the evidence, state the corrective action, and name the
-next measurable target. If the cycle was eval-only, explain whether the feed
-failed to produce a ticket or whether every ticket was correctly blocked.
+replay/merge, or supply replenishment. Cite the evidence, state the corrective
+action, and name the next measurable target. If the cycle was eval-only,
+explain whether the feed failed to produce a ticket or whether every ticket was
+correctly blocked. If a supply eval produced an `Open.` ticket, record the CTO
+approval, deferral, or rejection decision and its effect on the two-ticket
+buffer.
 
 ## Evidence
 
