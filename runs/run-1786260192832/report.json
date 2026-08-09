@@ -1,0 +1,140 @@
+{
+  "artifacts": [
+    {
+      "kind": "phase-reports",
+      "path": "phases/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 44,
+      "budget_failures": 0,
+      "cost_usd": 0.016936218,
+      "tool_errors": 1,
+      "total_bucket_tokens": 583814.0,
+      "unknown_costs": 0,
+      "workers": 2
+    },
+    "mode": "organization",
+    "outcomes": {
+      "cycle": "pass",
+      "evaluator": "pass",
+      "infrastructure": "pass",
+      "product": "pass"
+    },
+    "phases": [
+      {
+        "id": "01-eval",
+        "path": "phases/01-eval/report.json",
+        "result": "pass",
+        "valid": true
+      }
+    ],
+    "throughput": {
+      "admitted_tickets": 0,
+      "delivered_tickets": 0,
+      "delivery_conversion": 0.0,
+      "delivery_target_met": false,
+      "eligible_delivery_cycle": false,
+      "engineer_rows": 0,
+      "engineer_target": 0,
+      "handbook_quarantines": 0,
+      "reeval_dispatched": 0,
+      "reeval_passed": 0,
+      "supply_evals_dispatched": 0,
+      "supply_evals_passed": 0
+    },
+    "tool_errors": [
+      {
+        "report": "phases/01-eval/workers/eval-manager/task-iniget/report.json",
+        "summary": "Validation failed for tool \"edit\":\n  - edits.0: must be object\n\nReceived arguments:\n{\n  \"path\": \"/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786260192832/phases/01-eval/workers/eval-manager/task-iniget/REPORT.md\",\n  \"edits\": \"[{\\\"oldText\\\": \\\"## Effort metrics\\\\n\\\\nTrial 1 (eval-worker `task-iniget-1`): 29 assistant turns, 33 tool calls, 33\\\\ntool results, 0 tool errors, 17 thinking blocks. Session span for the worker\\\\nis reported in the worker `report.json`; timing below is treated as diagnostic\\\\nunless a strict gate applies (this eval has no strict candidate/oracle runtime\\\\nenvelope). No worker friction observed: the single trial passed correctness,\\\\nrestrictions, protocol, and timing, with zero tool errors.\\\", \\\"newText\\\": \\\"## Effort metrics\\\\n\\\\nTrial 1 (eval-worker `task-iniget-1`): 29 assistant turns, 33 tool calls, 33\\\\ntool results, 0 tool errors, 17 thinking blocks. Tool breakdown: 24 bash,\\\\n3 edit, 5 read, 1 write. Session span 144,947 ms (agent wall 146,101 ms); stop\\\\nreasons 1 `stop` + 28 `toolUse`. The single trial passed correctness,\\\\nrestrictions, protocol, and timing with zero tool errors, so there is no\\\\nworker friction to report. Provider model: `openrouter/deepseek/deepseek-v4-flash-0731`.\\\", \\\"attributed to the worker, then the session is 29 turns in ~145s, a lean successful run.\\\"}]\"\n}",
+        "tool": "edit",
+        "turn": 8,
+        "worker": {
+          "role": "eval-manager",
+          "worker_id": "task-iniget"
+        }
+      }
+    ],
+    "workers": [
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-iniget"
+        },
+        "path": "phases/01-eval/workers/eval-manager/task-iniget/report.json",
+        "result": "pass",
+        "tool_errors": 1,
+        "usage": {
+          "assistant_turns": 15,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.004497408,
+          "cache_read_tokens": 249856,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.008564868,
+          "input_cost_usd": 0.0025718399999999993,
+          "input_tokens": 28576,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00149562,
+          "output_tokens": 8309,
+          "provider_total_tokens": 286741,
+          "reasoning_tokens": 1744,
+          "thinking_blocks": 9,
+          "tool_calls": 15,
+          "tool_errors": 1,
+          "tool_results": 15,
+          "total_bucket_tokens": 286741,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-iniget-1"
+        },
+        "path": "phases/01-eval/workers/eval-worker/task-iniget-1/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 29,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.004705920000000001,
+          "cache_read_tokens": 261440,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.00837135,
+          "input_cost_usd": 0.00274851,
+          "input_tokens": 30539,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00091692,
+          "output_tokens": 5094,
+          "provider_total_tokens": 297073,
+          "reasoning_tokens": 1619,
+          "thinking_blocks": 17,
+          "tool_calls": 33,
+          "tool_errors": 0,
+          "tool_results": 33,
+          "total_bucket_tokens": 297073,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "04fb98f8c63b63cccffce7ef2c3cabde81bb05ba"
+  },
+  "findings": [],
+  "identity": {
+    "mode": "organization",
+    "run_id": "run-1786260192832"
+  },
+  "kind": "run",
+  "result": "pass",
+  "schema_version": 1,
+  "state": "completed"
+}

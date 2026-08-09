@@ -1,0 +1,109 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786260192832/phases/01-eval/workers/eval-manager/task-iniget/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_process": "pass",
+    "dispatch_claim": "a1796cadcdf3e00245e975b7f4d120107c29baeb9a6f1e1157e092ade06c4adf",
+    "dispatch_id": "eval-manager-task-iniget",
+    "factory_source": "unchanged",
+    "message_sha256": "a1796cadcdf3e00245e975b7f4d120107c29baeb9a6f1e1157e092ade06c4adf",
+    "reporting": "pass",
+    "required_report": "present",
+    "session_limit_watcher": "pass",
+    "system_prompt_sha256": "f0e5d1efca27aa10cd1f86cf5948d721b662eb7f582a55f5741b11854280eee8",
+    "watcher": "pass"
+  },
+  "findings": [
+    {
+      "count": 1,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "role": "eval-manager",
+    "worker_id": "task-iniget"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "provider_telemetry": {
+    "event_turns": 15,
+    "events_path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786260192832/phases/01-eval/workers/eval-manager/task-iniget/session.jsonl.events.jsonl",
+    "output_tokens_per_second": 0,
+    "present": true,
+    "provider_errors": [],
+    "response_elapsed_ms": 0,
+    "retry_count": 0,
+    "retry_delay_ms": 0,
+    "retry_errors": [],
+    "retry_failures": 0,
+    "retry_successes": 0
+  },
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786260192832/phases/01-eval/workers/eval-manager/task-iniget/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 14,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 167824
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786260192832/phases/01-eval/workers/eval-manager/task-iniget/session.jsonl.bz2",
+      "summary": "Validation failed for tool \"edit\":\n  - edits.0: must be object\n\nReceived arguments:\n{\n  \"path\": \"/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786260192832/phases/01-eval/workers/eval-manager/task-iniget/REPORT.md\",\n  \"edits\": \"[{\\\"oldText\\\": \\\"## Effort metrics\\\\n\\\\nTrial 1 (eval-worker `task-iniget-1`): 29 assistant turns, 33 tool calls, 33\\\\ntool results, 0 tool errors, 17 thinking blocks. Session span for the worker\\\\nis reported in the worker `report.json`; timing below is treated as diagnostic\\\\nunless a strict gate applies (this eval has no strict candidate/oracle runtime\\\\nenvelope). No worker friction observed: the single trial passed correctness,\\\\nrestrictions, protocol, and timing, with zero tool errors.\\\", \\\"newText\\\": \\\"## Effort metrics\\\\n\\\\nTrial 1 (eval-worker `task-iniget-1`): 29 assistant turns, 33 tool calls, 33\\\\ntool results, 0 tool errors, 17 thinking blocks. Tool breakdown: 24 bash,\\\\n3 edit, 5 read, 1 write. Session span 144,947 ms (agent wall 146,101 ms); stop\\\\nreasons 1 `stop` + 28 `toolUse`. The single trial passed correctness,\\\\nrestrictions, protocol, and timing with zero tool errors, so there is no\\\\nworker friction to report. Provider model: `openrouter/deepseek/deepseek-v4-flash-0731`.\\\", \\\"attributed to the worker, then the session is 29 turns in ~145s, a lean successful run.\\\"}]\"\n}",
+      "tool": "edit",
+      "turn": 8
+    }
+  ],
+  "tools": [
+    {
+      "count": 3,
+      "name": "edit"
+    },
+    {
+      "count": 10,
+      "name": "read"
+    },
+    {
+      "count": 2,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 15,
+    "budget_usd": 0.15,
+    "cache_read_cost_usd": 0.004497408,
+    "cache_read_tokens": 249856,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.008564868,
+    "input_cost_usd": 0.0025718399999999993,
+    "input_tokens": 28576,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.00149562,
+    "output_tokens": 8309,
+    "provider_total_tokens": 286741,
+    "reasoning_tokens": 1744,
+    "thinking_blocks": 9,
+    "tool_calls": 15,
+    "tool_errors": 1,
+    "tool_results": 15,
+    "total_bucket_tokens": 286741,
+    "user_messages": 1
+  }
+}

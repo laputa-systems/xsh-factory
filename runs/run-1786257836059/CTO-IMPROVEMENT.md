@@ -2,7 +2,7 @@
 
 ## Status
 
-pending-validation
+validated
 
 ## Change
 
@@ -59,6 +59,8 @@ read-order instruction.
 
 ## Next-cycle disposition
 
-The next CTO marks this `validated` only with the named sequential raw-session
-evidence and a valid manager report; otherwise mark it `reverted` and apply
-the controller-draft fallback before another supply admission.
+Validated by `runs/run-1786260192832/phases/01-eval`: the `task-iniget`
+manager issued the required admission reads separately, completed its staged
+report in 15 turns, and the phase recorded `required_outputs.manager_report:
+true`. Retain the sequential contract. A future `not-ready` report after that
+sequence triggers the controller-draft fallback named above.

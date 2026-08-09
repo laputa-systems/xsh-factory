@@ -1,0 +1,89 @@
+{
+  "classification": "pass",
+  "correctness": {
+    "all_exact": true,
+    "cases": [
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 11477302,
+        "exact": true,
+        "name": "public",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 12343809
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 11573177,
+        "exact": true,
+        "name": "hidden_port",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 12359476
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 10843213,
+        "exact": true,
+        "name": "hidden_spaces",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 16003672
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 14143865,
+        "exact": true,
+        "name": "hidden_trim",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 14496076
+      },
+      {
+        "candidate_exit": 0,
+        "candidate_wall_ns": 12720145,
+        "exact": true,
+        "name": "hidden_global",
+        "oracle_exit": 0,
+        "oracle_wall_ns": 11126799
+      },
+      {
+        "candidate_exit": 3,
+        "candidate_wall_ns": 13305775,
+        "exact": true,
+        "name": "hidden_missing_key",
+        "oracle_exit": 1,
+        "oracle_wall_ns": 14104324
+      },
+      {
+        "candidate_exit": 3,
+        "candidate_wall_ns": 12168890,
+        "exact": true,
+        "name": "hidden_missing_section",
+        "oracle_exit": 1,
+        "oracle_wall_ns": 12038973
+      },
+      {
+        "candidate_exit": 3,
+        "candidate_wall_ns": 12248474,
+        "exact": true,
+        "name": "hidden_malformed",
+        "oracle_exit": 1,
+        "oracle_wall_ns": 12264141
+      }
+    ],
+    "passed": true
+  },
+  "eval_id": "task-iniget",
+  "image_id": "sha256:3fabc86494cab9751a38f46bdfd3351317e2ea8522499c9e632b21241ff0e6a2",
+  "platform": "linux/arm64",
+  "protocol": {
+    "artifact_present": true,
+    "review_ok": true
+  },
+  "restrictions": {
+    "passed": true,
+    "uses_ini": true
+  },
+  "result": "pass",
+  "timings": {
+    "passed": true
+  },
+  "trial_id": "1"
+}
