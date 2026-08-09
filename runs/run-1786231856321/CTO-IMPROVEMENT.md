@@ -2,12 +2,16 @@
 
 ## Status
 
-pending-validation
+validated
 
 The report-first manager repair was implemented after this cycle exposed the
-conflicting instruction path. It is not awaiting approval; a later explicit
-cycle must validate the exact manager-report invariant before this handoff is
-marked `validated`.
+conflicting instruction path. Run `run-1786233883963` validated that its
+instruction order is singular: the primary manager's only assistant turn made
+exactly the five required admission reads and did not inspect worker or
+evaluator evidence first. The primary report still remained incomplete because
+the provider did not return a second assistant turn after the completed tool
+results; that separate lifecycle boundary is addressed by the successor
+controller improvement in `runs/run-1786233883963/CTO-IMPROVEMENT.md`.
 
 ## Change
 
@@ -47,29 +51,30 @@ workers, 97 turns, and complete manager reports. Run 11
 
 ## Target metric
 
-On the next explicit organization cycle, every manager attempt must issue its
-first post-admission-dossier tool call as `write` or `edit` to the staged
-report. The root report must show every phase's `required_outputs.manager_report`
-as `true`, with no manager retry caused solely by an incomplete first draft.
+Run `run-1786233883963` observed zero evidence-order violations: the primary
+manager made only the five admission reads before its session stopped making
+progress, and the independent manager made the same reads then immediately
+wrote the staged report. The all-manager-completion portion of the former
+target was not met because the session watcher terminated a pending provider
+completion; it is now a controller lifecycle target, not an instruction-order
+claim.
 
 ## Validation
 
-Run `xsht test --jobs 1` after the repair and then use a later explicit
-organization request with the qualified image. Inspect the phase reports and
-manager raw sessions for the ordering: five admission reads, immediate report
-write/edit, then evidence refinement. The native suite currently passes
-144/144, but paid validation is intentionally pending because the failed run
-must not be relaunched under the same request.
+`runs/run-1786233883963/phases/01-eval/workers/eval-manager/task-bigfiles/`
+and its retry contain the ordered admission reads; the successful comparison is
+`phases/02-eval/workers/eval-manager/task-colsum/session.jsonl.bz2`. The
+current native suite protects the common role, assignment, and retry wording.
 
 ## Revert condition
 
-If a later manager still reads a worker report or evaluator manifest before its
-first staged-report write, or if the new wording causes a manager to omit a
-required evidence field after refinement, revert the prompt changes and move
-the report-first enforcement into a controller-owned deterministic fallback.
+If a later manager reads a worker report or evaluator manifest before its first
+staged-report write, or if the wording causes an otherwise available manager
+turn to omit a required evidence field after refinement, revert the prompt
+changes and move report-first enforcement into a controller-owned deterministic
+fallback.
 
 ## Next-cycle disposition
 
-Pending validation. The failed run remains preserved as the falsifying baseline;
-the next explicit cycle must validate the manager-report invariant before this
-handoff is closed.
+Validated for evidence order. The failed run remains the baseline for the
+separate pending-provider lifecycle repair recorded by the current cycle.

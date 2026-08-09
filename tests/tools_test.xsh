@@ -2758,6 +2758,50 @@ proc test_session_watch_idle_uses_epoch_milliseconds(ctx: TestContext) [fs, proc
   test.ok(elapsed >= 250, f"watcher fired too early: ${elapsed}ms")?
 }
 
+proc test_session_watch_defers_pending_provider_response_to_wall_limit(ctx: TestContext) [fs, process, time, error] {
+  let root = test.temp_dir(ctx, name: "session-watch-provider-response")?
+  let session = fp"${root}/session.jsonl"
+  let marker = fp"${root}/SESSION-LIMIT"
+  fs.write(
+    session,
+    """{"type":"message","message":{"role":"assistant","stopReason":"toolUse"}}
+{"type":"message","message":{"role":"toolResult","toolName":"read"}}
+""",
+  )?
+  let xsh = process.which("xsh")?
+  let factory = fs.cwd()?
+  let sleeper = spawn process.command_argv("sleep", ["sleep", "3"])?
+  let status = process.run(
+    process.command_argv(
+      xsh,
+      [
+        xsh.display(),
+        fp"${factory}/factory/tools/session-watch.xsh",
+        "--",
+        "--session",
+        session.display(),
+        "--pid",
+        f"${sleeper.pid}",
+        "--max-turns",
+        "10",
+        "--max-seconds",
+        "1",
+        "--marker",
+        marker.display(),
+        "--role",
+        "eval-manager",
+        "--max-idle-seconds",
+        "1",
+      ],
+      cwd: factory,
+      env: {XSH_MODULE_PATH: factory.display()},
+    ),
+  )?
+  let _ = wait sleeper
+  test.ok(! status.ok)?
+  test.contains(fs.read_text(marker)?, "wall limit exceeded")?
+}
+
 proc test_engineer_guidance_is_run_scoped() [fs, error] {
   let ticket = fs.read_text(fp"${fs.cwd()?}/factory/controllers/ticket.xsh")?
   let assignment = fs.read_text(fp"${fs.cwd()?}/templates/ENGINEER-ASSIGNMENT.md")?

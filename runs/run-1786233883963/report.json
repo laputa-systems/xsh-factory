@@ -1,0 +1,262 @@
+{
+  "artifacts": [
+    {
+      "kind": "phase-reports",
+      "path": "phases/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 70,
+      "budget_failures": 0,
+      "cost_usd": 0.04274082,
+      "tool_errors": 2,
+      "total_bucket_tokens": 993984.0,
+      "unknown_costs": 0,
+      "workers": 5
+    },
+    "mode": "organization",
+    "outcomes": {
+      "cycle": "fail",
+      "evaluator": "pass",
+      "infrastructure": "fail",
+      "product": "pass"
+    },
+    "phases": [
+      {
+        "id": "01-eval",
+        "path": "phases/01-eval/report.json",
+        "result": "fail",
+        "valid": true
+      },
+      {
+        "id": "02-eval",
+        "path": "phases/02-eval/report.json",
+        "result": "pass",
+        "valid": true
+      }
+    ],
+    "throughput": {
+      "admitted_tickets": 0,
+      "delivered_tickets": 0,
+      "delivery_conversion": 0.0,
+      "delivery_target_met": true,
+      "fresh_delivered_tickets": 0,
+      "fresh_engineer_rows": 0,
+      "fresh_engineer_target": 0,
+      "handbook_quarantines": 0,
+      "overlap_linked_replays": false,
+      "overlap_retained_fresh": false,
+      "reeval_dispatched": 0,
+      "reeval_passed": 0,
+      "retained_delivered_tickets": 0,
+      "retained_fast_paths": 0,
+      "retained_rows": 0
+    },
+    "tool_errors": [
+      {
+        "report": "phases/01-eval/workers/eval-worker/task-bigfiles-1/report.json",
+        "summary": "err[check.effect-violation]: `?` requires the `error` effect\n  probe.xsh:3:15\n    let files = fs.files(root, false, true, [], true)?\n                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `?` requires the `error` effect\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 5,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-bigfiles-1"
+        }
+      },
+      {
+        "report": "phases/02-eval/workers/eval-worker/task-colsum-1/report.json",
+        "summary": "err[check.effect-violation]: `?` requires the `error` effect\n  t.xsh:2:14\n    let text = fs.read_text(Path(argv[0]))?\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `?` requires the `error` effect\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 20,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-colsum-1"
+        }
+      }
+    ],
+    "workers": [
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-bigfiles-retry-1"
+        },
+        "path": "phases/01-eval/workers/eval-manager/task-bigfiles-retry-1/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 1,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 9.216e-6,
+          "cache_read_tokens": 512,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.000618696,
+          "input_cost_usd": 0.00057024,
+          "input_tokens": 6336,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00003924,
+          "output_tokens": 218,
+          "provider_total_tokens": 7066,
+          "reasoning_tokens": 43,
+          "thinking_blocks": 1,
+          "tool_calls": 2,
+          "tool_errors": 0,
+          "tool_results": 2,
+          "total_bucket_tokens": 7066,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-bigfiles"
+        },
+        "path": "phases/01-eval/workers/eval-manager/task-bigfiles/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 1,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 9.216e-6,
+          "cache_read_tokens": 512,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.000600246,
+          "input_cost_usd": 0.00053379,
+          "input_tokens": 5931,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00005724,
+          "output_tokens": 318,
+          "provider_total_tokens": 6761,
+          "reasoning_tokens": 12,
+          "thinking_blocks": 1,
+          "tool_calls": 5,
+          "tool_errors": 0,
+          "tool_results": 5,
+          "total_bucket_tokens": 6761,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-bigfiles-1"
+        },
+        "path": "phases/01-eval/workers/eval-worker/task-bigfiles-1/report.json",
+        "result": "pass",
+        "tool_errors": 1,
+        "usage": {
+          "assistant_turns": 17,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.001801728,
+          "cache_read_tokens": 100096,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.010463057999999996,
+          "input_cost_usd": 0.00783639,
+          "input_tokens": 87071,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00082494,
+          "output_tokens": 4583,
+          "provider_total_tokens": 191750,
+          "reasoning_tokens": 2069,
+          "thinking_blocks": 13,
+          "tool_calls": 24,
+          "tool_errors": 1,
+          "tool_results": 24,
+          "total_bucket_tokens": 191750,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-colsum"
+        },
+        "path": "phases/02-eval/workers/eval-manager/task-colsum/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 7,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.0020183040000000003,
+          "cache_read_tokens": 112128,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.005929074,
+          "input_cost_usd": 0.00229293,
+          "input_tokens": 25477,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0016178400000000002,
+          "output_tokens": 8988,
+          "provider_total_tokens": 146593,
+          "reasoning_tokens": 2419,
+          "thinking_blocks": 6,
+          "tool_calls": 11,
+          "tool_errors": 0,
+          "tool_results": 11,
+          "total_bucket_tokens": 146593,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-colsum-1"
+        },
+        "path": "phases/02-eval/workers/eval-worker/task-colsum-1/report.json",
+        "result": "pass",
+        "tool_errors": 1,
+        "usage": {
+          "assistant_turns": 44,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.008372735999999997,
+          "cache_read_tokens": 465152,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.025129746,
+          "input_cost_usd": 0.015042150000000004,
+          "input_tokens": 167135,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0017148600000000003,
+          "output_tokens": 9527,
+          "provider_total_tokens": 641814,
+          "reasoning_tokens": 4366,
+          "thinking_blocks": 32,
+          "tool_calls": 50,
+          "tool_errors": 1,
+          "tool_results": 50,
+          "total_bucket_tokens": 641814,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "aef5ddb3396ab78783dd76516d5fdcc25a17df29"
+  },
+  "findings": [
+    {
+      "detail": "",
+      "id": "01-eval",
+      "kind": "phase",
+      "result": "fail"
+    }
+  ],
+  "identity": {
+    "mode": "organization",
+    "run_id": "run-1786233883963"
+  },
+  "kind": "run",
+  "result": "fail",
+  "schema_version": 1,
+  "state": "completed"
+}

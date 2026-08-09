@@ -38,6 +38,38 @@ proc assistant_turns(session_path: Path) [fs, process, error] -> Result[Int] {
   turns
 }
 
+# A final tool result means Pi is waiting for the next provider completion.
+# Session JSONL stays unchanged while that completion is in flight, so its
+# modification time is not evidence that the assigned agent is inactive. The
+# role's ordinary wall limit remains the bounded recovery mechanism.
+proc provider_response_pending(session_path: Path) [fs, process, error] -> Result[Bool] {
+  if ! fs.exists(session_path)? {
+    return Ok(false)
+  }
+
+  var last_role = ""
+  let session_text = runtime.session_text(session_path)?
+  for line in session_text.lines() {
+    match json.decode(line) {
+      Ok(entry) => {
+        continue when json_text(json.get(entry, ["type"], "")) != "message"
+        match json.get(entry, ["message"], null) {
+          message is Record => {
+            let role = json_text(json.get(message, ["role"], ""))
+            if role != "" {
+              last_role = role
+            }
+          }
+          _ => {}
+        }
+      }
+      Err(_) => {}
+    }
+  }
+
+  last_role == "toolResult"
+}
+
 proc process_live(pid: Int) [process, error] -> Result[Bool] {
   process.list()? |> any .pid == pid
 }
@@ -111,7 +143,7 @@ proc main(...argv: List[Str]) [fs, process, time, error, io] {
       abort(3)
     }
 
-    if max_idle_seconds > 0 {
+    if max_idle_seconds > 0 and ! provider_response_pending(session)? {
       let last_activity = if fs.exists(session)? {
         modified_epoch_ms(fs.metadata(session)?.modified)
       } else {

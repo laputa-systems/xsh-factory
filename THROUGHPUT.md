@@ -213,12 +213,15 @@ Manager timing is bounded in two ways:
 - one report-recovery attempt: 180 seconds, using the same evidence packet.
 
 The session watcher also applies a 120-second inactivity bound to the
-eval-manager. This is shorter than the normal 300-second wall bound and the
-180-second recovery bound, while allowing one provider turn to spend a minute
-reading the controller-prepared packet without being mistaken for a stall.
-Inactivity is measured from the controller session file's last modification,
-not from a guessed provider state. A timeout terminates the manager, preserves
-its report/session attempt, and emits a structured reason. There is never a
+eval-manager when no provider completion is pending. This is shorter than the
+normal 300-second wall bound and the 180-second recovery bound. Once the
+controller session ends in completed tool results, Pi is waiting for the next
+provider turn and the session file cannot advance; that state is governed by
+the existing bounded wall limit rather than being misclassified as agent
+inactivity. Inactivity is measured from the controller session file's last
+modification, while the last session record distinguishes agent silence from a
+pending provider completion. A timeout terminates the manager, preserves its
+report/session attempt, and emits a structured reason. There is never a
 second unrestricted full wall-clock window.
 
 For a fresh linked replay, an exhausted manager recovery means the candidate is
@@ -329,6 +332,7 @@ The paid validation sequence exposed and repaired real boundary failures:
 | `run-1786230433596` | ticketless; two Open tickets, zero Approved rows; two discovery evals | both phases failed before Pi at local XSH build | zero workers, zero turns, `$0.00`; explicit image tag had been overwritten by the failed prior Docker build | repaired/validated explicit qualified-image selection; created a fresh platform-matched image |
 | `run-1786230602946` | ticketless; two Open tickets, zero Approved rows; `task-bigfiles` and `task-colsum` discovery overlap | both nine-case evals passed correctness/restrictions/protocol; both managers passed | four workers, 97 turns, `$0.052743888`; no delivery because no eligible ticket; one provider 503 retry succeeded | validated the image/build repair; cleared a non-semantic handbook snapshot with a native-tested narrow equivalence gate |
 | `run-1786231856321` | ticketless; two Open tickets, zero Approved rows; same two discovery evals | both evaluator trials passed; `task-colsum` manager passed; `task-bigfiles` manager and bounded retry left `not-ready` | five workers, 94 turns, `$0.062499888`; no delivery; infrastructure/overall fail | removed the role/assignment evidence-order conflict; native tests protect the report-first contract; validation pending |
+| `run-1786233883963` | ticketless; two Open tickets, zero Approved rows; `task-bigfiles` and `task-colsum` discovery overlap | both evaluator trials passed; `task-colsum` manager passed; both `task-bigfiles` manager attempts ended after their prescribed initial reads | five workers, 70 turns, `$0.04274082`; no delivery; infrastructure/overall fail | validated the report-first ordering; the watcher now distinguishes pending provider completion from agent inactivity; validation pending |
 
 Run 4 is an important negative result. It proves that the 120-second idle
 repair fixed a false-positive inactivity diagnosis, but it did not yet prove
@@ -463,6 +467,25 @@ worker and evaluator evidence refinement. `tests/tools_test.xsh` now asserts
 the three prompt surfaces. The native suite remains 144/144. Because the paid
 request already failed, the repair is not relaunched under the same request;
 the next explicit cycle is the validation boundary.
+
+Run 12 (`run-1786233883963`) was that boundary. Its primary manager complied
+with the repaired ordering: its only assistant response contained exactly the
+five admission reads and no worker/evaluator read. The retry likewise made only
+its prescribed phase-report and staged-report reads. Neither session received a
+second assistant response after the corresponding tool results, so neither
+could write a first draft before the 120-second idle watcher terminated it. The
+independent `task-colsum` manager used the same five-read first turn, received
+its next provider completion, immediately wrote the staged report, and passed.
+Thus the prompt contradiction is resolved; the remaining failure is a
+controller lifecycle misclassification, not a new evidence-order violation.
+
+`factory/tools/session-watch.xsh` now recognizes a final `toolResult` record as
+a pending provider completion. It retains the 120-second idle cap for ordinary
+agent silence, but lets the existing 300-second normal or 180-second recovery
+wall cap govern that pending state. A synthetic native test proves the watcher
+records the wall limit rather than an idle limit for that exact session shape.
+The change is pending the next explicit cycle; the current run remains the
+falsifying baseline and no paid relaunch is authorized by it.
 
 ## Qualification and closeout
 
