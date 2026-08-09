@@ -1,0 +1,262 @@
+#0 building with "orbstack" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile.test
+#1 transferring dockerfile: 5.68kB done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/alpine:3.24.1
+#2 DONE 0.0s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 57B done
+#3 DONE 0.0s
+
+#4 [ 1/12] FROM docker.io/library/alpine:3.24.1@sha256:28bd5fe8b56d1bd048e5babf5b10710ebe0bae67db86916198a6eec434943f8b
+#4 resolve docker.io/library/alpine:3.24.1@sha256:28bd5fe8b56d1bd048e5babf5b10710ebe0bae67db86916198a6eec434943f8b 0.0s done
+#4 DONE 0.0s
+
+#5 [ 4/12] ADD https://github.com/laputa-systems/llvm-prebuilt-musl/releases/download/llvm-musl-23.1.0-rc2-6eb5fb9/clang+llvm-23.1.0-rc2-aarch64-linux-musl.tar.xz /tmp/llvm-aarch64.tar.xz
+#5 ...
+
+#6 [ 8/12] ADD https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-musl/rustup-init /rustup-init-x86_64
+#6 DONE 0.1s
+
+#7 [ 9/12] ADD https://static.rust-lang.org/rustup/dist/aarch64-unknown-linux-musl/rustup-init /rustup-init-aarch64
+#7 DONE 0.1s
+
+#5 [ 4/12] ADD https://github.com/laputa-systems/llvm-prebuilt-musl/releases/download/llvm-musl-23.1.0-rc2-6eb5fb9/clang+llvm-23.1.0-rc2-aarch64-linux-musl.tar.xz /tmp/llvm-aarch64.tar.xz
+#5 DONE 0.3s
+
+#8 [ 3/12] ADD https://github.com/laputa-systems/llvm-prebuilt-musl/releases/download/llvm-musl-23.1.0-rc2-6eb5fb9/clang+llvm-23.1.0-rc2-x86_64-linux-musl.tar.xz /tmp/llvm-x86_64.tar.xz
+#8 DONE 0.3s
+
+#9 [ 2/12] RUN apk add --no-cache musl-dev linux-headers libgcc libunwind-dev git make binutils tzdata zip strace
+#9 CACHED
+
+#10 [ 7/12] RUN llvm-strip --strip-debug /usr/lib/crt*.o /usr/lib/[S]*.o 2>/dev/null || true
+#10 CACHED
+
+#11 [ 8/12] ADD https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-musl/rustup-init /rustup-init-x86_64
+#11 CACHED
+
+#12 [ 9/12] ADD https://static.rust-lang.org/rustup/dist/aarch64-unknown-linux-musl/rustup-init /rustup-init-aarch64
+#12 CACHED
+
+#13 [ 3/12] ADD https://github.com/laputa-systems/llvm-prebuilt-musl/releases/download/llvm-musl-23.1.0-rc2-6eb5fb9/clang+llvm-23.1.0-rc2-x86_64-linux-musl.tar.xz /tmp/llvm-x86_64.tar.xz
+#13 CACHED
+
+#14 [ 5/12] RUN case "arm64" in         amd64) f=/tmp/llvm-x86_64.tar.xz ;;         arm64) f=/tmp/llvm-aarch64.tar.xz ;;     esac     && echo '36647cca0bf57d206a6ce757d07a9d8489ef6ccf283a2cc7f740d1cba99a088b  /tmp/llvm-x86_64.tar.xz' | sha256sum -c -     && echo '0c9bd6f0fefa26dbdb7d6ed568f3799b558428b1ce1264656aa328fc6fd9e32d  /tmp/llvm-aarch64.tar.xz' | sha256sum -c -     && mkdir -p /opt/llvm-musl     && tar xf "$f" -C /opt/llvm-musl --strip-components=1     && test -f /opt/llvm-musl/lib/libclang.so     && rm /tmp/llvm-x86_64.tar.xz /tmp/llvm-aarch64.tar.xz
+#14 CACHED
+
+#15 [11/12] RUN rustup toolchain install nightly-2026-07-24     --target aarch64-unknown-linux-musl     --target x86_64-unknown-linux-musl     --component llvm-tools-preview
+#15 CACHED
+
+#16 [ 4/12] ADD https://github.com/laputa-systems/llvm-prebuilt-musl/releases/download/llvm-musl-23.1.0-rc2-6eb5fb9/clang+llvm-23.1.0-rc2-aarch64-linux-musl.tar.xz /tmp/llvm-aarch64.tar.xz
+#16 CACHED
+
+#17 [ 6/12] RUN for target in aarch64-unknown-linux-musl x86_64-unknown-linux-musl; do         stub_dir="/usr/lib/xsh-crt/$target";         mkdir -p "$stub_dir";         for obj in crtbegin.o crtbeginS.o crtbeginT.o crtend.o crtendS.o; do             clang --target="$target" -x c -c /dev/null -o "$stub_dir/$obj";         done;     done
+#17 CACHED
+
+#18 [10/12] RUN case "arm64" in         amd64) init=/rustup-init-x86_64 ;;         arm64) init=/rustup-init-aarch64 ;;     esac     && cp "$init" /rustup-init     && chmod +x /rustup-init     && /rustup-init -y --default-toolchain none     && rm /rustup-init /rustup-init-x86_64 /rustup-init-aarch64
+#18 CACHED
+
+#19 [12/12] RUN host_libdir="$(rustc --print target-libdir)"     && ln -sf /usr/lib/libgcc_s.so.1 "${host_libdir}/libgcc_s.so"     && ln -sf /usr/lib/libgcc_s.so.1 "${host_libdir}/libgcc_s.so.1"     && ln -sf /usr/lib/libc.so "${host_libdir}/libc.so"
+#19 CACHED
+
+#20 exporting to image
+#20 exporting layers done
+#20 exporting manifest sha256:c076372d8cd2534aeb8483c2225ff19ffd6919aa47fba0726724504189e22c27 done
+#20 exporting config sha256:fbd8cb2641d46ca6314f9b1d0ca76543e052d24469370d3b4e90b648bbc3ba9f done
+#20 exporting attestation manifest sha256:ef6cea3d1e3ab445f2a45b39b85f24124424bd4fca9f5443c13831a284dee73c 0.0s done
+#20 exporting manifest list sha256:6ae4fd3f250bd9ae8afe7cf843438bda11503b6072a2e22aa0175b9a16715727 0.0s done
+#20 naming to docker.io/library/xsh-test:latest done
+#20 unpacking to docker.io/library/xsh-test:latest done
+#20 DONE 0.1s
+info: syncing channel updates for nightly-2026-07-24-aarch64-unknown-linux-musl
+info: latest update on 2026-07-24 for version 1.99.0-nightly (89c61a754 2026-07-23)
+info: component llvm-tools is up to date
+info: downloading component rust-src
+    Updating git repository `https://github.com/joshuarli/hyper-futures-lite`
+    Updating git repository `https://github.com/joshuarli/h2-futures-lite`
+    Updating git repository `https://github.com/dignifiedquire/async-tar.git`
+   Compiling compiler_builtins v0.1.160 (/root/.rustup/toolchains/nightly-2026-07-24-aarch64-unknown-linux-musl/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins)
+   Compiling core v0.0.0 (/root/.rustup/toolchains/nightly-2026-07-24-aarch64-unknown-linux-musl/lib/rustlib/src/rust/library/core)
+   Compiling std v0.0.0 (/root/.rustup/toolchains/nightly-2026-07-24-aarch64-unknown-linux-musl/lib/rustlib/src/rust/library/std)
+   Compiling crossbeam-utils v0.8.21
+   Compiling rustix v1.1.4
+   Compiling libc v0.2.186
+   Compiling io-lifetimes v3.0.1
+   Compiling aws-lc-sys v0.41.0
+   Compiling io-lifetimes v2.0.4
+   Compiling io-extras v0.19.0
+   Compiling cap-primitives v4.0.2
+   Compiling cap-std v4.0.2
+   Compiling async-io v2.6.0
+   Compiling crc32fast v1.5.0
+   Compiling getrandom v0.4.2
+   Compiling httparse v1.10.1
+   Compiling libmimalloc-sys v0.1.49
+   Compiling zmij v1.0.21
+   Compiling thiserror v2.0.18
+   Compiling syscalls v0.8.1
+   Compiling cap-fs-ext v4.0.2
+   Compiling miniserde v0.1.45
+   Compiling xsh v0.0.1 (/work)
+   Compiling rustc-std-workspace-core v1.99.0 (/root/.rustup/toolchains/nightly-2026-07-24-aarch64-unknown-linux-musl/lib/rustlib/src/rust/library/rustc-std-workspace-core)
+   Compiling alloc v0.0.0 (/root/.rustup/toolchains/nightly-2026-07-24-aarch64-unknown-linux-musl/lib/rustlib/src/rust/library/alloc)
+   Compiling libc v0.2.189
+   Compiling adler2 v2.0.1
+   Compiling memchr v2.7.6
+   Compiling panic_abort v0.0.0 (/root/.rustup/toolchains/nightly-2026-07-24-aarch64-unknown-linux-musl/lib/rustlib/src/rust/library/panic_abort)
+   Compiling rustc-demangle v0.1.28
+   Compiling cfg-if v1.0.4
+   Compiling rustc-literal-escaper v0.0.8
+   Compiling unwind v0.0.0 (/root/.rustup/toolchains/nightly-2026-07-24-aarch64-unknown-linux-musl/lib/rustlib/src/rust/library/unwind)
+   Compiling aws-lc-rs v1.17.0
+   Compiling rustls v0.23.41
+   Compiling rustc-std-workspace-alloc v1.99.0 (/root/.rustup/toolchains/nightly-2026-07-24-aarch64-unknown-linux-musl/lib/rustlib/src/rust/library/rustc-std-workspace-alloc)
+   Compiling panic_unwind v0.0.0 (/root/.rustup/toolchains/nightly-2026-07-24-aarch64-unknown-linux-musl/lib/rustlib/src/rust/library/panic_unwind)
+   Compiling gimli v0.34.0
+   Compiling hashbrown v0.17.1
+   Compiling object v0.39.1
+   Compiling std_detect v0.1.5 (/root/.rustup/toolchains/nightly-2026-07-24-aarch64-unknown-linux-musl/lib/rustlib/src/rust/library/std_detect)
+   Compiling miniz_oxide v0.9.1
+   Compiling addr2line v0.27.0
+   Compiling proc_macro v0.0.0 (/root/.rustup/toolchains/nightly-2026-07-24-aarch64-unknown-linux-musl/lib/rustlib/src/rust/library/proc_macro)
+   Compiling once_cell v1.21.4
+   Compiling pin-project-lite v0.2.17
+   Compiling bitflags v2.13.0
+   Compiling linux-raw-sys v0.12.1
+   Compiling parking v2.2.1
+   Compiling futures-core v0.3.32
+   Compiling futures-io v0.3.32
+   Compiling fastrand v2.4.1
+   Compiling value-bag v1.13.1
+   Compiling zeroize v1.9.0
+   Compiling atomic-waker v1.1.2
+   Compiling concurrent-queue v2.5.0
+   Compiling log v0.4.33
+   Compiling futures-lite v2.6.1
+   Compiling typenum v1.20.1
+   Compiling slab v0.4.12
+   Compiling event-listener v5.4.1
+   Compiling rustls-pki-types v1.15.0
+   Compiling ambient-authority v0.0.2
+   Compiling memchr v2.8.1
+   Compiling ipnet v2.12.0
+   Compiling itoa v1.0.18
+   Compiling maybe-owned v0.3.4
+   Compiling event-listener-strategy v0.5.4
+   Compiling bytes v1.11.1
+   Compiling hybrid-array v0.4.12
+   Compiling foldhash v0.2.0
+   Compiling async-task v4.7.1
+   Compiling const-oid v0.10.2
+   Compiling crypto-common v0.2.2
+   Compiling block-buffer v0.12.0
+   Compiling untrusted v0.9.0
+   Compiling http v1.5.0
+   Compiling simd-adler32 v0.3.9
+   Compiling async-executor v1.14.0
+   Compiling async-channel v2.5.0
+   Compiling miniz_oxide v0.8.9
+   Compiling aho-corasick v1.1.4
+   Compiling piper v0.2.5
+   Compiling tracing-core v0.1.36
+   Compiling digest v0.11.3
+   Compiling zlib-rs v0.6.3
+   Compiling equivalent v1.0.2
+   Compiling rustls-webpki v0.103.13
+   Compiling subtle v2.6.1
+   Compiling regex-syntax v0.8.11
+   Compiling indexmap v2.14.0
+   Compiling tracing v0.1.44
+   Compiling http-body v1.1.0
+   Compiling blocking v1.6.2
+   Compiling async-lock v3.4.2
+   Compiling cpufeatures v0.3.0
+   Compiling fnv v1.0.7
+   Compiling futures-sink v0.3.33
+   Compiling compression-core v0.4.32
+   Compiling event-listener v2.5.3
+   Compiling try-lock v0.2.5
+   Compiling option-ext v0.2.0
+   Compiling smallvec v1.15.2
+   Compiling regex-automata v0.4.14
+   Compiling openssl-probe v0.2.1
+   Compiling rustls-native-certs v0.8.4
+   Compiling dirs-sys v0.5.0
+   Compiling want v0.3.1
+   Compiling async-channel v1.9.0
+   Compiling h2-futures v0.4.15 (https://github.com/joshuarli/h2-futures-lite?rev=732e8770cc6bbf998c573844f62e0afaccec3192#732e8770)
+   Compiling kv-log-macro v1.0.7
+   Compiling flate2 v1.1.9
+   Compiling crossbeam-epoch v0.9.18
+   Compiling futures-channel v0.3.32
+   Compiling rustc-hash v2.1.3
+   Compiling compression-codecs v0.4.38
+   Compiling pin-utils v0.1.0
+   Compiling same-file v1.0.6
+   Compiling async-compression v0.4.42
+   Compiling fs-set-times v0.20.3
+   Compiling rustix-linux-procfs v0.1.1
+   Compiling polling v3.11.0
+   Compiling walkdir v2.5.0
+   Compiling crossbeam-deque v0.8.6
+   Compiling directories v6.0.0
+   Compiling sha2 v0.11.0
+   Compiling uuid v1.23.3
+   Compiling async-global-executor v2.4.1
+   Compiling cap-net-ext v4.0.2
+   Compiling http-body-util v0.1.4
+   Compiling rustls-pemfile v2.2.0
+   Compiling bstr v1.12.1
+   Compiling async-std v1.13.2
+   Compiling filetime v0.2.29
+   Compiling crossbeam-channel v0.5.15
+   Compiling libbz2-rs-sys v0.2.5
+   Compiling pin-project v1.1.13
+   Compiling futures-rustls v0.26.0
+   Compiling hyper v1.11.0 (https://github.com/joshuarli/hyper-futures-lite?rev=c99b20ce178251a962289977fdfa2474e2564f8e#c99b20ce)
+   Compiling globset v0.4.18
+   Compiling rustls-platform-verifier v0.7.0
+   Compiling bzip2 v0.6.1
+   Compiling ignore v0.4.25
+   Compiling astral_async_zip v0.0.20
+   Compiling async-tar v0.6.1 (https://github.com/dignifiedquire/async-tar.git?rev=109365969684b9cfdbe2696d5185b4ebcfb29b4c#10936596)
+   Compiling xsh-net v0.0.1 (/work/crates/xsh-net)
+   Compiling mimalloc v0.1.52
+   Compiling cap-tempfile v4.0.2
+   Compiling cap-directories v4.0.2
+   Compiling lzma-rust2 v0.16.5
+   Compiling tempfile v3.27.0
+   Compiling xsh-applets v0.0.1 (/work/crates/xsh-applets)
+   Compiling sha1 v0.11.0
+   Compiling md-5 v0.11.0
+   Compiling diffy v0.5.0
+   Compiling jiff v0.2.31
+   Compiling data-encoding v2.11.0
+   Compiling regex-lite v0.1.9
+   Compiling xsh-registry v0.0.1 (/work/crates/xsh-registry)
+   Compiling xshi v0.0.1 (/work/crates/xshi)
+   Compiling xsht v0.0.1 (/work/crates/xsht)
+error[E0061]: this method takes 2 arguments but 1 argument was supplied
+   --> crates/xsht/src/xsht/test.rs:153:45
+    |
+153 |             && let Err(message) = collector.ingest_jsonl(trace)
+    |                                             ^^^^^^^^^^^^------- argument #2 of type `&str` is missing
+    |
+note: method defined here
+   --> crates/xsht/src/cli/coverage.rs:103:12
+    |
+103 |     pub fn ingest_jsonl(&mut self, scope: &str, jsonl: &str) -> Result<(), String> {
+    |            ^^^^^^^^^^^^                         -----------
+help: provide the argument
+    |
+153 |             && let Err(message) = collector.ingest_jsonl(trace, /* &str */)
+    |                                                               ++++++++++++
+
+For more information about this error, try `rustc --explain E0061`.
+error: could not compile `xsht` (bin "xsht") due to 1 previous error
+warning: build failed, waiting for other jobs to finish...
+make: *** [dist-Linux-docker] Error 101

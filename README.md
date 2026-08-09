@@ -46,6 +46,10 @@ XSH_MODULE_PATH=. xsh run.xsh templates/ORGANIZATION-REQUEST.md
 
 Before launch, the CTO reviews every remaining `Open.` ticket. The CTO checks
 evidence, duplication, scope, and acceptance criteria.
+`run.xsh` then requires a clean factory and product checkout, builds local
+`xsht` with its native-test feature, runs the factory native suite, and runs
+fail-closed `xsht lint --fix` followed by lint. A lint autofix that changes the
+checkout stops admission for CTO review; it never silently changes paid work.
 The controller reconciles merged tickets and, when a branchless approved
 ticket is ready, admits one complete delivery transaction and its linked replay.
 No independent eval shares that transaction. When no ticket is ready, it runs

@@ -1068,6 +1068,11 @@ proc test_standard_cycle_rotates_ticketless_discovery(ctx: TestContext) [fs, err
   test.contains(launcher, "cto_unreviewed_open_tickets")?
   test.contains(launcher, "unresolved_handbook_candidates")?
   test.contains(launcher, "factory/tools/cto.xsh")?
+  test.contains(launcher, "factory repository must be clean before preflight hygiene")?
+  test.contains(launcher, "--features", "preflight must build the exact xsht feature set")?
+  test.contains(launcher, "native-tests", "preflight must compile xsht native-test support")?
+  test.contains(launcher, "factory preflight native tests failed")?
+  test.contains(launcher, "factory preflight lint --fix changed the checkout")?
   test.contains(organization, "adaptive_approved_tickets")?
   test.contains(organization, "organization_eval_target")?
   test.contains(organization, "ticketless organization cycles require exactly one discovery eval")?

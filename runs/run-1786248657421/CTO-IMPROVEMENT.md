@@ -2,11 +2,13 @@
 
 ## Status
 
-pending-validation
+validated
 
-`pending-validation` means the CTO has already implemented this change. It is
-not awaiting another approval; the next cycle verifies the named metric or
-applies the safe inverse.
+The next organization attempt, `runs/run-1786250146613`, rebuilt the image
+without either prior `linux/random.h` or `-lunwind` error. It reached `xsht`
+compilation before a separate product source regression stopped the build, so
+the image repair itself is validated even though the broader worker target was
+blocked by that distinct failure.
 
 ## Change
 

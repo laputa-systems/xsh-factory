@@ -99,6 +99,76 @@ proc preflight(
     return false
   }
 
+  let factory_status = run.text "git" "-C" $factory_dir "status" "--porcelain" ?
+  if factory_status.trim() != "" {
+    eprint "factory repository must be clean before preflight hygiene"
+    return false
+  }
+
+  # Build the same xsht feature set used by the eval distribution before any
+  # paid controller can create a run directory. A plain debug build does not
+  # compile `xsht/native-tests`, so it cannot prove the factory runtime path.
+  let cargo = process.which("cargo")?.display()
+  let xsht_build = process.run(
+    process.command_argv(
+      cargo,
+      [cargo, "build", "-p", "xsht", "--bin", "xsht", "--features", "native-tests"],
+      cwd: xsh_repo,
+    ),
+  )?
+  if ! xsht_build.ok {
+    eprint "factory preflight xsht debug build failed"
+    return false
+  }
+
+  let local_xsht = fp"${xsh_repo}/target/debug/xsht"
+  if ! fs.exists(local_xsht)? {
+    eprint "factory preflight xsht debug binary is missing"
+    return false
+  }
+
+  let native_tests = process.run(
+    process.command_argv(
+      local_xsht,
+      [local_xsht.display(), "test"],
+      cwd: factory_dir,
+    ),
+  )?
+  if ! native_tests.ok {
+    eprint "factory preflight native tests failed"
+    return false
+  }
+
+  let lint_fix = process.run(
+    process.command_argv(
+      local_xsht,
+      [local_xsht.display(), "lint", "--fix"],
+      cwd: factory_dir,
+    ),
+  )?
+  if ! lint_fix.ok {
+    eprint "factory preflight lint --fix failed"
+    return false
+  }
+
+  let factory_after_lint = run.text "git" "-C" $factory_dir "status" "--porcelain" ?
+  if factory_after_lint.trim() != "" {
+    eprint "factory preflight lint --fix changed the checkout; CTO must personally review the diff"
+    return false
+  }
+
+  let lint = process.run(
+    process.command_argv(
+      local_xsht,
+      [local_xsht.display(), "lint"],
+      cwd: factory_dir,
+    ),
+  )?
+  if ! lint.ok {
+    eprint "factory preflight lint failed"
+    return false
+  }
+
   let runs_dir = fp"${factory_dir}/runs"
   let active_run = fp"${runs_dir}/ACTIVE"
   let organization_run = fp"${runs_dir}/ORGANIZATION-ACTIVE"
@@ -292,8 +362,8 @@ proc preflight(
 
       let evaluator_check = process.run(
         process.command_argv(
-          process.which("xsht")?,
-          ["xsht", "check", evaluator_file.display()],
+          local_xsht,
+          [local_xsht.display(), "check", evaluator_file.display()],
           cwd: factory_dir,
         ),
       )?
