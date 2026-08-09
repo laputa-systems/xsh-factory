@@ -178,9 +178,10 @@ not count as an admission failure.
 
 Eval-strength gate: before retiring or selecting an eval, the CTO must inspect
 `factory/tools/eval-trends.xsh` output. The report must separate agent effort from
-provider health and distinguish discovery trials, replays, and regression
-sentinels. Retire an eval only after the trend supports low information value,
-no required replay depends on it, and the decision is recorded with evidence.
+provider health, distinguish discovery trials, replays, and regression
+sentinels, and attribute durable tickets to their root run and phase. Retire
+an eval only after the trend supports low information value, no required replay
+depends on it, and the decision is recorded with evidence.
 
 Factory-efficiency gate: the CTO must be actively critical of throughput,
 cycle latency, paid spend, engineer utilization, and evidence produced per

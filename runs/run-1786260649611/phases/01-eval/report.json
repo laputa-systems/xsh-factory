@@ -1,0 +1,218 @@
+{
+  "artifacts": [
+    {
+      "kind": "session-directory",
+      "path": "workers/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 42,
+      "budget_failures": 0,
+      "cost_usd": 0.01703574,
+      "tool_errors": 3,
+      "total_bucket_tokens": 620031.0,
+      "unknown_costs": 0,
+      "workers": 2
+    },
+    "designer": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786260649611/phases/01-eval/workers/eval-designer/proposal-1/REPORT.md",
+      "present": false,
+      "result": "not-requested",
+      "role": "eval-designer",
+      "valid": true
+    },
+    "director": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786260649611/phases/01-eval/workers/director/director/REPORT.md",
+      "present": false,
+      "result": "not-requested",
+      "role": "director",
+      "valid": true
+    },
+    "engineer": [],
+    "handbook_lineage": {
+      "approved": "lineage/handbook-approved.md",
+      "candidate": "lineage/handbook-candidate.md"
+    },
+    "manager": {
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786260649611/phases/01-eval/workers/eval-manager/task-intsum/REPORT.md",
+      "present": true,
+      "result": "pass",
+      "role": "eval-manager",
+      "valid": true
+    },
+    "mode": "eval",
+    "narratives": [
+      {
+        "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786260649611/phases/01-eval/workers/eval-manager/task-intsum/REPORT.md",
+        "present": true,
+        "result": "pass",
+        "role": "eval-manager",
+        "valid": true
+      }
+    ],
+    "open_tickets": [],
+    "outcomes": {
+      "cycle": "pass",
+      "evaluator": "pass",
+      "infrastructure": "pass",
+      "product": "pass"
+    },
+    "required_outputs": {
+      "audit": true,
+      "candidate_acceptance": true,
+      "candidate_handbook": true,
+      "designer_handbook_read": true,
+      "designer_output": true,
+      "handbook_lineage": true,
+      "manager_evidence_read": true,
+      "manager_handbook_read": true,
+      "manager_report": true,
+      "manager_session": true,
+      "required": true,
+      "ticket_snapshot_unchanged": true,
+      "trial1_process": true,
+      "trial1_report": true,
+      "trial2_process": true,
+      "trial2_report": true,
+      "worker_handbook_read": true
+    },
+    "sessions": [
+      "workers/eval-manager/task-intsum/session.jsonl.bz2",
+      "workers/eval-worker/task-intsum-1/session.jsonl.bz2"
+    ],
+    "tool_errors": [
+      {
+        "report": "workers/eval-manager/task-intsum/report.json",
+        "summary": "Could not find edits[2] in /Users/josh/d/laputa-systems/xsh-factory/runs/run-1786260649611/phases/01-eval/workers/eval-manager/task-intsum/REPORT.md. The oldText must match exactly including all whitespace and newlines.",
+        "tool": "edit",
+        "turn": 9,
+        "worker": {
+          "role": "eval-manager",
+          "worker_id": "task-intsum"
+        }
+      },
+      {
+        "report": "workers/eval-manager/task-intsum/report.json",
+        "summary": "Could not find edits[1] in /Users/josh/d/laputa-systems/xsh-factory/runs/run-1786260649611/phases/01-eval/workers/eval-manager/task-intsum/REPORT.md. The oldText must match exactly including all whitespace and newlines.",
+        "tool": "edit",
+        "turn": 12,
+        "worker": {
+          "role": "eval-manager",
+          "worker_id": "task-intsum"
+        }
+      },
+      {
+        "report": "workers/eval-worker/task-intsum-1/report.json",
+        "summary": "ok\nsh: syntax error: bad substitution\n\n\nCommand exited with code 2",
+        "tool": "bash",
+        "turn": 11,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-intsum-1"
+        }
+      }
+    ],
+    "trials": [
+      {
+        "evidence": {
+          "candidate_sha256": "238903180cc104ec2c5d8b3f20c5bc61b389ec0a967df8cc208cdc7cd454174f",
+          "classification": "pass",
+          "correctness": "pass",
+          "eval_id": "task-intsum",
+          "handbook_sha256": "c1295e0ad1caaf0387c18293b8be7c79ebf567afd45154d4850912f686783618",
+          "oracle_sha256": "238903180cc104ec2c5d8b3f20c5bc61b389ec0a967df8cc208cdc7cd454174f",
+          "passed": true,
+          "protocol": "pass",
+          "restrictions": "pass",
+          "result": "pass",
+          "timing": "pass",
+          "trial_id": "1",
+          "valid": true
+        },
+        "path": "workers/eval-worker/task-intsum-1/run.json"
+      }
+    ],
+    "workers": [
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-intsum"
+        },
+        "path": "workers/eval-manager/task-intsum/report.json",
+        "result": "pass",
+        "tool_errors": 2,
+        "usage": {
+          "assistant_turns": 18,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.00566784,
+          "cache_read_tokens": 314880,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.01015155,
+          "input_cost_usd": 0.002698650000000001,
+          "input_tokens": 29985,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0017850600000000002,
+          "output_tokens": 9917,
+          "provider_total_tokens": 354782,
+          "reasoning_tokens": 1670,
+          "thinking_blocks": 12,
+          "tool_calls": 17,
+          "tool_errors": 2,
+          "tool_results": 17,
+          "total_bucket_tokens": 354782,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-intsum-1"
+        },
+        "path": "workers/eval-worker/task-intsum-1/report.json",
+        "result": "pass",
+        "tool_errors": 1,
+        "usage": {
+          "assistant_turns": 24,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.004377600000000001,
+          "cache_read_tokens": 243200,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.006884189999999999,
+          "input_cost_usd": 0.00146223,
+          "input_tokens": 16247,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00104436,
+          "output_tokens": 5802,
+          "provider_total_tokens": 265249,
+          "reasoning_tokens": 2600,
+          "thinking_blocks": 17,
+          "tool_calls": 29,
+          "tool_errors": 1,
+          "tool_results": 29,
+          "total_bucket_tokens": 265249,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "04fb98f8c63b63cccffce7ef2c3cabde81bb05ba"
+  },
+  "findings": [],
+  "identity": {
+    "eval_id": "task-intsum",
+    "mode": "eval",
+    "run_id": "01-eval"
+  },
+  "kind": "phase",
+  "result": "pass",
+  "schema_version": 1,
+  "state": "completed"
+}

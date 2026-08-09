@@ -4,6 +4,7 @@ use factory.schema as schema
 type Sample = {
   eval_id: Str,
   run_id: Str,
+  phase_id: Str,
   path: Str,
   turns: Int,
   tokens: Int,
@@ -13,6 +14,14 @@ type Sample = {
   provider_errors: Int,
   result: Str,
   classification: Str,
+  ticket_ids: List[Str],
+}
+
+type TicketSource = {
+  id: Str,
+  eval_id: Str,
+  run_id: Str,
+  phase_id: Str,
 }
 
 pure text(value: Any, fallback: Str = "unknown") -> Str {
@@ -36,7 +45,11 @@ pure integer(value: Any) -> Int {
 }
 
 pure run_id_for(path_value: Path) -> Str {
-  let parts = path_value.display().split("/")
+  return run_id_for_text(path_value.display())
+}
+
+pure run_id_for_text(path_text: Str) -> Str {
+  let parts = path_text.split("/")
   var after_runs = false
   for part in parts {
     if after_runs {
@@ -49,6 +62,90 @@ pure run_id_for(path_value: Path) -> Str {
   }
 
   return "unknown"
+}
+
+pure phase_id_for_text(path_text: Str) -> Str {
+  let parts = path_text.split("/")
+  var after_phases = false
+  for part in parts {
+    if after_phases {
+      return part
+    }
+
+    if part == "phases" {
+      after_phases = true
+    }
+  }
+
+  return "unknown"
+}
+
+pure ticket_field(line: Str, label: Str) -> Str {
+  let trimmed = line.trim()
+  if ! trimmed.starts_with(label) {
+    return ""
+  }
+
+  let quoted = trimmed.split("`")
+  if quoted.len() >= 2 {
+    return quoted[1]
+  }
+
+  return trimmed.replace(label, "").trim()
+}
+
+proc ticket_sources(factory_dir: Path) [fs, error] -> Result[List[TicketSource]] {
+  let ticket_dir = fp"${factory_dir}/tickets"
+  var sources: List[TicketSource] = []
+  if ! fs.exists(ticket_dir)? {
+    return sources
+  }
+
+  for entry in fs.files(ticket_dir, gitignore: false, hidden: true)? {
+    continue unless entry.name.ends_with(".md")
+    let contents = fs.read_text(entry.path)?
+    var eval_id = ""
+    var manager_run = ""
+    for line in contents.split("\n") {
+      let found_eval = ticket_field(line, "- Eval:")
+      if found_eval != "" {
+        eval_id = found_eval
+      }
+      let found_manager = ticket_field(line, "- Manager run:")
+      if found_manager != "" {
+        manager_run = found_manager
+      }
+    }
+
+    let run_id = run_id_for_text(manager_run)
+    let phase_id = phase_id_for_text(manager_run)
+    if eval_id != "" and run_id != "unknown" and phase_id != "unknown" {
+      sources = sources.push({
+        id: entry.name.replace(".md", ""),
+        eval_id: eval_id,
+        run_id: run_id,
+        phase_id: phase_id,
+      })
+    }
+  }
+
+  return sources
+}
+
+pure ticket_ids_for(
+  sources: List[TicketSource],
+  eval_id: Str,
+  run_id: Str,
+  phase_id: Str,
+) -> List[Str] {
+  var ids: List[Str] = []
+  for source in sources {
+    if source.eval_id == eval_id and source.run_id == run_id and source.phase_id == phase_id {
+      ids = ids.push(source.id)
+    }
+  }
+
+  return ids
 }
 
 pure eval_id_for(report: Any, path_value: Path) -> Str {
@@ -80,6 +177,7 @@ proc read_samples(factory_dir: Path) [fs, error] -> Result[List[Sample]] {
     return samples
   }
 
+  let sources = ticket_sources(factory_dir)?
   for entry in fs.files(runs, gitignore: false, hidden: true) {
     continue when entry.name != "report.json" or "/workers/eval-worker/" not in entry.path.display()
     let report = json.read(entry.path)?
@@ -96,7 +194,8 @@ proc read_samples(factory_dir: Path) [fs, error] -> Result[List[Sample]] {
     }
     samples = samples.push({
       eval_id: eval_id_for(report, entry.path),
-      run_id: text(json.get(identity, ["run_id"], run_id_for(entry.path)), run_id_for(entry.path)),
+      run_id: run_id_for(entry.path),
+      phase_id: phase_id_for_text(entry.path.display()),
       path: entry.path.display(),
       turns: integer(json.get(usage, ["assistant_turns"], 0)),
       tokens: integer(json.get(usage, ["total_bucket_tokens"], 0)),
@@ -106,6 +205,12 @@ proc read_samples(factory_dir: Path) [fs, error] -> Result[List[Sample]] {
       provider_errors: provider_error_count,
       result: text(json.get(report, ["result"], "unknown")),
       classification: text(json.get(execution, ["classification"], "unknown")),
+      ticket_ids: ticket_ids_for(
+        sources,
+        eval_id_for(report, entry.path),
+        run_id_for(entry.path),
+        phase_id_for_text(entry.path.display()),
+      ),
     })
   }
 
@@ -156,6 +261,7 @@ pure row(eval_id: Str, run_id: Str, samples: List[Sample]) -> Any {
   var passed = 0
   var retries = 0
   var provider_errors = 0
+  var ticket_ids: List[Str] = []
   for sample in samples {
     turns = turns.push(sample.turns)
     tokens = tokens.push(sample.tokens)
@@ -163,6 +269,11 @@ pure row(eval_id: Str, run_id: Str, samples: List[Sample]) -> Any {
     wall = wall.push(sample.wall_ms)
     retries += sample.retries
     provider_errors += sample.provider_errors
+    for ticket_id in sample.ticket_ids {
+      if ticket_id not in ticket_ids {
+        ticket_ids = ticket_ids.push(ticket_id)
+      }
+    }
     if sample.result == "pass" and sample.classification == "pass" {
       passed += 1
     }
@@ -171,6 +282,7 @@ pure row(eval_id: Str, run_id: Str, samples: List[Sample]) -> Any {
   return {
     eval_id: eval_id,
     run_id: run_id,
+    phase_id: samples[0].phase_id,
     trials: samples.len(),
     passed: passed,
     median_turns: median_int(turns |> sort-by .),
@@ -181,6 +293,8 @@ pure row(eval_id: Str, run_id: Str, samples: List[Sample]) -> Any {
     median_wall_ms: median_int(wall |> sort-by .),
     provider_retries: retries,
     provider_errors: provider_errors,
+    tickets_created: ticket_ids.len(),
+    ticket_ids: ticket_ids,
   }
 }
 
@@ -200,7 +314,7 @@ proc trend_rows(samples: List[Sample], selected: Str) [error] -> Result[List[Any
     let run_id = current.run_id
     while index < ordered.len() {
       let sample = ordered[index]
-      break when sample.eval_id != eval_id or sample.run_id != run_id
+      break when sample.eval_id != eval_id or sample.run_id != run_id or sample.phase_id != current.phase_id
       batch = batch.push(sample)
       index += 1
     }
@@ -250,10 +364,11 @@ proc main(...argv: List[Str]) [fs, env, error, io] {
     return
   }
 
-  print "EVAL RUN TRIALS PASS MED_TURNS P90_TURNS MED_TOKENS P90_TOKENS MED_ERRORS MED_WALL_MS RETRIES PROVIDER_ERRORS"
+  print "EVAL RUN PHASE TRIALS PASS MED_TURNS P90_TURNS MED_TOKENS P90_TOKENS MED_ERRORS MED_WALL_MS RETRIES PROVIDER_ERRORS TICKETS_CREATED"
   for value in rows {
     let eval_id = text(json.get(value, ["eval_id"], "unknown"))
     let run_id = text(json.get(value, ["run_id"], "unknown"))
+    let phase_id = text(json.get(value, ["phase_id"], "unknown"))
     let trials = text(json.get(value, ["trials"], 0))
     let passed = text(json.get(value, ["passed"], 0))
     let median_turns = text(json.get(value, ["median_turns"], 0))
@@ -264,6 +379,7 @@ proc main(...argv: List[Str]) [fs, env, error, io] {
     let median_wall = text(json.get(value, ["median_wall_ms"], 0))
     let retries = text(json.get(value, ["provider_retries"], 0))
     let provider_errors = text(json.get(value, ["provider_errors"], 0))
-    print f"${eval_id} ${run_id} ${trials} ${passed} ${median_turns} ${p90_turns} ${median_tokens} ${p90_tokens} ${median_errors} ${median_wall} ${retries} ${provider_errors}"
+    let tickets_created = text(json.get(value, ["tickets_created"], 0))
+    print f"${eval_id} ${run_id} ${phase_id} ${trials} ${passed} ${median_turns} ${p90_turns} ${median_tokens} ${p90_tokens} ${median_errors} ${median_wall} ${retries} ${provider_errors} ${tickets_created}"
   }
 }

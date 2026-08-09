@@ -1349,8 +1349,19 @@ Draft.
 proc test_eval_trends_aggregates_historical_worker_reports(ctx: TestContext) [fs, process, error] {
   let root = test.temp_dir(ctx, name: "eval-trends")?
   let factory = fs.cwd()?
-  let report_dir = fp"${root}/runs/run-1/workers/eval-worker/task-bigfiles-1"
+  let report_dir = fp"${root}/runs/run-1/phases/01-eval/workers/eval-worker/task-bigfiles-1"
   fs.mkdir(report_dir)?
+  fs.mkdir(fp"${root}/tickets")?
+  fs.write(
+    fp"${root}/tickets/task-bigfiles-001.md",
+    """# Ticket task-bigfiles-001
+
+## Source eval and manager
+
+- Eval: `task-bigfiles`
+- Manager run: `runs/run-1/phases/01-eval/workers/eval-manager/task-bigfiles/REPORT.md`
+""",
+  )?
   json.write(
     fp"${report_dir}/report.json",
     {
@@ -1360,6 +1371,7 @@ proc test_eval_trends_aggregates_historical_worker_reports(ctx: TestContext) [fs
         role: "eval-worker",
         worker_id: "task-bigfiles-1",
         eval_id: "task-bigfiles",
+        run_id: "01-eval",
       },
       state: "completed",
       result: "pass",
@@ -1389,7 +1401,15 @@ proc test_eval_trends_aggregates_historical_worker_reports(ctx: TestContext) [fs
   let status = process.run(
     process.command_argv(
       xsh,
-      [xsh.display(), fp"${factory}/factory/tools/eval-trends.xsh", "--", "--factory-dir", root.display()],
+      [
+        xsh.display(),
+        fp"${factory}/factory/tools/eval-trends.xsh",
+        "--",
+        "--factory-dir",
+        root.display(),
+        "--format",
+        "json",
+      ],
       cwd: factory,
       stdout: output,
       env: {XSH_MODULE_PATH: factory.display(), FACTORY_DIR: factory.display()},
@@ -1400,6 +1420,9 @@ proc test_eval_trends_aggregates_historical_worker_reports(ctx: TestContext) [fs
   test.contains(text, "task-bigfiles")?
   test.contains(text, "10")?
   test.contains(text, "100")?
+  test.contains(text, "\"run_id\": \"run-1\"")?
+  test.contains(text, "\"phase_id\": \"01-eval\"")?
+  test.contains(text, "\"tickets_created\": 1")?
 }
 
 proc test_session_report_is_structured_and_counts_thinking(ctx: TestContext) [fs, process, error] {

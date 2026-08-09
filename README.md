@@ -126,7 +126,9 @@ XSH_MODULE_PATH=. xsh factory/tools/eval-trends.xsh -- --factory-dir . --format 
 ```
 
 Use `--format json` for machine-readable analysis and `--eval ID` to focus on
-one package. The report separates worker effort from provider retry/error data.
+one package. The report separates worker effort from provider retry/error data
+and identifies the root run, phase, and `tickets_created`/ticket IDs for each
+durable ticket with a source-manager record.
 
 For a compact live or completed-cycle view, use the read-only run inspector:
 

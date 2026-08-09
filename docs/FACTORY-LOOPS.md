@@ -66,10 +66,11 @@ whether the change should remain.
 ## Eval-strength loop: `factory/tools/eval-trends.xsh`
 
 The CTO uses `factory/tools/eval-trends.xsh` before selecting or retiring an eval. It
-aggregates persisted eval-worker reports by eval and run, including turns,
-tokens, tool errors, wall time, and provider retry/error counts. These are
-agent-effort signals, not intrinsic task-difficulty scores. Compare them with
-correctness, durable tickets, handbook candidates, and replay status.
+aggregates persisted eval-worker reports by eval, root run, and phase, including
+turns, tokens, tool errors, wall time, provider retry/error counts, and durable
+ticket IDs attributed through each ticket's source-manager record. These are
+agent-effort and supply-yield signals, not intrinsic task-difficulty scores.
+Compare them with correctness, handbook candidates, and replay status.
 
 An eval may remain a cheap regression sentinel even when its worker sessions
 are short. Automatic ticketless selection rotates by least-recently-tried

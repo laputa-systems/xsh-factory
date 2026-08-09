@@ -78,8 +78,10 @@ the manifest, exact message path, worker identity, mode, and work directory
 are the dispatch contract.
 - Fail closed at boundaries: validate paths, exact assignments, commits,
   report schema, handbook lineage, image identity, budgets, and required reads.
-- Historical eval strength is measured by `factory/tools/eval-trends.xsh` from worker
-  reports; its output separates provider health from agent effort.
+- Historical eval strength and ticket yield are measured by
+  `factory/tools/eval-trends.xsh` from worker reports and ticket source records;
+  its output separates provider health from agent effort and attributes a ticket
+  to its originating root run and phase.
 - `factory/tools/run-status.xsh` is the deterministic CTO run inspector. It
   reads reports, lifecycle events, registered process state, queue allocation,
   worker metrics, and budget markers without mutating the run.

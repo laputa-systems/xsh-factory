@@ -1,0 +1,55 @@
+{
+  "classification": "pass",
+  "correctness": {
+    "all_exact": true,
+    "hidden_large_exact": true,
+    "hidden_malformed_exact": true,
+    "hidden_mixed_exact": true,
+    "hidden_neg_exact": true,
+    "hidden_zero_exact": true,
+    "public_exact": true
+  },
+  "eval_id": "task-intsum",
+  "image_id": "sha256:3fabc86494cab9751a38f46bdfd3351317e2ea8522499c9e632b21241ff0e6a2",
+  "inputs": {
+    "agents_sha256": "1df8bf2bf3b49e3488a60b8c7086d4366bf730e1c05e6b2a0d32266f18b12bd3",
+    "handbook_sha256": "c1295e0ad1caaf0387c18293b8be7c79ebf567afd45154d4850912f686783618",
+    "task_sha256": "bcb5ea616592a1b1535e8f2a159c9c62e8feb45f8b8a5bf094aaeb9d4e114d05"
+  },
+  "model": "deepseek/deepseek-v4-flash-0731",
+  "offline": "unknown",
+  "outputs": {
+    "candidate_sha256": "238903180cc104ec2c5d8b3f20c5bc61b389ec0a967df8cc208cdc7cd454174f",
+    "oracle_sha256": "238903180cc104ec2c5d8b3f20c5bc61b389ec0a967df8cc208cdc7cd454174f"
+  },
+  "platform": "linux/arm64",
+  "protocol": {
+    "artifact_present": true,
+    "review_ok": true
+  },
+  "provider": "openrouter",
+  "restrictions": {
+    "forbidden_operations": true,
+    "passed": true
+  },
+  "result": "pass",
+  "session": "/session/session.jsonl",
+  "telemetry": "unknown",
+  "thinking": "high",
+  "timings": {
+    "hidden_large_candidate_wall_ns": 14546077,
+    "hidden_large_oracle_wall_ns": 15455667,
+    "hidden_malformed_candidate_wall_ns": 12609436,
+    "hidden_malformed_oracle_wall_ns": 14185533,
+    "hidden_mixed_candidate_wall_ns": 14146824,
+    "hidden_mixed_oracle_wall_ns": 13699319,
+    "hidden_neg_candidate_wall_ns": 12258516,
+    "hidden_neg_oracle_wall_ns": 11459635,
+    "hidden_zero_candidate_wall_ns": 12347476,
+    "hidden_zero_oracle_wall_ns": 12352642,
+    "public_candidate_wall_ns": 14120656,
+    "public_oracle_wall_ns": 12778854
+  },
+  "trial_id": "1",
+  "xsh_commit": "04fb98f8c63b63cccffce7ef2c3cabde81bb05ba"
+}
