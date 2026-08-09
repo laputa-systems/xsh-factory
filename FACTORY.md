@@ -34,12 +34,12 @@ engineer never chooses a ticket. There is one process launcher,
 `factory/entrypoints/run-agent.xsh`, and one top-level dispatcher, `run.xsh`.
 
 Organization admission applies queue pressure deterministically after CTO
-inventory: an eligible ready queue reserves exactly one fresh branchless
-product ticket and may attach at most one retained branch replay. Every fresh
-engineer row keeps its hard linked replay. The optional independent-eval lane
-is zero while a fresh delivery slot exists and expands to the coded discovery
-bound only when no fresh row is available. Open tickets inform pressure but
-are never promoted by the controller.
+inventory: an eligible ready queue reserves exactly one branchless product
+ticket and its hard linked replay. The independent-eval lane is zero while
+that delivery slot exists; when no ticket is ready it runs one focused,
+least-recently-tried discovery eval. Existing implementation branches are
+preserved for CTO review or supersession, never replayed by the controller.
+Open tickets are never promoted by the controller.
 
 ## Engineering rules
 
@@ -143,14 +143,15 @@ level. The selected request is copied into the appropriate run directory as
   engineer rows concurrently, then capture a portable patch per ticket;
 - `eval-design`: dispatch one designer, review its package, and promote one
   proposal while preserving `Draft.` status; or
-- `organization`: compose the bounded implementation, linked replay,
-  independent eval, and optional design phases.
+- `organization`: run one bounded implementation and linked replay when a
+  branchless approved ticket is ready, otherwise one focused discovery eval,
+  plus an optional design phase.
 
 Child phases may overlap only when their inputs and product state are
 independent. Ticket implementation completes before each ticket's candidate
 replay; a passing engineer row is re-evaluated independently even when a
 sibling ticket fails.
-The independent eval and eval-design phase may run concurrently with it.
+The optional eval-design phase may run concurrently with the primary phase.
 Process handles and lifecycle events, not polling agents, advance the state
 machine. `events.jsonl` is the canonical cycle ledger: lifecycle transitions
 and normalized controller stdout/stderr are JSON lines there. Per-process log

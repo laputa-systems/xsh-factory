@@ -201,7 +201,6 @@ proc test_cycle_request_defaults_and_scalar_accessors() [error] {
   test.eq(facts.active_evals, [])?
   test.eq(facts.trial_count, 1)?
   test.eq(facts.design_count, 0)?
-  test.ok(! facts.allow_measured_reuse)?
   test.eq(facts.aggregate_budget, 0.50)?
   test.eq(request.mode_value(text)?, "eval")?
   test.eq(request.ticket_values(text)?, [])?
@@ -209,7 +208,6 @@ proc test_cycle_request_defaults_and_scalar_accessors() [error] {
   test.eq(request.eval_values(text)?, [])?
   test.eq(request.trial_value(text)?, 1)?
   test.eq(request.design_value(text)?, 0)?
-  test.ok(! request.measured_reuse_value(text)?)
   let colon = """# Cycle
 
 ## Mode
@@ -392,7 +390,6 @@ proc test_admission_fails_closed_for_portfolio_and_repository_boundaries() [erro
     active_evals: cycle.active_evals,
     trial_count: cycle.trial_count,
     design_count: cycle.design_count,
-    allow_measured_reuse: cycle.allow_measured_reuse,
     role_overrides: cycle.role_overrides,
     required_outputs: cycle.required_outputs,
     aggregate_budget: cycle.aggregate_budget,

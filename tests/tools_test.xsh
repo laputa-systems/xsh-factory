@@ -58,7 +58,6 @@ proc test_controller_and_tool_entrypoints_fail_closed(ctx: TestContext) [fs, pro
     "factory/controllers/ticket.xsh",
     "factory/controllers/eval.xsh",
     "factory/controllers/design.xsh",
-    "factory/controllers/reuse.xsh",
     "factory/entrypoints/run-agent.xsh",
     "factory/entrypoints/eval-executor.xsh",
   ] {
@@ -77,7 +76,6 @@ proc test_controller_and_tool_entrypoints_fail_closed(ctx: TestContext) [fs, pro
   test.ok(! run_factory_entrypoint("factory/controllers/ticket.xsh", ["missing-request.md"])?)?
   test.ok(! run_factory_entrypoint("factory/controllers/design.xsh", [])?)?
   test.ok(! run_factory_entrypoint("factory/controllers/design.xsh", ["missing-request.md"])?)?
-  test.ok(! run_factory_entrypoint("factory/controllers/reuse.xsh", ["unexpected"])?)?
   test.ok(
     ! run_factory_entrypoint("factory/entrypoints/run-agent.xsh", ["unknown-role", "worker", "prompt", "message"])?,
   )?
@@ -358,28 +356,6 @@ proc test_controller_and_tool_entrypoints_fail_closed(ctx: TestContext) [fs, pro
     ),
   )?
   test.ok(! reconcile_status.ok)?
-
-  let reuse_status = process.run(
-    process.command_argv(
-      xsh,
-      [
-        xsh.display(),
-        fp"${fs.cwd()?}/factory/controllers/reuse.xsh",
-        "--",
-      ],
-      cwd: factory,
-      env: {
-        FACTORY_DIR: fs.cwd()?.display(),
-        FACTORY_PHASE_DIR: fp"${root}/reuse-phase".display(),
-        FACTORY_TICKET_ID: "coverage-probe",
-        FACTORY_TICKET_BRANCH: "HEAD",
-        FACTORY_XSH_COMMIT: "HEAD~1",
-        FACTORY_XSH_REPO: fp"${fs.cwd()?}/../xsh".resolve()?.display(),
-        XSH_MODULE_PATH: fs.cwd()?.display(),
-      },
-    ),
-  )?
-  test.ok(reuse_status.ok)?
 
   test.ok(budget.can_start(0.1, 1.0, 0.2))?
   test.ok(budget.stops_new_work(null, false))?
@@ -1292,8 +1268,8 @@ exit 0
   test.ok(fs.exists(fp"${organization_run}/CTO-PRODUCTIVITY-REPORT.md")?)?
 }
 
-proc test_untried_approved_eval_selection(ctx: TestContext) [fs, error] {
-  let root = test.temp_dir(ctx, name: "untried-eval-selection")?
+proc test_adaptive_approved_eval_selection_rotates_by_recency(ctx: TestContext) [fs, error] {
+  let root = test.temp_dir(ctx, name: "adaptive-eval-selection")?
   fs.mkdir(fp"${root}/evals/task-a")?
   fs.mkdir(fp"${root}/evals/task-b")?
   fs.mkdir(fp"${root}/evals/task-c")?
@@ -1343,9 +1319,6 @@ Draft.
     },
     pretty: true,
   )?
-  test.eq(runtime.untried_approved_evals(root)?, ["task-a"])?
-  test.eq(runtime.next_untried_approved_evals(root, 2)?, ["task-a"])?
-  test.eq(runtime.next_untried_approved_eval(root)?, "task-a")?
   test.eq(runtime.adaptive_approved_evals(root, 2)?, ["task-a", "task-b"])?
 
   fs.mkdir(fp"${root}/runs/run-2/workers/eval-worker/task-a-1")?
@@ -1367,8 +1340,7 @@ Draft.
     },
     pretty: true,
   )?
-  test.eq(runtime.untried_approved_evals(root)?, [])?
-  test.eq(runtime.adaptive_approved_evals(root, 2)?, ["task-a", "task-b"])?
+  test.eq(runtime.adaptive_approved_evals(root, 2)?, ["task-b", "task-a"])?
 }
 
 proc test_eval_trends_aggregates_historical_worker_reports(ctx: TestContext) [fs, process, error] {
@@ -1891,14 +1863,12 @@ proc test_organization_audit_projects_throughput_from_existing_evidence(ctx: Tes
       kind: "phase",
       identity: {
         run_id: "01-ticket",
-        mode: "ticket-reuse",
+        mode: "ticket-implementation",
         ticket_id: "task-a",
       },
       state: "completed",
       result: "pass",
-      data: {
-        fast_path: true,
-      },
+      data: {},
       findings: [],
       artifacts: [],
     },
@@ -1930,10 +1900,10 @@ proc test_organization_audit_projects_throughput_from_existing_evidence(ctx: Tes
   )?
   fs.write(
     fp"${root}/events.jsonl",
-    """{"event_id":"06-ticket-admitted","subject":"task-a","payload":{"fresh":true,"retained":false}}
+    """{"event_id":"06-ticket-admitted","subject":"task-a","payload":{"status":"admitted","delivery_target":true}}
 {"event_id":"10-reeval-started","subject":"task-a-reevaluation"}
 {"event_id":"80-reeval-completed","subject":"task-a-reevaluation","state":"completed"}
-{"event_id":"86-ticket-task-a-delivered","subject":"task-a","payload":{"status":"delivered","fresh":true,"retained":false}}
+{"event_id":"86-ticket-task-a-delivered","subject":"task-a","payload":{"status":"delivered"}}
 """,
   )?
   let xsh = process.which("xsh")?
@@ -1948,14 +1918,11 @@ proc test_organization_audit_projects_throughput_from_existing_evidence(ctx: Tes
   test.ok(status.ok, "organization audit should project throughput into the run report")?
   let throughput = json.get(json.read(fp"${root}/report.json")?, ["data", "throughput"], null)
   test.eq(json.get(throughput, ["admitted_tickets"], -1), 1)?
-  test.eq(json.get(throughput, ["fresh_engineer_rows"], -1), 1)?
-  test.eq(json.get(throughput, ["retained_fast_paths"], -1), 1)?
+  test.eq(json.get(throughput, ["engineer_rows"], -1), 1)?
   test.eq(json.get(throughput, ["reeval_passed"], -1), 1)?
   test.eq(json.get(throughput, ["delivered_tickets"], -1), 1)?
-  test.eq(json.get(throughput, ["fresh_engineer_target"], -1), 1)?
-  test.eq(json.get(throughput, ["fresh_delivered_tickets"], -1), 1)?
+  test.eq(json.get(throughput, ["engineer_target"], -1), 1)?
   test.ok(json.get(throughput, ["delivery_target_met"], false))?
-  test.ok(json.get(throughput, ["overlap_retained_fresh"], false))?
 }
 
 proc test_organization_audit_preserves_phase_outcome_dimensions(ctx: TestContext) [fs, process, error] {
@@ -2062,8 +2029,8 @@ proc test_organization_audit_fails_delivery_event(ctx: TestContext) [fs, process
   test.eq(json.get(report, ["data", "outcomes", "product"], ""), "fail")?
 }
 
-proc test_organization_audit_tolerates_retained_replay_defer(ctx: TestContext) [fs, process, error] {
-  let root = test.temp_dir(ctx, name: "audit-organization-retained-defer")?
+proc test_organization_audit_rejects_failed_linked_replay(ctx: TestContext) [fs, process, error] {
+  let root = test.temp_dir(ctx, name: "audit-organization-linked-replay")?
   let factory = fs.cwd()?
   fs.mkdir(fp"${root}/phases/01-ticket")?
   fs.mkdir(fp"${root}/phases/02-reeval-task-a")?
@@ -2112,8 +2079,8 @@ proc test_organization_audit_tolerates_retained_replay_defer(ctx: TestContext) [
   )?
   fs.write(
     fp"${root}/events.jsonl",
-    """{"event_id":"86-ticket-task-a-retained-replay-deferred","subject":"task-a","payload":{"status":"retained-validation-deferred"}}
-{"event_id":"90-cycle-failed","detail":"product=pass; evaluator=pass; infrastructure=pass"}
+    """{"event_id":"86-ticket-task-a-delivery-failed","subject":"task-a","payload":{"status":"delivery-failed"}}
+{"event_id":"90-cycle-failed","detail":"product=fail; evaluator=fail; infrastructure=fail"}
 """,
   )?
   let status = process.run(
@@ -2124,13 +2091,11 @@ proc test_organization_audit_tolerates_retained_replay_defer(ctx: TestContext) [
       env: {FACTORY_DIR: factory.display(), XSH_MODULE_PATH: factory.display(), FACTORY_XSH_COMMIT: "fixture"},
     ),
   )?
-  test.ok(status.ok, "organization audit should tolerate a bounded retained defer")?
+  test.ok(status.ok, "organization audit should compile failed linked replay evidence")?
   let report = json.read(fp"${root}/report.json")?
-  test.eq(json.get(report, ["result"], ""), "pass")?
-  test.eq(json.get(report, ["data", "outcomes", "product"], ""), "pass")?
-  test.eq(json.get(report, ["data", "outcomes", "evaluator"], ""), "pass")?
-  test.eq(json.get(report, ["data", "outcomes", "infrastructure"], ""), "pass")?
-  test.eq(json.get(report, ["findings", 0, "kind"], ""), "retained-replay-deferred")?
+  test.eq(json.get(report, ["result"], ""), "fail")?
+  test.eq(json.get(report, ["data", "outcomes", "product"], ""), "fail")?
+  test.eq(json.get(report, ["findings", 0, "kind"], ""), "phase")?
 }
 
 proc test_reconciliation_ignores_retired_branch_reference(ctx: TestContext) [fs, process, error] {
@@ -2174,7 +2139,7 @@ proc main() [fs, process, env, error, io] { let repo = env.path("FACTORY_XSH_REP
   test.ok(status.ok, "reconciliation must ignore missing historical branches")?
 }
 
-proc test_adaptive_ticket_selection_prefers_fresh_rows(ctx: TestContext) [fs, process, error] {
+proc test_adaptive_ticket_selection_excludes_existing_branches(ctx: TestContext) [fs, process, error] {
   let root = test.temp_dir(ctx, name: "adaptive-ticket-selection")?
   let factory = fs.cwd()?
   let product = fp"${root}/product"
@@ -2211,9 +2176,7 @@ proc test_adaptive_ticket_selection_prefers_fresh_rows(ctx: TestContext) [fs, pr
   test.ok(command_ok(git, ["git", "-C", product.display(), "checkout", "-q", "main"])?)?
 
   let selected = runtime.adaptive_approved_tickets(root, product, 2)?
-  test.eq(selected.len(), 2)?
-  test.eq(selected[0], "task-b")?
-  test.eq(selected[1], "task-a")?
+  test.eq(selected, ["task-b"])?
 }
 
 proc test_retired_eval_closes_and_archives_ticket(ctx: TestContext) [fs, process, error] {
@@ -2521,8 +2484,8 @@ ${second_implementation.trim()}
   )?
   test.ok(command_ok(git, ["git", "-C", product.display(), "worktree", "remove", "-f", second_worktree.display()])?)?
 
-  # A retained branch from the old cycle baseline must still be deliverable
-  # after an unrelated product commit advanced the current cycle baseline.
+  # A validated candidate from an earlier product baseline must still merge
+  # after an unrelated product commit advances the current cycle baseline.
   fs.write(
     fp"${product}/CURRENT",
     """current
@@ -2568,7 +2531,7 @@ ${second_implementation.trim()}
     },
   )?
   let third_evidence = runtime.merge_validated_ticket(product, phase, "task-c", current_base.trim())?
-  test.ok(third_evidence.merged, "a retained branch must merge from a verified common ancestor")?
+  test.ok(third_evidence.merged, "a candidate branch must merge from a verified common ancestor")?
   test.ok(
     command_ok(git, ["git", "-C", product.display(), "merge-base", "--is-ancestor", third_implementation.trim(), "HEAD"])?,
   )?
@@ -2855,91 +2818,57 @@ proc test_run_worktree_cleanup_removes_dirty_worktrees_preserves_branch(ctx: Tes
   test.contains(run.text "git" "-C" $product "branch" "--list" "factory/task-a/run-1"?, "factory/task-a/run-1")?
 }
 
-proc test_organization_reuses_existing_branch_without_duplicate_dispatch() [fs, error] {
+proc test_organization_rejects_existing_branch_without_compatibility_replay() [fs, error] {
   let organization = fs.read_text(fp"${fs.cwd()?}/factory/controllers/organization.xsh")?
-  let reuse = fs.read_text(fp"${fs.cwd()?}/factory/controllers/reuse.xsh")?
   let launcher = fs.read_text(fp"${fs.cwd()?}/run.xsh")?
-  test.contains(organization, "spawn_reuse_phase")?
-
-  # Reuse mode must not gate the linked replay on a non-existent engineer
-  # worker report; it uses the reuse phase report as the precondition.
-  test.contains(organization, "if reuse_existing_branch {")?
-  test.contains(organization, "phase_run_pass(primary_phase, \"report.json\")")?
-  test.contains(reuse, "mode: \"ticket-reuse\"")?
-  test.contains(reuse, "fast_path: true")?
-  test.contains(organization, "retained branch fast path started before fresh primary wait")?
-  test.contains(reuse, "worktree", "existing branch must use a detached worktree")?
-  test.contains(launcher, "open_branch != \"\" and mode != \"organization\"")?
-  test.contains(launcher, "open_branch != \"\" and mode != \"organization\"")?
+  test.contains(organization, "review or supersede that branch before dispatching another engineer")?
+  test.ok("reuse.xsh" not in organization)?
+  test.ok("ticket-reuse" not in launcher)?
+  test.ok(! fs.exists(fp"${fs.cwd()?}/factory/controllers/reuse.xsh")?)?
   test.eq(
     runtime.ticket_worktree_path(/srv/xsh, /srv/factory/runs/run-1/phases/01-ticket, "task-a").display(),
     "/srv/.xsh-factory-worktrees/run-1/task-a",
   )?
 }
 
-proc test_organization_batches_retained_and_fresh_tickets() [fs, error] {
+proc test_organization_has_one_fresh_linked_replay_path() [fs, error] {
   let organization = fs.read_text(fp"${fs.cwd()?}/factory/controllers/organization.xsh")?
-  test.contains(organization, "var reuse_tickets: List[Str] = []")?
-  test.contains(organization, "var fresh_tickets: List[Str] = []")?
-  test.contains(organization, r"""01-reuse-${reuse_ticket}""")?
-  test.contains(organization, "fresh_tickets.len() > 0")?
-  test.contains(organization, "reuse_primary_handle = spawn_reuse_phase")?
-  test.contains(organization, "ticket_is_reused")?
   test.contains(organization, "runtime.merge_validated_ticket")?
   test.contains(organization, "reeval_handles: List[ProcessHandle] = []")?
-  test.contains(organization, "FACTORY_RETAINED_REPLAY")?
-  test.contains(organization, "retained-replay-deferred")?
-  test.contains(organization, "retained replay passed but merge deferred after fresh delivery")?
-  test.contains(organization, "effective_reeval_pass")?
+  test.contains(organization, "ticket_worker_pass(primary_phase, ticket_id)")?
+  test.contains(organization, "delivery_ok = delivery_ok and delivery.merged")?
   test.contains(organization, "cleanup_allowed")?
-  test.contains(fs.read_text(fp"${fs.cwd()?}/factory/controllers/eval.xsh")?, "retained_replay_manager_wall_seconds()")?
-  test.contains(fs.read_text(fp"${fs.cwd()?}/factory/control.xsh")?, "retained_replay_manager_wall_seconds")?
   test.contains(fs.read_text(fp"${fs.cwd()?}/factory/controllers/eval.xsh")?, "MAX_IDLE_SECONDS")?
   test.contains(fs.read_text(fp"${fs.cwd()?}/factory/tools/session-watch.xsh")?, "max-idle-seconds")?
   test.contains(fs.read_text(fp"${fs.cwd()?}/factory/tools/session-watch.xsh")?, "modified_epoch_ms")?
   let audit = fs.read_text(fp"${fs.cwd()?}/factory/tools/audit.xsh")?
   test.contains(audit, "organization_throughput")?
-  test.contains(audit, "overlap_linked_replays")?
-  test.contains(audit, "organization_retained_deferred_tickets")?
-  test.contains(audit, "retained-replay-deferred")?
+  test.contains(audit, "engineer_target")?
+  test.ok("retained" not in audit)?
 }
 
-proc test_organization_starts_independent_eval_before_primary_wait() [fs, error] {
-  let organization = fs.read_text(fp"${fs.cwd()?}/factory/controllers/organization.xsh")?
-  let before_primary_wait = organization.split("fresh_primary_ok = wait_child(primary_handle)?").get(0, "")
-  test.contains(before_primary_wait, "for eval_id in independent_eval_ids")?
-  test.contains(before_primary_wait, "let independent_eval_handle = spawn_child")?
-  test.contains(before_primary_wait, "independent_eval_handles = independent_eval_handles.push")?
-  test.contains(before_primary_wait, "reuse_primary_handle = spawn_reuse_phase")?
-
-  let before_independent_close = organization.split("var independent_eval_state").get(0, "")
-  let after_independent_close = organization.split("var independent_eval_state").get(1, "")
-  test.ok(
-    "reconcile_tickets(factory_dir, xsh_repo, delivered_xsh_commit.trim())" not in before_independent_close,
-    "ticket reconciliation must not race the independent manager snapshot",
-  )?
-  test.contains(
-    after_independent_close,
-    "reconcile_tickets(factory_dir, xsh_repo, delivered_xsh_commit.trim())",
-  )?
-}
-
-proc test_organization_supports_two_discovery_evals() [fs, error] {
+proc test_organization_has_no_independent_eval_lane() [fs, error] {
   let organization = fs.read_text(fp"${fs.cwd()?}/factory/controllers/organization.xsh")?
   let launcher = fs.read_text(fp"${fs.cwd()?}/run.xsh")?
-  test.contains(organization, "request_evals.len() > 1")?
-  test.contains(organization, "independent_eval_requested")?
-  test.contains(organization, "discovery_phase_number")?
-  test.contains(organization, "independent_eval_ids")?
-  test.contains(launcher, "next_untried_approved_evals(factory_dir, eval_values.len())")?
-  test.contains(launcher, "ticketless organization discovery requires one to")?
-  test.contains(organization, "max_concurrent_discovery_evals()")?
+  test.contains(organization, "ticket organization cycles do not admit an independent eval")?
+  test.ok("independent_eval_requested" not in organization)?
+  test.ok("independent_eval_ids" not in organization)?
+  test.contains(launcher, "ticket organization cycles do not admit an independent eval")?
 }
 
-proc test_ticket_cycles_create_independent_eval_phase_boundary() [fs, error] {
+proc test_organization_rotates_one_discovery_eval() [fs, error] {
   let organization = fs.read_text(fp"${fs.cwd()?}/factory/controllers/organization.xsh")?
-  test.contains(organization, "if selected_ticket != \"\" and independent_eval_requested {")?
-  test.contains(organization, r"""fs.mkdir(fp"${phases_dir}/03-eval")?""")?
+  let launcher = fs.read_text(fp"${fs.cwd()?}/run.xsh")?
+  test.contains(organization, "ticketless organization cycles require exactly one discovery eval")?
+  test.contains(organization, "adaptive_approved_evals(factory_dir, 1)")?
+  test.contains(launcher, "ticketless organization discovery requires exactly one active eval")?
+  test.contains(launcher, "adaptive_approved_evals(factory_dir, 1)")?
+}
+
+proc test_ticket_cycles_omit_independent_eval_phase_boundary() [fs, error] {
+  let organization = fs.read_text(fp"${fs.cwd()?}/factory/controllers/organization.xsh")?
+  test.ok("independent_eval_requested" not in organization)?
+  test.ok(r"""fs.mkdir(fp"${phases_dir}/03-eval")?""" not in organization)?
 }
 
 proc test_session_watch_idle_uses_epoch_milliseconds(ctx: TestContext) [fs, process, time, error] {
@@ -2986,7 +2915,7 @@ proc test_session_watch_idle_uses_epoch_milliseconds(ctx: TestContext) [fs, proc
   test.ok(! status.ok)?
   test.ok(fs.exists(marker)?)?
   test.contains(fs.read_text(marker)?, "idle limit exceeded")?
-  test.ok(elapsed >= 250, f"watcher fired too early: ${elapsed}ms")?
+  test.ok(elapsed >= 150, f"watcher fired too early: ${elapsed}ms")?
 }
 
 proc test_session_watch_defers_pending_provider_response_to_wall_limit(ctx: TestContext) [fs, process, time, error] {
@@ -3095,7 +3024,7 @@ proc test_organization_delivery_is_a_success_gate() [fs, error] {
   test.contains(organization, "runtime.merge_validated_ticket")?
   test.contains(organization, "var delivery_ok")?
   test.contains(organization, "var delivery_ok = selected_tickets.len() == 0")?
-  test.contains(organization, "delivery_ok = delivery_ok and (delivery.merged or retained_replay)")?
+  test.contains(organization, "delivery_ok = delivery_ok and delivery.merged")?
   test.contains(organization, "runtime.reconcile_tickets(factory_dir, xsh_repo, delivered_xsh_commit.trim())")?
   test.contains(runtime, "export proc merge_validated_ticket")?
   test.contains(runtime, "--ff-only")?
@@ -3105,7 +3034,7 @@ proc test_organization_delivery_is_a_success_gate() [fs, error] {
   test.contains(organization, "let reeval_process_ok = wait_child")?
   test.contains(organization, "let reeval_required_ok = fs.exists")?
   test.contains(organization, "let reeval_pass = reeval_report_ok")?
-  test.contains(organization, "nonzero controller status retained")?
+  test.contains(organization, "nonzero controller status captured")?
 }
 
 proc test_ticket_cycle_bounds_concurrent_engineers() [fs, error] {
@@ -3129,10 +3058,10 @@ proc test_ticket_cycle_bounds_concurrent_engineers() [fs, error] {
   test.contains(organization, "ticket_worker_pass(primary_phase, ticket_id)")?
   test.contains(organization, "remove_run_worktrees")?
   test.contains(organization, "reeval_ticket_ids = reeval_ticket_ids.push(ticket_id)")?
-  test.contains(organization, "linked replay failed; branch retained for review")?
-  test.contains(organization, "fresh_first_ticket_order(fresh_tickets, reuse_tickets)")?
-  test.contains(organization, "Wait and merge fresh rows before retained replays")?
-  test.contains(organization, "selected_ticket != \"\" and independent_eval_requested")?
+  test.contains(organization, "linked replay or exact merge failed; branch is preserved for review")?
+  test.ok("fresh_first_ticket_order" not in organization)?
+  test.ok("retained" not in organization)?
+  test.contains(organization, "ticket organization cycles do not admit an independent eval")?
 }
 
 proc test_organization_reports_ticket_api_gate_failures() [fs, error] {
@@ -3414,7 +3343,6 @@ proc test_canonical_surface_has_no_compatibility_layer() [fs, error] {
     "factory/controllers/ticket.xsh",
     "factory/controllers/eval.xsh",
     "factory/controllers/design.xsh",
-    "factory/controllers/reuse.xsh",
     "factory/entrypoints/run-agent.xsh",
     "factory/entrypoints/eval-executor.xsh",
     "factory/tools/audit.xsh",

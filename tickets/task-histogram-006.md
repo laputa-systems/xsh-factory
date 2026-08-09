@@ -2,7 +2,20 @@
 
 ## Status
 
-Open.
+Closed.
+
+## CTO decision — superseded 2026-08-08
+
+- Decision: Close without another implementation or replay. The unmerged
+  branch `factory/task-histogram-006/1786209590202` is preserved as historical
+  evidence only; controller replay is no longer an admission path.
+- Basis: Its commit `fc432ea` proposed an actionable unknown-stream-stage
+  diagnostic. Current XSH `HEAD` at `aef5ddb` already diagnoses an unknown
+  stream stage in `src/syntax/parser/expr.rs`, and the current parser behavior
+  is the product baseline for any future issue.
+- Disposition: no merge record is written and the branch is not deleted by
+  this decision. Any later diagnostic gap requires a new, evidence-backed
+  ticket against current XSH `HEAD`.
 
 ## CTO decision — directed replay required 2026-08-08
 

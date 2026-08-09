@@ -26,7 +26,7 @@ paid work starts and after the result is known. Use these stages:
 Name the bottleneck, cite the latest evidence, and choose one corrective action.
 Record the analysis in `CTO-PRODUCTIVITY-REPORT.md` and the measurable target
 in `CTO-IMPROVEMENT.md`. A zero-ticket cycle is not automatically a failure,
-but repeated eval-only cycles or repeated reuse of a saturated eval is a feed
+but repeated eval-only cycles or repeated sampling of a saturated eval is a feed
 failure that requires rotation to a different approved eval or a change to the
 eval-to-ticket path. Do not optimize ticket count by opening weak or duplicate
 tickets.
@@ -71,9 +71,9 @@ One cycle may:
 
 - admit two engineer tickets in a ticket-implementation cycle whenever two
   evidence-backed Approved tickets are available;
-- run one linked re-evaluation for every passing engineer row; allocate the
-  optional independent eval lane from queue pressure (zero under heavy ticket
-  pressure, one at moderate pressure, and up to four for an empty queue);
+- run one linked re-evaluation for every passing engineer row; organization
+  mode runs one least-recently-tried approved discovery eval only when no
+  delivery ticket is available;
 - produce and immediately review at most one new eval proposal;
 - promote that proposal package into `evals/` regardless of the review result;
   set `Approved.` only when the evaluator and evidence pass, otherwise retain
@@ -175,7 +175,7 @@ and test surface. A convenience spelling with no semantic advantage is
 rejected or deferred. A quality rejection is durable factory progress and does
 not count as an admission failure.
 
-Eval-strength gate: before retiring or reusing an eval, the CTO must inspect
+Eval-strength gate: before retiring or selecting an eval, the CTO must inspect
 `factory/tools/eval-trends.xsh` output. The report must separate agent effort from
 provider health and distinguish discovery trials, replays, and regression
 sentinels. Retire an eval only after the trend supports low information value,
@@ -184,9 +184,8 @@ no required replay depends on it, and the decision is recorded with evidence.
 Factory-efficiency gate: the CTO must be actively critical of throughput,
 cycle latency, paid spend, engineer utilization, and evidence produced per
 cycle. A completed organization cycle is not good enough merely because its
-reports pass. It must produce at least one reviewable engineer implementation
-commit, either from a newly dispatched engineer or an explicitly reconciled
-existing engineer branch. If the cycle produces no engineer implementation
+reports pass. An eligible cycle must produce at least one reviewable engineer
+implementation commit from a newly dispatched engineer. If the cycle produces no engineer implementation
 commit, classify it as a throughput failure, state why the admission decision
 failed, and record a concrete corrective change in `CTO-IMPROVEMENT.md`.
 Every organization cycle must also leave a `CTO-PRODUCTIVITY-REPORT.md` with
@@ -196,8 +195,8 @@ next measurable throughput target. Do not describe an eval-only cycle as
 successful factory progress when an eligible product ticket was available.
 It must also contain the bottleneck stage, evidence, corrective action, and
 next target metric. If the eval-to-ticket stage is the constraint, the next
-cycle must select a different approved eval when one has not been recently
-tested, unless the CTO records evidence for reusing the current eval.
+cycle selects the least-recently-tried approved eval; an already-saturated eval
+is not selected through a request override.
 
 For a completed engineer patch, inspect scope, tests, exact assignment,
 portable diff, and linked replay. Each passing engineer row receives its own
@@ -210,9 +209,9 @@ delivery cannot be proven. Reconciliation updates the linked `TICKET.md` to
 `Merged.` only after the recorded implementation is proven in XSH `HEAD`; the
 manager replay then accepts or rejects the product change.
 
-If the selected ticket already has an unmerged implementation branch, reuse that
-branch for replay and do not dispatch another engineer. The controller captures
-the patch against the common ancestor and owns temporary worktree cleanup.
+If a candidate ticket already has an unmerged implementation branch, stop
+admission and review or supersede it before dispatching another engineer. The
+branch remains auditable evidence but is not a controller replay input.
 
 ### 4. Choose one narrow cycle
 
@@ -221,8 +220,8 @@ The source is a request template; the immutable cycle request belongs under
 the controller-created `runs/run-<id>/CYCLE-REQUEST.md`, not at repository top
 level:
 
-- with an approved ticket: implement it and run its linked replay; run the
-  optional independent active eval only when queue pressure allocates it, and
+- with an approved ticket: implement it and run its linked replay; no
+  independent eval shares that delivery cycle, and
   produce, review, and promote one design proposal when below the cap;
 - without an approved ticket: run one active eval as primary and produce,
   review, and promote one design proposal when below the cap; or

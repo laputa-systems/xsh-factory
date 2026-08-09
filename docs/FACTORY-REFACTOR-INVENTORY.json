@@ -11,7 +11,7 @@
     "workflow": ["factory/graph.xsh", "factory/dispatch.xsh", "factory/process.xsh", "factory/lifecycle.xsh"],
     "evidence": ["factory/evidence.xsh", "factory/reports.xsh", "factory/schema.xsh", "factory/cleanup.xsh"],
     "reconciliation": ["factory/tickets.xsh", "factory/evals.xsh", "factory/control.xsh", "factory/runtime.xsh"],
-    "controllers": ["factory/controllers/organization.xsh", "factory/controllers/ticket.xsh", "factory/controllers/eval.xsh", "factory/controllers/design.xsh", "factory/controllers/reuse.xsh"],
+    "controllers": ["factory/controllers/organization.xsh", "factory/controllers/ticket.xsh", "factory/controllers/eval.xsh", "factory/controllers/design.xsh"],
     "entrypoints": ["run.xsh", "factory/entrypoints/run-agent.xsh", "factory/entrypoints/eval-executor.xsh"],
     "tools": [
       "factory/tools/audit.xsh",

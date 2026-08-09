@@ -8,9 +8,8 @@ Start with [NORTH-STAR.md](NORTH-STAR.md), then read
 [FACTORY.md](FACTORY.md) for the engineering contract and
 [docs/FACTORY-LOOPS.md](docs/FACTORY-LOOPS.md) for the loop boundaries.
 
-Core control-plane contracts live under [`factory/`](factory/) now. The root
-launchers remain stable compatibility entry points; see the
-[refactor migration report](docs/FACTORY-REFACTOR-MIGRATION.md) and the
+Core control-plane contracts live under [`factory/`](factory/). The sole
+top-level launcher is [`run.xsh`](run.xsh); see the
 [machine-readable inventory](docs/FACTORY-REFACTOR-INVENTORY.json) before
 changing a boundary.
 
@@ -47,7 +46,8 @@ XSH_MODULE_PATH=. xsh run.xsh templates/ORGANIZATION-REQUEST.md
 
 Before launch, the CTO reviews every remaining `Open.` ticket. The CTO checks
 evidence, duplication, scope, and acceptance criteria.
-The controller reconciles merged tickets and admits up to two implementations.
+The controller reconciles merged tickets and admits one complete organization
+delivery transaction.
 It starts safe independent phases concurrently.
 It replays successful tickets against linked evals. The optional independent
 eval lane adapts to queue pressure so product delivery keeps capacity when the
@@ -75,9 +75,9 @@ The organization controller also persists the same inventory as
 `CTO-TICKET-INVENTORY.md` and `CTO-TICKET-INVENTORY.json` in every run before
 ticket admission.
 
-If an approved ticket has an unmerged factory branch, the organization
-controller reuses that branch for the linked replay. It captures a portable
-patch, then removes the temporary detached worktree.
+If an approved ticket has an unmerged factory branch, admission fails closed.
+The CTO must review or explicitly supersede the branch before a new engineer
+row can be dispatched.
 
 Run a focused eval, ticket implementation, or design phase with its request
 template:

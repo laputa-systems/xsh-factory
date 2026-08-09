@@ -65,16 +65,17 @@ whether the change should remain.
 
 ## Eval-strength loop: `factory/tools/eval-trends.xsh`
 
-The CTO uses `factory/tools/eval-trends.xsh` before reusing or retiring an eval. It
+The CTO uses `factory/tools/eval-trends.xsh` before selecting or retiring an eval. It
 aggregates persisted eval-worker reports by eval and run, including turns,
 tokens, tool errors, wall time, and provider retry/error counts. These are
 agent-effort signals, not intrinsic task-difficulty scores. Compare them with
 correctness, durable tickets, handbook candidates, and replay status.
 
-An eval may be retained as a cheap regression sentinel even when its worker
-sessions are short. Retire it only when the trend shows low information value,
-no required replay depends on it, and the CTO records the evidence and a
-replacement portfolio role.
+An eval may remain a cheap regression sentinel even when its worker sessions
+are short. Automatic ticketless selection rotates by least-recently-tried
+evidence; it does not retry an alphabetical prefix. Retire an eval only when
+the trend shows low information value, no required handbook replay depends on
+it, and the CTO records the evidence and a replacement portfolio role.
 
 ## Design loop: eval-designer
 
@@ -108,20 +109,20 @@ top-level admission boundary, and invokes one mode controller. Controllers
 wait on process handles and use lifecycle callbacks after child exit; agents
 do not poll each other and do not drive the state machine.
 
-The organization controller can start independent work concurrently:
+An organization cycle has one primary path; optional eval design may overlap it:
 
 ```text
-approved ticket ──> implementation ──> linked re-evaluation
-                     │
-                     └──────────────> independent eval
+approved branchless ticket ──> implementation ──> linked re-evaluation
 
-optional eval-design ───────────────────────────────┘
+no ready ticket ─────────────> one least-recently-tried discovery eval
+
+optional eval-design ────────────────────────────────> CTO review
 ```
 
 Implementation must finish before the linked candidate replay because the
-replay consumes its worktree or patch. The independent eval and design phase
-have disjoint inputs and may overlap with implementation. If no ticket is
-admitted, the independent eval becomes the primary phase.
+replay consumes its worktree or patch. The design phase has disjoint inputs and
+may overlap the primary phase. If no ticket is admitted, the one discovery eval
+is the primary phase.
 
 The CTO is the authority for product merges, handbook promotion, eval
 approval, and reversion. The organization controller executes the CTO's

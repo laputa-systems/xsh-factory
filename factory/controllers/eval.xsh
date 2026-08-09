@@ -262,7 +262,6 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   let xsh_repo = env.path("FACTORY_XSH_REPO", fp"${factory_dir}/../xsh")?
   let candidate_ticket = env.get_or("FACTORY_REEVAL_TICKET", "not-reevaluation")?
   let candidate_worktree = env.get_or("FACTORY_REEVAL_WORKTREE", "not-reevaluation")?
-  let retained_replay = env.get_or("FACTORY_RETAINED_REPLAY", "false")? == "true"
   let stamp = time.now()
   let configured_phase_dir = env.get_or("FACTORY_PHASE_DIR", "")?
   let run_dir = if configured_phase_dir == "" {
@@ -955,13 +954,6 @@ wall-ms=${build_elapsed}
     },
   ]
   fs.write(manager_message, control.fill_template(manager_template.read_text()?, manager_values))?
-  let manager_assignments = if retained_replay {
-    common_assignments.push(
-      f"FACTORY_EVAL_MANAGER_MAX_WALL_SECONDS=${control.retained_replay_manager_wall_seconds()}",
-    )
-  } else {
-    common_assignments
-  }
   runtime.emit_event(
     event_template,
     run_dir,
@@ -977,7 +969,7 @@ wall-ms=${build_elapsed}
     run_dir,
     xsh_path,
     run_agent,
-    manager_assignments,
+    common_assignments,
     "eval-manager",
     eval_id,
     eval_id,
@@ -1054,7 +1046,7 @@ wall-ms=${build_elapsed}
       run_dir,
       xsh_path,
       run_agent,
-      manager_assignments.push("FACTORY_EVAL_MANAGER_MAX_WALL_SECONDS=180"),
+      common_assignments.push("FACTORY_EVAL_MANAGER_MAX_WALL_SECONDS=180"),
       "eval-manager",
       retry_worker_id,
       eval_id,

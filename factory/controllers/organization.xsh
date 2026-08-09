@@ -1,4 +1,4 @@
-##! Organization-cycle controller with independent phase overlap.
+##! Organization-cycle controller for one delivery transaction or one discovery eval.
 use factory.control as control
 use factory.request as typed_request
 use factory.runtime as runtime
@@ -156,35 +156,6 @@ proc ticket_worker_pass(phase_dir: Path, ticket_id: Str) [fs, error] -> Result[B
   return schema.value_text(json.get(json.read(report)?, ["result"], "unknown")) == "pass"
 }
 
-proc spawn_reuse_phase(
-  phase_dir: Path,
-  factory_dir: Path,
-  xsh_repo: Path,
-  ticket_id: Str,
-  branch: Str,
-  base_commit: Str,
-) [fs, process, env, error] -> Result[ProcessHandle] {
-  let xsh = process.which("xsh")?
-  let env_path = process.which("env")?
-  let assignments = [
-    f"FACTORY_DIR=${factory_dir.display()}",
-    f"FACTORY_PHASE_DIR=${phase_dir.display()}",
-    f"FACTORY_XSH_REPO=${xsh_repo.display()}",
-    f"FACTORY_XSH_COMMIT=${base_commit}",
-    f"FACTORY_TICKET_ID=${ticket_id}",
-    f"FACTORY_TICKET_BRANCH=${branch}",
-    f"XSH_MODULE_PATH=${factory_dir.display()}",
-  ]
-  return spawn process.command_argv(
-    env_path,
-    [env_path.display()].extend(assignments)
-      .extend([xsh.display(), fp"${factory_dir}/factory/controllers/reuse.xsh", "--"]),
-    cwd: factory_dir,
-    stdout: fp"${phase_dir}/reuse.stdout",
-    stderr: fp"${phase_dir}/reuse.stderr",
-  )
-}
-
 proc phase_request(
   template: Path,
   output_path: Path,
@@ -258,8 +229,8 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
 
   let design_requested = new_eval_count == 1
   let requested_tickets = typed_request.ticket_values(request_text)?
-  if requested_tickets.len() > control.max_concurrent_engineers() {
-    eprint f"organization cycles admit at most ${control.max_concurrent_engineers()} tickets"
+  if requested_tickets.len() > 1 {
+    eprint "organization cycles admit exactly one ticket at most"
     abort(2)
   }
 
@@ -297,7 +268,6 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     abort(1)
   }
 
-  runtime.stage_cto_improvement(factory_dir, run_dir)?
   runtime.stage_cto_improvement(factory_dir, run_dir)?
   runtime.stage_cto_productivity_report(factory_dir, run_dir)?
   runtime.register_cycle_controller(run_dir)?
@@ -350,36 +320,6 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     }
   }
 
-  # A bounded organization batch may contain one retained implementation and
-  # one fresh ticket. The retained branch is replayed without Pi while the
-  # fresh ticket is dispatched through the normal concurrent engineer path.
-  # More than one retained branch is rejected explicitly because each branch
-  # needs its own isolated primary phase and merge evidence.
-  var reuse_tickets: List[Str] = []
-  var fresh_tickets: List[Str] = []
-  for ticket_id in selected_tickets {
-    let branch = runtime.open_ticket_branch(xsh_repo, ticket_id)?
-    if branch == "" {
-      fresh_tickets = fresh_tickets.push(ticket_id)
-    } else {
-      reuse_tickets = reuse_tickets.push(ticket_id)
-    }
-  }
-
-  if reuse_tickets.len() > 1 {
-    eprint "organization cycles support at most one retained implementation branch per batch"
-    abort(2)
-  }
-
-  let reuse_existing_branch = reuse_tickets.len() == 1
-  let reuse_ticket = if reuse_existing_branch { reuse_tickets[0] } else { "" }
-  if reuse_existing_branch {
-    let reuse_branch = runtime.open_ticket_branch(xsh_repo, reuse_ticket)?
-    eprint f"reusing existing implementation branch for ${reuse_ticket}: ${reuse_branch}"
-  }
-
-  let primary_dispatch_requested = selected_ticket == "" or fresh_tickets.len() > 0
-
   for ticket_id in selected_tickets {
     let ticket_path = fp"${factory_dir}/tickets/${ticket_id}.md"
     if control.ticket_change_target(ticket_path.read_text()?) != "product" {
@@ -409,30 +349,33 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     }
 
     let open_branch = runtime.open_ticket_branch(xsh_repo, ticket_id)?
-    if open_branch != "" and ! (reuse_existing_branch and ticket_id == reuse_ticket) {
+    if open_branch != "" {
       eprint f"ticket ${ticket_id} already has an unmerged implementation branch: ${open_branch}"
-      eprint "replay or review that branch before dispatching another engineer"
+      eprint "review or supersede that branch before dispatching another engineer"
       abort(2)
     }
   }
 
   let requested_evals = typed_request.eval_values(request_text)?
-  let adaptive_eval_limit = control.organization_eval_target(
-    queue_counts.get(0, 0),
-    selected_tickets.len(),
-  )
+  let adaptive_eval_limit = control.organization_eval_target(selected_tickets.len())
   let request_evals = if requested_evals.len() == 0 {
     runtime.adaptive_approved_evals(factory_dir, adaptive_eval_limit)?
   } else {
     requested_evals
   }
-  if request_evals.len() > control.max_concurrent_discovery_evals() {
-    eprint f"organization cycles allow at most ${control.max_concurrent_discovery_evals()} independent evals"
+  if selected_ticket != "" and requested_evals.len() > 0 {
+    eprint "ticket organization cycles do not admit an independent eval"
     abort(2)
   }
-
-  if selected_ticket == "" and request_evals.len() < 1 {
-    eprint "ticketless organization cycles require at least one discovery eval"
+  if selected_ticket == "" and requested_evals.len() > 0 {
+    let expected_evals = runtime.adaptive_approved_evals(factory_dir, 1)?
+    if requested_evals != expected_evals {
+      eprint f"organization request must select the least-recently-tried approved evals ${expected_evals.join(", ")}; selected ${requested_evals.join(", ")}"
+      abort(2)
+    }
+  }
+  if selected_ticket == "" and request_evals.len() != 1 {
+    eprint "ticketless organization cycles require exactly one discovery eval"
     abort(2)
   }
 
@@ -443,19 +386,6 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   } else {
     ""
   }
-  if selected_ticket == "" {
-    var seen_evals: List[Str] = []
-    for eval_id in request_evals {
-      if eval_id in seen_evals {
-        eprint f"organization discovery evals must be distinct: ${eval_id}"
-        abort(2)
-      }
-
-      seen_evals = seen_evals.push(eval_id)
-    }
-  }
-
-  let independent_eval_requested = request_evals.len() > 0 and (selected_ticket != "" or request_evals.len() > 1)
   let ticket_eval = if selected_ticket != "" {
     control.ticket_eval(selected_ticket_path.read_text()?)
   } else {
@@ -497,11 +427,6 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   } else {
     fp"${phases_dir}/01-ticket"
   }
-  let reuse_phase = if reuse_existing_branch and fresh_tickets.len() > 0 {
-    fp"${phases_dir}/01-reuse-${reuse_ticket}"
-  } else {
-    primary_phase
-  }
   let design_phase = if selected_ticket == "" {
     fp"${phases_dir}/0${request_evals.len() + 1}-eval-design"
   } else {
@@ -522,7 +447,6 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     fp"${factory_dir}/factory/controllers/ticket.xsh"
   }
   let primary_controller = env.path("FACTORY_PRIMARY_CONTROLLER", default_primary_controller)?
-  let eval_controller = env.path("FACTORY_EVAL_CONTROLLER", fp"${factory_dir}/factory/controllers/eval.xsh")?
   let reeval_controller = env.path("FACTORY_REEVAL_CONTROLLER", fp"${factory_dir}/factory/controllers/eval.xsh")?
   let design_controller = env.path("FACTORY_DESIGN_CONTROLLER", fp"${factory_dir}/factory/controllers/design.xsh")?
   let home = env.get("HOME")?
@@ -534,43 +458,9 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   fs.mkdir(phases_dir)?
   fs.mkdir(phase_requests_dir)?
   fs.mkdir(primary_phase)?
-  if reuse_existing_branch and fresh_tickets.len() > 0 {
-    fs.mkdir(reuse_phase)?
-  }
 
   if design_requested {
     fs.mkdir(design_phase)?
-  }
-
-  var independent_eval_ids: List[Str] = []
-  var independent_eval_phases: List[Path] = []
-  var independent_eval_requests: List[Path] = []
-  var independent_eval_stdout: List[Path] = []
-  var independent_eval_stderr: List[Path] = []
-  if selected_ticket != "" and independent_eval_requested {
-    # An explicitly requested independent eval gets its own phase boundary.
-    # The default ticket cycle leaves this lane empty so it cannot consume
-    # delivery capacity or turn a passing product path into an eval failure.
-    fs.mkdir(fp"${phases_dir}/03-eval")?
-    independent_eval_ids = independent_eval_ids.push(requested_eval)
-    independent_eval_phases = independent_eval_phases.push(fp"${phases_dir}/03-eval")
-    independent_eval_requests = independent_eval_requests.push(fp"${phase_requests_dir}/03-eval.md")
-    independent_eval_stdout = independent_eval_stdout.push(fp"${run_dir}/independent-eval-${requested_eval}.stdout")
-    independent_eval_stderr = independent_eval_stderr.push(fp"${run_dir}/independent-eval-${requested_eval}.stderr")
-  } else {
-    var discovery_phase_number = 2
-    for eval_id in request_evals {
-      continue when eval_id == requested_eval
-      let phase = fp"${phases_dir}/0${discovery_phase_number}-eval"
-      let phase_request_path = fp"${phase_requests_dir}/0${discovery_phase_number}-eval.md"
-      independent_eval_ids = independent_eval_ids.push(eval_id)
-      independent_eval_phases = independent_eval_phases.push(phase)
-      independent_eval_requests = independent_eval_requests.push(phase_request_path)
-      independent_eval_stdout = independent_eval_stdout.push(fp"${run_dir}/independent-eval-${eval_id}.stdout")
-      independent_eval_stderr = independent_eval_stderr.push(fp"${run_dir}/independent-eval-${eval_id}.stderr")
-      fs.mkdir(phase)?
-      discovery_phase_number += 1
-    }
   }
 
   fs.write(active_run, run_dir.display() + "\n")?
@@ -584,7 +474,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     "started",
     1,
     "controller",
-    "bounded organization cycle with concurrent discovery and independent eval overlap",
+    "bounded organization cycle with one delivery transaction or one discovery eval",
   )?
   runtime.emit_event(
     event_template,
@@ -594,11 +484,10 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     "started",
     1,
     "controller",
-    f"open=${queue_counts.get(0, 0)}; approved=${queue_counts.get(1, 0)}; engineers=${engineer_target}; independent_eval_target=${adaptive_eval_limit}; independent_evals=${request_evals.len()}; linked_replay=mandatory",
+    f"open=${queue_counts.get(0, 0)}; approved=${queue_counts.get(1, 0)}; engineers=${engineer_target}; independent_eval_target=${adaptive_eval_limit}; independent_evals=${request_evals.len()}; linked_replay=mandatory; discovery=least-recently-tried",
   )?
 
   for ticket_id in selected_tickets {
-    let retained = ticket_id in reuse_tickets
     runtime.emit_structured_event(
       event_template,
       run_dir,
@@ -606,17 +495,15 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
       ticket_id,
       {
         status: "admitted",
-        fresh: ! retained,
-        retained: retained,
-        delivery_target: ! retained,
+        delivery_target: true,
       },
     )?
   }
 
   var ticket_value = "None."
-  if fresh_tickets.len() > 0 {
+  if selected_tickets.len() > 0 {
     ticket_value = ""
-    for ticket_id in fresh_tickets {
+    for ticket_id in selected_tickets {
       ticket_value = if ticket_value == "" { f"`${ticket_id}`" } else { f"""${ticket_value}
 - `${ticket_id}`""" }
     }
@@ -624,40 +511,19 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
 
   let primary_objective = if selected_ticket == "" {
     f"Run one fresh ${selected_eval} eval because no approved ticket was admitted."
-  } else if fresh_tickets.len() > 0 {
-    f"Implement the fresh approved ticket rows ${ticket_value} in isolated XSH worktrees; replay the retained branch in its separate reuse phase."
   } else {
-    f"Implement exactly ${selected_ticket} in one isolated XSH worktree."
+    f"Implement the approved ticket rows ${ticket_value} in isolated XSH worktrees; every passing engineer row receives a linked pre-merge replay."
   }
-  if primary_dispatch_requested {
-    phase_request(
-      phase_template,
-      primary_request,
-      primary_mode,
-      selected_eval,
-      trial_count,
-      0,
-      ticket_value,
-      primary_objective,
-    )?
-  }
-
-  if independent_eval_requested {
-    var independent_eval_index = 0
-    for eval_id in independent_eval_ids {
-      phase_request(
-        phase_template,
-        independent_eval_requests[independent_eval_index],
-        "eval",
-        eval_id,
-        trial_count,
-        0,
-        "None.",
-        f"Run the independent ${eval_id} eval against the XSH main commit.",
-      )?
-      independent_eval_index += 1
-    }
-  }
+  phase_request(
+    phase_template,
+    primary_request,
+    primary_mode,
+    selected_eval,
+    trial_count,
+    0,
+    ticket_value,
+    primary_objective,
+  )?
 
   if design_requested {
     phase_request(
@@ -706,12 +572,9 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
 
   let primary_subject = if selected_ticket == "" {
     selected_eval
-  } else if fresh_tickets.len() > 0 {
-    fresh_tickets[0]
   } else {
     selected_ticket
   }
-  var independent_eval_handles: List[ProcessHandle] = []
   runtime.emit_event(
     event_template,
     run_dir,
@@ -723,133 +586,33 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     primary_mode,
   )?
 
-  var independent_eval_spawn_index = 0
-  for eval_id in independent_eval_ids {
-    runtime.emit_event(
-      event_template,
-      run_dir,
-      f"10-independent-eval-${eval_id}-started",
-      eval_id,
-      "started",
-      1,
-      "organization",
-      "running the discovery eval in parallel with the primary phase",
-    )?
-    let independent_eval_handle = spawn_child(
-      eval_controller,
-      independent_eval_requests[independent_eval_spawn_index],
-      independent_eval_phases[independent_eval_spawn_index],
-      factory_dir,
-      xsh_repo,
-      run_dir,
-      xsh_commit.trim(),
-      run_agent,
-      auth_file,
-      pi_command,
-      docker,
-      target,
-      platform,
-      [
-        "FACTORY_MODE=eval",
-        f"FACTORY_EVAL_ID=${eval_id}",
-        "FACTORY_REEVAL_TICKET=not-reevaluation",
-        "FACTORY_REEVAL_WORKTREE=not-reevaluation",
-        "FACTORY_SKIP_TICKET_RECONCILE=false",
-      ],
-      independent_eval_stdout[independent_eval_spawn_index],
-      independent_eval_stderr[independent_eval_spawn_index],
-    )?
-    independent_eval_handles = independent_eval_handles.push(independent_eval_handle)
-    independent_eval_spawn_index += 1
-  }
-
-  # Start the deterministic retained-branch preflight before waiting on the
-  # fresh primary. This reuse phase does not consume Pi budget; its linked
-  # replay still does and remains bounded quality evidence.
-  var reuse_primary_handle: ProcessHandle? = null
-  if reuse_existing_branch {
-    let reuse_branch = runtime.open_ticket_branch(xsh_repo, reuse_ticket)?
-    runtime.emit_event(
-      event_template,
-      run_dir,
-      "10-reuse-started",
-      reuse_ticket,
-      "started",
-      1,
-      "organization",
-      "retained branch fast path started before fresh primary wait",
-    )?
-    reuse_primary_handle = spawn_reuse_phase(
-      reuse_phase,
-      factory_dir,
-      xsh_repo,
-      reuse_ticket,
-      reuse_branch,
-      xsh_commit.trim(),
-    )?
-  }
-
-  var fresh_primary_ok = ! primary_dispatch_requested
-  if primary_dispatch_requested {
-    let primary_handle = spawn_child(
-      primary_controller,
-      primary_request,
-      primary_phase,
-      factory_dir,
-      xsh_repo,
-      run_dir,
-      xsh_commit.trim(),
-      run_agent,
-      auth_file,
-      pi_command,
-      docker,
-      target,
-      platform,
-      [
-        f"FACTORY_MODE=${primary_mode}",
-        f"FACTORY_EVAL_ID=${selected_eval}",
-        "FACTORY_REEVAL_TICKET=not-reevaluation",
-        "FACTORY_REEVAL_WORKTREE=not-reevaluation",
-        "FACTORY_SKIP_TICKET_RECONCILE=false",
-        "FACTORY_RETAIN_WORKTREE=true",
-      ],
-      fp"${run_dir}/primary.stdout",
-      fp"${run_dir}/primary.stderr",
-    )?
-    fresh_primary_ok = wait_child(primary_handle)?
-  }
-
-  var reuse_primary_ok = true
-  if reuse_primary_handle != null {
-    reuse_primary_ok = wait_child(reuse_primary_handle)?
-    runtime.emit_event(
-      event_template,
-      run_dir,
-      "80-reuse-completed",
-      reuse_ticket,
-      if reuse_primary_ok {
-        "completed"
-      } else {
-        "failed"
-      },
-      1,
-      "controller",
-      "retained branch fast path returned",
-    )?
-  }
-
-  let fresh_primary_report_ok = if primary_dispatch_requested {
-    phase_run_pass(primary_phase, "report.json")?
-  } else {
-    true
-  }
-  let reuse_primary_report_ok = if reuse_existing_branch {
-    phase_run_pass(reuse_phase, "report.json")?
-  } else {
-    true
-  }
-  let primary_ok = fresh_primary_ok and reuse_primary_ok
-  let primary_report_ok = fresh_primary_report_ok and reuse_primary_report_ok
+  let primary_handle = spawn_child(
+    primary_controller,
+    primary_request,
+    primary_phase,
+    factory_dir,
+    xsh_repo,
+    run_dir,
+    xsh_commit.trim(),
+    run_agent,
+    auth_file,
+    pi_command,
+    docker,
+    target,
+    platform,
+    [
+      f"FACTORY_MODE=${primary_mode}",
+      f"FACTORY_EVAL_ID=${selected_eval}",
+      "FACTORY_REEVAL_TICKET=not-reevaluation",
+      "FACTORY_REEVAL_WORKTREE=not-reevaluation",
+      "FACTORY_SKIP_TICKET_RECONCILE=false",
+      "FACTORY_RETAIN_WORKTREE=true",
+    ],
+    fp"${run_dir}/primary.stdout",
+    fp"${run_dir}/primary.stderr",
+  )?
+  let primary_ok = wait_child(primary_handle)?
+  let primary_report_ok = phase_run_pass(primary_phase, "report.json")?
   let primary_pass = primary_ok and primary_report_ok
   runtime.emit_event(
     event_template,
@@ -885,7 +648,6 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   var worktree_cleanup_ok = true
   var delivery_ok = selected_tickets.len() == 0
   var reeval_ticket_ids: List[Str] = []
-  var reeval_ticket_phases: List[Path] = []
   var reeval_ticket_worktrees: List[Path] = []
   var reeval_ticket_patches: List[Path] = []
   var reeval_handles: List[ProcessHandle] = []
@@ -893,19 +655,16 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     reeval_pass_for_result = true
     delivery_ok = true
 
-    # Wait and merge fresh rows before retained replays. Replay validation is
-    # still mandatory for each row, but an older branch must not hold a fresh
-    # product commit behind its own slow or failed manager closeout.
-    let replay_order = control.fresh_first_ticket_order(fresh_tickets, reuse_tickets)
-    for ticket_id in replay_order {
+    # Every admitted row is a fresh engineer implementation. Its own worker
+    # report is the precondition for an isolated linked replay, so one failed
+    # ticket does not suppress another row's validation.
+    for ticket_id in selected_tickets {
       let ticket_path = fp"${factory_dir}/tickets/${ticket_id}.md"
       let ticket_eval_id = control.ticket_eval(ticket_path.read_text()?)
       let ticket_reeval_phase = fp"${phases_dir}/02-reeval-${ticket_id}"
       let ticket_reeval_request = fp"${phase_requests_dir}/02-reeval-${ticket_id}.md"
-      let ticket_is_reused = reuse_existing_branch and ticket_id == reuse_ticket
-      let ticket_phase = if ticket_is_reused { reuse_phase } else { primary_phase }
-      let ticket_worktree = runtime.ticket_worktree_path(xsh_repo, ticket_phase, ticket_id)
-      let ticket_patch = fp"${ticket_phase}/patches/${ticket_id}.diff"
+      let ticket_worktree = runtime.ticket_worktree_path(xsh_repo, primary_phase, ticket_id)
+      let ticket_patch = fp"${primary_phase}/patches/${ticket_id}.diff"
       fs.mkdir(ticket_reeval_phase)?
       phase_request(
         phase_template,
@@ -918,15 +677,7 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
         f"Validate the ${ticket_id} implementation against the linked ${ticket_eval_id} eval before merge.",
       )?
 
-      # In reuse mode no engineer worker report exists (the branch is reused,
-      # not re-implemented), so the validated reuse report is the precondition
-      # for the linked candidate replay. Fresh rows use their own worker report
-      # so one failed ticket does not suppress another ticket's replay.
-      let ticket_primary_pass = if ticket_is_reused {
-        phase_run_pass(ticket_phase, "report.json")?
-      } else {
-        ticket_worker_pass(primary_phase, ticket_id)?
-      }
+      let ticket_primary_pass = ticket_worker_pass(primary_phase, ticket_id)?
       if ! ticket_primary_pass {
         reeval_pass_for_result = false
         delivery_ok = false
@@ -940,14 +691,13 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
             status: "delivery-failed",
             branch: "",
             implementation_commit: "",
-            detail: "primary evidence failed; linked replay was not admitted and branch retained",
+            detail: "primary engineer evidence failed; linked replay was not admitted and branch is preserved for review",
           },
         )?
         continue
       }
 
       let ticket_candidate = ticket_worktree.display()
-      let retained_replay = if ticket_is_reused { "true" } else { "false" }
       runtime.emit_event(
         event_template,
         run_dir,
@@ -978,13 +728,11 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
           f"FACTORY_REEVAL_TICKET=${ticket_id}",
           f"FACTORY_REEVAL_WORKTREE=${ticket_candidate}",
           "FACTORY_SKIP_TICKET_RECONCILE=true",
-          f"FACTORY_RETAINED_REPLAY=${retained_replay}",
         ],
         fp"${run_dir}/reeval-${ticket_id}.stdout",
         fp"${run_dir}/reeval-${ticket_id}.stderr",
       )?
       reeval_ticket_ids = reeval_ticket_ids.push(ticket_id)
-      reeval_ticket_phases = reeval_ticket_phases.push(ticket_phase)
       reeval_ticket_worktrees = reeval_ticket_worktrees.push(ticket_worktree)
       reeval_ticket_patches = reeval_ticket_patches.push(ticket_patch)
       reeval_handles = reeval_handles.push(reeval_handle)
@@ -1007,17 +755,11 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
       ) == true
       let reeval_report_ok = phase_run_pass(reeval_phase, "report.json")? and reeval_required_ok
       let reeval_pass = reeval_report_ok
-      let retained_replay = reuse_existing_branch and ticket_id == reuse_ticket
-
-      # A retained replay is quality evidence for an already-existing branch.
-      # If its bounded manager closeout defers, keep the branch available for a
-      # later replay without allowing that old row to block fresh delivery.
-      let effective_reeval_pass = reeval_pass or retained_replay
-      reeval_pass_for_result = reeval_pass_for_result and effective_reeval_pass
+      reeval_pass_for_result = reeval_pass_for_result and reeval_pass
       let delivery = if reeval_pass {
         runtime.merge_validated_ticket(
           xsh_repo,
-          reeval_ticket_phases[reeval_wait_index],
+          primary_phase,
           ticket_id,
           xsh_commit.trim(),
         )?
@@ -1030,19 +772,12 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
         }
       }
 
-      # A retained branch can pass its replay and still be too old to merge
-      # cleanly after the fresh commit. Keep that branch for a future
-      # reconciliation, but do not report its expected stale-base conflict as
-      # a fresh delivery failure.
-      let retained_delivery_deferred = retained_replay and ! delivery.merged
-      delivery_ok = delivery_ok and (delivery.merged or retained_replay)
+      delivery_ok = delivery_ok and delivery.merged
       runtime.emit_structured_event(
         event_template,
         run_dir,
         if delivery.merged {
           f"86-ticket-${ticket_id}-delivered"
-        } else if retained_delivery_deferred {
-          f"86-ticket-${ticket_id}-retained-replay-deferred"
         } else {
           f"86-ticket-${ticket_id}-delivery-failed"
         },
@@ -1050,25 +785,15 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
         {
           status: if delivery.merged {
             "delivered"
-          } else if retained_delivery_deferred {
-            "retained-validation-deferred"
           } else {
             "delivery-failed"
           },
           branch: delivery.branch,
           implementation_commit: delivery.implementation_commit,
-          fresh: ! retained_replay,
-          retained: retained_replay,
           detail: if delivery.merged {
             f"${delivery.implementation_commit} is now reachable from XSH HEAD"
-          } else if retained_delivery_deferred {
-            if reeval_pass {
-              "retained replay passed but merge deferred after fresh delivery; branch retained for review"
-            } else {
-              "retained replay deferred within bounded policy; branch retained for review"
-            }
           } else {
-            "linked replay failed; branch retained for review"
+            "linked replay or exact merge failed; branch is preserved for review"
           },
         },
       )?
@@ -1103,12 +828,10 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
           if reeval_process_ok {
             "candidate re-evaluation returned with a passing phase report"
           } else {
-            "candidate re-evaluation phase report passed; nonzero controller status retained"
+            "candidate re-evaluation phase report passed; nonzero controller status captured"
           }
-        } else if retained_replay {
-          "retained replay deferred; bounded phase evidence preserved"
         } else {
-          "fresh candidate re-evaluation did not produce a passing phase report"
+          "candidate re-evaluation did not produce a passing phase report"
         },
       )?
       if reeval_pass {
@@ -1124,11 +847,9 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
         )?
       }
 
-      # Fresh delivery requires a portable patch before its worktree can be
-      # removed. A retained timeout may have no patch, but its detached
-      # worktree is still safe to remove when clean; the Git branch remains.
+      # Delivery requires a portable patch before its worktree can be removed.
       let patch_ready = fs.exists(reeval_ticket_patches[reeval_wait_index])?
-      let cleanup_allowed = patch_ready and reeval_pass or retained_replay
+      let cleanup_allowed = patch_ready and reeval_pass
       let cleaned = cleanup_allowed and runtime.remove_clean_worktree(
         xsh_repo,
         reeval_ticket_worktrees[reeval_wait_index],
@@ -1142,74 +863,8 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
   worktree_cleanup_ok = worktree_cleanup_ok and final_worktree_cleanup_ok
   let delivered_xsh_commit = run.text "git" "-C" $xsh_repo "rev-parse" "HEAD" ?
 
-  var independent_eval_state = if independent_eval_requested { "not-run" } else { "not-applicable" }
-  var independent_eval_report_state = if independent_eval_requested { "not-run" } else { "not-applicable" }
-  if independent_eval_requested {
-    var independent_eval_wait_index = 0
-    var all_independent_evals_pass = true
-    var all_independent_eval_reports_pass = true
-    for eval_id in independent_eval_ids {
-      let independent_eval_ok = wait_child(independent_eval_handles[independent_eval_wait_index])?
-      let independent_eval_report_ok = phase_run_pass(
-        independent_eval_phases[independent_eval_wait_index],
-        "report.json",
-      )?
-      let independent_eval_pass = independent_eval_ok and independent_eval_report_ok
-      let independent_eval_exit = if independent_eval_pass { 0 } else { 1 }
-      runtime.emit_process_output(
-        run_dir,
-        f"independent-eval-${eval_id}",
-        "stdout",
-        independent_eval_stdout[independent_eval_wait_index],
-        independent_eval_exit,
-      )?
-      runtime.emit_process_output(
-        run_dir,
-        f"independent-eval-${eval_id}",
-        "stderr",
-        independent_eval_stderr[independent_eval_wait_index],
-        independent_eval_exit,
-      )?
-      all_independent_evals_pass = all_independent_evals_pass and independent_eval_pass
-      all_independent_eval_reports_pass = all_independent_eval_reports_pass and independent_eval_report_ok
-      runtime.emit_event(
-        event_template,
-        run_dir,
-        f"80-independent-eval-${eval_id}-completed",
-        eval_id,
-        if independent_eval_pass {
-          "completed"
-        } else {
-          "failed"
-        },
-        1,
-        "controller",
-        "discovery eval phase returned",
-      )?
-      if independent_eval_pass {
-        runtime.emit_event(
-          event_template,
-          run_dir,
-          f"85-independent-eval-${eval_id}-validated",
-          eval_id,
-          "validated",
-          1,
-          "controller",
-          "discovery eval report.json passed",
-        )?
-      }
-
-      independent_eval_wait_index += 1
-    }
-
-    independent_eval_state = if all_independent_evals_pass { "pass" } else { "fail" }
-    independent_eval_report_state = if all_independent_eval_reports_pass { "pass" } else { "missing-or-failed" }
-  }
-
-  # The independent eval may still be checking its pre-manager ticket
-  # snapshot. Reconcile delivered tickets only after that overlapping phase
-  # has closed, so controller-owned lifecycle updates cannot look like a
-  # manager mutation.
+  # Reconcile only after the primary delivery or discovery phase has closed, so
+  # controller-owned lifecycle updates cannot look like a manager mutation.
   let _ = runtime.reconcile_tickets(factory_dir, xsh_repo, delivered_xsh_commit.trim())?
 
   var design_state = "not-requested"
@@ -1267,14 +922,13 @@ proc main(...argv: List[Str]) [fs, process, env, time, error, io] {
     "missing"
   }
   let audit_pass = audit_report_ok and audit_result == "pass"
-  let independent_eval_pass_for_result = if independent_eval_requested {
-    independent_eval_state == "pass"
-  } else {
-    true
-  }
   let design_pass_for_result = design_state == "pass" or design_state == "not-requested"
-  let product_result = if primary_pass and reeval_pass_for_result and delivery_ok { "pass" } else { "fail" }
-  let evaluator_result = if independent_eval_pass_for_result and design_pass_for_result { "pass" } else { "fail" }
+  let product_result = if selected_ticket == "" or (primary_pass and reeval_pass_for_result and delivery_ok) {
+    "pass"
+  } else {
+    "fail"
+  }
+  let evaluator_result = if (selected_ticket != "" or primary_pass) and design_pass_for_result { "pass" } else { "fail" }
   let infrastructure_result = if worktree_cleanup_ok and audit_pass { "pass" } else { "fail" }
   let initial_result = if product_result == "pass" and evaluator_result == "pass" and infrastructure_result == "pass" {
     "pass"

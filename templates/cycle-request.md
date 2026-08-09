@@ -16,8 +16,8 @@ must review every `Open.` ticket, change each eligible ticket to `Approved.`,
 and record the evidence and any deferral reason in the ticket. Never leave an
 eligible ticket Open and silently substitute an eval-only cycle. When a ticket
 is admitted, its linked re-evaluation is mandatory; the independent eval lane
-is allocated by queue pressure, while the independent eval-design phase runs
-alongside the primary phase.
+is omitted; a ticketless cycle runs one least-recently-tried discovery eval,
+while the independent eval-design phase may run alongside the primary phase.
 
 ## Mode
 
@@ -25,13 +25,12 @@ alongside the primary phase.
 
 ## Eval admission
 
-- Allow measured eval reuse: `no`
-- The controller must select the lexicographically first untried Approved eval
-  when one exists. Set reuse to `yes` only with a written CTO rationale.
+- The controller selects the least-recently-tried Approved eval when no
+  branchless approved product ticket is ready.
 
 ## Active evals
 
-- `task-bigfiles`
+- Auto.
 
 ## Trial plan
 
@@ -60,7 +59,7 @@ alongside the primary phase.
 ## Ticket policy
 
 - Review all open tickets before selection: `yes`
-- Select the first two approved tickets after review: `yes`
+- Select one branchless approved ticket after review: `yes`
 - Approve eligible Open tickets before controller invocation: `required`
 - Require at least one engineer implementation commit when a quality-approved
   ticket is admitted: `yes`
@@ -75,10 +74,10 @@ environment override in the invocation, using names such as
 
 ## Required outputs
 
-- up to two approved ticket implementations and one linked pre-merge replay per
-  ticket when tickets are available;
-- the queue-pressure allocation of independent evals when a ticket is
-  available, otherwise the adaptive active-eval batch as the primary phase;
+- one approved ticket implementation and one linked pre-merge replay when a
+  ticket is available;
+- no independent eval when a ticket is available, otherwise one focused
+  least-recently-tried eval as the primary phase;
 - one substantive eval-design proposal meeting the difficulty gate pending review;
 - structured worker reports and raw Pi sessions;
 - a run-level `report.json` covering every worker;

@@ -9,7 +9,6 @@ export type CycleRequest = {
   active_evals: List[types.EvalId],
   trial_count: types.TrialCount,
   design_count: Int,
-  allow_measured_reuse: Bool,
   role_overrides: List[Any],
   required_outputs: List[Str],
   aggregate_budget: Float,
@@ -24,7 +23,6 @@ export type RequestFacts = {
   active_evals: List[Str],
   trial_count: Int,
   design_count: Int,
-  allow_measured_reuse: Bool,
   aggregate_budget: Float,
 }
 
@@ -137,17 +135,6 @@ export pure parse_design_count(text: Str) -> Result[Int] {
   count
 }
 
-## Parses the explicit measured-reuse opt-in.
-export pure parse_measured_reuse(text: Str) -> Bool {
-  for line in text.lines() {
-    if "Allow measured eval reuse" in line and ("`yes`" in line or "`true`" in line) {
-      return true
-    }
-  }
-
-  return false
-}
-
 ## Parses an optional aggregate budget, keeping the hard ceiling in policy.
 export pure parse_aggregate_budget(text: Str) -> Result[Float] {
   for line in section_lines(text, "Aggregate budget") {
@@ -191,7 +178,6 @@ export pure parse(text: Str) -> Result[CycleRequest] {
     active_evals: evals,
     trial_count: parse_trial_count(text)?,
     design_count: design_count,
-    allow_measured_reuse: parse_measured_reuse(text),
     role_overrides: [],
     required_outputs: ["report.json", "events.jsonl"],
     aggregate_budget: aggregate_budget,
@@ -208,7 +194,6 @@ export pure facts(text: Str) -> Result[RequestFacts] {
     active_evals: [eval_id.value for eval_id in cycle.active_evals],
     trial_count: cycle.trial_count.value,
     design_count: cycle.design_count,
-    allow_measured_reuse: cycle.allow_measured_reuse,
     aggregate_budget: cycle.aggregate_budget,
   })
 }
@@ -248,10 +233,4 @@ export pure trial_value(text: Str) -> Result[Int] {
 export pure design_value(text: Str) -> Result[Int] {
   let cycle = parse(text)?
   cycle.design_count
-}
-
-## Returns the explicit measured-reuse permission.
-export pure measured_reuse_value(text: Str) -> Result[Bool] {
-  let cycle = parse(text)?
-  cycle.allow_measured_reuse
 }

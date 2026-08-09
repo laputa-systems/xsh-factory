@@ -109,17 +109,14 @@ grepping broadly.
 - `run.xsh` is the only top-level launcher. It performs preflight, admission,
   locks, aggregate-budget setup, signal cleanup, and dispatches exactly one
   mode controller.
-- `factory/controllers/organization.xsh` composes the bounded organization graph: approved
-  ticket implementation, linked replay, independent eval, and optional eval
-  design. It owns overlap and waits on process handles; it does not ask agents
-  to select work.
+- `factory/controllers/organization.xsh` composes the bounded organization graph: one
+  approved branchless ticket implementation, its linked replay, one focused
+  discovery eval when no ticket is ready, and optional eval design. It owns
+  overlap and waits on process handles; it does not ask agents to select work.
 - `factory/controllers/ticket.xsh` creates clean XSH worktrees, renders immutable engineer
   assignments, dispatches engineer rows through `factory/entrypoints/run-agent.xsh`, validates
   reports/branches/commits/worktrees, amends validated engineer commits with
   provenance, and captures portable patches.
-- `factory/controllers/reuse.xsh` validates an already-existing factory branch in a
-  detached worktree for an organization replay; it is not a second engineer
-  dispatch path.
 - `factory/controllers/eval.xsh` builds the local XSH image/runtime, dispatches eval workers
   through `factory/entrypoints/eval-executor.xsh`, and then dispatches the eval-manager. It owns
   trial admission and evaluator manifests, not qualitative diagnosis.
@@ -141,7 +138,8 @@ grepping broadly.
 - `factory/runtime.xsh` contains effectful shared operations: process/PID
   registration and cancellation, locks, event-ledger writes, CTO handoffs,
   eval promotion, ticket reconciliation, worktree/patch cleanup, handbook
-  lineage checks, exact session-read checks, and engineer commit provenance.
+  lineage checks, exact session-read checks, engineer commit provenance, and
+  least-recently-tried discovery selection.
 - `factory/schema.xsh` is the single machine-report envelope validator for
   `worker`, `phase`, and `run` reports. Do not add role-specific machine
   projections; preserve metrics in `report.json` and raw session JSONL.
@@ -219,7 +217,7 @@ trailer-verification, idempotency, patch-hash, and cleanup cases live in
   admission, lifecycle, ticket inventory, handbook gates, and role ceilings.
 - `tests/tools_test.xsh` covers report normalization, tool-error retention,
   process/event behavior, budget and cleanup consequences, worktree/patch
-  boundaries, organization reuse, eval promotion, and engineer provenance
+  boundaries, organization admission, eval promotion, and engineer provenance
   amendment.
 - The nearest hard judge for factory changes is
   `xsht test`. Use synthetic sessions, Git repositories, and

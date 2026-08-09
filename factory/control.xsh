@@ -232,14 +232,6 @@ export pure default_max_wall_seconds(role: Str) -> Str {
   return ""
 }
 
-## Eval-manager closeout is bounded tightly because the manager reads a
-## controller-prepared packet, not an open-ended investigation. A failed
-## attempt receives one shorter report-recovery retry in eval.xsh. Retained
-## replays use the same 300-second bound.
-export pure retained_replay_manager_wall_seconds() -> Str {
-  return "300"
-}
-
 ## Clamps a turn or wall-clock limit to the role's hard ceiling.
 export pure clamp_session_limit(role: Str, key: Str, configured: Str) -> Result[Str] {
   let ceiling_text = if key == "MAX_TURNS" {
@@ -293,20 +285,17 @@ export pure engineer_target(approved_count: Int) -> Int {
   }
 }
 
-## Organization cycles reserve one fresh implementation row and may attach
-## one retained replay row. Ticket-implementation mode keeps the wider
-## two-engineer ceiling, but the delivery lane has a single deterministic
-## fresh target.
+## An organization cycle runs one complete fresh delivery transaction. The
+## ticket-implementation controller retains its independent two-engineer bound,
+## but organization qualification measures one engineer and one linked replay.
 export pure organization_ticket_target(approved_count: Int) -> Int {
-  return if approved_count > 0 { max_concurrent_engineers() } else { 0 }
+  return if approved_count > 0 { 1 } else { 0 }
 }
 
-## Allocates the optional independent-eval lane from queue pressure. Linked
-## replays are not included here: every passing engineer row still requires its
-## own linked replay before delivery. A crowded product queue spends the paid
-## capacity on implementation; an empty queue spends it on discovery.
-export pure organization_eval_target(open_count: Int, selected_ticket_count: Int) -> Int {
-  let open = if open_count < 0 { 0 } else { open_count }
+## A ticketless organization cycle gets one focused discovery eval. Discovery
+## rotates by least-recently-tried evidence in runtime.xsh; multiplying stable
+## evals from a sparse queue spends budget without improving ticket supply.
+export pure organization_eval_target(selected_ticket_count: Int) -> Int {
   let selected = if selected_ticket_count < 0 { 0 } else { selected_ticket_count }
   if selected > 0 {
     # A product cycle already has a mandatory linked replay. Independent
@@ -314,21 +303,7 @@ export pure organization_eval_target(open_count: Int, selected_ticket_count: Int
     return 0
   }
 
-  return if open == 0 {
-    max_concurrent_discovery_evals()
-  } else if open <= 2 {
-    2
-  } else {
-    1
-  }
-}
-
-## Orders a mixed organization batch so fresh product work reaches the merge
-## boundary before a retained branch replay. Every row still keeps its own
-## replay and provenance gates; this only prevents an older branch from
-## delaying an otherwise validated fresh delivery.
-export pure fresh_first_ticket_order(fresh: List[Str], retained: List[Str]) -> List[Str] {
-  fresh.extend(retained)
+  return 1
 }
 
 ## The manager reads a controller-prepared evidence packet. A short inactivity
@@ -1261,15 +1236,4 @@ export pure engineer_assignment_ok(
 ) -> Bool {
   let expected_message = run_dir + "/messages/" + ticket_id + ".md"
   return ticket_id != "" and message_file == expected_message and f"- Ticket ID: `${ticket_id}`" in assignment and f"- Dedicated XSH worktree: `${workdir}`" in assignment and "<!-- CONTROLLER_TICKET_SNAPSHOT_BEGIN -->" in assignment and "<!-- CONTROLLER_TICKET_SNAPSHOT_END -->" in assignment and "Do not search for open tickets" in assignment
-}
-
-## Parses whether a cycle requires an untried approved eval.
-export pure request_allow_measured_eval(text: Str) -> Bool {
-  for line in text.lines() {
-    if line.trim() == "- Allow measured eval reuse: `yes`" {
-      return true
-    }
-  }
-
-  return false
 }

@@ -52,7 +52,7 @@ state are spread across many top-level files:
 - effects and reconciliation: `factory/runtime.xsh`;
 - report envelope: `factory/schema.xsh`;
 - phase controllers: `factory/controllers/ticket.xsh`, `factory/controllers/eval.xsh`, `factory/controllers/design.xsh`,
-  `factory/controllers/organization.xsh`, and `factory/controllers/reuse.xsh`;
+  and `factory/controllers/organization.xsh`;
 - top-level admission: `run.xsh`;
 - process boundary: `factory/entrypoints/run-agent.xsh`;
 - audit and reporting: `factory/tools/audit.xsh`, `factory/tools/report.xsh`, and
@@ -246,8 +246,7 @@ factory/
 │   ├── organization.xsh
 │   ├── ticket.xsh
 │   ├── eval.xsh
-│   ├── design.xsh
-│   └── reuse.xsh
+│   └── design.xsh
 ├── tools/
 │   ├── audit.xsh
 │   ├── session.xsh
@@ -593,9 +592,8 @@ Migrate in this order:
 1. `factory/controllers/eval.xsh`;
 2. `factory/controllers/design.xsh`;
 3. `factory/controllers/ticket.xsh`;
-4. `factory/controllers/reuse.xsh`;
-5. `factory/controllers/organization.xsh`;
-6. `run.xsh` as the final admission wrapper.
+4. `factory/controllers/organization.xsh`;
+5. `run.xsh` as the final admission wrapper.
 
 For each controller:
 

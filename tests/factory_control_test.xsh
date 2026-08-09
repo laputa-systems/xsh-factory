@@ -32,23 +32,7 @@ proc test_cycle_request_parsing() [error] {
   test.eq(control.request_tickets(request), ["task-tags-001", "task-tags-002"])?
   test.eq(control.request_trial_count(request)?, 1)?
   test.eq(control.request_new_eval_count(request)?, 1)?
-  test.ok(! control.request_allow_measured_eval(request))?
-  test.ok(
-    control.request_allow_measured_eval(
-  request + """
-- Allow measured eval reuse: `yes`
-""",
-),
-  )?
   test.eq(control.request_ticket_policy(request), "explicit")?
-}
-
-proc test_untried_eval_policy_is_explicit() [error] {
-  test.ok(
-    ! control.request_allow_measured_eval("""# Cycle
-"""),
-  )?
-  test.ok(control.request_allow_measured_eval("- Allow measured eval reuse: `yes`"))?
 }
 
 proc test_eval_difficulty_contract_gate() [error] {
@@ -103,7 +87,7 @@ let status = process.run(command)
   )?
 }
 
-proc test_organization_selects_two_approved_tickets(ctx: TestContext) [fs, error] {
+proc test_direct_ticket_selector_can_select_two_approved_tickets(ctx: TestContext) [fs, error] {
   let root = test.temp_dir(ctx, name: "approved-ticket-selection")?
   let tickets = fp"${root}/tickets"
   fs.mkdir(tickets)?
@@ -159,32 +143,16 @@ Approved.
   test.ok(! runtime.accepted_ticket(fp"${tickets}/task-factory.md")?)?
 }
 
-proc test_fresh_ticket_order_preserves_replay_gates() [error] {
-  test.eq(
-    control.fresh_first_ticket_order(["task-fresh"], ["task-retained"]),
-    ["task-fresh", "task-retained"],
-  )?
-  test.eq(
-    control.fresh_first_ticket_order([], ["task-retained"]),
-    ["task-retained"],
-  )?
-}
-
-proc test_organization_eval_target_follows_queue_pressure() [error] {
-  test.eq(control.organization_eval_target(0, 0), 4)?
-  test.eq(control.organization_eval_target(1, 0), 2)?
-  test.eq(control.organization_eval_target(2, 0), 2)?
-  test.eq(control.organization_eval_target(3, 0), 1)?
-  test.eq(control.organization_eval_target(0, 1), 0)?
-  test.eq(control.organization_eval_target(2, 1), 0)?
-  test.eq(control.organization_eval_target(3, 1), 0)?
-  test.eq(control.organization_eval_target(3, 2), 0)?
+proc test_organization_eval_target_reserves_one_focused_discovery_lane() [error] {
+  test.eq(control.organization_eval_target(0), 1)?
+  test.eq(control.organization_eval_target(1), 0)?
+  test.eq(control.organization_eval_target(2), 0)?
 }
 
 proc test_organization_delivery_slot_is_single_fresh_row() [error] {
   test.eq(control.organization_ticket_target(0), 0)?
-  test.eq(control.organization_ticket_target(1), 2)?
-  test.eq(control.organization_ticket_target(8), 2)?
+  test.eq(control.organization_ticket_target(1), 1)?
+  test.eq(control.organization_ticket_target(8), 1)?
   test.eq(control.default_max_idle_seconds("eval-manager"), "120")?
   test.eq(control.default_max_idle_seconds("engineer"), "0")?
   test.eq(control.clamp_idle_limit("eval-manager", "600")?, "120")?
@@ -296,7 +264,7 @@ proc test_handbook_text_equivalent_ignores_editorial_drift() [error] {
   )?
 }
 
-proc test_organization_phase_request_preserves_multiple_tickets() [fs, error] {
+proc test_direct_ticket_phase_request_preserves_multiple_tickets() [fs, error] {
   let template = fs.read_text(fp"${fs.cwd()?}/templates/ORGANIZATION-PHASE-REQUEST.md")?
   let request = control.fill_template(
     template,
@@ -363,7 +331,6 @@ proc test_role_defaults_are_coded_and_capped() [env, error] {
   test.eq(control.default_max_wall_seconds("eval-manager"), "300")?
   test.eq(control.default_max_wall_seconds("eval-worker"), "1800")?
   test.eq(control.default_max_wall_seconds("engineer"), "1800")?
-  test.eq(control.retained_replay_manager_wall_seconds(), "300")?
   test.eq(control.configured_role_setting("eval-manager", "MAX_IDLE_SECONDS")?, "120")?
   env FACTORY_ENGINEER_BUDGET_USD="2" {
     test.eq(control.configured_role_setting("engineer", "BUDGET_USD")?, control.default_budget("engineer"))?
@@ -1022,7 +989,7 @@ proc test_role_report_skeletons_are_fail_closed() [fs, error] {
   test.contains(runner, "ENGINEER-REPORT.md")?
 }
 
-proc test_standard_cycle_uses_diverse_active_eval(ctx: TestContext) [fs, error] {
+proc test_standard_cycle_rotates_ticketless_discovery(ctx: TestContext) [fs, error] {
   let request = fs.read_text(fp"${fs.cwd()?}/templates/ORGANIZATION-REQUEST.md")?
   let improvement = fs.read_text(fp"${fs.cwd()?}/templates/CTO-IMPROVEMENT.md")?
   let productivity = fs.read_text(fp"${fs.cwd()?}/templates/CTO-PRODUCTIVITY-REPORT.md")?
@@ -1035,7 +1002,7 @@ proc test_standard_cycle_uses_diverse_active_eval(ctx: TestContext) [fs, error] 
   let throughput = fs.read_text(fp"${fs.cwd()?}/THROUGHPUT.md")?
   test.contains(request, "queue-pressure")?
   test.contains(request, "- Auto.")?
-  test.contains(request, "Allow measured eval reuse")?
+  test.contains(request, "least-recently-tried")?
   test.eq(control.engineer_target(8), 2)?
   test.eq(control.engineer_target(0), 0)?
   test.contains(fs.read_text(fp"${fs.cwd()?}/factory/tools/eval-trends.xsh")?, "median_turns")?
@@ -1096,23 +1063,22 @@ proc test_standard_cycle_uses_diverse_active_eval(ctx: TestContext) [fs, error] 
   test.contains(launcher, "factory/tools/cto.xsh")?
   test.contains(organization, "adaptive_approved_tickets")?
   test.contains(organization, "organization_eval_target")?
-  test.contains(organization, "max_concurrent_discovery_evals()")?
+  test.contains(organization, "ticketless organization cycles require exactly one discovery eval")?
   test.contains(launcher, "organization_eval_target")?
   test.contains(runtime_source, "organization_ticket_counts")?
-  test.contains(fs.read_text(fp"${fs.cwd()?}/run.xsh")?, "next_untried_approved_eval")?
+  test.contains(fs.read_text(fp"${fs.cwd()?}/run.xsh")?, "least-recently-tried approved evals")?
   test.contains(organization, "cto_unreviewed_open_tickets")?
   test.contains(organization, "write_cto_inventory")?
   test.contains(cto_runner, "cto_ticket_inventory")?
   test.contains(organization, "for ticket_id in selected_tickets")?
   test.contains(organization, "ticket_eval_available")?
   test.contains(organization, "eval_is_disabled")?
-  test.contains(organization, "max_concurrent_engineers()")?
-  test.ok("admit at most one ticket" not in organization)?
+  test.contains(organization, "organization cycles admit exactly one ticket at most")?
   test.contains(runtime_source, "passing engineer report")?
   test.ok("git branch provenance" not in runtime_source)?
   test.contains(throughput, "## The operating target")?
   test.contains(throughput, "Three consecutive eligible cycles")?
-  test.contains(throughput, "one fresh row plus at most one retained row")?
+  test.contains(throughput, "one branchless approved ticket")?
   test.contains(throughput, "Candidate acceptance: pass.")?
   test.eq(control.max_concurrent_discovery_evals(), 4)?
 }

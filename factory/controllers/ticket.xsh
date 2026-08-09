@@ -690,11 +690,11 @@ proc run_ticket_cycle(
     }
 
     let worktree_action = if ! ticket_ok {
-      "retained-after-validation-failure"
+      "preserved-after-validation-failure"
     } else if ! patch_ok {
-      "retained-after-patch-failure"
+      "preserved-after-patch-failure"
     } else if retain_worktree {
-      "retained-for-linked-reevaluation"
+      "preserved-for-linked-reevaluation"
     } else if runtime.remove_clean_worktree(xsh_repo, worktree)? {
       "removed-after-patch"
     } else {

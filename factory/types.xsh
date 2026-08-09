@@ -298,7 +298,7 @@ export pure mode_name(mode: CycleMode) -> Str {
 
 ## Constructs a controller-owned cycle mode.
 export pure make_mode(value: Str) -> Result[CycleMode] {
-  if value == "eval" or value == "ticket-implementation" or value == "eval-design" or value == "organization" or value == "ticket-reuse" {
+  if value == "eval" or value == "ticket-implementation" or value == "eval-design" or value == "organization" {
     return Ok({value: value})
   }
 

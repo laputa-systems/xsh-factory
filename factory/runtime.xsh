@@ -25,7 +25,7 @@ export type MergedTicket = {
 
 ## The exact product branch and provenance commit eligible for organization
 ## delivery. A false result is normal controller state: the branch and its
-## evidence remain available for CTO inspection and a later reuse cycle.
+## evidence remain available for CTO inspection and manual disposition.
 export type DeliveryEvidence = {
   merged: Bool,
   ticket_id: Str,
@@ -1058,101 +1058,60 @@ pure worker_report_eval_id(report: Any, path_value: Path) -> Str {
   return ""
 }
 
-proc eval_trial_count(factory_dir: Path, eval_id: Str) [fs, error] -> Result[Int] {
+# Run IDs are timestamp-derived, so lexical ordering yields a deterministic
+# recency order without relying on filesystem mtime.
+proc latest_eval_trial_path(factory_dir: Path, eval_id: Str) [fs, error] -> Result[Str] {
   let runs = fp"${factory_dir}/runs"
   if ! fs.exists(runs)? {
-    return 0
+    return ""
   }
 
-  var count = 0
+  var latest = ""
   for entry in fs.files(runs, gitignore: false, hidden: true) {
     continue when entry.name != "report.json" or "/workers/eval-worker/" not in entry.path.display()
     let report = json.read(entry.path)?
     if worker_report_eval_id(report, entry.path) == eval_id {
-      count += 1
+      let candidate = entry.path.display()
+      if candidate > latest {
+        latest = candidate
+      }
     }
   }
 
-  return count
+  return latest
 }
 
-## Returns approved evals with no persisted eval-worker report.
-export proc untried_approved_evals(factory_dir: Path) [fs, error] -> Result[List[Str]] {
-  let eval_dir = fp"${factory_dir}/evals"
-  var untried: List[Str] = []
-  if ! fs.exists(eval_dir)? {
-    return untried
-  }
-
-  let contracts = fs.files(eval_dir, gitignore: false, hidden: true)
-    |> where .name == "EVAL.md"
-    |> sort-by .path.display()
-    |> collect()
-  for contract in contracts {
-    let eval_id = contract.path.parent().name()
-    continue when control.ticket_status(contract.path.read_text()?) != "Approved."
-    if eval_trial_count(factory_dir, eval_id)? == 0 {
-      untried = untried.push(eval_id)
-    }
-  }
-
-  return untried
-}
-
-## Returns the deterministic next approved eval requiring its first trial.
-## Returns up to `limit` deterministic approved evals requiring their first trial.
-export proc next_untried_approved_evals(factory_dir: Path, limit: Int) [fs, error] -> Result[List[Str]] {
-  let untried = untried_approved_evals(factory_dir)?
-  if limit <= 0 {
-    return []
-  }
-
-  var selected: List[Str] = []
-  for eval_id in untried {
-    selected = selected.push(eval_id)
-    break when selected.len() >= limit
-  }
-
-  return selected
-}
-
-## Returns the deterministic next approved eval requiring its first trial.
-export proc next_untried_approved_eval(factory_dir: Path) [fs, error] -> Result[Str] {
-  let next = next_untried_approved_evals(factory_dir, 1)?
-  return if next.len() == 0 { "" } else { next[0] }
-}
-
-## Selects approved evals for adaptive organization admission. Prefer evals
-## without a persisted trial, then reuse the deterministic approved queue when
-## the portfolio has been fully exercised.
+## Selects approved evals for adaptive organization admission. Evals with no
+## persisted worker trial sort first; subsequent choices rotate by their oldest
+## observed trial. This prevents a repeatedly passing alphabetical prefix from
+## consuming ticketless cycles without generating new product evidence.
 export proc adaptive_approved_evals(factory_dir: Path, limit: Int) [fs, error] -> Result[List[Str]] {
   if limit <= 0 {
     return []
   }
 
-  var selected: List[Str] = []
-  let untried = untried_approved_evals(factory_dir)?
-  for eval_id in untried {
-    selected = selected.push(eval_id)
-    if selected.len() >= limit {
-      return selected
-    }
-  }
-
   let eval_dir = fp"${factory_dir}/evals"
   if ! fs.exists(eval_dir)? {
-    return selected
+    return []
   }
 
+  var candidates: List[Any] = []
   let contracts = fs.files(eval_dir, gitignore: false, hidden: true)
     |> where .name == "EVAL.md"
     |> sort-by .path.display()
     |> collect()
   for contract in contracts {
     let eval_id = contract.path.parent().name()
-    continue when eval_id in selected
     continue when control.ticket_status(contract.path.read_text()?) != "Approved."
-    selected = selected.push(eval_id)
+    candidates = candidates.push({
+      id: eval_id,
+      latest_trial: latest_eval_trial_path(factory_dir, eval_id)?,
+    })
+  }
+
+  var selected: List[Str] = []
+  for candidate in candidates |> sort-by .latest_trial {
+    selected = selected.push(candidate.id)
     if selected.len() >= limit {
       return selected
     }
@@ -1189,10 +1148,9 @@ export proc first_approved_tickets(factory_dir: Path, limit: Int) [fs, error] ->
   return selected
 }
 
-## Selects approved product tickets with fresh rows first, then retained
-## branches. Fresh work is the throughput target; retained branches remain in
-## the same bounded batch so replay quality is still exercised when capacity
-## exists.
+## Selects only branchless approved product tickets. Existing implementation
+## branches are preserved for manual review, but never consume an organization
+## admission or invoke a compatibility replay path.
 export proc adaptive_approved_tickets(
   factory_dir: Path,
   xsh_repo: Path,
@@ -1207,8 +1165,7 @@ export proc adaptive_approved_tickets(
     return []
   }
 
-  var fresh: List[Str] = []
-  var retained: List[Str] = []
+  var selected: List[Str] = []
   let entries = fs.files(ticket_dir, gitignore: false, hidden: true)
     |> sort-by .path.display()
     |> collect()
@@ -1216,41 +1173,14 @@ export proc adaptive_approved_tickets(
     continue unless entry.name.ends_with(".md")
     continue unless accepted_ticket(entry.path)?
     let ticket_id = entry.name.replace(".md", "")
-    if open_ticket_branch(xsh_repo, ticket_id)? == "" {
-      fresh = fresh.push(ticket_id)
-    } else {
-      retained = retained.push(ticket_id)
+    continue when open_ticket_branch(xsh_repo, ticket_id)? != ""
+    selected = selected.push(ticket_id)
+    if selected.len() >= limit {
+      return selected
     }
   }
 
-  var selected: List[Str] = []
-
-  # Reserve exactly one fresh delivery row. The second organization slot is
-  # for one retained replay, never for another fresh engineer whose merge
-  # could create an avoidable closeout queue.
-  if fresh.len() > 0 {
-    selected = selected.push(fresh[0])
-  }
-
-  if selected.len() >= limit {
-    return selected
-  }
-
-  # A batch has capacity for one retained replay. If no fresh row exists this
-  # also turns a backlog of retained branches into one useful replay instead
-  # of an admission failure caused by the controller's overlap ceiling.
-  for ticket_id in retained {
-    selected = selected.push(ticket_id)
-    break
-  }
-
   selected
-}
-
-## Backward-compatible single-ticket selector for focused controllers.
-export proc first_approved_ticket(factory_dir: Path) [fs, error] -> Result[Str] {
-  let selected = first_approved_tickets(factory_dir, 1)?
-  return if selected.len() == 1 { selected[0] } else { "" }
 }
 
 ## Builds the complete ticket inventory used by the CTO pre-cycle briefing.
@@ -1600,8 +1530,8 @@ export proc open_ticket_branch(xsh_repo: Path, ticket_id: Str) [process, error] 
 }
 
 ## Delivers one validated organization-cycle implementation into XSH HEAD.
-## The controller supplies the phase containing the controller-owned engineer
-## or reuse evidence. The exact report commit must still be the branch tip,
+## The controller supplies the phase containing controller-owned engineer
+## evidence. The exact report commit must still be the branch tip,
 ## must descend from the cycle baseline, and the product checkout must be
 ## clean. A single branch fast-forwards; a second independent branch is merged
 ## with an explicit checked merge so two admitted tickets cannot strand the
@@ -1637,10 +1567,10 @@ export proc merge_validated_ticket(
     return evidence
   }
 
-  # Retained organization branches may predate the current cycle baseline.
-  # Require a verified common ancestor instead of requiring the branch to
-  # contain the latest baseline; this preserves the checked merge path for
-  # independent, reviewable work while rejecting unrelated histories.
+  # A candidate branch may predate the current cycle baseline. Require a
+  # verified common ancestor instead of requiring the branch to contain the
+  # latest baseline; this preserves the checked merge path while rejecting
+  # unrelated histories.
   var merge_base = base_commit.trim()
   var reported_merge_base = ""
   if fs.exists(phase_report)? {

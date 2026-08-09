@@ -10,11 +10,10 @@ top level.
 
 Run one bounded organization cycle. The controller applies the queue-pressure
 policy after deterministic CTO inventory: when a branchless approved product
-ticket exists, it reserves exactly one fresh engineer row and may attach one
-retained replay. Every fresh row keeps its linked replay hard. The optional
-independent-eval lane is omitted by default while the fresh delivery slot is
-available and expands only when no fresh row is ready. It never promotes an
-`Open.` ticket.
+ticket exists, it reserves exactly one engineer row and its linked replay.
+The independent-eval lane is omitted while that delivery slot is available;
+with no ready ticket, one least-recently-tried discovery eval is selected. It
+never promotes an `Open.` ticket or replays an existing implementation branch.
 
 ## Bottleneck review
 
@@ -28,9 +27,8 @@ is available; discovery expands only when the ready queue is empty.
 
 ## Eval admission
 
-- Allow measured eval reuse: `yes`
-- The controller selects the next untried approved evals according to queue
-  pressure.
+- The controller selects the least-recently-tried Approved eval when no
+  product ticket is ready.
 
 ## Active evals
 
@@ -53,7 +51,7 @@ is available; discovery expands only when the ready queue is empty.
 ## Ticket policy
 
 - Review all open tickets before selection: `yes`
-- Select one fresh approved ticket first, then at most one retained branch.
+- Select one branchless approved ticket.
 - Admission invariant: every selected ticket was already `Approved.` before
   invoking `run.xsh`; `Open.` tickets are never promoted by the controller.
 - Quality gate: do not dispatch a ticket whose proposed API addition lacks the
@@ -67,10 +65,10 @@ invocation with a role-specific setting.
 
 ## Required outputs
 
-- one fresh engineer implementation row whenever a branchless approved ticket
+- one engineer implementation row whenever a branchless approved ticket
   is ready;
-- the linked replay for every fresh row, plus the adaptive discovery batch only
-  when no fresh ticket is ready;
+- the linked replay for that row, or one focused discovery eval only when no
+  ticket is ready;
 - structured worker reports and raw Pi sessions;
 - a run-level `report.json` covering every worker;
 - a `## North-star impact` section in each narrative role report;

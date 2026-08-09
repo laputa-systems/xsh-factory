@@ -25,10 +25,6 @@ proc test_request_and_scalar_accessors_preserve_operator_intent() [error] {
 
 - `task-a`
 
-## Allow measured eval reuse
-
-- Allow measured eval reuse: `yes`
-
 ## Aggregate budget
 
 - USD: `0.75`
@@ -42,7 +38,6 @@ proc test_request_and_scalar_accessors_preserve_operator_intent() [error] {
   test.eq(parsed.active_evals[0].value, "task-ecount")?
   test.eq(parsed.trial_count.value, 2)?
   test.eq(parsed.design_count, 1)?
-  test.ok(parsed.allow_measured_reuse)?
   let facts = request.facts(text)?
   test.eq(facts.mode, "organization")?
   test.eq(request.mode_value(text)?, "organization")?
@@ -51,7 +46,6 @@ proc test_request_and_scalar_accessors_preserve_operator_intent() [error] {
   test.eq(request.eval_values(text)?[0], "task-ecount")?
   test.eq(request.trial_value(text)?, 2)?
   test.eq(request.design_value(text)?, 1)?
-  test.ok(request.measured_reuse_value(text)?)?
   test.eq(request.parse_aggregate_budget(text)?, 0.75)?
 
   let paired_discovery = text.replace(

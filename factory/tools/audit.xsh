@@ -86,11 +86,7 @@ proc narrative_paths(run_dir: Path) [fs, error] -> Result[List[Path]] {
 # projection of lifecycle and phase evidence, not another persisted schema.
 proc organization_throughput(run_dir: Path, worker_reports: List[Path]) [fs, error] -> Result[Any] {
   var admitted_tickets: List[Str] = []
-  var fresh_admitted_tickets: List[Str] = []
-  var retained_admitted_tickets: List[Str] = []
   var delivered_tickets = 0
-  var fresh_delivered_tickets = 0
-  var retained_delivered_tickets = 0
   var reeval_dispatched = 0
   var reeval_passed = 0
   let events_path = fp"${run_dir}/events.jsonl"
@@ -105,15 +101,6 @@ proc organization_throughput(run_dir: Path, worker_reports: List[Path]) [fs, err
             if ! (subject in admitted_tickets) {
               admitted_tickets = admitted_tickets.push(subject)
             }
-
-            let fresh = boolean(json.get(event, ["payload", "fresh"], false))
-            if fresh and ! (subject in fresh_admitted_tickets) {
-              fresh_admitted_tickets = fresh_admitted_tickets.push(subject)
-            }
-
-            if ! fresh and ! (subject in retained_admitted_tickets) {
-              retained_admitted_tickets = retained_admitted_tickets.push(subject)
-            }
           } else if event_id == "10-reeval-started" {
             reeval_dispatched += 1
           } else if event_id == "80-reeval-completed" and state == "completed" {
@@ -125,12 +112,6 @@ proc organization_throughput(run_dir: Path, worker_reports: List[Path]) [fs, err
 
             if event_id.ends_with("-delivered") {
               delivered_tickets += 1
-              let fresh = boolean(json.get(event, ["payload", "fresh"], false))
-              if fresh {
-                fresh_delivered_tickets += 1
-              } else {
-                retained_delivered_tickets += 1
-              }
             }
           }
         }
@@ -139,51 +120,25 @@ proc organization_throughput(run_dir: Path, worker_reports: List[Path]) [fs, err
     }
   }
 
-  var retained_phases: List[Path] = []
-  let phases_dir = fp"${run_dir}/phases"
-  if fs.exists(phases_dir)? {
-    for entry in fs.children(phases_dir, stat: false, ordered: true)? {
-      continue when entry.kind != "dir"
-      let report = fp"${entry.path}/report.json"
-      if fs.exists(report)? and json.get(json.read(report)?, ["data", "fast_path"], false) == true {
-        retained_phases = retained_phases.push(entry.path)
-      }
-    }
-  }
-
-  var retained_fast_paths = 0
-  for phase in retained_phases {
-    let report = fp"${phase}/report.json"
-    if fs.exists(report)? {
-      retained_fast_paths += 1
-    }
-  }
-
   let handbook_quarantines = [entry for entry in fs.files(run_dir, gitignore: false, hidden: true)? if entry.name == "FACTORY-HANDBOOK-QUARANTINED"].len()
   let admitted_count = admitted_tickets.len()
-  let fresh_target = if fresh_admitted_tickets.len() > 0 { 1 } else { 0 }
+  let engineer_target = if admitted_count > 0 { 1 } else { 0 }
   let delivery_conversion = if admitted_count == 0 {
     0.0
   } else {
     delivered_tickets.float() / admitted_count.float()
   }
-  let fresh_engineer_rows = [report for report in worker_reports if "/workers/engineer/" in report.display()].len()
+  let engineer_rows = [report for report in worker_reports if "/workers/engineer/" in report.display()].len()
   return {
     admitted_tickets: admitted_count,
-    fresh_engineer_target: fresh_target,
-    fresh_engineer_rows: fresh_engineer_rows,
-    fresh_delivered_tickets: fresh_delivered_tickets,
-    retained_delivered_tickets: retained_delivered_tickets,
-    delivery_target_met: fresh_target == 0 or fresh_delivered_tickets > 0,
-    retained_rows: retained_phases.len(),
+    engineer_target: engineer_target,
+    engineer_rows: engineer_rows,
+    delivery_target_met: engineer_target == 0 or delivered_tickets > 0,
     reeval_dispatched: reeval_dispatched,
     reeval_passed: reeval_passed,
     delivered_tickets: delivered_tickets,
     delivery_conversion: delivery_conversion,
-    retained_fast_paths: retained_fast_paths,
     handbook_quarantines: handbook_quarantines,
-    overlap_retained_fresh: retained_phases.len() > 0 and fresh_engineer_rows > 0,
-    overlap_linked_replays: reeval_dispatched > 1,
   }
 }
 
@@ -211,31 +166,6 @@ pure detail_outcome(detail: Str, dimension: Str, fallback: Bool) -> Bool {
   }
 
   fallback
-}
-
-proc organization_retained_deferred_tickets(run_dir: Path) [fs, error] -> Result[List[Str]] {
-  var tickets: List[Str] = []
-  let events_path = fp"${run_dir}/events.jsonl"
-  if ! fs.exists(events_path)? {
-    return tickets
-  }
-
-  for line in fs.read_text(events_path)?.lines() {
-    match json.decode(line) {
-      Ok(event) => {
-        let event_id = text(json.get(event, ["event_id"], ""))
-        if event_id.starts_with("86-ticket-") and event_id.ends_with("-retained-replay-deferred") {
-          let subject = text(json.get(event, ["subject"], ""), "")
-          if subject != "" and ! (subject in tickets) {
-            tickets = tickets.push(subject)
-          }
-        }
-      }
-      Err(_) => {}
-    }
-  }
-
-  tickets
 }
 
 proc organization_event_outcomes(
@@ -677,7 +607,6 @@ proc audit_organization(run_dir: Path, factory_dir: Path) [fs, process, env, err
   var product_ok = true
   var evaluator_ok = true
   var infrastructure_ok = true
-  let retained_deferred_tickets = organization_retained_deferred_tickets(run_dir)?
   if fs.exists(phases_dir)? {
     for entry in fs.children(phases_dir, stat: false, ordered: true)
       |> where .kind == "dir"
@@ -687,31 +616,16 @@ proc audit_organization(run_dir: Path, factory_dir: Path) [fs, process, env, err
       let value = if present { json.read(report_path)? } else { null }
       let valid = present and schema.valid(value, "phase")
       let result = if valid { text(json.get(value, ["result"], "unknown")) } else { "missing" }
-      let phase_ticket = if entry.name.starts_with("02-reeval-") {
-        entry.name.replace("02-reeval-", "")
-      } else {
-        ""
-      }
-      let retained_replay_deferred = valid and result != "pass" and phase_ticket in retained_deferred_tickets
       phases = phases.push(
         {id: entry.name, path: relative_path(run_dir.display(), report_path), valid: valid, result: result},
       )
       if ! valid or result != "pass" {
         findings = findings.push(
-          if retained_replay_deferred {
-            {
-              kind: "retained-replay-deferred",
-              id: entry.name,
-              result: result,
-              detail: "retained replay evidence is preserved; deferred validation is nonblocking",
-            }
-          } else {
-            {kind: "phase", id: entry.name, result: result, detail: ""}
-          },
+          {kind: "phase", id: entry.name, result: result, detail: ""},
         )
       }
 
-      if valid and ! retained_replay_deferred {
+      if valid {
         product_ok = product_ok and phase_outcome(value, "product")
         evaluator_ok = evaluator_ok and phase_outcome(value, "evaluator")
         infrastructure_ok = infrastructure_ok and phase_outcome(value, "infrastructure")

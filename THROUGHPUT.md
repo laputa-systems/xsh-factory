@@ -15,45 +15,28 @@ untrusted mutation. The contract below keeps those two truths together.
 
 An **eligible delivery cycle** has at least one approved, product-targeted,
 branchless ticket whose linked eval is approved and whose CTO review is
-recorded. The controller must then reserve one fresh delivery slot and dispatch
-one fresh engineer row.
-
-The target for every eligible cycle is:
+recorded. The controller reserves exactly one delivery transaction and
+dispatches one engineer row.
 
 ```text
-fresh engineer row >= 1
-fresh engineer commit delivered to XSH HEAD >= 1
-linked replay correctness = pass
-linked replay restrictions = pass
-linked replay protocol = pass
+engineer row >= 1
+engineer commit delivered to XSH HEAD >= 1
+linked replay correctness/restrictions/protocol = pass
 linked replay manager decision = accept
 provenance and cleanup = pass
 ```
 
-The target is measured from existing `report.json` and `events.jsonl` data.
-There is deliberately no `throughput.json` projection. The run report remains
-the one machine report envelope; the productivity and CTO Markdown reports are
-navigation views over that evidence.
+Three consecutive eligible cycles satisfying the target establish sustained
+throughput. A ticketless cycle is a discovery cycle, not an engineer-throughput
+result. The controller cannot manufacture product supply: CTO inventory must
+keep evidence-backed tickets approved and branchless.
 
-Three consecutive eligible cycles satisfying the target, with no hand-edited
-reports or CTO bypass, establish sustained throughput. One successful cycle is
-only a smoke test. A cycle with no approved branchless ticket is not a failed
-delivery cycle, but it must be admitted as an eval/discovery cycle before paid
-work and must not claim an engineer-throughput result.
-
-The controller cannot manufacture an approved ticket from an empty queue. CTO
-inventory should therefore keep two or three evidence-backed product tickets
-approved and branchless. The queue is a supply buffer, not permission for
-workers to discover or promote work.
-
-## The delivery transaction
-
-The product-critical path is intentionally narrow:
+## The delivery transaction and supply policy
 
 ```text
 CTO inventory
-  -> reserve one fresh approved ticket
-  -> fresh engineer in an isolated XSH worktree
+  -> reserve one branchless approved ticket
+  -> engineer in an isolated XSH worktree
   -> fresh debug xsht build and lint autofix; clean-worktree check
   -> report, branch, patch, and provenance checks
   -> linked replay of the exact candidate behavior
@@ -62,114 +45,49 @@ CTO inventory
   -> ticket reconciliation and durable delivery event
 ```
 
-The owners are explicit:
+`factory/tools/cto.xsh` and `factory/runtime.xsh` own deterministic inventory;
+`factory/controllers/organization.xsh` owns the transaction;
+`factory/controllers/ticket.xsh` owns engineer evidence and provenance;
+`factory/controllers/eval.xsh` owns the linked replay; and
+`factory/runtime.xsh::merge_validated_ticket` owns delivery.
 
-- `factory/tools/cto.xsh` and `factory/runtime.xsh` own deterministic ticket
-  inventory, readiness, ordering, and reservation facts.
-- `factory/controllers/organization.xsh` owns lane admission, process handles,
-  waits, phase boundaries, and the fresh-before-retained merge order.
-- `factory/controllers/ticket.xsh` owns the engineer worktree, immutable
-  assignment, report/branch/patch/provenance checks, and commit amendment.
-- `factory/controllers/eval.xsh` owns linked replay admission and evaluator
-  execution. It does not let a manager override a failed package gate.
-- `factory/runtime.xsh::merge_validated_ticket` owns the final product-side
-  fast-forward or merge decision.
-- `factory/tools/audit.xsh` projects admission, delivery, replay, and lane
-  metrics into the existing run report.
+An existing unmerged implementation branch is never a controller replay input.
+Admission fails closed until the CTO reviews or supersedes it. This deliberately
+removes a low-value branch-replay compatibility path: preserved branches remain
+auditable historical evidence, not queued work.
 
-Fresh delivery is reserved before optional work is admitted. Selection is
-deterministic by ticket path, with fresh branchless tickets before retained
-branches. An organization batch may contain one fresh ticket and at most one
-retained ticket. It must never contain two fresh engineers merely because the
-queue is large: the goal is a predictable delivered commit, not a larger
-unfinished batch.
+Queue pressure has one purpose: protect the delivery transaction. With a
+branchless approved ticket, organization mode runs exactly that transaction and
+no independent discovery eval. With no eligible ticket, it runs exactly one
+approved eval selected by least-recently-tried worker evidence. This rotation
+prevents an alphabetical or explicit-reuse escape from repeatedly spending on
+already-saturated evals.
 
-When a fresh ticket exists, retained work is secondary. A retained replay may
-run for evidence, but its timeout, stale-base merge conflict, or report
-deferral cannot delay or relabel a passing fresh delivery. If no fresh ticket
-exists, one retained branch may be replayed; that is useful reconciliation but
-does not satisfy the fresh-engineer target.
+The existing hard bounds remain: direct ticket-implementation mode may admit
+at most two rows; organization mode admits one row; every passing row receives
+one linked replay; the eval portfolio is capped at 30; and the aggregate cycle
+budget is the shutdown boundary.
 
-## Queue-pressure allocation
+The run report's `data.throughput` contains admitted tickets, engineer target
+and rows, linked replays dispatched and passed, delivered tickets, delivery
+conversion, delivery-target status, and handbook quarantines. Admission events
+precede worker dispatch and reconciliation remains idempotent.
 
-Queue pressure is calculated from deterministic CTO inventory. `Open.` tickets
-are pressure evidence only; they are never promoted by a controller. The
-dispatchable queue is approved product tickets, split into branchless fresh
-rows and retained implementation branches.
+## Outcome semantics
 
-The policy is:
-
-| Ready product state | Fresh engineers | Retained rows | Independent discovery evals |
-| --- | ---: | ---: | ---: |
-| One or more branchless approved tickets | exactly 1 | at most 1 | 0 by default |
-| No branchless ticket, one retained branch | 0 | at most 1 | up to the no-ticket bound |
-| No approved implementation row | 0 | 0 | 1–4, according to Open-ticket pressure and the eval cap |
-
-The independent lane is optional evidence. It is allocated only when the
-fresh delivery slot is not available, unless a request explicitly opts into a
-single corroborating eval and the controller proves that the eval cannot block
-the delivery transaction. The default product cycle therefore spends its
-paid capacity on the fresh engineer and linked replay rather than forcing an
-unrelated manager review into the critical path.
-
-The existing coded bounds remain hard:
-
-- at most two rows in a ticket-implementation request;
-- one fresh row plus at most one retained row in an organization batch;
-- one linked replay for every passing engineer row;
-- no more than four independent discovery evals in a ticketless organization
-  cycle;
-- no more than 30 checked-in eval packages; and
-- the aggregate cycle budget remains the top-level shutdown boundary.
-
-If admission finds no fresh row, it records that fact in the queue event and
-the run report before paid work. If it finds a fresh row, an eval-only primary
-phase is an admission error, not an alternative success mode.
-
-## Lane isolation and outcome semantics
-
-`factory/controllers/organization.xsh` treats the organization as four lanes:
-
-1. **Fresh implementation:** mandatory whenever a ready row exists.
-2. **Fresh linked replay:** mandatory hard gate for that implementation.
-3. **Retained replay:** bounded, best-effort evidence for an existing branch.
-4. **Independent eval:** optional discovery or corroboration.
-
-The fresh implementation and its linked replay are the only lanes that can
-produce fresh product delivery. Independent and retained results remain
-visible in `report.json`, but their outcomes are separate from product
-outcome. The report must preserve the split:
+The delivery transaction is the product outcome. A ticketless discovery eval
+is the evaluator outcome. Reports preserve:
 
 ```text
-product        = fresh implementation/replay/merge result
+product        = implementation/replay/merge result
 evaluator      = independent eval and design result
 infrastructure = reports, budgets, paths, lifecycle, provenance, cleanup
 cycle          = product AND evaluator AND infrastructure
 ```
 
-This split is important. A retained timeout must not convert a passing fresh
-delivery into an infrastructure failure. A fresh linked replay failure must
-remain a product-quality failure even when an independent eval passes. A
-manager provider stall must be recorded as bounded closeout evidence, not
-silently counted as agent judgment.
-
-The run report should expose at least these throughput facts in its existing
-`data.throughput` object:
-
-- admitted ticket identities;
-- fresh engineer target and fresh rows actually dispatched;
-- retained rows and retained fast paths;
-- linked replays dispatched and passed;
-- fresh deliveries and total deliveries;
-- delivery conversion;
-- whether the fresh delivery target was met;
-- retained deferrals; and
-- handbook quarantines.
-
-Admission events must be written before worker dispatch, so a worker failure is
-not incorrectly reported as if no ticket had been admitted. Delivery events
-must identify whether the delivered row was fresh or retained. Reconciliation
-must remain idempotent after interruption.
+A linked replay failure is a product-quality failure. A manager provider stall
+is bounded closeout evidence, not agent judgment. There is no secondary branch
+lane whose result can dilute or substitute for the delivery target.
 
 ## Manager closeout contract
 
@@ -225,9 +143,9 @@ pending provider completion. A timeout terminates the manager, preserves its
 report/session attempt, and emits a structured reason. There is never a
 second unrestricted full wall-clock window.
 
-For a fresh linked replay, an exhausted manager recovery means the candidate is
-retained and delivery is rejected. For retained or independent work, the same
-condition emits explicit deferred evidence and cannot block a fresh delivery.
+For a linked replay, an exhausted manager recovery preserves the candidate
+branch and rejects delivery. A discovery-eval recovery failure is evaluator
+evidence; it cannot be relabeled as product delivery.
 
 ## Replay quality contract
 
@@ -257,15 +175,13 @@ provenance/patch/clean-worktree checks independently pass.
 
 ## Failure matrix
 
-| Failure | Fresh lane | Retained lane | Independent lane |
-| --- | --- | --- | --- |
-| No approved branchless ticket | no delivery expectation; preflight records eval mode | may replay one branch | may run discovery |
-| Engineer report/branch/patch failure | retain branch; no delivery | not applicable | unaffected |
-| Linked correctness/restriction/protocol failure | retain candidate; no delivery | retain branch; defer if applicable | unaffected |
-| Fresh manager timeout after retry | retain candidate; no delivery | not applicable | not applicable |
-| Retained timeout or stale merge | fresh delivery remains valid | emit retained-deferred evidence | unaffected |
-| Independent eval failure | fresh delivery remains independently classified | unaffected | evaluator outcome fails |
-| Budget breach or source mutation | stop the owning cycle, preserve evidence, write postmortem | same | same |
+| Failure | Delivery transaction | Discovery cycle |
+| --- | --- | --- |
+| No approved branchless ticket | no delivery expectation | run one least-recently-tried eval |
+| Engineer report/branch/patch failure | preserve branch; no delivery | not applicable |
+| Linked correctness/restriction/protocol or manager failure | preserve candidate; no delivery | not applicable |
+| Independent eval failure | not applicable | evaluator outcome fails |
+| Budget breach or source mutation | stop the owning cycle, preserve evidence, write postmortem | same |
 
 No failure class is repaired by relaunching the same paid request. Deterministic
 machinery failures get a native regression test and a later explicit request.
@@ -283,23 +199,21 @@ session thoughts, evaluator pass, or a partially written report.
 The machinery is validated without Pi using `xsht` tests, synthetic sessions,
 fake child controllers, and harmless process doubles. The required cases are:
 
-1. one ready ticket reserves one fresh row;
-2. a second fresh ticket cannot displace the reserved first row;
-3. one retained row may accompany the fresh row but cannot replace it;
-4. a ticket cycle may omit the independent eval lane;
-5. a ticketless cycle still receives the adaptive discovery target;
+1. one ready ticket reserves one engineer row;
+2. a second ticket cannot displace the reserved first row;
+3. an unmerged branch fails admission rather than entering a replay lane;
+4. a delivery cycle omits the independent eval lane;
+5. a ticketless cycle selects one least-recently-tried approved eval;
 6. admission events count a ticket before worker dispatch;
-7. fresh and retained delivery events are counted separately;
-8. independent failure does not block a passing fresh delivery;
-9. retained timeout emits a nonblocking deferral;
-10. fresh replay timeout preserves the branch and blocks delivery;
-11. the manager retry reuses the exact evidence packet;
-12. no manager attempt exceeds its normal or recovery wall bound;
-13. inactivity is detected independently of total wall time;
-14. exact acceptance lines pass and vague acceptance language fails;
-15. evaluator gates cannot be overridden by manager prose;
-16. controller interruption/reconciliation is idempotent; and
-17. product, evaluator, infrastructure, and overall outcomes remain distinct.
+7. delivery events identify the ticket and exact merge;
+8. linked replay timeout preserves the branch and blocks delivery;
+9. the manager retry reuses the exact evidence packet;
+10. no manager attempt exceeds its normal or recovery wall bound;
+11. inactivity is detected independently of total wall time;
+12. exact acceptance lines pass and vague acceptance language fails;
+13. evaluator gates cannot be overridden by manager prose;
+14. controller interruption/reconciliation is idempotent; and
+15. product, evaluator, infrastructure, and overall outcomes remain distinct.
 
 The nearest hard judge is:
 
@@ -312,15 +226,17 @@ Before paid qualification, also run deterministic preflight and inspect
 factory branches, the eval cap, root/phase path boundaries, and a clean product
 checkout.
 
-## Executed implementation ledger
+## Historical implementation ledger
+
+The following is frozen historical evidence for the retired retained-replay
+policy. It does not describe an active controller path.
 
 The implementation tranche was committed as `06418ac`, with subsequent
-bounded repairs and evidence closeouts kept separate. The machinery now
-includes adaptive queue pressure, one-fresh-plus-one-retained selection,
-independent-eval suppression under ticket pressure, split product/evaluator/
+bounded repairs and evidence closeouts kept separate. The historical machinery
+included adaptive queue pressure, branch replay, split product/evaluator/
 infrastructure outcomes, provenance-aware delivery accounting, manager retry
-bounds, and epoch-correct inactivity detection. It has been exercised by the
-144-test native suite.
+bounds, and epoch-correct inactivity detection. Later sections retain the
+record without reviving that retired admission path.
 
 The paid validation sequence exposed and repaired real boundary failures:
 
@@ -363,8 +279,8 @@ The next quality action is not another blind replay of `task-histogram-006`.
 Its ticket is returned to `Open.` with its branch preserved. A directed
 package-owned replay must compile `filter { |x| ... }`, assert a readable
 stage-level error naming `filter` and recommending `where`, and then rerun the
-nine histogram cases. Adaptive selection may proceed to the next retained
-Approved branch while that evidence is prepared.
+nine histogram cases. That directed replay was retired; any later concern must
+be represented by a new current-HEAD ticket.
 
 Run 7 (`run-1786229388916`) is the first post-hardening delivery result. The
 queue selected retained `task-histogram-007`; its evaluator exercised the
@@ -373,8 +289,8 @@ diagnostic, then passed all ten cases, restrictions, and protocol. The manager
 completed with an explicit acceptance, and the controller delivered the
 amended commit `fdd33b69fb70b2e8ecb2038cd1ff5561f5c99cfc` to XSH `HEAD`
 `aef5ddb3396ab78783dd76516d5fdcc25a17df29`. Cost was `$0.026925`, with 2
-workers and 45 turns. This satisfies retained-delivery throughput, but not the
-fresh eligible-cycle target because no branchless ticket was available.
+workers and 45 turns. It was historical replay evidence, not an
+eligible-cycle delivery target because no branchless ticket was available.
 
 Run 7 also provided the matched evidence for the concise integer-division
 handbook lesson. The CTO promoted candidate
@@ -436,15 +352,10 @@ backlog. The native suite now passes 144 tests, including a regression proving
 that substantive wording changes still compare unequal. `runtime/handbook.md`
 itself was not changed.
 
-The current queue contains two Open tickets:
-`task-histogram-005` remains blocked by its restriction failure, and
-`task-histogram-006` remains blocked until a directed replay compiles
-`filter { |x| ... }` and asserts the defining readable `filter`/`where`
-diagnostic. There are zero Approved rows and no branchless implementation
-ticket, so the three-cycle fresh-delivery qualification has not started.
-Retained delivery from Run 7 is historical throughput evidence, not a fresh
-eligible-cycle pass. The next productive cycle requires CTO-approved,
-branchless product supply before the one-commit gate can be measured.
+At the time of these runs, the queue contained two Open tickets with stale
+implementation branches. Both have since been closed as superseded by current
+XSH behavior; the next productive cycle requires a new CTO-approved,
+branchless ticket before the one-commit gate can be measured.
 
 Run 11 (`run-1786231856321`) revalidated the image path and both evaluator
 trials, but exposed a separate manager-closeout regression. The primary
@@ -496,20 +407,19 @@ durable run evidence, productivity report, and CTO report. The qualification
 ledger is:
 
 ```text
-cycle N:   fresh row 1, fresh delivery 1, linked replay pass
-cycle N+1: fresh row 1, fresh delivery 1, linked replay pass
-cycle N+2: fresh row 1, fresh delivery 1, linked replay pass
+cycle N:   engineer row 1, delivery 1, linked replay pass
+cycle N+1: engineer row 1, delivery 1, linked replay pass
+cycle N+2: engineer row 1, delivery 1, linked replay pass
 ```
 
 Independent evals may be absent from these cycles when the approved queue is
 under pressure. That is expected: quality is preserved by the linked replay,
 while discovery resumes when no delivery row is available.
 
-Qualification fails if any cycle uses a retained commit to satisfy a fresh
-target, if a non-product lane blocks delivery, if a manager consumes an
-unbounded retry, or if a passing report is not accompanied by a reachable XSH
-commit and provenance event. A failure preserves the branch and evidence and
-identifies the exact lane for the next deterministic repair.
+Qualification fails if a non-product lane substitutes for delivery, if a
+manager consumes an unbounded retry, or if a passing report is not accompanied
+by a reachable XSH commit and provenance event. A failure preserves the branch
+and evidence and identifies the exact repair.
 
 The CTO closes the implementation and each qualification run with one scoped
 commit. Do not push to a remote, merge unrelated work, or delete evidence.

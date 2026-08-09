@@ -2,7 +2,21 @@
 
 ## Status
 
-Open.
+Closed.
+
+## CTO decision — superseded 2026-08-08
+
+- Decision: Close without another implementation or replay. The unmerged
+  branch `factory/task-histogram-005/1786212466873` is preserved as historical
+  evidence only; controller replay is no longer an admission path.
+- Basis: Its commit `2d255aa` proposed strict unsigned parsing, but XSH `HEAD`
+  at `aef5ddb` already provides the same product capability through
+  `Str.parse_uint` and `Str.parse_uint_positive` (`e6d3fd9`, with follow-up
+  alignment `1231645`). Replaying the obsolete branch cannot produce a new
+  product decision.
+- Disposition: no merge record is written and the branch is not deleted by
+  this decision. Any later semantic concern requires a new, evidence-backed
+  ticket against current XSH `HEAD`.
 
 ## CTO decision — retained replay 2026-08-08
 
