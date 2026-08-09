@@ -46,13 +46,42 @@ pure worker_identity(path_value: Path) -> Any {
   return {role: "unknown", worker_id: "unknown"}
 }
 
+pure worker_report_file(name: Str) -> Bool {
+  return name == "report.json" or (name.starts_with("report.attempt-") and name.ends_with(".json"))
+}
+
+# Recovery preserves a failed report as `report.attempt-N.json` and copies the
+# successful retry into the canonical manager location consumed by downstream
+# gates. Project both real attempts, but use the report identity to avoid
+# counting that canonical recovery copy a second time.
+proc worker_report_key(report_path: Path) [fs, error] -> Result[Str] {
+  let report = json.read(report_path)?
+  let role = text(json.get(report, ["identity", "role"], ""), "")
+  let worker_id = text(json.get(report, ["identity", "worker_id"], ""), "")
+  if role != "" and worker_id != "" {
+    return role + ":" + worker_id
+  }
+
+  # Invalid reports remain distinct so their diagnostics cannot be hidden by
+  # an unrelated valid worker report.
+  return report_path.display()
+}
+
 proc worker_report_paths(run_dir: Path) [fs, error] -> Result[List[Path]] {
-  var reports = [
+  let candidates = [
     entry.path
     for entry in fs.files(run_dir, gitignore: false, hidden: true)?
-    if entry.name == "report.json" and "/workers/" in entry.path.display()
+    if worker_report_file(entry.name) and "/workers/" in entry.path.display()
   ]
-  return reports |> sort-by .display()
+  var reports: List[Path] = []
+  var seen: List[Str] = []
+  for candidate in candidates |> sort-by .display() {
+    let key = worker_report_key(candidate)?
+    continue when key in seen
+    seen = seen.push(key)
+    reports = reports.push(candidate)
+  }
+  return reports
 }
 
 proc session_paths(run_dir: Path) [fs, error] -> Result[List[Path]] {

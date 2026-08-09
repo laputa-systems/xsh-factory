@@ -1785,6 +1785,74 @@ proc test_audit_compiles_one_phase_report(ctx: TestContext) [fs, process, error]
   test.ok(! fs.exists(fp"${root}/COST.md")?)?
 }
 
+# Manager recovery preserves the initial attempt under `report.attempt-1.json`
+# and copies the retry to the canonical manager path for downstream gates. The
+# audit must count each paid attempt once, rather than double-counting that
+# canonical recovery copy or dropping the preserved initial attempt.
+proc test_audit_counts_manager_recovery_attempts_once(ctx: TestContext) [fs, process, error] {
+  let root = test.temp_dir(ctx, name: "audit-manager-recovery-accounting")?
+  let factory = fs.cwd()?
+  write_eval_phase_fixture(root, factory)?
+  let manager_dir = fp"${root}/workers/eval-manager/task-tags"
+  let retry_dir = fp"${root}/workers/eval-manager/task-tags-retry-1"
+  fs.mkdir(retry_dir)?
+  json.write(
+    fp"${manager_dir}/report.attempt-1.json",
+    {
+      schema_version: 1,
+      kind: "worker",
+      identity: {role: "eval-manager", worker_id: "task-tags"},
+      state: "completed",
+      result: "pass",
+      usage: {
+        assistant_turns: 7,
+        total_bucket_tokens: 70,
+        cost_usd: 0.03,
+        budget_usd: 0.15,
+        tool_errors: 0,
+      },
+      tool_errors: [],
+      findings: [],
+      artifacts: [],
+    },
+    pretty: true,
+  )?
+  let retry_report = {
+    schema_version: 1,
+    kind: "worker",
+    identity: {role: "eval-manager", worker_id: "task-tags-retry-1"},
+    state: "completed",
+    result: "pass",
+    usage: {
+      assistant_turns: 11,
+      total_bucket_tokens: 110,
+      cost_usd: 0.02,
+      budget_usd: 0.15,
+      tool_errors: 0,
+    },
+    tool_errors: [],
+    findings: [],
+    artifacts: [],
+  }
+  json.write(fp"${manager_dir}/report.json", retry_report, pretty: true)?
+  json.write(fp"${retry_dir}/report.json", retry_report, pretty: true)?
+  let status = process.run(
+    process.command_argv(
+      process.which("xsh")?,
+      ["xsh", fp"${factory}/factory/tools/audit.xsh", "--", root.display(), "eval"],
+      cwd: factory,
+      env: {FACTORY_DIR: factory.display(), XSH_MODULE_PATH: factory.display(), FACTORY_XSH_COMMIT: "fixture"},
+    ),
+  )?
+  test.ok(status.ok, "audit should project manager recovery evidence")?
+  let cost = json.get(json.read(fp"${root}/report.json")?, ["data", "cost"], null)
+  test.eq(json.get(cost, ["workers"], -1), 4)?
+  test.eq(json.get(cost, ["assistant_turns"], -1), 21)?
+  test.eq(json.get(cost, ["total_bucket_tokens"], -1), 220)?
+  let actual_cost = json.get(cost, ["cost_usd"], -1.0)
+  test.ok(actual_cost > 0.069 and actual_cost < 0.071)?
+}
+
 proc test_audit_preserves_controller_required_output_failure(ctx: TestContext) [fs, process, error] {
   let root = test.temp_dir(ctx, name: "audit-required-output-gate")?
   let factory = fs.cwd()?

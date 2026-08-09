@@ -1,0 +1,169 @@
+{
+  "artifacts": [
+    {
+      "kind": "phase-reports",
+      "path": "phases/"
+    },
+    {
+      "kind": "raw-events",
+      "path": "events.jsonl"
+    }
+  ],
+  "data": {
+    "cost": {
+      "assistant_turns": 62,
+      "budget_failures": 0,
+      "cost_usd": 0.038061792000000004,
+      "tool_errors": 1,
+      "total_bucket_tokens": 1534777.0,
+      "unknown_costs": 0,
+      "workers": 3
+    },
+    "mode": "organization",
+    "outcomes": {
+      "cycle": "pass",
+      "evaluator": "pass",
+      "infrastructure": "pass",
+      "product": "pass"
+    },
+    "phases": [
+      {
+        "id": "01-eval",
+        "path": "phases/01-eval/report.json",
+        "result": "pass",
+        "valid": true
+      }
+    ],
+    "throughput": {
+      "admitted_tickets": 0,
+      "delivered_tickets": 0,
+      "delivery_conversion": 0.0,
+      "delivery_target_met": true,
+      "engineer_rows": 0,
+      "engineer_target": 0,
+      "handbook_quarantines": 0,
+      "reeval_dispatched": 0,
+      "reeval_passed": 0
+    },
+    "tool_errors": [
+      {
+        "report": "phases/01-eval/workers/eval-worker/task-ecount-1/report.json",
+        "summary": "ecount.xsh: needs formatting\n\n\nCommand exited with code 1",
+        "tool": "bash",
+        "turn": 49,
+        "worker": {
+          "role": "eval-worker",
+          "worker_id": "task-ecount-1"
+        }
+      }
+    ],
+    "workers": [
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-ecount-retry-1"
+        },
+        "path": "phases/01-eval/workers/eval-manager/task-ecount-retry-1/report.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 3,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.000405504,
+          "cache_read_tokens": 22528,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.002567484,
+          "input_cost_usd": 0.00161136,
+          "input_tokens": 17904,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.0005506199999999999,
+          "output_tokens": 3059,
+          "provider_total_tokens": 43491,
+          "reasoning_tokens": 1327,
+          "thinking_blocks": 3,
+          "tool_calls": 8,
+          "tool_errors": 0,
+          "tool_results": 8,
+          "total_bucket_tokens": 43491,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-manager",
+          "worker_id": "task-ecount"
+        },
+        "path": "phases/01-eval/workers/eval-manager/task-ecount/report.attempt-1.json",
+        "result": "pass",
+        "tool_errors": 0,
+        "usage": {
+          "assistant_turns": 4,
+          "budget_usd": 0.15,
+          "cache_read_cost_usd": 0.0001152,
+          "cache_read_tokens": 6400,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.0034252199999999997,
+          "input_cost_usd": 0.00287496,
+          "input_tokens": 31944,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.00043506,
+          "output_tokens": 2417,
+          "provider_total_tokens": 40761,
+          "reasoning_tokens": 1052,
+          "thinking_blocks": 3,
+          "tool_calls": 9,
+          "tool_errors": 0,
+          "tool_results": 8,
+          "total_bucket_tokens": 40761,
+          "user_messages": 1
+        },
+        "valid": true
+      },
+      {
+        "identity": {
+          "role": "eval-worker",
+          "worker_id": "task-ecount-1"
+        },
+        "path": "phases/01-eval/workers/eval-worker/task-ecount-1/report.json",
+        "result": "pass",
+        "tool_errors": 1,
+        "usage": {
+          "assistant_turns": 55,
+          "budget_usd": 0.5,
+          "cache_read_cost_usd": 0.025164287999999996,
+          "cache_read_tokens": 1398016,
+          "cache_write_cost_usd": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.032069088,
+          "input_cost_usd": 0.0025468200000000004,
+          "input_tokens": 28298,
+          "malformed_lines": 0,
+          "output_cost_usd": 0.004357980000000001,
+          "output_tokens": 24211,
+          "provider_total_tokens": 1450525,
+          "reasoning_tokens": 14410,
+          "thinking_blocks": 47,
+          "tool_calls": 68,
+          "tool_errors": 1,
+          "tool_results": 68,
+          "total_bucket_tokens": 1450525,
+          "user_messages": 1
+        },
+        "valid": true
+      }
+    ],
+    "xsh_commit": "e2a609a94d8f624b8dc7cc1efae62a2691d3cbc8"
+  },
+  "findings": [],
+  "identity": {
+    "mode": "organization",
+    "run_id": "run-1786251384949"
+  },
+  "kind": "run",
+  "result": "pass",
+  "schema_version": 1,
+  "state": "completed"
+}

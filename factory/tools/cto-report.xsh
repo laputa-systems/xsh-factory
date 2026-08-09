@@ -409,6 +409,29 @@ proc main(...argv: List[Str]) [fs, env, error, io] {
   eval_reviews = eval_reviews |> sort-by .display()
   handbook_lineage = handbook_lineage |> sort-by .display()
 
+  # The audited envelope is authoritative for worker accounting. In particular,
+  # manager recovery keeps an initial `report.attempt-N.json` and copies the
+  # retry into a canonical path for downstream gates. Re-scanning filenames
+  # would hide the attempt and display the retry twice.
+  match json.get(data, ["workers"], []) {
+    audited is List[Any] => {
+      var audited_paths: List[Path] = []
+      for worker in audited {
+        let path_text = text(json.get(worker, ["path"], ""), "")
+        if path_text != "" {
+          let report_path = fp"${run_dir}/${path_text}"
+          if fs.exists(report_path)? {
+            audited_paths = audited_paths.push(report_path)
+          }
+        }
+      }
+      if audited_paths.len() > 0 {
+        worker_reports = audited_paths
+      }
+    }
+    _ => {}
+  }
+
   var employees = ""
   for report in employee_reports {
     employees = employees + employee_block(run_dir, report, employee_template)? + "\n"
