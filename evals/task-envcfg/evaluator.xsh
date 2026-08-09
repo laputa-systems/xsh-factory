@@ -65,7 +65,8 @@ proc run_envcfg_case(index: Int, case: EnvcfgCase) [fs, process, time, error] ->
   return {exact: exact, candidate_wall_ns: candidate.wall_ns, oracle_wall_ns: oracle.wall_ns}
 }
 
-# Verifies the canonical reference entry restored by task-envcfg-008.
+# Verifies the canonical reference entry restored by task-envcfg-008 or its
+# explicitly scoped compatibility successor task-envcfg-009.
 # This is a linked-replay gate only: ordinary config discovery must not be
 # coupled to a feature that its task contract does not require.
 proc error_fail_reference_resolves() [fs, process, error] -> Result[Bool] {
@@ -122,7 +123,8 @@ proc run_task_envcfg() [fs, process, env, time, error, io] -> Result[Int] {
   var hidden_malformed_oracle_wall_ns = 0
   var hidden_empty_port_candidate_wall_ns = 0
   var hidden_empty_port_oracle_wall_ns = 0
-  let error_fail_reference_required = env.get_or("FACTORY_REEVAL_TICKET", "")? == "task-envcfg-008"
+  let reeval_ticket = env.get_or("FACTORY_REEVAL_TICKET", "")?
+  let error_fail_reference_required = reeval_ticket == "task-envcfg-008" or reeval_ticket == "task-envcfg-009"
   let error_fail_reference_passed = if error_fail_reference_required {
     error_fail_reference_resolves()?
   } else {

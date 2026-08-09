@@ -4,12 +4,13 @@ This is the final bounded retry for the eval-manager report. The prior attempt
 did not produce a contract-complete narrative. Recover the existing evidence;
 do not rerun the executor, broaden discovery, or inspect historical runs.
 
-First read only the current structured phase report and the staged report below.
-Do not read the original worker report, evaluator manifest, artifact, or raw
-session before drafting. Your next tool call after those two reads MUST use
-`write` or `edit` to replace every skeleton placeholder in the staged report.
-Finish the report before any optional investigation, raw session read, or
-artifact probe. A valid closeout
+The role and immutable assignment still require exactly five first reads: the
+supplied handbook snapshot, `NORTH-STAR.md`, `roles/pi-session-briefing.md`,
+the eval's `EVAL.md`, and the current structured phase report below. Complete
+that set first. Do not read the original worker report. Do not read the staged report, evaluator manifest, artifact, or raw session before drafting. Your next
+tool call after those five reads MUST use `write` or `edit` to replace every
+skeleton placeholder at the staged report path below. Finish the report before
+any optional investigation, raw session read, or artifact probe. A valid closeout
 has `## Result` set to `pass` or `fail`, all required headings populated, no
 `not-ready` result, and no `Fill from` or `Fill every` placeholder text.
 

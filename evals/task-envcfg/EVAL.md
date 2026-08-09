@@ -117,10 +117,11 @@ so a hard-coded text workaround is classified as a restriction failure, and
 checks that `review.md` preserves both required headings and contains no
 template placeholders.
 
-For the linked replay of `task-envcfg-008`, the package also invokes
+For the linked replay of `task-envcfg-008` or its deliberately scoped
+compatibility successor `task-envcfg-009`, the package also invokes
 `xsht api api:error.fail` in the candidate build and requires a successful
 reference entry that names `error.fail`. This is a hard candidate gate only
-for that ticket's replay: the product change is an API-index repair, and the
+for either ticket's replay: the product change is an API-index repair, and the
 ordinary config task does not require a deliberate validation failure spelling.
 The ten environment cases and their ordinary restrictions remain unchanged.
 

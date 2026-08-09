@@ -7,6 +7,21 @@ A candidate hash listed as `promoted` has been incorporated into the rolling
 must remain visible as unresolved work in the CTO briefing; controllers must
 not silently discard it.
 
+## Explicit CTO disposition — run-1786255756177
+
+| Candidate SHA-256 | Disposition |
+| --- | --- |
+| `12a0ce8b24922bc4d631d84b87c4c621464e7ac48c163de4c222d802d5749698` | deferred pending delivery of `task-envcfg-009` and a second independently observed API-reference omission; not promoted |
+
+The ticket engineer proposed a useful registry-maintenance rule: pair a
+shipped API-reference entry with an exact-query regression. The candidate
+branch was not delivered because its required standard-module compatibility
+policy was outside closed `task-envcfg-008`, and the linked replay manager did
+not complete its narrative. Preserve the snapshot as evidence, but do not turn
+one rejected candidate into factory-wide handbook guidance. Revisit it only
+after `task-envcfg-009` delivers and a distinct API-index change shows the
+same maintenance need.
+
 ## Explicit CTO disposition — 2026-08-08 unchanged snapshots after validation correction
 
 | Candidate SHA-256 | Disposition |

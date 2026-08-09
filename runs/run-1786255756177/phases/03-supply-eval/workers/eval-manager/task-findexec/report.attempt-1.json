@@ -1,0 +1,115 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786255756177/phases/03-supply-eval/workers/eval-manager/task-findexec/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_process": "nonzero-exit",
+    "dispatch_claim": "77f7abaecd6b9fa9014cb09b85ca9ade1ae54cf439b2f399d84f25fb3aefd97a",
+    "dispatch_id": "eval-manager-task-findexec",
+    "factory_source": "unchanged",
+    "message_sha256": "77f7abaecd6b9fa9014cb09b85ca9ade1ae54cf439b2f399d84f25fb3aefd97a",
+    "reporting": "pass",
+    "required_report": "present",
+    "session_limit_watcher": "failed",
+    "system_prompt_sha256": "75e4263ca5275326232c179c9d6a014cbde42112245afcf635d4f417cc187174",
+    "watcher": "pass"
+  },
+  "findings": [
+    {
+      "count": 2,
+      "kind": "tool-error",
+      "severity": "warning"
+    }
+  ],
+  "identity": {
+    "role": "eval-manager",
+    "worker_id": "task-findexec"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "provider_telemetry": {
+    "event_turns": 5,
+    "events_path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786255756177/phases/03-supply-eval/workers/eval-manager/task-findexec/session.jsonl.events.jsonl",
+    "output_tokens_per_second": 0,
+    "present": true,
+    "provider_errors": [
+      "Stream ended without finish_reason"
+    ],
+    "response_elapsed_ms": 0,
+    "retry_count": 1,
+    "retry_delay_ms": 2000,
+    "retry_errors": [
+      "Stream ended without finish_reason"
+    ],
+    "retry_failures": 0,
+    "retry_successes": 1
+  },
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786255756177/phases/03-supply-eval/workers/eval-manager/task-findexec/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "error"
+    },
+    {
+      "count": 4,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 225759
+  },
+  "tool_errors": [
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786255756177/phases/03-supply-eval/workers/eval-manager/task-findexec/session.jsonl.bz2",
+      "summary": "ENOENT: no such file or directory, access '/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786255756177/phases/03-supply-eval/workers/eval-worker/task-findexec-1/findexec.xsh'",
+      "tool": "read",
+      "turn": 5
+    },
+    {
+      "raw_session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786255756177/phases/03-supply-eval/workers/eval-manager/task-findexec/session.jsonl.bz2",
+      "summary": "ENOENT: no such file or directory, access '/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786255756177/phases/03-supply-eval/workers/eval-worker/task-findexec-1/review.md'",
+      "tool": "read",
+      "turn": 5
+    }
+  ],
+  "tools": [
+    {
+      "count": 9,
+      "name": "read"
+    },
+    {
+      "count": 1,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 5,
+    "budget_usd": 0.15,
+    "cache_read_cost_usd": 0.0004481279999999999,
+    "cache_read_tokens": 24896,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.003803058,
+    "input_cost_usd": 0.0029063699999999997,
+    "input_tokens": 32293,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.00044856,
+    "output_tokens": 2492,
+    "provider_total_tokens": 59681,
+    "reasoning_tokens": 877,
+    "thinking_blocks": 5,
+    "tool_calls": 10,
+    "tool_errors": 2,
+    "tool_results": 10,
+    "total_bucket_tokens": 59681,
+    "user_messages": 1
+  }
+}

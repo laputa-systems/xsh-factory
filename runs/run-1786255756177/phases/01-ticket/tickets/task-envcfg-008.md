@@ -2,7 +2,7 @@
 
 ## Status
 
-Closed.
+Approved.
 
 ## Change target
 
@@ -31,16 +31,6 @@ Closed.
 - Product hygiene after detection: `7b4bee1a1cef74fed832331cd6cc5bb6e324c4ee`
   removes unrelated unreachable showcase code so the required fresh lint gate
   exits cleanly; it does not change this ticket's behavior or scope.
-- Closeout review: `runs/run-1786255756177` produced candidate commit
-  `b9ddeadc3dcc6e51ecd3d1d81aa8675066d2c7a3`. Its registry entry and linked
-  replay API gate passed, but adding `error` to the module registry also makes
-  the name reserved. The candidate changed both checker shadow checks to exempt
-  local `error` bindings. `docs/SPEC.md` currently reserves every registry
-  module name except `args`, and the product has 609 local `error` bindings.
-  That is a language compatibility decision outside this ticket's explicit
-  reference-only boundary, so the branch is preserved as evidence and this
-  ticket is closed without merge. `task-envcfg-009` carries the deliberately
-  scoped successor decision.
 
 ## Budget breach
 

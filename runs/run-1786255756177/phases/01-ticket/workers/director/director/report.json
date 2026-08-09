@@ -1,0 +1,100 @@
+{
+  "artifacts": [
+    {
+      "kind": "pi-session",
+      "path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786255756177/phases/01-ticket/workers/director/director/session.jsonl.bz2"
+    }
+  ],
+  "execution": {
+    "agent_process": "pass",
+    "dispatch_claim": "7efb77bb516f94315fbef7d1af3eda1f172cc45465b5eb683505af029416a26f",
+    "dispatch_id": "director-director",
+    "factory_source": "unchanged",
+    "message_sha256": "7efb77bb516f94315fbef7d1af3eda1f172cc45465b5eb683505af029416a26f",
+    "reporting": "pass",
+    "required_report": "present",
+    "session_limit_watcher": "pass",
+    "system_prompt_sha256": "46eeebe9c5ded596c3cdebfa5355ef5f528ba4592c7e5adc216b11527e4f69b4",
+    "watcher": "pass"
+  },
+  "findings": [],
+  "identity": {
+    "role": "director",
+    "worker_id": "director"
+  },
+  "kind": "worker",
+  "models": [
+    "openrouter/deepseek/deepseek-v4-flash-0731"
+  ],
+  "provider_telemetry": {
+    "event_turns": 11,
+    "events_path": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786255756177/phases/01-ticket/workers/director/director/session.jsonl.events.jsonl",
+    "output_tokens_per_second": 0,
+    "present": true,
+    "provider_errors": [],
+    "response_elapsed_ms": 0,
+    "retry_count": 0,
+    "retry_delay_ms": 0,
+    "retry_errors": [],
+    "retry_failures": 0,
+    "retry_successes": 0
+  },
+  "result": "pass",
+  "schema_version": 1,
+  "session": "/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786255756177/phases/01-ticket/workers/director/director/session.jsonl.bz2",
+  "state": "completed",
+  "stop_reasons": [
+    {
+      "count": 1,
+      "name": "stop"
+    },
+    {
+      "count": 10,
+      "name": "toolUse"
+    }
+  ],
+  "timing": {
+    "session_span_ms": 68778
+  },
+  "tool_errors": [],
+  "tools": [
+    {
+      "count": 5,
+      "name": "bash"
+    },
+    {
+      "count": 1,
+      "name": "edit"
+    },
+    {
+      "count": 12,
+      "name": "read"
+    },
+    {
+      "count": 1,
+      "name": "write"
+    }
+  ],
+  "usage": {
+    "assistant_turns": 11,
+    "budget_usd": 0.06,
+    "cache_read_cost_usd": 0.00482112,
+    "cache_read_tokens": 267840,
+    "cache_write_cost_usd": 0,
+    "cache_write_tokens": 0,
+    "cost_usd": 0.01134117,
+    "input_cost_usd": 0.00515169,
+    "input_tokens": 57241,
+    "malformed_lines": 0,
+    "output_cost_usd": 0.00136836,
+    "output_tokens": 7602,
+    "provider_total_tokens": 332683,
+    "reasoning_tokens": 5196,
+    "thinking_blocks": 10,
+    "tool_calls": 19,
+    "tool_errors": 0,
+    "tool_results": 19,
+    "total_bucket_tokens": 332683,
+    "user_messages": 1
+  }
+}

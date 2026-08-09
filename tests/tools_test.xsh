@@ -3182,7 +3182,9 @@ proc test_eval_gate_diagnostics_are_persisted() [fs, error] {
   test.contains(evaluator, "retry_guidance")?
   test.contains(evaluator, "FACTORY_EVAL_MANAGER_MAX_WALL_SECONDS=180")?
   let retry_template = fs.read_text(fp"${fs.cwd()?}/templates/EVAL-MANAGER-RETRY.md")?
-  test.contains(retry_template, "Your next tool call after those two reads MUST")?
+  test.contains(retry_template, "exactly five first reads")?
+  test.contains(retry_template, "after those five reads MUST")?
+  test.contains(retry_template, "Do not read the staged report")?
   test.contains(retry_template, "optional investigation")?
 }
 
@@ -3311,9 +3313,11 @@ proc test_task_envcfg_error_fail_replay_checks_the_api_reference() [fs, error] {
   test.contains(evaluator, "error_fail_reference_resolves")?
   test.contains(evaluator, "api:error.fail")?
   test.contains(evaluator, "task-envcfg-008")?
+  test.contains(evaluator, "task-envcfg-009")?
   test.contains(evaluator, "api_reference_failed")?
   test.contains(contract, "hard candidate gate only")?
   test.contains(contract, "task-envcfg-008")?
+  test.contains(contract, "task-envcfg-009")?
 }
 
 proc test_eval_dispatch_is_package_owned() [fs, error] {

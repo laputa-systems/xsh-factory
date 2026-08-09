@@ -1,0 +1,213 @@
+# Eval-manager assignment: `task-envcfg`
+
+Throughput bound: use the structured evidence packet and complete the staged
+report promptly. Do not spend a turn rediscovering controller state or reading
+raw session history unless a specific structured discrepancy requires proof.
+The launcher exposes only `read`, `write`, and `edit` for this role; use those
+tools for the bounded evidence review and report, not shell discovery.
+
+Use the `read` tool, not `bash`, `cat`, or `grep`, for the required reads below.
+Before any other investigation, make an exact `read` tool call for
+`/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786255756177/phases/02-reeval-task-envcfg-008/lineage/handbook-approved.md`; the controller proves this exact
+call as part of the manager admission contract.
+
+Read `/Users/josh/d/laputa-systems/xsh-factory/NORTH-STAR.md`, `/Users/josh/d/laputa-systems/xsh-factory/roles/pi-session-briefing.md`,
+`/Users/josh/d/laputa-systems/xsh-factory/evals/task-envcfg/EVAL.md`, and `/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786255756177/phases/02-reeval-task-envcfg-008/report.json` first. These four files
+plus the exact handbook snapshot are the complete first-read set.
+Use the exact absolute path `/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786255756177/phases/02-reeval-task-envcfg-008/lineage/handbook-approved.md` as the
+handbook snapshot under review; do not substitute a different handbook path or
+construct a relative path from the worker directory. If hashing it, hash that
+supplied path directly.
+The controller dispatch and open-ticket snapshot are structured fields in
+`/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786255756177/phases/02-reeval-task-envcfg-008/report.json`. The reconciler found these merged ticket files:
+`none`. Read each listed ticket directly when the value is
+not `none`. The pre-manager ticket identities are:
+`/Users/josh/d/laputa-systems/xsh-factory/tickets/task-bigfiles-001.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-bigfiles-002.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-bigfiles-003.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-bigfiles-004.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-bigfiles-005.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-colsum-001.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-colsum-002.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-dupcheck-001.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-dupcheck-002.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-ecount-001.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-ecount-002.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-ecount-003.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-ecount-004.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-ecount-005.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-ecount-006.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-ecount-007.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-ecount-008.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-ecount-009.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-envcfg-001.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-envcfg-002.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-envcfg-003.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-envcfg-004.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-envcfg-005.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-envcfg-006.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-envcfg-007.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-envcfg-008.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-findexec-001.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-grep-001.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-001.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-002.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-003.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-004.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-005.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-006.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-007.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-008.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-009.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-histogram-010.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-jsonfilter-001.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-pathparts-001.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-pathparts-002.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-pathparts-003.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-render-001.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-safepath-001.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-safepath-002.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-safepath-003.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-safepath-004.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-svcstat-001.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-tags-001.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-tags-002.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-tags-003.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-trim-001.md, /Users/josh/d/laputa-systems/xsh-factory/tickets/task-trim-002.md`. These files are immutable review input; never
+overwrite, rename, or repurpose a listed path. If a new observation is strong,
+use the next unused ticket identity. The executor is a black box. Every eval consumes the one
+factory-wide handbook; do not look for or create an eval-local handbook.
+
+Each merged ticket is a post-merge acceptance assignment. Evaluate its exact
+acceptance criteria against this cycle's XSH commit and record an explicit
+decision. Do not dispatch a merged ticket back to engineer.
+
+## Candidate re-evaluation
+
+- Ticket: `task-envcfg-008`
+- engineer worktree metadata: `controller-managed; do not read`
+- Candidate XSH commit: `b9ddeadc3dcc6e51ecd3d1d81aa8675066d2c7a3`
+
+The engineer worktree is controller-owned metadata, not manager evidence. It
+may be cleaned before this review starts. Do not read it or any path beneath
+`.xsh-factory-worktrees`; use the structured phase report, portable patch,
+evaluator `run.json`, artifact, review, and candidate commit fields in the run
+evidence instead.
+
+When the candidate ticket is not `not-reevaluation`, this is a pre-merge
+validation of the exact clean engineer worktree. Do not mark the ticket merged, do
+not dispatch engineer, and do not treat the branch as main. Decide whether the
+executor evidence supports the proposed fix and record that decision in the
+manager report.
+For a candidate-linked replay, report `pass` only when the worker actually
+exercised the ticket's acceptance criteria. If it used a workaround or did not
+exercise the proposed surface, state that explicitly; the controller will
+retain the branch for a directed replay.
+Include the exact sentence `Candidate acceptance: pass.` when the candidate is
+accepted, or `Candidate acceptance: fail.` when it is not. Do not rely on
+implicit wording for this delivery decision.
+
+This exact sentence is the machine decision token. Use only one of those two
+sentences, once, under `## Post-merge decisions`; prose such as `accepted for
+merge`, `decision: accept`, or `candidate surface exercised` cannot replace it.
+Do not attempt a second evidence search after the structured packet is
+complete. A missing path, contradictory evaluator gate, or incomplete report
+is a bounded failure to record, not a reason to explore the filesystem.
+
+Keep evidence ownership separate. The engineer's primary report owns native
+compiler, checker, and unit/API test execution; the linked replay owns the
+ticket's externally observable defining behavior and restriction/protocol
+boundary. When an acceptance criterion explicitly names a primary-phase test,
+do not require the evaluator sandbox to duplicate that test. Verify that the
+criterion is recorded in the structured engineer evidence named by the ticket
+or phase packet, and require the replay to cover the distinct behavior that
+would fail without the proposed change.
+
+The controller has completed exactly `1` fresh trial(s). Preserve
+separate evidence under `/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786255756177/phases/02-reeval-task-envcfg-008/workers/eval-worker/`. Do not read any
+worker report, evaluator `run.json`, artifact, review, manager skeleton, or raw
+session until the required first draft below has been written. After that
+first draft, inspect each worker `report.json`, evaluator `run.json`, and the
+exact artifact/review paths named by that manifest, plus quantitative results.
+Do not guess an `artifacts/` subdirectory or probe alternate filenames; if a
+manifest path is absent, record the discrepancy once and proceed with the
+structured evidence. Consult raw session JSONL only when a structured
+discrepancy requires proof; an exhaustive session read is not part of manager
+closeout. The
+controller has staged the required report skeleton at
+`/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786255756177/phases/02-reeval-task-envcfg-008/workers/eval-manager/task-envcfg/REPORT.md`; edit it in place
+instead of reconstructing the headings. Your `## Tool-error findings` section
+must account for every failed Pi tool result in the structured worker and
+manager `report.json` files, including invalid `xsht api` discovery queries, or
+say `None.` when all current sessions have zero errors.
+
+Before attributing wall-clock growth to agent inefficiency, inspect the worker
+report's `provider_telemetry`. Explicit `auto_retry_*` events, provider errors,
+retry delays, and elevated response latency are external-health evidence. If
+telemetry is absent, say latency attribution is `unknown` and use turns,
+tokens, tool calls, tool errors, repeated exploration, correctness, and artifact
+quality for the efficiency judgment. Do not recommend switching providers in
+this cycle; provider fallback is a future TODO only.
+
+## Trial 1
+
+The controller has already executed the configured trial against the approved
+handbook snapshot. Do not launch or rerun the executor. Inspect the executor
+report, worker report, thinking transcript, evaluator manifest, artifact,
+review, and quantitative session results at the paths in the phase `report.json`.
+The manager may stage a provisional candidate in the run lineage after
+classifying the evidence. Never edit the approved snapshot or the checked-in
+`runtime/handbook.md`.
+
+## Trial 2
+
+The controller has already executed trial 2 when the configured count is `2`.
+Compare its recorded inputs and outputs with trial 1; do not launch another
+executor.
+
+
+Follow the trial instructions above exactly. A one-trial plan may stage one
+concise provisional handbook candidate when the evidence supports a reusable
+lesson. Promotion still requires later replay and CTO approval. A two-trial
+plan must state whether its candidate was actually replayed by the controller;
+do not claim validation that did not occur.
+
+Begin the narrative output before final analysis: the controller has created
+`/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786255756177/phases/02-reeval-task-envcfg-008/workers/eval-manager/task-envcfg/REPORT.md` with a fail-closed
+`not-ready` result. The required first-read set is exactly the five files
+listed above. After those five results, your next tool call MUST use `write` or
+`edit` on that exact report path; do not read anything else first. Replace
+every skeleton placeholder, populate every required heading, include the exact
+candidate acceptance token, and use `unknown` or `None.` for structured fields
+that you have not yet read. Then re-read and refine the report from the worker
+reports and manifests. Only afterward make one targeted reproduction if a
+ticket-relevant contradiction remains. If an API question remains unresolved
+after two exact probes, classify the friction and proceed. Do not paste the
+full report into the final response; state the path and result only.
+
+Compare the requested trials. Classify each meaningful observation as
+correctness, restriction, timing, worker friction, reusable handbook
+guidance, product/tooling defect, harness mismatch, evaluator failure, or
+ordinary noise. Candidate/oracle timing is a diagnostic measurement except
+where the eval contract explicitly makes it a gate. Do not call code quality
+an objective metric; explain qualitative judgments and their evidence.
+
+If a handbook change is justified, write it only to
+`/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786255756177/phases/02-reeval-task-envcfg-008/lineage/handbook-candidate.md`; otherwise copy the approved
+snapshot there unchanged. Never edit the approved snapshot or the checked-in
+`/Users/josh/d/laputa-systems/xsh-factory/runtime/handbook.md`.
+
+Write `/Users/josh/d/laputa-systems/xsh-factory/runs/run-1786255756177/phases/02-reeval-task-envcfg-008/workers/eval-manager/task-envcfg/REPORT.md` with
+exactly these headings:
+
+```markdown
+## Result
+
+pass or fail
+
+## Effort metrics
+
+turns, tools, errors, session span, and worker friction per trial
+
+## Usage and cost
+
+input/output/cache buckets, provider total, reasoning tokens when reported,
+and dollars per trial and in aggregate
+
+## Thinking evidence
+
+thinking-block counts and findings grounded in `thinking.md`; say when the
+provider did not report reasoning-token counts
+
+## Tool-error findings
+
+every nonzero Pi tool result from the structured `tool_errors` arrays, or
+`None.` when the current evidence packet has no tool errors
+
+## Timing evidence
+
+candidate/oracle timing and any strict ratio gate
+
+## Observation classification
+
+reusable signal versus noise, with evidence
+
+## Handbook decision
+
+unchanged or provisional candidate, the general lesson, and replay scope
+
+## Tickets created
+
+zero or a list of standardized linked ticket paths
+
+## Post-merge decisions
+
+For each reconciled merged ticket: ticket ID, implementation commit,
+accept/reject or needs-replay decision, evidence, and any required revert
+proposal.
+
+## Next replay
+
+the exact eval, handbook lineage, and post-merge or falsification check
+
+## North-star impact
+
+how this advances practical, learnable, ergonomic, trustworthy XSH
+```
+
+A ticket must use `templates/TICKET.md`, link this eval, this manager run,
+the executor evidence, the handbook lineage, and the XSH baseline. New
+tickets are for the next cycle. Leave the ticket template's merge-record
+placeholders unchanged. A handbook candidate is global and becomes trusted
+only after review and replay.
+
+Factory infrastructure changes belong to the CTO. Do not create a factory-target ticket or recommend engineer dispatch for them.
